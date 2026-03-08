@@ -175,12 +175,16 @@ export async function updateBreakpointItem(
   }
 }
 
-export async function approveAllBreakpoints(topologyId: string): Promise<void> {
-  await api.post('/api/user-task/accept', { topologyId, type: 'userTask' })
+export async function approveAllBreakpoints(topologyId: string, nodeId?: string): Promise<void> {
+  const payload: Record<string, string> = { topologyId, type: 'userTask' }
+  if (nodeId) payload.nodeId = nodeId
+  await api.post('/api/user-task/accept', payload)
 }
 
-export async function rejectAllBreakpoints(topologyId: string): Promise<void> {
-  await api.post('/api/user-task/reject', { topologyId, type: 'userTask' })
+export async function rejectAllBreakpoints(topologyId: string, nodeId?: string): Promise<void> {
+  const payload: Record<string, string> = { topologyId, type: 'userTask' }
+  if (nodeId) payload.nodeId = nodeId
+  await api.post('/api/user-task/reject', payload)
 }
 
 export async function hasBreakpointMessages(topologyId: string): Promise<boolean> {

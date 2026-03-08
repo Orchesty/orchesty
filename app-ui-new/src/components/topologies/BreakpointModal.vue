@@ -2,10 +2,12 @@
 import { ref, watch, computed } from 'vue'
 import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
+import CopyValue from '@/components/ui/CopyValue.vue'
 import { useToast } from '@/composables/useToast'
 import {
   fetchBreakpointItems,
   approveBreakpointItem,
+  approveAllBreakpoints,
 } from '@/services/breakpointService'
 import type { TrashItem } from '@/types/trash'
 
@@ -100,6 +102,21 @@ const handleApprove = async () => {
   }
 }
 
+const handleApproveAll = async () => {
+  actionLoading.value = true
+  try {
+    await approveAllBreakpoints(props.topologyId, props.nodeId)
+    showToast('All breakpoint messages approved', 'success')
+    emit('update')
+    handleClose()
+  } catch (err) {
+    console.error('Failed to approve all:', err)
+    showToast('Failed to approve all messages', 'error')
+  } finally {
+    actionLoading.value = false
+  }
+}
+
 const handleClose = () => {
   emit('update:modelValue', false)
 }
@@ -153,9 +170,14 @@ const handleClose = () => {
         >
           Headers
         </h4>
-        <pre
-          class="max-h-48 overflow-auto rounded-lg border border-gray-200 bg-gray-50 p-3 font-mono text-xs text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
-        >{{ formatJson(currentItem.headers) }}</pre>
+        <div class="group/copy relative">
+          <div class="absolute right-2 top-2 opacity-0 transition-opacity group-hover/copy:opacity-100">
+            <CopyValue :value="formatJson(currentItem.headers)" hide-value title="Copy headers" />
+          </div>
+          <pre
+            class="max-h-48 overflow-auto rounded-lg border border-gray-200 bg-gray-50 p-3 font-mono text-xs text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+          >{{ formatJson(currentItem.headers) }}</pre>
+        </div>
       </div>
 
       <!-- Body -->
@@ -165,14 +187,27 @@ const handleClose = () => {
         >
           Body
         </h4>
-        <pre
-          class="max-h-64 overflow-auto rounded-lg border border-gray-200 bg-gray-50 p-3 font-mono text-xs text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
-        >{{ formatJson(currentItem.body) }}</pre>
+        <div class="group/copy relative">
+          <div class="absolute right-2 top-2 opacity-0 transition-opacity group-hover/copy:opacity-100">
+            <CopyValue :value="formatJson(currentItem.body)" hide-value title="Copy body" />
+          </div>
+          <pre
+            class="max-h-64 overflow-auto rounded-lg border border-gray-200 bg-gray-50 p-3 font-mono text-xs text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+          >{{ formatJson(currentItem.body) }}</pre>
+        </div>
       </div>
     </div>
 
     <template #footer-actions>
       <div v-if="currentItem && !loading" class="flex items-center justify-end gap-3">
+        <Button
+          v-if="totalCount > 1"
+          variant="outline"
+          :disabled="actionLoading"
+          @click="handleApproveAll"
+        >
+          Approve All ({{ totalCount }})
+        </Button>
         <Button
           variant="success"
           :disabled="actionLoading"

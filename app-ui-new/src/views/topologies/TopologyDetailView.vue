@@ -17,7 +17,7 @@ import type { MoreActionsSection } from '@/components/ui/MoreActions.vue'
 import Card from '@/components/ui/Card.vue'
 import TabCard from '@/components/ui/TabCard.vue'
 import Textarea from '@/components/ui/datagrid/Textarea.vue'
-import { fetchTopologyDetail, fetchTopologySchema, publishTopology, toggleTopologyEnabled, updateTopology } from '@/services/topologiesService'
+import { fetchTopologyDetail, fetchTopologySchema, publishTopology, toggleTopologyEnabled, updateTopology, fetchCategoryBreadcrumb } from '@/services/topologiesService'
 import { validateMcpManifest } from '@/utils/mcpManifestValidator'
 import { fetchTopologyMetrics } from '@/services/topologyMetricsService'
 import { useToast } from '@/composables/useToast'
@@ -25,9 +25,8 @@ import type { TopologyDetail, TopologyLayoutContext } from '@/types/topologies-p
 import type { TopologyMetrics, MetricsMode } from '@/types/topology-metrics'
 import { useLastTopology } from '@/composables/useLastTopology'
 import TraceDrawer from '@/components/trace/TraceDrawer.vue'
-import TrashDetailDrawer from '@/components/trash/TrashDetailDrawer.vue'
+import FailedMessageModal from '@/components/topologies/FailedMessageModal.vue'
 import { useTraceDrawer } from '@/composables/useTraceDrawer'
-import { approveTrashItem, rejectTrashItem, updateTrashItem } from '@/services/trashService'
 import type { TrashItem } from '@/types/trash'
 
 interface Props {
@@ -64,6 +63,7 @@ const topologyEditorRef = ref<InstanceType<typeof TopologyEditor> | null>(null)
 const topology = ref<TopologyDetail | null>(null)
 const loading = ref(true)
 const error = ref<string | null>(null)
+const categoryPath = ref<string[]>([])
 const versionDrawerOpen = ref(false)
 const designerDrawerOpen = ref(false)
 
@@ -195,53 +195,21 @@ const inactiveTabClass = 'text-gray-500 border-transparent hover:text-gray-600 h
 // Refresh trigger -- incremented after process run to invalidate tab data
 const refreshKey = ref(0)
 
-// Shared trash drawer state
-const trashDrawerOpen = ref(false)
-const trashDrawerItem = ref<TrashItem | null>(null)
+// Shared failed message modal state (for the Failed Messages tab)
+const failedTabModalOpen = ref(false)
+const failedTabNodeId = ref('')
+const failedTabCorrelationId = ref('')
+const failedTabTopologyId = ref('')
 
 const handleOpenFailedMessage = (item: TrashItem) => {
-  trashDrawerItem.value = item
-  trashDrawerOpen.value = true
+  failedTabNodeId.value = item.nodeId
+  failedTabCorrelationId.value = item.correlationId
+  failedTabTopologyId.value = item.topologyId
+  failedTabModalOpen.value = true
 }
 
-const handleDrawerApprove = async () => {
-  if (!trashDrawerItem.value) return
-  try {
-    await approveTrashItem(trashDrawerItem.value.id)
-    showToast('Message approved successfully', 'success')
-    trashDrawerOpen.value = false
-    refreshKey.value++
-  } catch (error) {
-    console.error('Approve failed:', error)
-    showToast('Failed to approve message', 'error')
-  }
-}
-
-const handleDrawerUpdate = async (data: { headers: Record<string, unknown>; body: Record<string, unknown> }) => {
-  if (!trashDrawerItem.value) return
-  try {
-    const updatedData = await updateTrashItem(trashDrawerItem.value.id, data)
-    trashDrawerItem.value.headers = updatedData.headers
-    trashDrawerItem.value.body = updatedData.body
-    showToast('Message updated successfully', 'success')
-    refreshKey.value++
-  } catch (error) {
-    console.error('Update failed:', error)
-    showToast('Failed to update message', 'error')
-  }
-}
-
-const handleDrawerReject = async () => {
-  if (!trashDrawerItem.value) return
-  try {
-    await rejectTrashItem(trashDrawerItem.value.id)
-    showToast('Message rejected successfully', 'success')
-    trashDrawerOpen.value = false
-    refreshKey.value++
-  } catch (error) {
-    console.error('Reject failed:', error)
-    showToast('Failed to reject message', 'error')
-  }
+const handleTabModalUpdate = () => {
+  refreshKey.value++
 }
 
 // Topology action handlers (from detail page header, delegating to layout)
@@ -368,6 +336,16 @@ const loadTopologyDetail = async () => {
         hasFlow.value = Array.isArray(nodes) && nodes.some((n: { type?: string }) => n.type === 'flow')
       } catch {
         hasFlow.value = false
+      }
+
+      if (topology.value.category) {
+        try {
+          categoryPath.value = await fetchCategoryBreadcrumb(topology.value.category)
+        } catch {
+          categoryPath.value = []
+        }
+      } else {
+        categoryPath.value = []
       }
     }
   } catch (err) {
@@ -575,41 +553,62 @@ onMounted(async () => {
     <!-- Page Header -->
     <div class="mb-6">
       <div class="flex items-center justify-between mb-2">
-        <!-- Toggle Sidebar Button -->
+        <!-- Toggle Sidebar Button + Breadcrumb -->
         <div>
-          <button
-            type="button"
-            @click="layout.topologySidebarCollapsed.value = !layout.topologySidebarCollapsed.value"
-            class="items-center justify-center rounded-lg p-0 relative -left-1 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-          >
-            <svg
-              v-show="layout.topologySidebarCollapsed.value"
-              class="w-6 h-6"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              height="24px"
-              viewBox="0 -960 960 960"
-              width="24px"
-              fill="currentColor"
+          <div class="flex items-center gap-2 mb-1">
+            <button
+              type="button"
+              @click="layout.topologySidebarCollapsed.value = !layout.topologySidebarCollapsed.value"
+              class="inline-flex items-center justify-center rounded-lg p-0 relative -left-1 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
             >
-              <path d="M498.08-623.46v286.92L641.92-480 498.08-623.46ZM212.31-140q-29.92 0-51.12-21.19Q140-182.39 140-212.31v-535.38q0-29.92 21.19-51.12Q182.39-820 212.31-820h535.38q29.92 0 51.12 21.19Q820-777.61 820-747.69v535.38q0 29.92-21.19 51.12Q777.61-140 747.69-140H212.31ZM320-200v-560H212.31q-4.62 0-8.46 3.85-3.85 3.84-3.85 8.46v535.38q0 4.62 3.85 8.46 3.84 3.85 8.46 3.85H320Zm60 0h367.69q4.62 0 8.46-3.85 3.85-3.84 3.85-8.46v-535.38q0-4.62-3.85-8.46-3.84-3.85-8.46-3.85H380v560Zm-60 0H200h120Z" />
-            </svg>
-            <svg
-              v-show="!layout.topologySidebarCollapsed.value"
-              class="w-6 h-6"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              height="24px"
-              viewBox="0 -960 960 960"
-              width="24px"
-              fill="currentColor"
-            >
-              <path d="M641.92-336.54v-286.92L498.08-480l143.84 143.46ZM212.31-140q-29.92 0-51.12-21.19Q140-182.39 140-212.31v-535.38q0-29.92 21.19-51.12Q182.39-820 212.31-820h535.38q29.92 0 51.12 21.19Q820-777.61 820-747.69v535.38q0 29.92-21.19 51.12Q777.61-140 747.69-140H212.31ZM320-200v-560H212.31q-4.62 0-8.46 3.85-3.85 3.84-3.85 8.46v535.38q0 4.62 3.85 8.46 3.84 3.85 8.46 3.85H320Zm60 0h367.69q4.62 0 8.46-3.85 3.85-3.84 3.85-8.46v-535.38q0-4.62-3.85-8.46-3.84-3.85-8.46-3.85H380v560Zm-60 0H200h120Z" />
-            </svg>
-            <span class="sr-only">Toggle sidebar</span>
-          </button>
+              <svg
+                v-show="layout.topologySidebarCollapsed.value"
+                class="w-6 h-6"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 -960 960 960"
+                width="24px"
+                fill="currentColor"
+              >
+                <path d="M498.08-623.46v286.92L641.92-480 498.08-623.46ZM212.31-140q-29.92 0-51.12-21.19Q140-182.39 140-212.31v-535.38q0-29.92 21.19-51.12Q182.39-820 212.31-820h535.38q29.92 0 51.12 21.19Q820-777.61 820-747.69v535.38q0 29.92-21.19 51.12Q777.61-140 747.69-140H212.31ZM320-200v-560H212.31q-4.62 0-8.46 3.85-3.85 3.84-3.85 8.46v535.38q0 4.62 3.85 8.46 3.84 3.85 8.46 3.85H320Zm60 0h367.69q4.62 0 8.46-3.85 3.85-3.84 3.85-8.46v-535.38q0-4.62-3.85-8.46-3.84-3.85-8.46-3.85H380v560Zm-60 0H200h120Z" />
+              </svg>
+              <svg
+                v-show="!layout.topologySidebarCollapsed.value"
+                class="w-6 h-6"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 -960 960 960"
+                width="24px"
+                fill="currentColor"
+              >
+                <path d="M641.92-336.54v-286.92L498.08-480l143.84 143.46ZM212.31-140q-29.92 0-51.12-21.19Q140-182.39 140-212.31v-535.38q0-29.92 21.19-51.12Q182.39-820 212.31-820h535.38q29.92 0 51.12 21.19Q820-777.61 820-747.69v535.38q0 29.92-21.19 51.12Q777.61-140 747.69-140H212.31ZM320-200v-560H212.31q-4.62 0-8.46 3.85-3.85 3.84-3.85 8.46v535.38q0 4.62 3.85 8.46 3.84 3.85 8.46 3.85H320Zm60 0h367.69q4.62 0 8.46-3.85 3.85-3.84 3.85-8.46v-535.38q0-4.62-3.85-8.46-3.84-3.85-8.46-3.85H380v560Zm-60 0H200h120Z" />
+              </svg>
+              <span class="sr-only">Toggle sidebar</span>
+            </button>
 
-          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ topology.name }}</h1>
+            <!-- Breadcrumb -->
+            <nav class="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
+              <span>Topologies</span>
+              <template v-for="folder in categoryPath" :key="folder">
+                <svg class="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+                <span>{{ folder }}</span>
+              </template>
+            </nav>
+          </div>
+
+          <!-- Title row -->
+          <div class="flex items-center gap-3">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ topology.name }}</h1>
+            <span class="text-sm text-gray-400 dark:text-gray-500 font-normal">v.{{ topology.version }}</span>
+            <span :class="['text-xs font-medium px-2.5 py-0.5 rounded', statusBadgeClass]">
+              {{ statusLabel }}
+            </span>
+          </div>
+
           <div v-if="topology.description" class="flex items-center gap-1 mt-1 max-w-xl">
             <p data-description-text class="text-sm text-gray-500 dark:text-gray-400 overflow-hidden whitespace-nowrap">{{ topology.description }}</p>
             <button
@@ -618,12 +617,6 @@ onMounted(async () => {
               @click="descriptionPopupOpen = true"
               class="shrink-0 text-xs text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
             >...</button>
-          </div>
-          <div class="flex items-center gap-2 mt-2">
-            <span class="text-sm text-gray-500 dark:text-gray-400">Version {{ topology.version }}</span>
-            <span :class="['text-xs font-medium px-2.5 py-0.5 rounded', statusBadgeClass]">
-              {{ statusLabel }}
-            </span>
           </div>
         </div>
 
@@ -687,7 +680,7 @@ onMounted(async () => {
     <div v-show="activeTopologyTab === 'topology'">
       <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
         <div class="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden">
-          <TopologyEditor ref="topologyEditorRef" :topology-id="topology._id" :topology-enabled="topology.enabled" :refresh-key="refreshKey" @process-run="handleProcessRun" @open-failed-message="handleOpenFailedMessage" />
+          <TopologyEditor ref="topologyEditorRef" :topology-id="topology._id" :topology-enabled="topology.enabled" :refresh-key="refreshKey" @process-run="handleProcessRun" />
         </div>
       </div>
     </div>
@@ -908,12 +901,14 @@ onMounted(async () => {
   <!-- Trace Drawer -->
   <TraceDrawer v-model="isTraceDrawerOpen" />
 
-  <!-- Shared Failed Message Drawer -->
-  <TrashDetailDrawer
-    v-model="trashDrawerOpen"
-    :item="trashDrawerItem"
-    @approve="handleDrawerApprove"
-    @update="handleDrawerUpdate"
-    @reject="handleDrawerReject"
+  <!-- Failed Message Modal (for Failed Messages tab) -->
+  <FailedMessageModal
+    v-model="failedTabModalOpen"
+    :topology-id="failedTabTopologyId"
+    :node-id="failedTabNodeId"
+    :correlation-id="failedTabCorrelationId"
+    node-name=""
+    hide-bulk-actions
+    @update="handleTabModalUpdate"
   />
 </template>

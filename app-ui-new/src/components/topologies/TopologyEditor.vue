@@ -5,13 +5,14 @@ import type { EditorCore, LabelCustomizationMap } from 'rete-editor'
 import CronSettingsModal from '@/components/scheduled-tasks/CronSettingsModal.vue'
 import RunProcessModal from '@/components/topologies/RunProcessModal.vue'
 import BreakpointModal from '@/components/topologies/BreakpointModal.vue'
+import FailedMessageModal from '@/components/topologies/FailedMessageModal.vue'
+import CopyValue from '@/components/ui/CopyValue.vue'
 import { useCronNodeActions } from '@/composables/useCronNodeActions'
 import { useToast } from '@/composables/useToast'
 import { useDateFormat } from '@/composables/useDateFormat'
 import { useProcessPolling } from '@/composables/useProcessPolling'
 import { fetchTopologySchema, saveTopologySchema } from '@/services/topologiesService'
 import { fetchRawTopologyMetrics } from '@/services/topologyMetricsService'
-import { fetchTrashItems } from '@/services/trashService'
 import {
   fetchNodeOverlayCounts,
   approveAllBreakpoints,
@@ -22,7 +23,6 @@ import api from '@/services/api'
 import { topologyEditorService } from '@/services/topologyEditorService'
 import type { ScheduledTask } from '@/types/scheduled-tasks'
 import type { CronNode } from '@/types/topologies-page'
-import type { TrashItem } from '@/types/trash'
 
 interface Props {
   topologyId: string
@@ -37,7 +37,6 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'process-run': []
-  'open-failed-message': [item: TrashItem]
 }>()
 
 const { Editor, createConfig } = ReteEditorKit
@@ -68,6 +67,10 @@ const editorCore = ref<EditorCore>()
 const cronSettingsModalOpen = ref(false)
 const runProcessModalOpen = ref(false)
 const breakpointModalOpen = ref(false)
+const failedMessageModalOpen = ref(false)
+const failedMessageNodeId = ref('')
+const failedMessageCorrelationId = ref('')
+const failedMessageNodeName = ref('')
 const selectedNode = ref<EditorNode | null>(null)
 const breakpointCounts = ref<Record<string, number>>({})
 const hasBreakpoints = ref(false)
@@ -159,27 +162,20 @@ const nodeStatuses = ref<Record<string, boolean>>({})
 
 const errorIconSvg = '<svg style="width:40px;height:40px;" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="#dc2626" stroke="#dc2626"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
 
-const handleErrorIconClick = async (editorNodeId: string) => {
+const handleErrorIconClick = (editorNodeId: string) => {
   const backendNodeId = resolveBackendId(editorNodeId)
   const correlationId = polling.latestProcess.value?.id
   if (!correlationId) return
 
-  try {
-    const result = await fetchTrashItems({
-      correlationId,
-      node: backendNodeId,
-      topology: props.topologyId,
-      perPage: 1,
-      sortBy: 'timestamp',
-      sortOrder: 'desc',
-    })
-    const item = result.data[0]
-    if (item) {
-      emit('open-failed-message', item)
-    }
-  } catch (err) {
-    console.error('Failed to fetch failed message for node:', err)
-  }
+  const nodeData = nodesData.value[editorNodeId]
+  failedMessageNodeId.value = backendNodeId
+  failedMessageCorrelationId.value = correlationId
+  failedMessageNodeName.value = nodeData?.name || editorNodeId
+  failedMessageModalOpen.value = true
+}
+
+const handleFailedMessageUpdate = async () => {
+  await refreshNodeOverlays()
 }
 
 const getOverlayTopLeft = (node: EditorNode) => {
@@ -210,6 +206,7 @@ const getBreakpointOverlay = (node: EditorNode) => {
 const getBreakpointActions = (node: EditorNode) => {
   const count = breakpointCounts.value[node.id] || 0
   if (!count) return []
+  const backendNodeId = resolveBackendId(node.id)
   return [
     {
       id: 'approve-all',
@@ -218,9 +215,9 @@ const getBreakpointActions = (node: EditorNode) => {
       tooltip: 'Approve all',
       onClick: async () => {
         try {
-          await approveAllBreakpoints(props.topologyId)
+          await approveAllBreakpoints(props.topologyId, backendNodeId)
           showToast('All breakpoint messages approved', 'success')
-          await refreshNodeOverlays()
+          await handleBreakpointUpdate()
         } catch (err) {
           console.error('Failed to approve all:', err)
           showToast('Failed to approve all messages', 'error')
@@ -234,9 +231,9 @@ const getBreakpointActions = (node: EditorNode) => {
       tooltip: 'Reject all',
       onClick: async () => {
         try {
-          await rejectAllBreakpoints(props.topologyId)
+          await rejectAllBreakpoints(props.topologyId, backendNodeId)
           showToast('All breakpoint messages rejected', 'success')
-          await refreshNodeOverlays()
+          await handleBreakpointUpdate()
         } catch (err) {
           console.error('Failed to reject all:', err)
           showToast('Failed to reject all messages', 'error')
@@ -576,13 +573,12 @@ const processDuration = computed(() => {
   return formatMs(p.duration)
 })
 
-const showProcessPanel = computed(() =>
-  processStartNodeName.value && (polling.isPolling.value || polling.processCompleted.value)
-)
+const showProcessPanel = computed(() => !!processStartNodeName.value)
 
 const dismissProcessPanel = () => {
   processStartNodeName.value = null
   processStartedAt.value = null
+  polling.stopPolling()
   polling.latestProcess.value = null
   polling.processCompleted.value = false
   nodeStatuses.value = {}
@@ -734,6 +730,12 @@ watch(() => props.refreshKey, () => {
               </span>
               <span :class="statusBadgeClass">{{ statusLabel }}</span>
             </div>
+            <div v-if="polling.latestProcess.value?.id" class="text-gray-500 dark:text-gray-400">
+              Correl. ID:
+              <CopyValue :value="polling.latestProcess.value.id">
+                <span class="font-mono">{{ polling.latestProcess.value.id.slice(0, 16) }}...</span>
+              </CopyValue>
+            </div>
             <div v-if="displayStartTime" class="text-gray-500 dark:text-gray-400">
               Start: {{ formatDateTime(displayStartTime) }}
             </div>
@@ -776,6 +778,15 @@ watch(() => props.refreshKey, () => {
       :node-id="selectedNode ? resolveBackendId(selectedNode.id) : ''"
       :topology-id="topologyId"
       @update="handleBreakpointUpdate"
+    />
+
+    <FailedMessageModal
+      v-model="failedMessageModalOpen"
+      :topology-id="topologyId"
+      :node-id="failedMessageNodeId"
+      :correlation-id="failedMessageCorrelationId"
+      :node-name="failedMessageNodeName"
+      @update="handleFailedMessageUpdate"
     />
   </div>
 </template>
