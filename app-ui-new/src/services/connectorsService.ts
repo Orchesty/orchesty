@@ -23,12 +23,10 @@ const { formatChartDate } = useDateFormat()
  * Map API connector item to UI Connector model
  */
 function mapApiItemToConnector(apiItem: ConnectorApiItem): Connector {
-  // Determine status based on error counts
   const hasErrors = apiItem.status400 > 0 || apiItem.status500 > 0
   return {
     id: apiItem.nodeId,
-    name: apiItem.nodeId, // Will be replaced by node name in component
-    application: apiItem.applicationId, // Will be replaced by app name in component
+    application: apiItem.applicationId,
     avgRequestTime: apiItem.duration,
     requests: apiItem.count,
     errors400: apiItem.status400,
@@ -121,7 +119,8 @@ export async function fetchConnectors(
 
   // Add node filter
   if (params.node) {
-    filterObj.filter.push([{ column: 'nodeId', operator: 'EQ', value: [params.node] }])
+    const nodeValues = Array.isArray(params.node) ? params.node : [params.node]
+    filterObj.filter.push([{ column: 'nodeId', operator: 'EQ', value: nodeValues }])
   }
 
   // Add application filter
@@ -170,32 +169,25 @@ export async function fetchConnectors(
 
 /**
  * Fetch connector detail with error statistics.
- * Accepts one or more nodeIds. When multiple are provided, uses the IN operator
- * and aggregates results across all nodes (same connector in different topologies).
+ * Filters by nodeId array so all nodes with the same name are included.
  */
 export async function fetchConnectorDetail(
-  connectorIdOrIds: string | string[],
+  nodeIds: string[],
   timeFilter: TimeFilter,
 ): Promise<ConnectorDetail> {
-  const nodeIds = Array.isArray(connectorIdOrIds) ? connectorIdOrIds : [connectorIdOrIds]
   const dateRange = convertTimeFilterToDateTimeRange(timeFilter)
   const dateFrom = formatDateTimeForApi(dateRange.from) || ''
   const dateTo = formatDateTimeForApi(dateRange.to) || ''
-
-  const isMultiple = nodeIds.length > 1
-  const nodeFilter = isMultiple
-    ? { column: 'nodeId', operator: 'IN', value: nodeIds }
-    : { column: 'nodeId', operator: 'EQ', value: [nodeIds[0]] }
 
   const filterObj: ConnectorApiFilter = {
     search: null,
     filter: [
       [{ column: 'created', operator: 'BETWEEN', value: [dateFrom, dateTo] }],
-      [nodeFilter]
+      [{ column: 'nodeId', operator: 'EQ', value: nodeIds }]
     ],
     sorter: [],
     paging: {
-      itemsPerPage: isMultiple ? nodeIds.length : 1,
+      itemsPerPage: 1,
       page: 1
     }
   }
@@ -211,8 +203,7 @@ export async function fetchConnectorDetail(
   if (items.length === 0) {
     return {
       connector: {
-        id: nodeIds[0],
-        name: nodeIds[0],
+        id: nodeIds[0] || '',
         application: '',
         avgRequestTime: 0,
         requests: 0,
@@ -229,82 +220,38 @@ export async function fetchConnectorDetail(
     }
   }
 
-  if (items.length === 1) {
-    const connector = mapApiItemToConnector(items[0])
-    return {
-      connector,
-      errors400: items[0].status400,
-      errors500: items[0].status500,
-      totalRequests: items[0].count,
-      lastRequestStatus: items[0].lastStatus,
-      errorRecords: [],
-    }
-  }
-
-  // Aggregate across multiple nodes
-  let totalCount = 0
-  let totalStatus400 = 0
-  let totalStatus500 = 0
-  let totalDuration = 0
-  let lastStatus = 0
-
-  for (const item of items) {
-    totalCount += item.count
-    totalStatus400 += item.status400
-    totalStatus500 += item.status500
-    totalDuration += item.duration * item.count
-    lastStatus = item.lastStatus
-  }
-
-  const avgDuration = totalCount > 0 ? Math.round(totalDuration / totalCount) : 0
-  const hasErrors = totalStatus400 > 0 || totalStatus500 > 0
-
+  const connector = mapApiItemToConnector(items[0])
   return {
-    connector: {
-      id: nodeIds[0],
-      name: nodeIds[0],
-      application: items[0].applicationId,
-      avgRequestTime: avgDuration,
-      requests: totalCount,
-      errors400: totalStatus400,
-      errors500: totalStatus500,
-      lastRequestStatus: lastStatus,
-      status: hasErrors ? 'errors' : 'ok',
-    },
-    errors400: totalStatus400,
-    errors500: totalStatus500,
-    totalRequests: totalCount,
-    lastRequestStatus: lastStatus,
+    connector,
+    errors400: items[0].status400,
+    errors500: items[0].status500,
+    totalRequests: items[0].count,
+    lastRequestStatus: items[0].lastStatus,
     errorRecords: [],
   }
 }
 
 /**
  * Fetch connector error records with pagination.
- * Accepts one or more nodeIds for aggregated queries.
+ * Filters by nodeId array so all nodes with the same name are included.
  */
 export async function fetchConnectorErrorRecords(
-  connectorIdOrIds: string | string[],
+  nodeIds: string[],
   timeFilter: TimeFilter,
   page: number = 1,
   limit: number = 10,
   sortField: string = 'created',
   sortDirection: string = 'desc'
 ): Promise<PaginatedResponse<ConnectorErrorRecord>> {
-  const nodeIds = Array.isArray(connectorIdOrIds) ? connectorIdOrIds : [connectorIdOrIds]
   const dateRange = convertTimeFilterToDateTimeRange(timeFilter)
   const dateFrom = formatDateTimeForApi(dateRange.from) || ''
   const dateTo = formatDateTimeForApi(dateRange.to) || ''
-
-  const nodeFilter = nodeIds.length > 1
-    ? { column: 'nodeId', operator: 'IN', value: nodeIds }
-    : { column: 'nodeId', operator: 'EQ', value: [nodeIds[0]] }
 
   const filterObj: ConnectorApiFilter = {
     search: null,
     filter: [
       [{ column: 'created', operator: 'BETWEEN', value: [dateFrom, dateTo] }],
-      [nodeFilter],
+      [{ column: 'nodeId', operator: 'EQ', value: nodeIds }],
       [{ column: 'status', operator: 'EQ', value: ['FAILED'] }]
     ],
     sorter: [{ column: sortField, direction: sortDirection.toUpperCase() }],
@@ -339,27 +286,22 @@ export async function fetchConnectorErrorRecords(
 
 /**
  * Fetch connector chart data for error visualization.
- * Accepts one or more nodeIds for aggregated queries.
+ * Filters by nodeId array so all nodes with the same name are included.
  */
 export async function fetchConnectorChartData(
-  connectorIdOrIds: string | string[],
+  nodeIds: string[],
   timeFilter: TimeFilter,
   buckets: number,
 ): Promise<{ categories: string[]; errors400: number[]; errors500: number[] }> {
-  const nodeIds = Array.isArray(connectorIdOrIds) ? connectorIdOrIds : [connectorIdOrIds]
   const dateRange = convertTimeFilterToDateTimeRange(timeFilter)
   const dateFrom = formatDateTimeForApi(dateRange.from) || ''
   const dateTo = formatDateTimeForApi(dateRange.to) || ''
-
-  const nodeFilter = nodeIds.length > 1
-    ? { column: 'nodeId', operator: 'IN', value: nodeIds }
-    : { column: 'nodeId', operator: 'EQ', value: [nodeIds[0]] }
 
   const filterObj: ConnectorApiFilter = {
     search: null,
     filter: [
       [{ column: 'created', operator: 'BETWEEN', value: [dateFrom, dateTo] }],
-      [nodeFilter]
+      [{ column: 'nodeId', operator: 'EQ', value: nodeIds }]
     ],
     sorter: [{ column: 'created', direction: 'ASC' }],
     paging: {

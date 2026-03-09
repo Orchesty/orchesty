@@ -158,7 +158,7 @@ export async function fetchTrashItems(
  * Used for ID-to-name resolution throughout the app.
  */
 export async function fetchTopologyNodeMappings(): Promise<TopologyNodeMappings> {
-  const response = await api.get<TopologyNodeMappings>('/api/topologies/nodes', {
+  const response = await api.get<TopologyNodeMappings>('/api/applications/topologies/nodes', {
     params: { all: 1 },
   })
   return response.data
@@ -169,7 +169,7 @@ export async function fetchTopologyNodeMappings(): Promise<TopologyNodeMappings>
  * Used for populating dropdown filters.
  */
 export async function fetchFilteredMappings(): Promise<TopologyNodeMappings> {
-  const response = await api.get<TopologyNodeMappings>('/api/topologies/nodes')
+  const response = await api.get<TopologyNodeMappings>('/api/applications/topologies/nodes')
   return response.data
 }
 

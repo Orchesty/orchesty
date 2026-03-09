@@ -316,7 +316,7 @@ const handleExportTopology = async (topologyId?: string, topologyName?: string) 
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${name}.json`
+    a.download = `${name}.tplg.json`
     a.click()
     URL.revokeObjectURL(url)
     showToast('Topology exported successfully', 'success')

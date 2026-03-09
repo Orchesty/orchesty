@@ -31,8 +31,8 @@ final class GetPost extends ConnectorAbstract
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws CurlException
      * @throws ConnectorException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

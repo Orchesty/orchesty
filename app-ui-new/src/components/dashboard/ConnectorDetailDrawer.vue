@@ -16,8 +16,6 @@ interface Props {
   modelValue: boolean
   connector: Connector | null
   globalTimeFilter: TimeFilterType
-  /** All nodeIds for this connector (used when connector spans multiple topology nodes) */
-  nodeIds?: string[]
 }
 
 const props = defineProps<Props>()
@@ -27,7 +25,7 @@ const emit = defineEmits<{
 }>()
 
 // Use topology/node mappings composable
-const { getTopologyName, getNodeName, getApplicationName } = useTopologyNodeMappings()
+const { getTopologyName, getApplicationName, getNodeName, getNodeIdsByName } = useTopologyNodeMappings()
 
 // Local time filter (independent from global)
 const localTimeFilter = ref<TimeFilterType>(props.globalTimeFilter)
@@ -164,19 +162,19 @@ const loadData = async () => {
 
   loading.value = true
 
-  // Use nodeIds array if provided (aggregated view), otherwise single connector id
-  const queryIds = props.nodeIds && props.nodeIds.length > 0 ? props.nodeIds : props.connector.id
+  const nodeIds = getNodeIdsByName(getNodeName(props.connector.id))
+  const resolvedIds = nodeIds.length > 0 ? nodeIds : [props.connector.id]
 
   try {
-    const detail = await fetchConnectorDetail(queryIds, localTimeFilter.value)
+    const detail = await fetchConnectorDetail(resolvedIds, localTimeFilter.value)
     connectorDetail.value = detail
 
-    const chart = await fetchConnectorChartData(queryIds, localTimeFilter.value, 20)
+    const chart = await fetchConnectorChartData(resolvedIds, localTimeFilter.value, 20)
     chartData.value = chart
 
     const apiSortField = sortField.value === 'timestamp' ? 'created' : sortField.value
     const records = await fetchConnectorErrorRecords(
-      queryIds,
+      resolvedIds,
       localTimeFilter.value,
       currentPage.value,
       itemsPerPage.value,

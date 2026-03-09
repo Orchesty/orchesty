@@ -27,10 +27,12 @@ const emit = defineEmits<{
 // Use topology/node/application mappings composable
 const {
   loadMappings,
-  getNodeName,
   getApplicationName,
+  getNodeName,
+  getNodeIdsByName,
   applicationOptions: applicationOptionsFromMappings,
-  nodeOptions: nodeOptionsFromMappings
+  deduplicatedNodeOptions: deduplicatedNodeOptionsFromMappings,
+  mappings,
 } = useTopologyNodeMappings()
 
 const connectors = ref<Connector[]>([])
@@ -70,11 +72,43 @@ const applicationOptions = computed(() => {
   ]
 })
 
+// Node options filtered by selected application, deduplicated by name
 const nodeOptions = computed(() => {
-  return [
-    { value: null, label: 'All Nodes' },
-    ...nodeOptionsFromMappings.value
-  ]
+  const baseOptions = [{ value: null, label: 'All Nodes' }]
+
+  if (!selectedApp.value || !mappings.value) {
+    return [...baseOptions, ...deduplicatedNodeOptionsFromMappings.value]
+  }
+
+  const nodeIdsForApp = mappings.value.applicationTree?.[selectedApp.value] || []
+
+  const namesForApp = new Set(
+    nodeIdsForApp
+      .map(id => mappings.value?.nodes[id])
+      .filter((name): name is string => !!name)
+  )
+
+  const filteredNodes = Array.from(namesForApp)
+    .map(name => ({ value: name, label: name }))
+    .sort((a, b) => a.label.localeCompare(b.label))
+
+  return [...baseOptions, ...filteredNodes]
+})
+
+// Clear node filter when application changes if selected node is not in new application
+watch(selectedApp, () => {
+  if (nodeFilter.value && selectedApp.value && mappings.value) {
+    const nodeIdsForApp = mappings.value.applicationTree?.[selectedApp.value] || []
+    const namesForApp = new Set(
+      nodeIdsForApp
+        .map(id => mappings.value?.nodes[id])
+        .filter(Boolean)
+    )
+
+    if (!namesForApp.has(nodeFilter.value)) {
+      nodeFilter.value = null
+    }
+  }
 })
 
 // Actions configuration
@@ -96,9 +130,10 @@ const loadData = async () => {
   loading.value = true
 
   try {
+    const nodeIds = nodeFilter.value ? getNodeIdsByName(nodeFilter.value) : undefined
     const response = await fetchConnectors({
       status: quickFilter.value,
-      node: nodeFilter.value || undefined,
+      node: nodeIds && nodeIds.length > 0 ? nodeIds : undefined,
       application: selectedApp.value || undefined,
       dateFrom: formatDateTimeForApi(dateTimeRange.value.from) || undefined,
       dateTo: formatDateTimeForApi(dateTimeRange.value.to) || undefined,

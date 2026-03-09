@@ -108,6 +108,7 @@ func (n *node) start() {
 func (n *node) process(dto *model.ProcessMessage) bool {
 	dto.Status = enum.MessageStatus_Consumed
 	dto.SetHeader(enum.Header_NodeId, n.Node.ID)
+	dto.SetHeader(enum.Header_NodeName, n.Node.Name)
 	dto.SetHeader(enum.Header_TopologyId, n.topologyId)
 	dto.SetHeader(enum.Header_WorkerFollowers, n.followersList)
 	if topology.IsSystemTopology(n.topologyName) {

@@ -99,7 +99,7 @@ abstract class HubSpotCreateContactAbstract extends ConnectorAbstract implements
             }
 
             $dto->setData($response->getBody());
-        } catch (CurlException | ConnectorException $e) {
+        } catch (ConnectorException | CurlException $e) {
             throw new OnRepeatException($dto, $e->getMessage(), $e->getCode(), $e);
         }
 

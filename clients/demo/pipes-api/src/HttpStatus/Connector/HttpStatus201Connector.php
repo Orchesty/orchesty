@@ -32,9 +32,9 @@ final class HttpStatus201Connector extends ConnectorAbstract
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws CurlException
-     * @throws ConnectorException
      * @throws ApplicationInstallException
+     * @throws ConnectorException
+     * @throws CurlException
      * @throws CustomNodeException
      * @throws GuzzleException
      */

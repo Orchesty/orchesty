@@ -858,7 +858,7 @@ paths:
                 "500":
                     $ref: '#/components/responses/InternalServerError'
 
-    /api/topologies/nodes:
+    /api/applications/topologies/nodes:
         get:
             tags: [ Topologies ]
             responses:
@@ -2905,7 +2905,13 @@ components:
                     type: object
                     additionalProperties:
                         type: string
-                tree:
+                topologyTree:
+                    type: object
+                    additionalProperties:
+                        type: array
+                        items:
+                            type: string
+                applicationTree:
                     type: object
                     additionalProperties:
                         type: array
