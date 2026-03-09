@@ -23,8 +23,9 @@ type (
 
 	MetricsNode struct {
 		Id struct {
-			NodeId string `bson:"nodeId"`
-			UserId string `bson:"userId"`
+			NodeId   string `bson:"nodeId"`
+			NodeName string `bson:"nodeName"`
+			UserId   string `bson:"userId"`
 		} `bson:"_id"`
 		Messages      int    `bson:"messages"`
 		TopologyId    string `bson:"topologyId"`
@@ -61,6 +62,7 @@ func (this MetricsSvc) collectMetrics() {
 						"$group", bson.D{
 							{"_id", bson.D{
 								{"nodeId", "$message.headers.node-id"},
+								{"nodeName", "$message.headers.node-name"},
 								{"userId", "$message.headers.user"},
 							}},
 							{"messages", bson.D{{"$sum", 1}}},
@@ -72,6 +74,7 @@ func (this MetricsSvc) collectMetrics() {
 			},
 			bson.D{
 				{"message.headers.node-id", 1},
+				{"message.headers.node-name", 1},
 				{"message.headers.user", 1},
 				{"message.headers.topology-id", 1},
 				{"message.headers.application", 1},
@@ -96,6 +99,7 @@ func (this MetricsSvc) collectMetrics() {
 						"$group", bson.D{
 							{"_id", bson.D{
 								{"nodeId", "$message.headers.node-id"},
+								{"nodeName", "$message.headers.node-name"},
 								{"userId", "$message.headers.user"},
 							}},
 							{"messages", bson.D{{"$sum", 1}}},
@@ -108,6 +112,7 @@ func (this MetricsSvc) collectMetrics() {
 			bson.D{
 				{"type", 1},
 				{"message.headers.node-id", 1},
+				{"message.headers.node-name", 1},
 				{"message.headers.user", 1},
 				{"message.headers.topology-id", 1},
 				{"message.headers.application", 1},
@@ -156,6 +161,7 @@ func (this MetricsSvc) insertMetrics(cursor *driver.Cursor, metricsCollection st
 		if err := this.metrics.Send(metricsCollection, map[string]interface{}{
 			"userId":        metricsNode.Id.UserId,
 			"nodeId":        metricsNode.Id.NodeId,
+			"nodeName":      metricsNode.Id.NodeName,
 			"topologyId":    metricsNode.TopologyId,
 			"applicationId": metricsNode.ApplicationId,
 		}, map[string]interface{}{

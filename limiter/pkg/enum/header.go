@@ -9,6 +9,7 @@ const (
 	// TODO deprecated totok by mělo být vyřešeno novým gateway workerem
 	Header_ForceTargetQueue = "force-target-queue"
 	Header_NodeId           = "node-id"
+	Header_NodeName         = "node-name"
 	Header_ResultCode       = "result-code"
 	Header_ResultMessage    = "result-message"
 	// Debug detail
