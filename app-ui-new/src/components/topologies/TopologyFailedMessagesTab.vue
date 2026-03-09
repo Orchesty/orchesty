@@ -54,7 +54,7 @@ const dateTimeRange = ref<{ from: string | null; to: string | null }>({
 const nodeOptions = computed(() => {
   const options: { value: string | null; label: string }[] = [{ value: null, label: 'All Nodes' }]
   if (mappings.value) {
-    const nodeIds = mappings.value.tree[props.topologyId] || []
+    const nodeIds = mappings.value.topologyTree[props.topologyId] || []
     for (const nodeId of nodeIds) {
       const name = mappings.value.nodes[nodeId] || nodeId
       options.push({ value: nodeId, label: name })

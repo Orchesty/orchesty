@@ -124,11 +124,9 @@ const handleHeatmapClick = async (data: HeatmapClickData) => {
 // Connector detail drawer (shared by ConnectorsTab and ApplicationsTab)
 const connectorDrawerOpen = ref(false)
 const selectedConnector = ref<Connector | null>(null)
-const connectorNodeIds = ref<string[]>([])
 
-const handleOpenConnectorDetail = (connector: Connector, nodeIds?: string[]) => {
+const handleOpenConnectorDetail = (connector: Connector) => {
   selectedConnector.value = connector
-  connectorNodeIds.value = nodeIds || []
   connectorDrawerOpen.value = true
 }
 
@@ -271,7 +269,6 @@ const handleTopologyProcessesClick = async (topologyId: string) => {
       v-model="connectorDrawerOpen"
       :connector="selectedConnector"
       :global-time-filter="activeTimeFilter"
-      :node-ids="connectorNodeIds"
     />
   </DashboardLayout>
 </template>

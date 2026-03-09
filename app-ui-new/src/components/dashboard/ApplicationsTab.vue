@@ -27,7 +27,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  openConnectorDetail: [connector: Connector, nodeIds: string[]]
+  openConnectorDetail: [connector: Connector]
 }>()
 
 const { loadMappings, getNodeName, getApplicationName } = useTopologyNodeMappings()
@@ -37,12 +37,10 @@ const error = ref<string | null>(null)
 const applicationGroups = ref<ApplicationHeatmapGroup[]>([])
 
 const handleHeatmapClick = (data: { name: string; nodeId?: string; nodeIds?: string[]; timeSlot: string; timeSlotEnd: string }) => {
-  const ids = data.nodeIds || (data.nodeId ? [data.nodeId] : [])
-  if (ids.length === 0) return
+  if (!data.name) return
 
   emit('openConnectorDetail', {
-    id: ids[0],
-    name: data.name,
+    id: data.nodeId || '',
     application: '',
     avgRequestTime: 0,
     requests: 0,
@@ -50,7 +48,7 @@ const handleHeatmapClick = (data: { name: string; nodeId?: string; nodeIds?: str
     errors500: 0,
     lastRequestStatus: 0,
     status: 'ok',
-  }, ids)
+  })
 }
 
 const loadData = async () => {

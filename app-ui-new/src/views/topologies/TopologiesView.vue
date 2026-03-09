@@ -187,7 +187,7 @@ const handleSidebarTopologyAction = async (topologyId: string, topologyName: str
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
-        a.download = `${topologyName}.json`
+        a.download = `${topologyName}.tplg.json`
         a.click()
         URL.revokeObjectURL(url)
         showToast(`Topology "${topologyName}" exported successfully`, 'success')

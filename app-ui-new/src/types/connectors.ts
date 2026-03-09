@@ -2,7 +2,6 @@ import type { QueryParams } from './api'
 
 export interface Connector {
   id: string
-  name: string
   application: string
   avgRequestTime: number // in milliseconds
   requests: number
@@ -16,7 +15,7 @@ export type ConnectorStatus = 'all' | 'ok' | 'errors'
 
 export interface ConnectorQueryParams extends QueryParams {
   status?: ConnectorStatus
-  node?: string
+  node?: string | string[]
   application?: string
   dateFrom?: string
   dateTo?: string

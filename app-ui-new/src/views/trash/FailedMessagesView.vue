@@ -75,7 +75,7 @@ const nodeOptions = computed(() => {
   }
 
   // Get node IDs for the selected topology from the tree
-  const nodeIdsInTopology = mappings.value.tree[topologyFilter.value] || []
+  const nodeIdsInTopology = mappings.value.topologyTree[topologyFilter.value] || []
 
   // Get unique names of nodes in this topology
   const namesInTopology = new Set(
@@ -94,7 +94,7 @@ const nodeOptions = computed(() => {
 // Clear node filter when topology changes if selected node name is not in new topology
 watch(topologyFilter, () => {
   if (nodeFilter.value && topologyFilter.value && mappings.value) {
-    const nodeIdsInTopology = mappings.value.tree[topologyFilter.value] || []
+    const nodeIdsInTopology = mappings.value.topologyTree[topologyFilter.value] || []
     const namesInTopology = new Set(
       nodeIdsInTopology
         .map(id => mappings.value?.nodes[id])

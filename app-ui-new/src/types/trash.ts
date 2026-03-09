@@ -82,5 +82,6 @@ export interface TopologyNodeMappings {
   nodes: Record<string, string>
   topologies: Record<string, string>
   topologyVersions?: Record<string, number>
-  tree: Record<string, string[]>
+  topologyTree: Record<string, string[]>
+  applicationTree?: Record<string, string[]>
 }
