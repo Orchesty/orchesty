@@ -31,11 +31,12 @@ func indices() []mongo.IndexModel {
 		{
 			Keys: bson.D{
 				{"message.headers.node-id", 1},
+				{"message.headers.node-name", 1},
 				{"message.headers.user", 1},
 				{"message.headers.topology-id", 1},
 				{"message.headers.application", 1},
 			},
-			Options: options.Index().SetName("IK_limiter_messageHeadersNodeId_messageHeadersUser_messageHeadersTopologyId_messageHeadersApplication"),
+			Options: options.Index().SetName("IK_limiter_messageHeadersNodeId_messageHeadersNodeName_messageHeadersUser_messageHeadersTopologyId_messageHeadersApplication"),
 		},
 	}
 }
