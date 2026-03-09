@@ -335,7 +335,7 @@ const handleFilterChange = (filter: ProcessFilter) => {
 }
 
 watch(
-  [() => props.series, () => props.yLabelMap, () => props.yLabelPrefix],
+  () => props.series,
   () => {
     if (chartEl.value && props.series.length > 0) {
       nextTick(() => {
@@ -357,10 +357,10 @@ onMounted(() => {
 })
 
 onActivated(() => {
+  if (!chartMounted.value) return
   nextTick(() => {
     if (chartEl.value && props.series.length > 0) {
       initChart(chartEl.value, getHeatmapOptions())
-      chartMounted.value = true
     }
   })
 })

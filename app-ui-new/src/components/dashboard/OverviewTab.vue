@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onActivated, onDeactivated, watch } from 'vue'
+import { ref, onActivated, onDeactivated, watch } from 'vue'
 import ProcessesChart from './ProcessesChart.vue'
 import LimiterCard from './LimiterCard.vue'
 import TrashCard from './TrashCard.vue'
@@ -81,10 +81,6 @@ watch(() => props.heatmapFilter, () => {
 
 watch(() => props.refreshKey, () => {
   invalidate()
-  loadData()
-})
-
-onMounted(() => {
   loadData()
 })
 

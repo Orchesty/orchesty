@@ -50,12 +50,19 @@ const chartLoading = ref(true)
 const processes = ref<Process[]>([])
 const statusFilter = ref<ProcessStatus>('all')
 const topologyFilter = ref<string | null>(null)
-const skipAutoLoad = ref(false)
+
+const initialRange = convertTimeFilterToDateTimeRange(props.globalTimeFilter)
+const hasExternalFilters = !!(props.externalFilters?.topology || props.externalFilters?.timeRange)
+const skipAutoLoad = ref(hasExternalFilters)
 
 const dateTimeRange = ref<{ from: string | null; to: string | null }>({
-  from: null,
-  to: null,
+  from: props.externalFilters?.timeRange?.from ?? initialRange.from,
+  to: props.externalFilters?.timeRange?.to ?? initialRange.to,
 })
+
+if (props.externalFilters?.topology) {
+  topologyFilter.value = getTopologyName(props.externalFilters.topology)
+}
 
 // Table columns
 const columns: TableColumn[] = [
@@ -145,6 +152,12 @@ const {
   skipAutoLoad,
 })
 
+if (hasExternalFilters) {
+  nextTick(() => {
+    skipAutoLoad.value = false
+  })
+}
+
 const handleAuditClick = (process: Process) => {
   console.log('Audit button clicked for process:', process)
   selectedProcess.value = process
@@ -213,7 +226,6 @@ watch(
       loadChartData()
     }
   },
-  { immediate: true }
 )
 
 watch(
@@ -259,25 +271,7 @@ watch(
 
 onActivated(() => {
   isActive.value = true
-
-  const filters = props.externalFilters
-  if (filters && (filters.topology || filters.timeRange)) {
-    skipAutoLoad.value = true
-    if (filters.topology) {
-      topologyFilter.value = getTopologyName(filters.topology)
-    }
-    if (filters.timeRange) {
-      dateTimeRange.value = {
-        from: filters.timeRange.from,
-        to: filters.timeRange.to,
-      }
-    }
-    nextTick(() => {
-      skipAutoLoad.value = false
-      loadData()
-    })
-    loadChartData()
-  } else if (isStale()) {
+  if (isStale()) {
     loadData()
     loadChartData()
   }

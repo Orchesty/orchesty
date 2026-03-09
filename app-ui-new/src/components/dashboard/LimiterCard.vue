@@ -10,7 +10,7 @@ import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 
 const { formatChartLabel } = useDateFormat()
-const { getNodeName } = useTopologyNodeMappings()
+const { getNodeName, getTopologyName } = useTopologyNodeMappings()
 
 /**
  * Get granularity in minutes matching backend's getDateTruncBinSize logic
@@ -326,6 +326,9 @@ const getColumnChartOptions = () => {
       >
         <template #cell-connector="{ row }">
           <span class="font-medium text-gray-900 dark:text-white">{{ getNodeName(row.nodeId) }}</span>
+        </template>
+        <template #cell-topology="{ row }">
+          <span class="text-gray-900 dark:text-white">{{ getTopologyName(row.topologyId) }}</span>
         </template>
         <template #cell-messages="{ row }">
           {{ row.maxMessages }}
