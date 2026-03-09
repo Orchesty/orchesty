@@ -1,194 +1,294 @@
 {
-    "connections": [
-        {
-            "from": "ddbeff82aa0ec910",
-            "id": "2adcb371571c0a42",
-            "sourceOutput": "output",
-            "targetInput": "input",
-            "to": "2177b08ff8afdc55"
-        },
-        {
-            "from": "2177b08ff8afdc55",
-            "id": "d0e097cea16daf1e",
-            "sourceOutput": "output",
-            "targetInput": "input",
-            "to": "2a4c4c055f46d84b"
-        },
-        {
-            "from": "2177b08ff8afdc55",
-            "id": "2855fc86403f5390",
-            "sourceOutput": "output",
-            "targetInput": "input",
-            "to": "509602cb942b8bd8"
-        },
-        {
-            "from": "2177b08ff8afdc55",
-            "id": "03991a96a1b808ec",
-            "sourceOutput": "output",
-            "targetInput": "input",
-            "to": "0d2d8d231e3cca5f"
-        },
-        {
-            "from": "2177b08ff8afdc55",
-            "id": "cf7b9d3bff2d68f6",
-            "sourceOutput": "output",
-            "targetInput": "input",
-            "to": "0273ea78b29d8498"
-        },
-        {
-            "from": "2177b08ff8afdc55",
-            "id": "46ec3a705dbe8922",
-            "sourceOutput": "output",
-            "targetInput": "input",
-            "to": "0aa25f4c9df46111"
-        },
-        {
-            "from": "2177b08ff8afdc55",
-            "id": "0d717bb53a938601",
-            "sourceOutput": "output",
-            "targetInput": "input",
-            "to": "9bb819f999f890aa"
-        }
-    ],
     "nodes": [
         {
-            "action": null,
+            "type": "flow",
             "id": "ddbeff82aa0ec910",
             "label": "Event",
+            "shape": "circle",
+            "property": null,
+            "action": null,
             "name": "start",
             "position": {
-                "x": 156,
-                "y": 87
-            },
-            "property": null,
-            "shape": "circle",
-            "type": "flow"
+                "x": 155,
+                "y": 95
+            }
         },
         {
-            "action": {
-                "app": "http-status-node-js",
-                "name": "http-status-node-js-200-connector",
-                "type": "connector",
-                "worker": "node-sdk"
-            },
+            "type": "flow",
             "id": "2a4c4c055f46d84b",
             "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "http-status-node-js-200-connector",
+                "worker": "node-sdk",
+                "type": "connector",
+                "app": "http-status-node-js"
+            },
             "name": null,
             "position": {
                 "x": 475,
-                "y": 87
-            },
-            "property": null,
-            "shape": "square",
-            "type": "flow"
+                "y": 95
+            }
         },
         {
-            "action": {
-                "app": "http-status-node-js",
-                "name": "http-status-node-js-201-connector",
-                "type": "connector",
-                "worker": "node-sdk"
-            },
+            "type": "flow",
             "id": "509602cb942b8bd8",
             "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "http-status-node-js-201-connector",
+                "worker": "node-sdk",
+                "type": "connector",
+                "app": "http-status-node-js"
+            },
             "name": null,
             "position": {
                 "x": 475,
-                "y": 246
-            },
-            "property": null,
-            "shape": "square",
-            "type": "flow"
+                "y": 255
+            }
         },
         {
-            "action": {
-                "app": "http-status-node-js",
-                "name": "http-status-node-js-400-connector",
-                "type": "connector",
-                "worker": "node-sdk"
-            },
+            "type": "flow",
             "id": "0d2d8d231e3cca5f",
             "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "http-status-node-js-400-connector",
+                "worker": "node-sdk",
+                "type": "connector",
+                "app": "http-status-node-js"
+            },
             "name": null,
             "position": {
                 "x": 475,
-                "y": 406
-            },
-            "property": null,
-            "shape": "square",
-            "type": "flow"
+                "y": 415
+            }
         },
         {
-            "action": {
-                "app": "http-status-node-js",
-                "name": "http-status-node-js-401-connector",
-                "type": "connector",
-                "worker": "node-sdk"
-            },
+            "type": "flow",
             "id": "0273ea78b29d8498",
             "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "http-status-node-js-401-connector",
+                "worker": "node-sdk",
+                "type": "connector",
+                "app": "http-status-node-js"
+            },
             "name": null,
             "position": {
                 "x": 475,
-                "y": 565
-            },
-            "property": null,
-            "shape": "square",
-            "type": "flow"
+                "y": 575
+            }
         },
         {
-            "action": {
-                "app": "http-status-node-js",
-                "name": "http-status-node-js-404-connector",
-                "type": "connector",
-                "worker": "node-sdk"
-            },
+            "type": "flow",
             "id": "0aa25f4c9df46111",
             "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "http-status-node-js-404-connector",
+                "worker": "node-sdk",
+                "type": "connector",
+                "app": "http-status-node-js"
+            },
             "name": null,
             "position": {
                 "x": 475,
-                "y": 725
-            },
-            "property": null,
-            "shape": "square",
-            "type": "flow"
+                "y": 735
+            }
         },
         {
-            "action": {
-                "app": "http-status-node-js",
-                "name": "http-status-node-js-500-connector",
-                "type": "connector",
-                "worker": "node-sdk"
-            },
+            "type": "flow",
             "id": "9bb819f999f890aa",
             "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "http-status-node-js-500-connector",
+                "worker": "node-sdk",
+                "type": "connector",
+                "app": "http-status-node-js"
+            },
             "name": null,
             "position": {
                 "x": 475,
-                "y": 884
-            },
-            "property": null,
-            "shape": "square",
-            "type": "flow"
+                "y": 875
+            }
         },
         {
-            "action": {
-                "app": "http-status-node-js",
-                "name": "http-status-node-js-batch",
-                "type": "batch",
-                "worker": "node-sdk"
-            },
+            "type": "flow",
             "id": "2177b08ff8afdc55",
             "label": "Batch",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "http-status-node-js-batch",
+                "worker": "node-sdk",
+                "type": "batch",
+                "app": "http-status-node-js"
+            },
             "name": null,
             "position": {
-                "x": 317,
-                "y": 87
-            },
-            "property": null,
+                "x": 315,
+                "y": 95
+            }
+        },
+        {
+            "type": "flow",
+            "id": "f77f0d6a35d69e0e",
+            "label": "Connector",
             "shape": "square",
-            "type": "flow"
+            "property": null,
+            "action": {
+                "name": "http-status-node-js-200-connector",
+                "worker": "node-sdk",
+                "type": "connector",
+                "app": "http-status-node-js"
+            },
+            "name": null,
+            "position": {
+                "x": 635,
+                "y": 95
+            }
+        },
+        {
+            "type": "flow",
+            "id": "fa6e9460a79c4b6f",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "http-status-node-js-201-connector",
+                "worker": "node-sdk",
+                "type": "connector",
+                "app": "http-status-node-js"
+            },
+            "name": null,
+            "position": {
+                "x": 635,
+                "y": 255
+            }
+        },
+        {
+            "type": "flow",
+            "id": "126720a961e0dbc9",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "http-status-node-js-400-connector",
+                "worker": "node-sdk",
+                "type": "connector",
+                "app": "http-status-node-js"
+            },
+            "name": null,
+            "position": {
+                "x": 795,
+                "y": 95
+            }
+        },
+        {
+            "type": "flow",
+            "id": "c7dc0ecbf82fecdb",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "http-status-node-js-500-connector",
+                "worker": "node-sdk",
+                "type": "connector",
+                "app": "http-status-node-js"
+            },
+            "name": null,
+            "position": {
+                "x": 795,
+                "y": 255
+            }
+        }
+    ],
+    "connections": [
+        {
+            "id": "665480b152b19aaf",
+            "from": "ddbeff82aa0ec910",
+            "to": "2177b08ff8afdc55",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "9e95158b06e49d27",
+            "from": "2177b08ff8afdc55",
+            "to": "2a4c4c055f46d84b",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "b6264e50ea50598a",
+            "from": "2177b08ff8afdc55",
+            "to": "509602cb942b8bd8",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "a0da6db86cbc5a2d",
+            "from": "2177b08ff8afdc55",
+            "to": "0d2d8d231e3cca5f",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "76c6594571cdc392",
+            "from": "2177b08ff8afdc55",
+            "to": "0273ea78b29d8498",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "11efa1e65434d7e7",
+            "from": "2177b08ff8afdc55",
+            "to": "0aa25f4c9df46111",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "2903e54e670e3be8",
+            "from": "2177b08ff8afdc55",
+            "to": "9bb819f999f890aa",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "e6410ab2eb52425b",
+            "from": "2a4c4c055f46d84b",
+            "to": "f77f0d6a35d69e0e",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "0a7c4a8e159286a6",
+            "from": "509602cb942b8bd8",
+            "to": "fa6e9460a79c4b6f",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "269fcca64274411c",
+            "from": "fa6e9460a79c4b6f",
+            "to": "c7dc0ecbf82fecdb",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "6fe47cd3ad45888a",
+            "from": "f77f0d6a35d69e0e",
+            "to": "126720a961e0dbc9",
+            "sourceOutput": "output",
+            "targetInput": "input"
         }
     ]
 }
