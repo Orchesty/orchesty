@@ -71,6 +71,7 @@ export async function fetchBreakpointItems(params: {
 export interface NodeOverlayCounts {
   breakpointCounts: Record<string, number>
   failedNodeIds: string[]
+  breakpointCorrelationId?: string
 }
 
 /**
@@ -110,7 +111,12 @@ export async function fetchNodeOverlayCounts(
     for (const item of breakpointRes.data.items) {
       breakpointCounts[item.nodeId] = (breakpointCounts[item.nodeId] || 0) + 1
     }
-    return { breakpointCounts, failedNodeIds: [] }
+    const firstItem = breakpointRes.data.items[0]
+    return {
+      breakpointCounts,
+      failedNodeIds: [],
+      breakpointCorrelationId: firstItem?.correlationId,
+    }
   }
 
   trashFilter.filter.push([
@@ -136,9 +142,11 @@ export async function fetchNodeOverlayCounts(
     failedNodeIdSet.add(item.nodeId)
   }
 
+  const firstBreakpoint = breakpointRes.data.items[0]
   return {
     breakpointCounts,
     failedNodeIds: [...failedNodeIdSet],
+    breakpointCorrelationId: firstBreakpoint?.correlationId,
   }
 }
 

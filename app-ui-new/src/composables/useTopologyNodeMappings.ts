@@ -242,6 +242,16 @@ export function useTopologyNodeMappings() {
   // Reactive name maps (id -> name) for passing as props to chart components.
   // These are reactive computeds -- when allMappings updates, dependent components re-render.
   const topologyNameMap = computed<Record<string, string>>(() => allMappings.value?.topologies ?? {})
+  const topologyNameWithVersionMap = computed<Record<string, string>>(() => {
+    const topologies = allMappings.value?.topologies ?? {}
+    const versions = allMappings.value?.topologyVersions ?? {}
+    const result: Record<string, string> = {}
+    for (const [id, name] of Object.entries(topologies)) {
+      const version = versions[id]
+      result[id] = version ? `${name} v.${version}` : name
+    }
+    return result
+  })
   const nodeNameMap = computed<Record<string, string>>(() => allMappings.value?.nodes ?? {})
   const applicationNameMap = computed<Record<string, string>>(() => allMappings.value?.applications ?? {})
 
@@ -273,6 +283,7 @@ export function useTopologyNodeMappings() {
     getNodeName,
     getApplicationName,
     topologyNameMap,
+    topologyNameWithVersionMap,
     nodeNameMap,
     applicationNameMap,
     topologyOptions,

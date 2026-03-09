@@ -34,7 +34,7 @@ const emit = defineEmits<{
 }>()
 
 // Use topology/node mappings composable
-const { getTopologyName, getTopologyNameWithVersion, topologyNameMap, deduplicatedTopologyOptions, getTopologyIdsByName } = useTopologyNodeMappings()
+const { getTopologyName, getTopologyNameWithVersion, topologyNameWithVersionMap, deduplicatedTopologyOptions, getTopologyIdsByName } = useTopologyNodeMappings()
 const { formatDateTime } = useDateFormat()
 const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
@@ -259,7 +259,25 @@ watch(
 
 onActivated(() => {
   isActive.value = true
-  if (isStale()) {
+
+  const filters = props.externalFilters
+  if (filters && (filters.topology || filters.timeRange)) {
+    skipAutoLoad.value = true
+    if (filters.topology) {
+      topologyFilter.value = getTopologyName(filters.topology)
+    }
+    if (filters.timeRange) {
+      dateTimeRange.value = {
+        from: filters.timeRange.from,
+        to: filters.timeRange.to,
+      }
+    }
+    nextTick(() => {
+      skipAutoLoad.value = false
+      loadData()
+    })
+    loadChartData()
+  } else if (isStale()) {
     loadData()
     loadChartData()
   }
@@ -309,7 +327,7 @@ onDeactivated(() => {
         :filter="props.heatmapFilter"
         :series="processesChartData.series"
         :x-categories="processesChartData.xCategories || []"
-        :y-label-map="topologyNameMap"
+        :y-label-map="topologyNameWithVersionMap"
         @filter-change="handleProcessFilterChange"
         @heatmap-click="handleHeatmapClick"
       />

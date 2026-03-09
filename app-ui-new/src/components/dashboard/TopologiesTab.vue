@@ -25,7 +25,7 @@ const emit = defineEmits<{
 }>()
 
 // Use topology/node mappings composable
-const { getTopologyName } = useTopologyNodeMappings()
+const { getTopologyNameWithVersion } = useTopologyNodeMappings()
 const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 const topologies = ref<Topology[]>([])
@@ -174,7 +174,7 @@ onDeactivated(() => {
             :to="`/topologies/${(row as Topology).id}`"
             class="whitespace-nowrap font-medium text-gray-900 hover:underline dark:text-white"
           >
-            {{ getTopologyName((row as Topology).id) }}
+            {{ getTopologyNameWithVersion((row as Topology).id) }}
           </RouterLink>
         </template>
 

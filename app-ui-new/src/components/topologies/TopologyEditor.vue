@@ -19,6 +19,7 @@ import {
   rejectAllBreakpoints,
   hasBreakpointMessages,
 } from '@/services/breakpointService'
+import { fetchLatestProcess } from '@/services/processesService'
 import api from '@/services/api'
 import { topologyEditorService } from '@/services/topologyEditorService'
 import type { ScheduledTask } from '@/types/scheduled-tasks'
@@ -258,6 +259,32 @@ const refreshNodeOverlays = async () => {
     }
     breakpointCounts.value = counts
     hasBreakpoints.value = Object.values(counts).some(c => c > 0)
+
+    if (hasBreakpoints.value && !processStartNodeName.value) {
+      const startNode = Object.values(nodesData.value).find(n =>
+        ['event', 'webhook', 'cron'].includes(n.label.toLowerCase())
+      )
+      processStartNodeName.value = startNode?.name || 'topology'
+      try {
+        const process = await fetchLatestProcess(props.topologyId)
+        if (process) {
+          polling.latestProcess.value = process
+        }
+      } catch {
+        // fallback: at least show the correlation ID from breakpoint data
+        if (result.breakpointCorrelationId) {
+          polling.latestProcess.value = {
+            id: result.breakpointCorrelationId,
+            topology: '',
+            topologyId: props.topologyId,
+            startTime: '',
+            duration: 0,
+            status: 'running',
+          }
+        }
+      }
+      startBreakpointPolling(2000)
+    }
 
     const statuses: Record<string, boolean> = {}
     for (const backendNodeId of result.failedNodeIds) {

@@ -27,7 +27,7 @@ const emit = defineEmits<{
 }>()
 
 // Use topology/node mappings composable
-const { topologyNameMap } = useTopologyNodeMappings()
+const { topologyNameWithVersionMap } = useTopologyNodeMappings()
 const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 const loading = ref(true)
@@ -139,7 +139,7 @@ onDeactivated(() => {
       :filter="props.heatmapFilter"
       :series="processesData.series"
       :x-categories="processesData.xCategories || []"
-      :y-label-map="topologyNameMap"
+      :y-label-map="topologyNameWithVersionMap"
       @filter-change="handleProcessFilterChange"
       @heatmap-click="handleHeatmapClick"
     />
