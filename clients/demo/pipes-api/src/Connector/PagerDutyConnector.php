@@ -39,8 +39,8 @@ final class PagerDutyConnector extends ConnectorAbstract
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws CurlException
      * @throws ConnectorException
+     * @throws CurlException
      * @throws DateTimeException
      * @throws JsonException
      */

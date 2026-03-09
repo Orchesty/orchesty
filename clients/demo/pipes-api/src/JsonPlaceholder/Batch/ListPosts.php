@@ -31,8 +31,8 @@ final class ListPosts extends BatchAbstract
      * @param BatchProcessDto $dto
      *
      * @return BatchProcessDto
-     * @throws CurlException
      * @throws ConnectorException
+     * @throws CurlException
      */
     public function processAction(BatchProcessDto $dto): BatchProcessDto
     {

@@ -64,11 +64,11 @@ final class SendDutyEmail extends CommonNodeAbstract
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws ConnectorException
      * @throws CurlException
      * @throws DateTimeException
-     * @throws MailerException
-     * @throws ConnectorException
      * @throws JsonException
+     * @throws MailerException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

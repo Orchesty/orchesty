@@ -33,12 +33,12 @@ final class HttpStatus404Connector extends ConnectorAbstract
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws CurlException
-     * @throws ConnectorException
-     * @throws PipesFrameworkException
      * @throws ApplicationInstallException
+     * @throws ConnectorException
+     * @throws CurlException
      * @throws CustomNodeException
      * @throws GuzzleException
+     * @throws PipesFrameworkException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
