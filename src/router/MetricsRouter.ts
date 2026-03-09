@@ -29,6 +29,7 @@ const connectorsInputSchema = Joi.object<IMetricsInput<IConnectorFields>>({
     tags: Joi.object({
         user_id: Joi.string().required(),
         node_id: Joi.string().required(),
+        node_name: Joi.string(),
         topology_id: Joi.string(),
         application_id: Joi.string(),
         correlation_id: Joi.string(),

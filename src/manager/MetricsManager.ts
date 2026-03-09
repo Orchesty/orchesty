@@ -44,5 +44,6 @@ export interface IConnectorFields {
 interface ITags {
     topology_id?: string;
     node_id?: string;
+    node_name?: string;
     correlation_id?: string;
 }
