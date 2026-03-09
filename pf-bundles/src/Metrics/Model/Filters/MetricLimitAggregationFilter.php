@@ -71,7 +71,9 @@ final class MetricLimitAggregationFilter extends GridAggregationFilterAbstract
             ->sort(['fields.created' => 'asc'])
             ->group()
             ->field('_id')
-            ->expression('$tags.nodeId')
+            ->expression('$tags.nodeName')
+            ->field('nodeId')
+            ->first('$tags.nodeId')
             ->field('topologyId')
             ->first('$tags.topologyId')
             ->field('applicationId')
@@ -89,7 +91,7 @@ final class MetricLimitAggregationFilter extends GridAggregationFilterAbstract
             ->field('_id')
             ->expression(FALSE)
             ->field('nodeId')
-            ->expression('$_id')
+            ->expression('$nodeId')
             ->field('topologyId')
             ->expression('$topologyId')
             ->field('applicationId')
@@ -113,7 +115,7 @@ final class MetricLimitAggregationFilter extends GridAggregationFilterAbstract
         $builder
             ->group()
             ->field('_id')
-            ->expression('$tags.nodeId');
+            ->expression('$tags.nodeName');
     }
 
 }

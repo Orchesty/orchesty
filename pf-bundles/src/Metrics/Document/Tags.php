@@ -14,6 +14,7 @@ class Tags
 {
 
     public const string NODE_ID        = 'node_id';
+    public const string NODE_NAME      = 'node_name';
     public const string TOPOLOGY_ID    = 'topology_id';
     public const string QUEUE          = 'queue';
     public const string APPLICATION_ID = 'application_id';
@@ -29,6 +30,7 @@ class Tags
 
     public const array CONNECTOR_TAGS = [
         self::NODE_ID,
+        self::NODE_NAME,
         self::TOPOLOGY_ID,
         self::APPLICATION_ID,
         self::USER_ID,
@@ -52,6 +54,12 @@ class Tags
     /**
      * @var string
      */
+    #[ODM\Field(name: 'node_name', type: 'string')]
+    private string $nodeName;
+
+    /**
+     * @var string
+     */
     #[ODM\Field(name: 'topology_id', type: 'string')]
     private string $topologyId;
 
@@ -67,6 +75,14 @@ class Tags
     public function getNodeId(): string
     {
         return $this->nodeId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNodeName(): string
+    {
+        return $this->nodeName;
     }
 
     /**
@@ -93,6 +109,18 @@ class Tags
     public function setNodeId(string $nodeId): self
     {
         $this->nodeId = $nodeId;
+
+        return $this;
+    }
+
+    /**
+     * @param string $nodeName
+     *
+     * @return $this
+     */
+    public function setNodeName(string $nodeName): self
+    {
+        $this->nodeName = $nodeName;
 
         return $this;
     }

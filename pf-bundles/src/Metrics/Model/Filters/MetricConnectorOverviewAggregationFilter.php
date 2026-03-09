@@ -112,7 +112,9 @@ final class MetricConnectorOverviewAggregationFilter extends GridAggregationFilt
             ->sort(['fields.created' => 'asc'])
             ->group()
             ->field('_id')
-            ->expression('$tags.node_id')
+            ->expression('$tags.node_name')
+            ->field('nodeId')
+            ->last('$tags.node_id')
             ->field('topologyId')
             ->last('$tags.topology_id')
             ->field('applicationId')
@@ -155,8 +157,10 @@ final class MetricConnectorOverviewAggregationFilter extends GridAggregationFilt
 
         $builder
             ->project()
+            ->field('_id')
+            ->expression(FALSE)
             ->field('nodeId')
-            ->expression('$_id')
+            ->expression('$nodeId')
             ->field('topologyId')
             ->expression('$topologyId')
             ->field('applicationId')
@@ -185,7 +189,7 @@ final class MetricConnectorOverviewAggregationFilter extends GridAggregationFilt
         $builder
             ->group()
             ->field('_id')
-            ->expression('$tags.node_id');
+            ->expression('$tags.node_name');
     }
 
 }

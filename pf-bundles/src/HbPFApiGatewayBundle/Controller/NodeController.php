@@ -31,7 +31,7 @@ final class NodeController extends AbstractController
      *
      * @return Response
      */
-    #[Route('/topologies/nodes', methods: ['GET'])]
+    #[Route('/applications/topologies/nodes', methods: ['GET'])]
     public function getTopologiesNodesAction(Request $request): Response
     {
         return $this->forward(
