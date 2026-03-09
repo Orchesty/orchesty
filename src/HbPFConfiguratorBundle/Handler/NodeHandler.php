@@ -72,12 +72,14 @@ final class NodeHandler
         $topologiesData       = [];
         $topologyVersionsData = [];
         $nodesData            = [];
-        $tree                 = [];
+        $topologyTree         = [];
+        $applicationTree      = [];
 
         foreach ($applications as $sdk) {
             foreach ($sdk['applications'] ?? [] as $application) {
                 if (isset($application['key'], $application['name'])) {
                     $applicationsData[$application['key']] = $application['name'];
+                    $applicationTree[$application['key']]  = [];
                 }
             }
         }
@@ -86,16 +88,21 @@ final class NodeHandler
             $topologyId                        = $topology->getId();
             $topologiesData[$topologyId]       = $this->formatName($topology->getName());
             $topologyVersionsData[$topologyId] = $topology->getVersion();
-            $tree[$topologyId]                 = [];
+            $topologyTree[$topologyId]         = [];
         }
 
         foreach ($nodes as $node) {
             $nodeId             = $node->getId();
             $topologyId         = $node->getTopology();
+            $applicationId      = $node->getApplication();
             $nodesData[$nodeId] = $this->formatName($node->getName());
 
-            if (isset($tree[$topologyId])) {
-                $tree[$topologyId][] = $nodeId;
+            if (isset($topologyTree[$topologyId])) {
+                $topologyTree[$topologyId][] = $nodeId;
+            }
+
+            if ($applicationId && isset($applicationTree[$applicationId])) {
+                $applicationTree[$applicationId][] = $nodeId;
             }
         }
 
@@ -105,10 +112,11 @@ final class NodeHandler
 
         return [
             'applications'     => $applicationsData,
+            'applicationTree'  => $applicationTree,
             'nodes'            => $nodesData,
             'topologies'       => $topologiesData,
+            'topologyTree'     => $topologyTree,
             'topologyVersions' => $topologyVersionsData,
-            'tree'             => $tree,
         ];
     }
 

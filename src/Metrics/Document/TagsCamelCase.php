@@ -29,6 +29,12 @@ class TagsCamelCase
      * @var string
      */
     #[ODM\Field]
+    private string $nodeName;
+
+    /**
+     * @var string
+     */
+    #[ODM\Field]
     private string $topologyId;
 
     /**
@@ -71,6 +77,25 @@ class TagsCamelCase
     public function setNodeId(string $nodeId): self
     {
         $this->nodeId = $nodeId;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNodeName(): string
+    {
+        return $this->nodeName;
+    }
+
+    /**
+     * @param string $nodeName
+     * @return self
+     */
+    public function setNodeName(string $nodeName): self
+    {
+        $this->nodeName = $nodeName;
 
         return $this;
     }

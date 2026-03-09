@@ -48,8 +48,8 @@ use Hanaboso\Utils\String\Json;
     name: 'IK_userTask_created_messageHeadersNodeId_messageHeadersTopologyId_messageHeadersResultMessage',
 )]
 #[ODM\Index( // Used by Limiter (pkg/metrics/client.go)
-    keys: ['type' => 'asc', 'message.headers.node-id' => 'asc', 'message.headers.user' => 'asc', 'message.headers.topology-id' => 'asc', 'message.headers.application' => 'asc'],
-    name: 'IK_userTask_type_messageHeadersNodeId_messageHeadersUser_messageHeadersTopologyId_messageHeadersApplication',
+    keys: ['type' => 'asc', 'message.headers.node-id' => 'asc', 'message.headers.node-name' => 'asc', 'message.headers.user' => 'asc', 'message.headers.topology-id' => 'asc', 'message.headers.application' => 'asc'],
+    name: 'IK_userTask_type_messageHeadersNodeId_messageHeadersNodeName_messageHeadersUser_messageHeadersTopologyId_messageHeadersApplication',
 )]
 #[ODM\HasLifecycleCallbacks]
 class UserTask
