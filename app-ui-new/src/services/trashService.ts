@@ -232,3 +232,19 @@ export async function bulkReject(ids: string[]): Promise<void> {
   await api.post('/api/user-task/reject', { ids })
 }
 
+export async function approveAllTrashItems(
+  topologyId: string, nodeId: string, correlationId: string,
+): Promise<void> {
+  await api.post('/api/user-task/accept', {
+    type: 'trash', topologyId, nodeId, correlationId,
+  })
+}
+
+export async function rejectAllTrashItems(
+  topologyId: string, nodeId: string, correlationId: string,
+): Promise<void> {
+  await api.post('/api/user-task/reject', {
+    type: 'trash', topologyId, nodeId, correlationId,
+  })
+}
+

@@ -99,7 +99,7 @@ final class ProcessGraphAggregationFilter extends GridAggregationFilterAbstract
                         $builder->expr()->add(
                             $builder->expr()->toLong($gte),
                             $builder->expr()->multiply(
-                                $builder->expr()->ceil(
+                                $builder->expr()->floor(
                                     $builder->expr()->divide(
                                         $builder->expr()->subtract(
                                             $builder->expr()->toLong('$created'),
@@ -196,7 +196,7 @@ final class ProcessGraphAggregationFilter extends GridAggregationFilterAbstract
                         $builder->expr()->add(
                             $builder->expr()->toLong($gte),
                             $builder->expr()->multiply(
-                                $builder->expr()->ceil(
+                                $builder->expr()->floor(
                                     $builder->expr()->divide(
                                         $builder->expr()->subtract(
                                             $builder->expr()->toLong('$created'),

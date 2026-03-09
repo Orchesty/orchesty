@@ -20,7 +20,6 @@ import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
 // Topology/Node mappings composable
 const {
-  loadMappings,
   getTopologyName,
   getNodeName,
   getNodeIdsByName,
@@ -199,10 +198,8 @@ const {
   filters: [searchFilter, correlationIdFilter, severityFilter, topologyFilter, nodeFilter, dateTimeRange],
 })
 
-// Load mappings and initial data
-onMounted(async () => {
-  await loadMappings()
-  await loadData()
+onMounted(() => {
+  loadData()
 })
 </script>
 

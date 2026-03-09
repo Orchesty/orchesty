@@ -7,9 +7,7 @@ use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\NodeException;
-use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
@@ -582,32 +580,24 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $tp  = (new Topology())->setName('Topology')->setVersion(1)->setEnabled(TRUE);
         $tp2 = (new Topology())->setName('Topology')->setVersion(2)->setEnabled(FALSE);
         $tp3 = (new Topology())->setName('Topology')->setVersion(2)->setEnabled(FALSE)->setDeleted(TRUE);
-        $nd  = (new Node())->setName('Node');
-        $nd2 = (new Node())->setName('Node');
         $this->dm->persist($tp);
         $this->dm->persist($tp2);
         $this->dm->persist($tp3);
+
+        $nd  = (new Node())
+            ->setName('Node')
+            ->setType(TypeEnum::CRON->value)
+            ->setTopology($tp->getId())
+            ->setCron('*/1 * * * *');
+        $nd2 = (new Node())
+            ->setName('Node')
+            ->setType(TypeEnum::CRON->value)
+            ->setTopology($tp2->getId())
+            ->setCron('*/1 * * * *');
         $this->dm->persist($nd);
         $this->dm->persist($nd2);
         $this->dm->flush();
 
-        $cronManager = self::createMock(CronManager::class);
-        $cronManager->method('getAll')->willReturn(
-            new ResponseDto(
-                200,
-                'OK',
-                sprintf(
-                    '[{"topology":"%s", "node":"%s", "time":"*/1 * * * *"}, {"topology":"%s", "node":"%s", "time":"*/1 * * * *"}]',
-                    $tp->getId(),
-                    $nd->getId(),
-                    $tp2->getId(),
-                    $nd2->getId(),
-                ),
-                [],
-            ),
-        );
-
-        $this->setProperty($this->manager, 'cronManager', $cronManager);
         $topologies = $this->manager->getCronTopologies();
 
         self::assertEquals(
@@ -653,50 +643,27 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     {
         $tp  = (new Topology())->setName('Topology')->setVersion(1)->setEnabled(TRUE);
         $tp2 = (new Topology())->setName('Topology')->setVersion(2)->setEnabled(TRUE);
-        $nd  = (new Node())->setName('Node');
-        $nd2 = (new Node())->setName('Node');
         $this->dm->persist($tp);
         $this->dm->persist($tp2);
+
+        $nd  = (new Node())
+            ->setName('Node')
+            ->setType(TypeEnum::CRON->value)
+            ->setTopology($tp->getId())
+            ->setCron('*/1 * * * *');
+        $nd2 = (new Node())
+            ->setName('Node')
+            ->setType(TypeEnum::CRON->value)
+            ->setTopology($tp2->getId())
+            ->setCron('*/1 * * * *');
         $this->dm->persist($nd);
         $this->dm->persist($nd2);
         $this->dm->flush();
-
-        $cronManager = self::createMock(CronManager::class);
-        $cronManager->method('getAll')->willReturn(
-            new ResponseDto(
-                200,
-                'OK',
-                sprintf(
-                    '[{"topology":"%s", "node":"%s", "time":"*/1 * * * *"}, {"topology":"%s", "node":"%s", "time":"*/1 * * * *"}]',
-                    $tp->getId(),
-                    $nd->getId(),
-                    $tp2->getId(),
-                    $nd2->getId(),
-                ),
-                [],
-            ),
-        );
-        $this->setProperty($this->manager, 'cronManager', $cronManager);
 
         $topologies = $this->manager->getCronTopologies();
 
         self::assertEquals(
             [
-                [
-                    'node'     => [
-                        'id'         => $nd2->getId(),
-                        'name'       => 'Node',
-                        'parameters' => NULL,
-                        'status'     => TRUE,
-                    ],
-                    'time'     => '*/1 * * * *',
-                    'topology' => [
-                        'id'      => $tp2->getId(),
-                        'name'    => 'Topology',
-                        'status'  => TRUE,
-                        'version' => 2,
-                    ],
-                ],
                 [
                     'node'     => [
                         'id'         => $nd->getId(),
@@ -712,6 +679,21 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
                         'version' => 1,
                     ],
                 ],
+                [
+                    'node'     => [
+                        'id'         => $nd2->getId(),
+                        'name'       => 'Node',
+                        'parameters' => NULL,
+                        'status'     => TRUE,
+                    ],
+                    'time'     => '*/1 * * * *',
+                    'topology' => [
+                        'id'      => $tp2->getId(),
+                        'name'    => 'Topology',
+                        'status'  => TRUE,
+                        'version' => 2,
+                    ],
+                ],
             ],
             $topologies,
         );
@@ -722,12 +704,13 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      */
     public function testGetCronTopologiesNotFound(): void
     {
-        $cronManager = self::createMock(CronManager::class);
-        $cronManager->method('getAll')->willReturn(
-            new ResponseDto(200, 'OK', '[{"topology":"Topology", "node":"Node", "time":"*/1 * * * *"}]', []),
-        );
-
-        $this->setProperty($this->manager, 'cronManager', $cronManager);
+        $nd = (new Node())
+            ->setName('Node')
+            ->setType(TypeEnum::CRON->value)
+            ->setTopology('nonexistent')
+            ->setCron('*/1 * * * *');
+        $this->dm->persist($nd);
+        $this->dm->flush();
 
         self::assertCount(0, $this->manager->getCronTopologies());
     }

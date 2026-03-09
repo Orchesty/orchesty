@@ -253,7 +253,7 @@ export async function fetchLimiterData(params: {
     paging: { itemsPerPage: 9999, page: 1 }
   }
 
-  const buckets = params.buckets || 20
+  const buckets = params.buckets || 40
   const graphResponse = await api.get<LimiterGraphApiResponse>(
     '/api/metrics/limits/graph',
     { params: { filter: JSON.stringify(graphFilter), buckets } }
@@ -380,10 +380,9 @@ export async function fetchTrashData(params: {
     `/api/metrics/user-tasks/graph?filter=${encodeURIComponent(JSON.stringify(graphFilter))}`
   )
 
-  // Load mappings for name resolution
-  const { getTopologyName } = useTopologyNodeMappings()
+  const { ensureLoaded, getTopologyName } = useTopologyNodeMappings()
+  await ensureLoaded()
 
-  // Transform graph data to horizontal bar chart format { x: topologyName, y: count }
   const chartData: Array<{ x: string; y: number }> = graphResponse.data.items.map(item => ({
     x: getTopologyName(item.topologyId),
     y: item.count

@@ -24,7 +24,7 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const { getTopologyName, getNodeName, getApplicationName, loadMappings } = useTopologyNodeMappings()
+const { getTopologyName, getNodeName, getApplicationName } = useTopologyNodeMappings()
 const { formatDateTime } = useDateFormat()
 
 // Data state
@@ -42,7 +42,7 @@ const connectorSortDirection = ref<'asc' | 'desc'>('desc')
 // Connector table columns
 const connectorColumns: TableColumn[] = [
   { key: 'connector', label: 'Connector / Application', sortable: false },
-  { key: 'called', label: 'Voláno', sortable: true },
+  { key: 'called', label: 'Called', sortable: true },
   { key: 'errors400', label: '400', sortable: true },
   { key: 'errors500', label: '500', sortable: true },
 ]
@@ -98,12 +98,6 @@ watch(
     connectorSortField.value = 'called'
     connectorSortDirection.value = 'desc'
 
-    try {
-      await loadMappings()
-    } catch (e) {
-      console.warn('Failed to load mappings:', e)
-    }
-
     let connectorsData: ProcessConnector[] = []
     let trashTotal = 0
     let trashItems: { whereItFailed: string; errorMessage: string }[] = []
@@ -148,9 +142,9 @@ watch(
   { immediate: true }
 )
 
-const calculateEndTime = (startTime: string, durationSeconds: number): Date => {
+const calculateEndTime = (startTime: string, durationMs: number): Date => {
   const start = new Date(startTime)
-  return new Date(start.getTime() + durationSeconds * 1000)
+  return new Date(start.getTime() + durationMs)
 }
 
 const handleClose = () => {

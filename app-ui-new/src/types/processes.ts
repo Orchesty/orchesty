@@ -5,7 +5,7 @@ export interface Process {
   topology: string
   topologyId: string
   startTime: string
-  duration: number // in seconds
+  duration: number // in milliseconds
   status: 'running' | 'completed' | 'failed'
   errorMessage?: string
 }

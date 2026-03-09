@@ -44,11 +44,8 @@ const emitTopologyAction = (action: string) => {
 const topologyActionsSections = computed<MoreActionsSection[]>(() => [
   {
     items: [
-      { type: 'button', label: 'Run', onClick: () => emitTopologyAction('run') },
       { type: 'button', label: 'Edit', onClick: () => emitTopologyAction('edit') },
       { type: 'button', label: 'Move', onClick: () => emitTopologyAction('move') },
-      { type: 'button', label: 'Clone', onClick: () => emitTopologyAction('clone') },
-      { type: 'button', label: 'Export', onClick: () => emitTopologyAction('export') },
     ],
   },
   {

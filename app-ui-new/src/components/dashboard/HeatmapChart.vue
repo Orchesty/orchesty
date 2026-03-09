@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, onActivated, watch, nextTick } from 'vue'
 import { useApexChart, getChartColors, getBaseChartOptions } from '@/composables/useApexChart'
 import type { ProcessFilter } from '@/types/dashboard'
 import Card from '@/components/ui/Card.vue'
@@ -136,6 +136,9 @@ const getHeatmapOptions = () => {
       toolbar: {
         show: false,
       },
+      selection: {
+        enabled: false,
+      },
       events: {
         dataPointSelection: (_event: any, _chartContext: any, config: any) => {
           const { seriesIndex, dataPointIndex } = config
@@ -166,6 +169,11 @@ const getHeatmapOptions = () => {
           }
         },
       },
+    },
+    states: {
+      normal: { filter: { type: 'none' } },
+      hover: { filter: { type: 'none' } },
+      active: { filter: { type: 'none' }, allowMultipleDataPointsSelection: false },
     },
     plotOptions: {
       heatmap: {
@@ -327,7 +335,7 @@ const handleFilterChange = (filter: ProcessFilter) => {
 }
 
 watch(
-  [() => props.series, () => props.yLabelMap, () => props.yLabelPrefix],
+  () => props.series,
   () => {
     if (chartEl.value && props.series.length > 0) {
       nextTick(() => {
@@ -344,6 +352,15 @@ onMounted(() => {
       initChart(chartEl.value, getHeatmapOptions())
       setupResizeObserver(chartEl.value)
       chartMounted.value = true
+    }
+  })
+})
+
+onActivated(() => {
+  if (!chartMounted.value) return
+  nextTick(() => {
+    if (chartEl.value && props.series.length > 0) {
+      initChart(chartEl.value, getHeatmapOptions())
     }
   })
 })
@@ -421,11 +438,20 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* Override ApexCharts tooltip wrapper so our custom content controls all styling */
 :deep(.apexcharts-tooltip) {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
   padding: 0 !important;
+}
+
+:deep(.apexcharts-canvas),
+:deep(.apexcharts-canvas *) {
+  outline: none !important;
+}
+
+:deep(.apexcharts-series rect) {
+  stroke: none !important;
+  stroke-width: 0 !important;
 }
 </style>

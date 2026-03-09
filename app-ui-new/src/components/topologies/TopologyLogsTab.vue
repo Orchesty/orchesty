@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onActivated, onDeactivated, watch } from 'vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import TextInput from '@/components/ui/datagrid/TextInput.vue'
@@ -13,13 +13,16 @@ import { fetchLogs } from '@/services/logsService'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import { useDateFormat } from '@/composables/useDateFormat'
+import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 
 interface Props {
   topologyId: string
   topologyName: string
+  refreshKey?: number
 }
 
 const props = defineProps<Props>()
+const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 // State
 const logs = ref<LogEntry[]>([])
@@ -29,7 +32,7 @@ const drawerOpen = ref(false)
 const selectedLog = ref<LogEntry | null>(null)
 
 // Topology and Node mappings
-const { loadMappings, mappings } = useTopologyNodeMappings()
+const { mappings, getNodeName } = useTopologyNodeMappings()
 const { formatDateTime } = useDateFormat()
 
 // Filters
@@ -129,6 +132,7 @@ async function loadData() {
     logs.value = response.data
     totalItems.value = response.pagination.total
     totalPages.value = response.pagination.totalPages
+    markFresh()
   } catch (error) {
     console.error('Failed to load logs:', error)
   } finally {
@@ -154,10 +158,22 @@ const {
   filters: [searchFilter, correlationIdFilter, severityFilter, nodeFilter, dateTimeRange],
 })
 
-// Load initial data
-onMounted(async () => {
-  await loadMappings()
-  await loadData()
+onMounted(() => {
+  loadData()
+})
+
+onActivated(() => {
+  isActive.value = true
+  if (isStale()) loadData()
+})
+
+onDeactivated(() => {
+  isActive.value = false
+})
+
+watch(() => props.refreshKey, () => {
+  invalidate()
+  if (isActive.value) loadData()
 })
 </script>
 
@@ -175,9 +191,11 @@ onMounted(async () => {
       :items-per-page="itemsPerPage"
       :sort-field="sortField"
       :sort-direction="sortDirection"
+      show-refresh
       @page-change="handlePageChange"
       @per-page-change="handlePerPageChange"
       @sort="handleSort"
+      @refresh="loadData"
     >
       <template #filters>
         <TextInput
@@ -208,7 +226,7 @@ onMounted(async () => {
       </template>
 
       <template #cell-node="{ value }">
-        <span class="whitespace-nowrap font-medium text-gray-900 dark:text-white">{{ value }}</span>
+        <span class="whitespace-nowrap font-medium text-gray-900 dark:text-white">{{ getNodeName(value) }}</span>
       </template>
 
       <template #cell-nodeId="{ value }">

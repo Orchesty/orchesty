@@ -15,6 +15,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
+  'shown': []
 }>()
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,7 +46,14 @@ onMounted(async () => {
         emit('update:modelValue', false)
       },
       onShow: () => {
-        // Don't emit here to avoid circular updates
+        const el = document.getElementById(props.id)
+        if (el) {
+          const onTransitionEnd = () => {
+            emit('shown')
+            el.removeEventListener('transitionend', onTransitionEnd)
+          }
+          el.addEventListener('transitionend', onTransitionEnd)
+        }
       },
     })
   }

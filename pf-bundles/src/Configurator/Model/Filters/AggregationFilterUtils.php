@@ -14,8 +14,10 @@ use OutOfRangeException;
 final readonly class AggregationFilterUtils
 {
 
-    public const string BUCKETS         = 'buckets';
-    public const int    DEFAULT_BUCKETS = 10;
+    public const string BUCKETS          = 'buckets';
+    public const int    DEFAULT_BUCKETS  = 10;
+    public const bool   DEFAULT_LAST_RUN = FALSE;
+    public const string LAST_RUN         = 'lastRun';
 
     /**
      * @param Builder $builder

@@ -20,12 +20,16 @@ function mapApiItemToScheduledTask(apiItem: ScheduledTaskApiItem): ScheduledTask
   // Map topology.status boolean to our status enum
   const status = apiItem.topology.status ? 'enabled' : 'disabled'
 
+  const topologyName = apiItem.topology.version
+    ? `${formatName(apiItem.topology.name)} v.${apiItem.topology.version}`
+    : formatName(apiItem.topology.name)
+
   return {
     id,
     name: formatName(apiItem.node.name),
     nodeId: apiItem.node.id,
     nodeStatus: apiItem.node.status,
-    topology: formatName(apiItem.topology.name),
+    topology: topologyName,
     topologyId: apiItem.topology.id,
     crontab: apiItem.time || null,
     nextRun: apiItem.time && apiItem.node.status && apiItem.topology.status ? getNextCronRun(apiItem.time) : null,
@@ -81,6 +85,19 @@ export async function fetchScheduledTasks(
       totalPages: response.data.paging.lastPage
     }
   }
+}
+
+/**
+ * Check if any enabled cron in an enabled topology has no crontab set
+ */
+export async function checkMisconfiguredCrons(): Promise<boolean> {
+  const response = await api.get<ScheduledTaskApiResponse>(
+    `/api/topologies/cron`
+  )
+
+  return response.data.items.some(
+    item => item.node.status && item.topology.status && !item.time
+  )
 }
 
 /**

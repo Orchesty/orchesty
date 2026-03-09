@@ -139,24 +139,26 @@ final readonly class MetricsHandler
 
     /**
      * @param GridRequestDtoInterface $dto
+     * @param bool                    $lastRun
      *
      * @return mixed[]
      * @throws Exception
      */
-    public function getMetricsRequests(GridRequestDtoInterface $dto): array
+    public function getMetricsRequests(GridRequestDtoInterface $dto, bool $lastRun): array
     {
-        return $this->getGridResponse($dto, $this->manager->getMetricsRequests($dto));
+        return $this->getGridResponse($dto, $this->manager->getMetricsRequests($dto, $lastRun));
     }
 
     /**
      * @param GridRequestDtoInterface $dto
+     * @param bool                    $lastRun
      *
      * @return mixed[]
      * @throws Exception
      */
-    public function getMetricsProcesses(GridRequestDtoInterface $dto): array
+    public function getMetricsProcesses(GridRequestDtoInterface $dto, bool $lastRun): array
     {
-        return $this->getGridResponse($dto, $this->manager->getMetricsProcesses($dto));
+        return $this->getGridResponse($dto, $this->manager->getMetricsProcesses($dto, $lastRun));
     }
 
     /**

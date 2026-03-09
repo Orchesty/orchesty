@@ -178,6 +178,7 @@ final class MetricsController
         return $this->getResponse(
             $this->handler->getMetricsRequests(
                 new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+                $request->query->getBoolean(AggregationFilterUtils::LAST_RUN, AggregationFilterUtils::DEFAULT_LAST_RUN),
             ),
         );
     }
@@ -194,6 +195,7 @@ final class MetricsController
         return $this->getResponse(
             $this->handler->getMetricsProcesses(
                 new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+                $request->query->getBoolean(AggregationFilterUtils::LAST_RUN, AggregationFilterUtils::DEFAULT_LAST_RUN),
             ),
         );
     }

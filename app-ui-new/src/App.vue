@@ -1,13 +1,32 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import { computed } from 'vue'
+import { RouterView, useRoute } from 'vue-router'
 import Toast from '@/components/ui/Toast.vue'
+import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import { useToast } from '@/composables/useToast'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { useAuthStore } from '@/stores/auth'
 
 const { toasts, removeToast } = useToast()
+const route = useRoute()
+const authStore = useAuthStore()
+
+const { loadMappings, isReady } = useTopologyNodeMappings()
+loadMappings()
+
+const publicPaths = ['/sign-in', '/forgot-password', '/reset-password']
+const isPublicRoute = computed(() =>
+  publicPaths.some(p => route.path === p || route.path.startsWith(p + '/'))
+)
+
+const appReady = computed(() => isPublicRoute.value || !authStore.isAuthenticated || isReady.value)
 </script>
 
 <template>
-  <RouterView />
+  <RouterView v-if="appReady" />
+  <div v-else class="flex h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+    <LoadingSpinner size="lg" text="Loading application data..." />
+  </div>
 
   <!-- Global Toast Notifications -->
   <div class="fixed bottom-4 left-4 z-[80] flex flex-col gap-2">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick, watch } from 'vue'
+import { ref, computed, onMounted, onActivated, nextTick, watch } from 'vue'
 import { useApexChart, getChartColors, getBaseChartOptions } from '@/composables/useApexChart'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useDateFormat } from '@/composables/useDateFormat'
@@ -10,7 +10,7 @@ import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 
 const { formatChartLabel } = useDateFormat()
-const { getNodeName } = useTopologyNodeMappings()
+const { getNodeName, getTopologyName } = useTopologyNodeMappings()
 
 /**
  * Get granularity in minutes matching backend's getDateTruncBinSize logic
@@ -74,7 +74,7 @@ const loadData = async () => {
       sortBy: sortField.value,
       sortOrder: sortDirection.value,
       timeFilter: props.timeFilter,
-      buckets: 20
+      buckets: 40
     })
 
     limiterData.value = response
@@ -117,7 +117,6 @@ watch(() => props.timeFilter, () => {
   loadData()
 })
 
-// Initialize chart on mount
 onMounted(async () => {
   try {
     await loadData()
@@ -132,6 +131,14 @@ onMounted(async () => {
   } catch (error) {
     console.error('LimiterCard mount error:', error)
   }
+})
+
+onActivated(() => {
+  nextTick(() => {
+    if (chartMounted.value && chartEl.value && limiterData.value) {
+      initChart(chartEl.value, getColumnChartOptions())
+    }
+  })
 })
 
 const getColumnChartOptions = () => {
@@ -319,6 +326,9 @@ const getColumnChartOptions = () => {
       >
         <template #cell-connector="{ row }">
           <span class="font-medium text-gray-900 dark:text-white">{{ getNodeName(row.nodeId) }}</span>
+        </template>
+        <template #cell-topology="{ row }">
+          <span class="text-gray-900 dark:text-white">{{ getTopologyName(row.topologyId) }}</span>
         </template>
         <template #cell-messages="{ row }">
           {{ row.maxMessages }}

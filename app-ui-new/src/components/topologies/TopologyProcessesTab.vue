@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onActivated, onDeactivated, watch } from 'vue'
 import ProcessAuditDrawer from '@/components/dashboard/ProcessAuditDrawer.vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
@@ -12,14 +12,17 @@ import { fetchProcesses } from '@/services/processesService'
 import { formatDateTimeForApi } from '@/utils/timeRangeConverter'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useDateFormat } from '@/composables/useDateFormat'
+import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 
 interface Props {
   topologyId: string
   topologyName: string
+  refreshKey?: number
 }
 
 const props = defineProps<Props>()
 const { formatDateTime } = useDateFormat()
+const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 // Drawer state
 const drawerOpen = ref(false)
@@ -52,12 +55,16 @@ const quickFilterOptions: QuickFilterOption[] = [
   { value: 'failed', label: 'Failed' },
 ]
 
-// Format duration from seconds to HH:MM:SS
-const formatDuration = (seconds: number): string => {
-  const hours = Math.floor(seconds / 3600)
-  const minutes = Math.floor((seconds % 3600) / 60)
-  const secs = seconds % 60
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+const formatDuration = (ms: number): string => {
+  if (ms < 1000) return `${Math.round(ms)}ms`
+  const totalSeconds = ms / 1000
+  if (totalSeconds < 60) return `${totalSeconds.toFixed(1)}s`
+  const minutes = Math.floor(totalSeconds / 60)
+  const secs = Math.round(totalSeconds % 60)
+  if (minutes < 60) return `${minutes}m ${secs}s`
+  const hours = Math.floor(minutes / 60)
+  const mins = minutes % 60
+  return `${hours}h ${mins}m ${secs}s`
 }
 
 // Load data function
@@ -79,6 +86,7 @@ const loadData = async () => {
     processes.value = response.data
     totalPages.value = response.meta.totalPages
     totalItems.value = response.meta.totalItems
+    markFresh()
   } catch (error) {
     console.error('Error loading processes:', error)
   } finally {
@@ -111,9 +119,22 @@ const handleAuditClick = (process: Process) => {
   console.log('Drawer state:', { drawerOpen: drawerOpen.value, selectedProcess: selectedProcess.value })
 }
 
-onMounted(async () => {
-  // Load initial data
+onMounted(() => {
   loadData()
+})
+
+onActivated(() => {
+  isActive.value = true
+  if (isStale()) loadData()
+})
+
+onDeactivated(() => {
+  isActive.value = false
+})
+
+watch(() => props.refreshKey, () => {
+  invalidate()
+  if (isActive.value) loadData()
 })
 </script>
 
@@ -133,9 +154,11 @@ onMounted(async () => {
         :items-per-page="itemsPerPage"
         :sort-field="sortField"
         :sort-direction="sortDirection"
+        show-refresh
         @page-change="handlePageChange"
         @per-page-change="handlePerPageChange"
         @sort="handleSort"
+        @refresh="loadData"
       >
         <!-- Quick Filters (left) -->
         <template #quick-filters>

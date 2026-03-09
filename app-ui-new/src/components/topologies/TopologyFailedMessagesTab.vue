@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onActivated, onDeactivated, computed, watch } from 'vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
 import TextInput from '@/components/ui/datagrid/TextInput.vue'
 import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
 import Confirm from '@/components/ui/Confirm.vue'
-import TrashDetailDrawer from '@/components/trash/TrashDetailDrawer.vue'
 import type { TrashItem, TrashQueryParams } from '@/types/trash'
 import type { BulkAction } from '@/types/datagrid'
 import type { TableColumn } from '@/types/dashboard'
@@ -14,27 +13,31 @@ import {
   fetchTrashItems,
   bulkApprove,
   bulkReject,
-  approveTrashItem,
-  rejectTrashItem,
-  updateTrashItem,
 } from '@/services/trashService'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useToast } from '@/composables/useToast'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import { useDateFormat } from '@/composables/useDateFormat'
+import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 
 interface Props {
   topologyId: string
   topologyName: string
+  refreshKey?: number
 }
 
 const props = defineProps<Props>()
 
+const emit = defineEmits<{
+  'open-drawer': [item: TrashItem]
+}>()
+
 // Toast notifications
 const { showToast } = useToast()
+const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 // Topology and Node mappings
-const { loadMappings, mappings, getNodeName } = useTopologyNodeMappings()
+const { mappings, getNodeName } = useTopologyNodeMappings()
 const { formatDateTime } = useDateFormat()
 
 // State
@@ -63,9 +66,6 @@ const nodeOptions = computed(() => {
   return options
 })
 
-// Drawer state
-const drawerOpen = ref(false)
-const selectedItem = ref<TrashItem | null>(null)
 
 // Confirm modal states
 const bulkApproveConfirmOpen = ref(false)
@@ -167,6 +167,7 @@ const loadData = async () => {
     trashItems.value = response.data
     totalItems.value = response.pagination.total
     totalPages.value = response.pagination.totalPages
+    markFresh()
   } catch (error) {
     console.error('Failed to load trash items:', error)
   } finally {
@@ -192,62 +193,28 @@ const {
   filters: [searchFilter, correlationIdFilter, nodeFilter, dateTimeRange],
 })
 
-// Load initial data
-onMounted(async () => {
-  await loadMappings()
+onMounted(() => {
   loadData()
 })
 
-// Drawer handlers
+onActivated(() => {
+  isActive.value = true
+  if (isStale()) loadData()
+})
+
+onDeactivated(() => {
+  isActive.value = false
+})
+
+watch(() => props.refreshKey, () => {
+  invalidate()
+  if (isActive.value) loadData()
+})
+
 const openDrawer = (item: TrashItem) => {
-  selectedItem.value = item
-  drawerOpen.value = true
+  emit('open-drawer', item)
 }
 
-const handleApprove = async () => {
-  if (!selectedItem.value) return
-
-  try {
-    await approveTrashItem(selectedItem.value.id)
-    showToast('Message approved successfully', 'success')
-    drawerOpen.value = false
-    loadData()
-  } catch (error) {
-    console.error('Approve failed:', error)
-    showToast('Failed to approve message', 'error')
-  }
-}
-
-const handleUpdate = async (data: { headers: Record<string, unknown>; body: Record<string, unknown> }) => {
-  if (!selectedItem.value) return
-
-  try {
-    const updatedData = await updateTrashItem(selectedItem.value.id, data)
-    // Update the selectedItem with the data returned from API
-    selectedItem.value.headers = updatedData.headers
-    selectedItem.value.body = updatedData.body
-    showToast('Message updated successfully', 'success')
-    // Keep drawer open so user can approve after editing
-    loadData()
-  } catch (error) {
-    console.error('Update failed:', error)
-    showToast('Failed to update message', 'error')
-  }
-}
-
-const handleReject = async () => {
-  if (!selectedItem.value) return
-
-  try {
-    await rejectTrashItem(selectedItem.value.id)
-    showToast('Message rejected successfully', 'success')
-    drawerOpen.value = false
-    loadData()
-  } catch (error) {
-    console.error('Reject failed:', error)
-    showToast('Failed to reject message', 'error')
-  }
-}
 
 </script>
 
@@ -268,9 +235,11 @@ const handleReject = async () => {
       :bulk-actions="bulkActions"
       :selected-rows="selectedRows"
       row-id-key="id"
+      show-refresh
       @page-change="handlePageChange"
       @per-page-change="handlePerPageChange"
       @sort="handleSort"
+      @refresh="loadData"
       @update:selected-rows="selectedRows = $event"
     >
       <template #filters>
@@ -333,15 +302,6 @@ const handleReject = async () => {
         </div>
       </template>
     </DataGrid>
-
-    <!-- Drawer -->
-    <TrashDetailDrawer
-      v-model="drawerOpen"
-      :item="selectedItem"
-      @approve="handleApprove"
-      @update="handleUpdate"
-      @reject="handleReject"
-    />
 
     <!-- Confirm Modals for Bulk Actions -->
     <Confirm

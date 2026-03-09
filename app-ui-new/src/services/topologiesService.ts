@@ -352,6 +352,27 @@ export async function fetchCategories(): Promise<FolderItem[]> {
 }
 
 /**
+ * Fetch the breadcrumb folder names for a given category ID.
+ * Returns folder names from root to the given category.
+ */
+export async function fetchCategoryBreadcrumb(categoryId: string): Promise<string[]> {
+  const response = await api.get<CategoriesApiResponse>('/api/categories')
+  const categories = response.data.items
+  const map = new Map<string, CategoryApiItem>()
+  for (const cat of categories) {
+    map.set(cat._id, cat)
+  }
+
+  const path: string[] = []
+  let current: CategoryApiItem | undefined = map.get(categoryId)
+  while (current) {
+    path.unshift(current.name)
+    current = current.parent ? map.get(current.parent) : undefined
+  }
+  return path
+}
+
+/**
  * Create a new category (folder)
  */
 export async function publishTopology(topologyId: string): Promise<void> {
@@ -365,8 +386,9 @@ export async function toggleTopologyEnabled(topologyId: string, enabled: boolean
 export async function createTopology(
   name: string,
   category: string | null = null,
-): Promise<void> {
-  await api.post('/api/topologies', { name, category })
+): Promise<{ _id: string }> {
+  const response = await api.post('/api/topologies', { name, category })
+  return response.data
 }
 
 export async function createCategory(

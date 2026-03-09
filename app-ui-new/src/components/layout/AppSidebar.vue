@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { Bot, ChartPie, Clock, OctagonAlert, List, Workflow, Grip, Settings } from 'lucide-vue-next'
 import { useSidebar } from '@/composables/useSidebar'
+import { useCronAlerts } from '@/composables/useCronAlerts'
 
 const route = useRoute()
 
@@ -17,6 +19,12 @@ const iconClass = (path: string) => {
 
 // Initialize sidebar hover functionality
 useSidebar()
+
+const { hasMisconfiguredCrons, refresh: refreshCronAlerts } = useCronAlerts()
+
+onMounted(() => {
+  refreshCronAlerts()
+})
 </script>
 
 <template>
@@ -86,8 +94,8 @@ useSidebar()
               >Scheduled Tasks</span
             >
             <span
-              class="absolute -top-1 -right-2 inline-flex items-center justify-center w-4 h-4 text-xs font-bold leading-none text-white bg-red-600 rounded-full dark:bg-red-500 hidden"
-              data-sidebar-collapse-show
+              v-if="hasMisconfiguredCrons"
+              class="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold leading-none text-white bg-red-600 rounded-full dark:bg-red-500"
               >!</span
             >
           </RouterLink>

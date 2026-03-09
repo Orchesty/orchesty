@@ -40,7 +40,7 @@ const itemsPerPage = ref(10)
 const loading = ref(false)
 
 // Chart data
-const chartData = ref<{ categories: string[]; errors400: number[]; errors500: number[] } | null>(null)
+const chartData = ref<{ categories: number[]; errors400: number[]; errors500: number[] } | null>(null)
 
 // Chart element
 const chartElement = ref<HTMLElement | null>(null)
@@ -55,76 +55,64 @@ const { initChart, isDarkMode, destroyChart } = useApexChart({
   },
 })
 
-// Initialize chart
 const getChartOptions = () => {
   if (!chartData.value) return null
+
+  const cats = chartData.value.categories
 
   return {
     series: [
       {
         name: '400 Errors',
-        data: chartData.value.errors400,
-        color: '#F59E0B', // yellow-500
+        data: chartData.value.errors400.map((v, i) => [cats[i], v]),
+        color: '#F59E0B',
       },
       {
         name: '500 Errors',
-        data: chartData.value.errors500,
-        color: '#EF4444', // red-500
+        data: chartData.value.errors500.map((v, i) => [cats[i], v]),
+        color: '#EF4444',
       },
     ],
     chart: {
       type: 'area',
       height: 300,
-      toolbar: {
-        show: false,
-      },
-      zoom: {
-        enabled: false,
-      },
+      toolbar: { show: false },
+      zoom: { enabled: false },
       background: 'transparent',
     },
-    dataLabels: {
-      enabled: false,
-    },
-    stroke: {
-      curve: 'smooth',
-      width: 2,
-    },
+    dataLabels: { enabled: false },
+    stroke: { curve: 'smooth', width: 2 },
     fill: {
       type: 'gradient',
-      gradient: {
-        opacityFrom: 0.5,
-        opacityTo: 0.1,
-      },
+      gradient: { opacityFrom: 0.5, opacityTo: 0.1 },
     },
     xaxis: {
-      categories: chartData.value.categories,
+      type: 'datetime',
       labels: {
-        style: {
-          colors: isDarkMode.value ? '#9CA3AF' : '#6B7280',
-        },
+        datetimeUTC: false,
+        style: { colors: isDarkMode.value ? '#9CA3AF' : '#6B7280' },
       },
+      tickAmount: 8,
     },
     yaxis: {
       labels: {
         formatter: (value: number) => Math.floor(value).toString(),
-        style: {
-          colors: isDarkMode.value ? '#9CA3AF' : '#6B7280',
-        },
+        style: { colors: isDarkMode.value ? '#9CA3AF' : '#6B7280' },
       },
     },
     legend: {
       position: 'top',
       horizontalAlign: 'right',
-      labels: {
-        colors: isDarkMode.value ? '#9CA3AF' : '#6B7280',
-      },
+      labels: { colors: isDarkMode.value ? '#9CA3AF' : '#6B7280' },
     },
     grid: {
       borderColor: isDarkMode.value ? '#374151' : '#E5E7EB',
     },
     tooltip: {
       theme: isDarkMode.value ? 'dark' : 'light',
+      x: {
+        format: 'd. M. yyyy  HH:mm',
+      },
     },
   }
 }

@@ -33,7 +33,6 @@ const { formatDateTime } = useDateFormat()
 
 // Topology/Node mappings composable
 const {
-  loadMappings,
   getTopologyName,
   getNodeName,
   getNodeIdsByName,
@@ -300,15 +299,10 @@ const {
   filters: [searchFilter, correlationIdFilter, nodeFilter, topologyFilter, dateTimeRange],
 })
 
-// Load mappings and data
-onMounted(async () => {
-  await loadMappings()
-
-  // Check for correlationId in query params
+onMounted(() => {
   if (route.query.correlationId) {
     correlationIdFilter.value = route.query.correlationId as string
   }
-
   loadData()
 })
 
@@ -510,8 +504,6 @@ const handleReject = async () => {
     <TrashDetailDrawer
       v-model="drawerOpen"
       :item="selectedItem"
-      :get-topology-name="getTopologyName"
-      :get-node-name="getNodeName"
       @approve="handleApprove"
       @update="handleUpdate"
       @reject="handleReject"

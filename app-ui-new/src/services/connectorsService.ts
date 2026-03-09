@@ -15,9 +15,6 @@ import type {
 import type { TimeFilter } from '@/types/dashboard'
 import api from '@/services/api'
 import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
-import { useDateFormat } from '@/composables/useDateFormat'
-
-const { formatChartDate } = useDateFormat()
 
 /**
  * Map API connector item to UI Connector model
@@ -56,12 +53,12 @@ function mapSortFieldToApiColumn(field: string): string {
  * Map graph API response to chart data format
  */
 function mapGraphApiToChartData(items: ConnectorGraphApiItem[]): {
-  categories: string[]
+  categories: number[]
   errors400: number[]
   errors500: number[]
 } {
   return {
-    categories: items.map(item => formatChartDate(item.created)),
+    categories: items.map(item => new Date(item.created).getTime()),
     errors400: items.map(item => item.status400),
     errors500: items.map(item => item.status500)
   }
@@ -292,7 +289,7 @@ export async function fetchConnectorChartData(
   nodeIds: string[],
   timeFilter: TimeFilter,
   buckets: number,
-): Promise<{ categories: string[]; errors400: number[]; errors500: number[] }> {
+): Promise<{ categories: number[]; errors400: number[]; errors500: number[] }> {
   const dateRange = convertTimeFilterToDateTimeRange(timeFilter)
   const dateFrom = formatDateTimeForApi(dateRange.from) || ''
   const dateTo = formatDateTimeForApi(dateRange.to) || ''

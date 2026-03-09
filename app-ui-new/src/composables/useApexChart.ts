@@ -27,10 +27,11 @@ export function useApexChart(options: UseApexChartOptions = {}) {
     }
   }
 
-  // Initialize chart (synchronous like original HTML implementation)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const initChart = (element: HTMLElement, chartOptions: any): ApexCharts | null => {
     try {
+      if (!element.isConnected) return null
+
       if (chartInstance.value) {
         chartInstance.value.destroy()
         chartInstance.value = null

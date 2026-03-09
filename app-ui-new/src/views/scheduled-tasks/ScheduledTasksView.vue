@@ -10,8 +10,13 @@ import { fetchScheduledTasks, updateTaskStatus, updateTaskCrontab } from '@/serv
 import { getNextCronRun, formatNextRun } from '@/utils/cronParser'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useToast } from '@/composables/useToast'
+import { useCronAlerts } from '@/composables/useCronAlerts'
 
 const { showToast } = useToast()
+const { refresh: refreshCronAlerts } = useCronAlerts()
+
+const isMisconfigured = (row: ScheduledTask) =>
+  row.nodeStatus && row.status === 'enabled' && !row.crontab
 
 const tasks = ref<ScheduledTask[]>([])
 
@@ -25,8 +30,8 @@ const updatingTasks = ref<Set<string>>(new Set())
 // Table columns
 const columns: TableColumn[] = [
   { key: 'toggle', label: '', className: 'w-16' },
-  { key: 'name', label: 'Name', sortable: false },
   { key: 'topology', label: 'Topology', sortable: false },
+  { key: 'name', label: 'Name', sortable: false },
   { key: 'crontab', label: 'Crontab', sortable: false },
   { key: 'nextRun', label: 'Next Run', sortable: false },
   { key: 'status', label: 'Topology Status', sortable: false },
@@ -46,6 +51,7 @@ const loadData = async () => {
     tasks.value = response.data
     totalPages.value = response.meta.totalPages
     totalItems.value = response.meta.totalItems
+    refreshCronAlerts()
   } catch (error) {
     console.error('Failed to load scheduled tasks:', error)
   } finally {
@@ -70,23 +76,19 @@ const {
   onDataLoad: loadData,
 })
 
-const handleToggleChange = async (task: ScheduledTask, event: Event) => {
-  const target = event.target as HTMLInputElement
-  const newEnabled = target.checked
+const handleToggleChange = async (task: ScheduledTask) => {
+  const newEnabled = !task.nodeStatus
 
-  // Add to updating set
   updatingTasks.value.add(task.id)
 
   try {
     await updateTaskStatus(task.nodeId, newEnabled)
-    // Reload data to get updated status
     await loadData()
     showToast(`Task ${newEnabled ? 'enabled' : 'disabled'} successfully`, 'success')
   } catch (error) {
     console.error('Failed to update task status:', error)
     showToast('Failed to update task status', 'error')
-    // Revert checkbox state on error
-    target.checked = !newEnabled
+    await loadData()
   } finally {
     updatingTasks.value.delete(task.id)
   }
@@ -197,7 +199,7 @@ onBeforeUnmount(() => {
               :checked="row.nodeStatus"
               :disabled="updatingTasks.has(row.id)"
               class="peer sr-only"
-              @change="handleToggleChange(row as ScheduledTask, $event)"
+              @change="handleToggleChange(row as ScheduledTask)"
             />
             <div
               :class="[
@@ -229,7 +231,12 @@ onBeforeUnmount(() => {
 
         <!-- Crontab Cell -->
         <template #cell-crontab="{ row }">
-          <span class="font-mono text-xs">{{ row.crontab || '-' }}</span>
+          <span v-if="row.crontab" class="font-mono text-xs">{{ row.crontab }}</span>
+          <span v-else-if="isMisconfigured(row)" class="inline-flex items-center gap-1 text-xs font-medium text-red-600 dark:text-red-400">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+            Cron is not set
+          </span>
+          <span v-else class="font-mono text-xs">-</span>
         </template>
 
         <!-- Next Run Cell -->

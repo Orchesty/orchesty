@@ -46,11 +46,7 @@ const handleClose = () => {
     size="md"
   >
     <div class="space-y-4">
-      <div class="rounded-lg bg-yellow-50 p-4 text-sm text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300">
-        <p class="font-medium">Important: Save this token securely</p>
-        <p class="mt-1">You won't be able to see it again after closing this window.</p>
-      </div>
-
+    
       <div>
         <div class="flex gap-2">
           <input

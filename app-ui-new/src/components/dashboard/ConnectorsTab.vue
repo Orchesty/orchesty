@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onActivated, onDeactivated } from 'vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
@@ -12,6 +12,7 @@ import { fetchConnectors } from '@/services/connectorsService'
 import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 
 interface Props {
   globalTimeFilter: TimeFilter
@@ -26,7 +27,6 @@ const emit = defineEmits<{
 
 // Use topology/node/application mappings composable
 const {
-  loadMappings,
   getApplicationName,
   getNodeName,
   getNodeIdsByName,
@@ -34,6 +34,7 @@ const {
   deduplicatedNodeOptions: deduplicatedNodeOptionsFromMappings,
   mappings,
 } = useTopologyNodeMappings()
+const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 const connectors = ref<Connector[]>([])
 const quickFilter = ref<ConnectorStatus>('all')
@@ -124,9 +125,6 @@ const actions: ActionConfig[] = [
 
 // Load data function (will be passed to useDataGrid)
 const loadData = async () => {
-  // Ensure mappings are loaded before resolving names
-  await loadMappings()
-
   loading.value = true
 
   try {
@@ -147,6 +145,7 @@ const loadData = async () => {
 
     totalPages.value = response.meta.totalPages
     totalItems.value = response.meta.totalItems
+    markFresh()
   } catch (error) {
     console.error('Error loading connectors:', error)
   } finally {
@@ -173,10 +172,10 @@ const {
 })
 
 watch(() => props.refreshKey, () => {
+  invalidate()
   loadData()
 })
 
-// Watch global time filter and convert to local datetime range
 watch(
   () => props.globalTimeFilter,
   (newFilter) => {
@@ -185,9 +184,20 @@ watch(
       from: range.from,
       to: range.to,
     }
+    invalidate()
+    if (isActive.value) loadData()
   },
   { immediate: true }
 )
+
+onActivated(() => {
+  isActive.value = true
+  if (isStale()) loadData()
+})
+
+onDeactivated(() => {
+  isActive.value = false
+})
 
 </script>
 

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, onActivated, onDeactivated, watch } from 'vue'
 import HeatmapChart from './HeatmapChart.vue'
 import type { Connector } from '@/types/connectors'
 import type { HeatmapSeries, ProcessFilter, TimeFilter } from '@/types/dashboard'
 import { fetchConnectorHeatmapData } from '@/services/dashboardService'
 import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 
 interface ApplicationHeatmapGroup {
   applicationName: string
@@ -30,7 +31,8 @@ const emit = defineEmits<{
   openConnectorDetail: [connector: Connector]
 }>()
 
-const { loadMappings, getNodeName, getApplicationName } = useTopologyNodeMappings()
+const { ensureLoaded, getNodeName, getApplicationName } = useTopologyNodeMappings()
+const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -56,11 +58,12 @@ const loadData = async () => {
   error.value = null
 
   try {
+    await ensureLoaded()
     const range = convertTimeFilterToDateTimeRange(props.timeFilter)
     const dateFrom = formatDateTimeForApi(range.from) || ''
     const dateTo = formatDateTimeForApi(range.to) || ''
 
-    const data = await fetchConnectorHeatmapData(props.heatmapFilter, dateFrom, dateTo, 20)
+    const data = await fetchConnectorHeatmapData(props.heatmapFilter, dateFrom, dateTo, 40)
 
     const connectorAppName: Record<string, string> = {}
     const namedSeries = data.series.map(s => {
@@ -152,6 +155,7 @@ const loadData = async () => {
     groups.sort((a, b) => a.applicationName.localeCompare(b.applicationName))
 
     applicationGroups.value = groups
+    markFresh()
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to load data'
     console.error('Error loading applications heatmap data:', err)
@@ -161,20 +165,31 @@ const loadData = async () => {
 }
 
 watch(() => props.timeFilter, () => {
-  loadData()
+  invalidate()
+  if (isActive.value) loadData()
 })
 
 watch(() => props.heatmapFilter, () => {
-  loadData()
+  invalidate()
+  if (isActive.value) loadData()
 })
 
 watch(() => props.refreshKey, () => {
+  invalidate()
   loadData()
 })
 
-onMounted(async () => {
-  await loadMappings()
+onMounted(() => {
   loadData()
+})
+
+onActivated(() => {
+  isActive.value = true
+  if (isStale()) loadData()
+})
+
+onDeactivated(() => {
+  isActive.value = false
 })
 </script>
 
