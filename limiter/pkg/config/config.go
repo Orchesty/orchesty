@@ -24,6 +24,7 @@ type (
 		UserTaskCollection        string `env:"USER_TASK_COLLECTION" default:"UserTask"`
 		ApiTokenCollection        string `env:"MONGODB_API_TOKEN_COLLECTION" default:"ApiToken"`
 		MetricsLimiterCollection  string `env:"MONGO_METRICS_LIMITER_COLLECTION" default:"limiter"`
+		MetricsRepeaterCollection string `env:"MONGO_METRICS_REPEATER_COLLECTION" default:"repeater"`
 		MetricsUserTaskCollection string `env:"MONGO_METRICS_USER_TASK_COLLECTION" default:"userTask"`
 	}
 
