@@ -114,42 +114,36 @@ final class MetricConnectorGraphAggregationFilter extends GridAggregationFilterA
                     ),
             )
             ->field('status200')
-            ->expression(
-                $builder->expr()->sum(
-                    $builder->expr()->cond(
-                        $builder->expr()->and(
-                            $builder->expr()->gte('$fields.response_code', 200),
-                            $builder->expr()->lte('$fields.response_code', 399),
-                        ),
-                        1,
-                        0,
+            ->sum(
+                $builder->expr()->cond(
+                    $builder->expr()->and(
+                        $builder->expr()->gte('$fields.response_code', 200),
+                        $builder->expr()->lte('$fields.response_code', 399),
                     ),
+                    1,
+                    0,
                 ),
             )
             ->field('status400')
-            ->expression(
-                $builder->expr()->sum(
-                    $builder->expr()->cond(
-                        $builder->expr()->and(
-                            $builder->expr()->gte('$fields.response_code', 400),
-                            $builder->expr()->lte('$fields.response_code', 499),
-                        ),
-                        1,
-                        0,
+            ->sum(
+                $builder->expr()->cond(
+                    $builder->expr()->and(
+                        $builder->expr()->gte('$fields.response_code', 400),
+                        $builder->expr()->lte('$fields.response_code', 499),
                     ),
+                    1,
+                    0,
                 ),
             )
             ->field('status500')
-            ->expression(
-                $builder->expr()->sum(
-                    $builder->expr()->cond(
-                        $builder->expr()->and(
-                            $builder->expr()->gte('$fields.response_code', 500),
-                            $builder->expr()->lte('$fields.response_code', 599),
-                        ),
-                        1,
-                        0,
+            ->sum(
+                $builder->expr()->cond(
+                    $builder->expr()->and(
+                        $builder->expr()->gte('$fields.response_code', 500),
+                        $builder->expr()->lte('$fields.response_code', 599),
                     ),
+                    1,
+                    0,
                 ),
             )
             ->addFields()

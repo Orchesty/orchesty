@@ -121,13 +121,11 @@ final class TopologyAggregationFilter extends GridAggregationFilterAbstract
             ->field('count')
             ->sum(1)
             ->field('failedCount')
-            ->expression(
-                $builder->expr()->sum(
-                    $builder->expr()->cond(
-                        $builder->expr()->gt('$nok', 0),
-                        1,
-                        0,
-                    ),
+            ->sum(
+                $builder->expr()->cond(
+                    $builder->expr()->gt('$nok', 0),
+                    1,
+                    0,
                 ),
             )
             ->field('finished')

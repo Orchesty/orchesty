@@ -73,13 +73,11 @@ final class ProcessTotalAggregationFilter extends GridAggregationFilterAbstract
             ->field('count')
             ->sum(1)
             ->field('failed')
-            ->expression(
-                $builder->expr()->sum(
-                    $builder->expr()->cond(
-                        $builder->expr()->ne('$nok', 0),
-                        1,
-                        0,
-                    ),
+            ->sum(
+                $builder->expr()->cond(
+                    $builder->expr()->ne('$nok', 0),
+                    1,
+                    0,
                 ),
             );
 
