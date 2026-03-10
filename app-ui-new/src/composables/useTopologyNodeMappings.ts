@@ -224,10 +224,17 @@ export function useTopologyNodeMappings() {
 
   // Resolve a display name to all matching nodeIds
   const getNodeIdsByName = (name: string): string[] => {
-    if (!filteredMappingsData.value) return []
-    return Object.entries(filteredMappingsData.value.nodes)
-      .filter(([, nodeName]) => nodeName === name)
-      .map(([id]) => id)
+    const ids: string[] = []
+    const sources = [allMappings.value, filteredMappingsData.value]
+    for (const source of sources) {
+      if (!source) continue
+      for (const [id, nodeName] of Object.entries(source.nodes)) {
+        if (nodeName === name && !ids.includes(id)) {
+          ids.push(id)
+        }
+      }
+    }
+    return ids
   }
 
   // Sorted application options for dropdowns (uses filtered mappings)
