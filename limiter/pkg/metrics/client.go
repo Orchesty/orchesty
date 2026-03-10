@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"fmt"
 	"time"
 
 	"limiter/pkg/config"
@@ -18,6 +19,7 @@ type (
 		mongo              mongo.MongoSvc
 		metrics            innerMetrics.Interface
 		limiterCollection  string
+		repeaterCollection string
 		userTaskCollection string
 	}
 
@@ -28,6 +30,7 @@ type (
 			UserId   string `bson:"userId"`
 		} `bson:"_id"`
 		Messages      int    `bson:"messages"`
+		Incoming      int    `bson:"incoming"`
 		TopologyId    string `bson:"topologyId"`
 		ApplicationId string `bson:"applicationId"`
 	}
@@ -38,6 +41,7 @@ func NewMetricsSvc(mongoSvc mongo.MongoSvc) MetricsSvc {
 		mongo:              mongoSvc,
 		metrics:            innerMetrics.Connect(config.MongoDb.MetricsDsn),
 		limiterCollection:  config.MongoDb.MetricsLimiterCollection,
+		repeaterCollection: config.MongoDb.MetricsRepeaterCollection,
 		userTaskCollection: config.MongoDb.MetricsUserTaskCollection,
 	}
 }
@@ -50,115 +54,137 @@ func (this MetricsSvc) Stop() {
 	this.metrics.Disconnect()
 }
 
-func (this MetricsSvc) collectMetrics() {
-	time.Sleep(time.Until(time.Now().Truncate(time.Minute).Add(time.Minute)))
-
-	for range time.Tick(time.Minute) {
-		this.collectFromCollection(
-			this.mongo.Collection(),
-			bson.A{
-				bson.D{
-					{
-						"$group", bson.D{
-							{"_id", bson.D{
-								{"nodeId", "$message.headers.node-id"},
-								{"nodeName", "$message.headers.node-name"},
-								{"userId", "$message.headers.user"},
-							}},
-							{"messages", bson.D{{"$sum", 1}}},
-							{"topologyId", bson.D{{"$first", "$message.headers.topology-id"}}},
-							{"applicationId", bson.D{{"$first", "$message.headers.application"}}},
-						},
-					},
-				},
-			},
-			bson.D{
-				{"message.headers.node-id", 1},
-				{"message.headers.node-name", 1},
-				{"message.headers.user", 1},
-				{"message.headers.topology-id", 1},
-				{"message.headers.application", 1},
-			},
-			this.limiterCollection,
-		)
-
-		this.collectFromCollection(
-			this.mongo.UserTaskCollection(),
-			bson.A{
-				bson.D{
-					{
-						"$match", bson.D{
-							{
-								"type", "trash",
-							},
-						},
-					},
-				},
-				bson.D{
-					{
-						"$group", bson.D{
-							{"_id", bson.D{
-								{"nodeId", "$message.headers.node-id"},
-								{"nodeName", "$message.headers.node-name"},
-								{"userId", "$message.headers.user"},
-							}},
-							{"messages", bson.D{{"$sum", 1}}},
-							{"topologyId", bson.D{{"$first", "$message.headers.topology-id"}}},
-							{"applicationId", bson.D{{"$first", "$message.headers.application"}}},
-						},
-					},
-				},
-			},
-			bson.D{
-				{"type", 1},
-				{"message.headers.node-id", 1},
-				{"message.headers.node-name", 1},
-				{"message.headers.user", 1},
-				{"message.headers.topology-id", 1},
-				{"message.headers.application", 1},
-			},
-			this.userTaskCollection,
-		)
+func buildGroupStage(lastTick time.Time) bson.D {
+	return bson.D{
+		{
+			"$group", bson.D{
+			{"_id", bson.D{
+				{"nodeId", "$message.headers.node-id"},
+				{"nodeName", "$message.headers.node-name"},
+				{"userId", "$message.headers.user"},
+			}},
+			{"messages", bson.D{{"$sum", 1}}},
+			{"incoming", bson.D{{"$sum", bson.D{{"$cond", bson.A{
+				bson.D{{"$gte", bson.A{"$created", lastTick}}},
+				1, 0,
+			}}}}}},
+			{"topologyId", bson.D{{"$first", "$message.headers.topology-id"}}},
+			{"applicationId", bson.D{{"$first", "$message.headers.application"}}},
+		},
+		},
 	}
 }
 
-func (this MetricsSvc) collectFromCollection(
+func (this MetricsSvc) collectMetrics() {
+	time.Sleep(time.Until(time.Now().Truncate(time.Minute).Add(time.Minute)))
+
+	limiterAndRepeaterHint := bson.D{
+		{"prioritize", 1},
+		{"created", 1},
+		{"message.headers.node-id", 1},
+		{"message.headers.node-name", 1},
+		{"message.headers.user", 1},
+		{"message.headers.topology-id", 1},
+		{"message.headers.application", 1},
+	}
+
+	trashHint := bson.D{
+		{"type", 1},
+		{"created", 1},
+		{"message.headers.node-id", 1},
+		{"message.headers.node-name", 1},
+		{"message.headers.user", 1},
+		{"message.headers.topology-id", 1},
+		{"message.headers.application", 1},
+	}
+
+	lastTick := time.Now()
+	previousLimiterCounts := make(map[string]int)
+	previousRepeaterCounts := make(map[string]int)
+	previousTrashCounts := make(map[string]int)
+
+	for range time.Tick(time.Minute) {
+		tickStart := time.Now()
+		groupStage := buildGroupStage(lastTick)
+
+		previousLimiterCounts = this.collectWithFlowMetrics(
+			this.mongo.Collection(),
+			bson.A{
+				bson.D{{"$match", bson.D{{"prioritize", false}}}},
+				groupStage,
+			},
+			limiterAndRepeaterHint,
+			this.limiterCollection,
+			previousLimiterCounts,
+		)
+
+		previousRepeaterCounts = this.collectWithFlowMetrics(
+			this.mongo.Collection(),
+			bson.A{
+				bson.D{{"$match", bson.D{{"prioritize", true}}}},
+				groupStage,
+			},
+			limiterAndRepeaterHint,
+			this.repeaterCollection,
+			previousRepeaterCounts,
+		)
+
+		previousTrashCounts = this.collectWithFlowMetrics(
+			this.mongo.UserTaskCollection(),
+			bson.A{
+				bson.D{{"$match", bson.D{{"type", "trash"}}}},
+				groupStage,
+			},
+			trashHint,
+			this.userTaskCollection,
+			previousTrashCounts,
+		)
+
+		lastTick = tickStart
+	}
+}
+
+func (this MetricsSvc) collectWithFlowMetrics(
 	collection *driver.Collection,
 	pipeline bson.A,
 	hint bson.D,
 	metricsCollection string,
-) {
-	go func() {
-		ctx, _ := this.mongo.Connection().Context()
-		cursor, err := collection.Aggregate(ctx, pipeline, options.Aggregate().SetHint(hint))
-
-		if err != nil {
-			log.Error().Err(err).Msg("Failed to query metrics")
-			return
-		}
-
-		defer func() {
-			_ = cursor.Close(ctx)
-		}()
-
-		if err = this.insertMetrics(cursor, metricsCollection); err != nil {
-			log.Error().Err(err).Msg("Failed to iterate metrics")
-		}
-	}()
-}
-
-func (this MetricsSvc) insertMetrics(cursor *driver.Cursor, metricsCollection string) error {
+	previousCounts map[string]int,
+) map[string]int {
 	ctx, _ := this.mongo.Connection().Context()
+	cursor, err := collection.Aggregate(ctx, pipeline, options.Aggregate().SetHint(hint))
+
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to query metrics")
+
+		return previousCounts
+	}
+
+	defer func() {
+		_ = cursor.Close(ctx)
+	}()
+
+	newCounts := make(map[string]int)
 
 	for cursor.Next(ctx) {
 		var metricsNode MetricsNode
 
-		if err := cursor.Decode(&metricsNode); err != nil {
+		if err = cursor.Decode(&metricsNode); err != nil {
 			log.Error().Err(err).Msg("Failed to decode metrics")
+
 			continue
 		}
 
-		if err := this.metrics.Send(metricsCollection, map[string]interface{}{
+		nodeKey := fmt.Sprintf("%s|%s|%s", metricsNode.Id.NodeId, metricsNode.Id.NodeName, metricsNode.Id.UserId)
+		outgoing := previousCounts[nodeKey] + metricsNode.Incoming - metricsNode.Messages
+
+		if outgoing < 0 {
+			outgoing = 0
+		}
+
+		newCounts[nodeKey] = metricsNode.Messages
+
+		if err = this.metrics.Send(metricsCollection, map[string]interface{}{
 			"userId":        metricsNode.Id.UserId,
 			"nodeId":        metricsNode.Id.NodeId,
 			"nodeName":      metricsNode.Id.NodeName,
@@ -167,10 +193,16 @@ func (this MetricsSvc) insertMetrics(cursor *driver.Cursor, metricsCollection st
 		}, map[string]interface{}{
 			"created":  time.Now(),
 			"messages": metricsNode.Messages,
+			"incoming": metricsNode.Incoming,
+			"outgoing": outgoing,
 		}); err != nil {
 			log.Error().Err(err).Msg("Failed to send metrics")
 		}
 	}
 
-	return cursor.Err()
+	if err = cursor.Err(); err != nil {
+		log.Error().Err(err).Msg("Failed to iterate metrics")
+	}
+
+	return newCounts
 }
