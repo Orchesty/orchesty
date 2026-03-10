@@ -47,22 +47,28 @@ final class NodeHandler
         $topologies = $this
             ->dm
             ->getRepository(Topology::class)
-            ->findBy(['deleted' => FALSE]);
+            ->findBy($all ? [] : ['deleted' => FALSE]);
 
-        /** @var Node[] $nodes */
-        $nodes = $this
+        $nodesQueryBuilder = $this
             ->dm
             ->getRepository(Node::class)
-            ->createQueryBuilder()
-            ->field('deleted')
-            ->equals(FALSE)
-            ->field('type')
-            ->notIn($all ? [] : [
-                TypeEnum::START->value,
-                TypeEnum::CRON->value,
-                TypeEnum::USER->value,
-                TypeEnum::WEBHOOK->value,
-            ])
+            ->createQueryBuilder();
+
+        if (!$all) {
+            $nodesQueryBuilder
+                ->field('deleted')
+                ->equals(FALSE)
+                ->field('type')
+                ->notIn([
+                    TypeEnum::CRON->value,
+                    TypeEnum::START->value,
+                    TypeEnum::USER->value,
+                    TypeEnum::WEBHOOK->value,
+                ]);
+        }
+
+        /** @var Node[] $nodes */
+        $nodes = $nodesQueryBuilder
             ->getQuery()
             ->toArray();
 
