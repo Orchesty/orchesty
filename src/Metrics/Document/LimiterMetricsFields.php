@@ -27,6 +27,18 @@ class LimiterMetricsFields
     private int $messages;
 
     /**
+     * @var int
+     */
+    #[ODM\Field]
+    private int $incoming;
+
+    /**
+     * @var int
+     */
+    #[ODM\Field]
+    private int $outgoing;
+
+    /**
      * LimiterMetricsFields constructor.
      *
      * @param int $messages
@@ -35,6 +47,8 @@ class LimiterMetricsFields
     {
         $this->created  = new DateTime();
         $this->messages = $messages;
+        $this->incoming = 0;
+        $this->outgoing = 0;
     }
 
     /**
@@ -51,6 +65,22 @@ class LimiterMetricsFields
     public function getMessages(): int
     {
         return $this->messages;
+    }
+
+    /**
+     * @return int
+     */
+    public function getIncoming(): int
+    {
+        return $this->incoming;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOutgoing(): int
+    {
+        return $this->outgoing;
     }
 
 }
