@@ -76,6 +76,8 @@ parameters:
 			- Hanaboso\PipesFramework\Metrics\Document\ContainerMetricsFieldsPods
 			- Hanaboso\PipesFramework\Metrics\Document\LimiterMetrics
 			- Hanaboso\PipesFramework\Metrics\Document\LimiterMetricsFields
+			- Hanaboso\PipesFramework\Metrics\Document\RepeaterMetrics
+			- Hanaboso\PipesFramework\Metrics\Document\RepeaterMetricsFields
 			- Hanaboso\PipesFramework\Metrics\Document\MonolithMetrics
 			- Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields
 			- Hanaboso\PipesFramework\Metrics\Document\ProcessesMetrics

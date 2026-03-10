@@ -6,12 +6,12 @@ use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * Class UserTaskMetricsFields
+ * Class RepeaterMetricsFields
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
  */
 #[ODM\EmbeddedDocument]
-class UserTaskMetricsFields
+class RepeaterMetricsFields
 {
 
     /**
@@ -39,7 +39,7 @@ class UserTaskMetricsFields
     private int $outgoing;
 
     /**
-     * UserTaskMetricsFields constructor.
+     * RepeaterMetricsFields constructor.
      *
      * @param int $messages
      */
