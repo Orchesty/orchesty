@@ -51,7 +51,7 @@ func (this MetricsSvc) Stop() {
 }
 
 func (this MetricsSvc) collectMetrics() {
-	time.Sleep(time.Duration(60-time.Now().Second()) * time.Second)
+	time.Sleep(time.Until(time.Now().Truncate(time.Minute).Add(time.Minute)))
 
 	for range time.Tick(time.Minute) {
 		this.collectFromCollection(

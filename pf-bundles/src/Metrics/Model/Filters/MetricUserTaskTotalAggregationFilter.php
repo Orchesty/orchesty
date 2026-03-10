@@ -74,23 +74,19 @@ final class MetricUserTaskTotalAggregationFilter extends GridAggregationFilterAb
             ->field('_id')
             ->expression(NULL)
             ->field('count')
-            ->expression(
-                $builder->expr()->avg(
-                    $builder->expr()->cond(
-                        $builder->expr()->gte('$fields.created', $middleTime),
-                        '$fields.messages',
-                        NULL,
-                    ),
+            ->avg(
+                $builder->expr()->cond(
+                    $builder->expr()->gte('$fields.created', $middleTime),
+                    '$fields.messages',
+                    NULL,
                 ),
             )
             ->field('previousCount')
-            ->expression(
-                $builder->expr()->avg(
-                    $builder->expr()->cond(
-                        $builder->expr()->lte('$fields.created', $middleTime),
-                        '$fields.messages',
-                        NULL,
-                    ),
+            ->avg(
+                $builder->expr()->cond(
+                    $builder->expr()->lte('$fields.created', $middleTime),
+                    '$fields.messages',
+                    NULL,
                 ),
             );
 
@@ -102,9 +98,9 @@ final class MetricUserTaskTotalAggregationFilter extends GridAggregationFilterAb
             ->field('_id')
             ->expression(FALSE)
             ->field('count')
-            ->expression($builder->expr()->round($builder->expr()->ifNull('$count', 0)))
+            ->round($builder->expr()->ifNull('$count', 0))
             ->field('previousCount')
-            ->expression($builder->expr()->round($builder->expr()->ifNull('$previousCount', 0)));
+            ->round($builder->expr()->ifNull('$previousCount', 0));
     }
 
     /**

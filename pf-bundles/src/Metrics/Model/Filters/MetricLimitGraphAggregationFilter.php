@@ -95,22 +95,20 @@ final class MetricLimitGraphAggregationFilter extends GridAggregationFilterAbstr
             ->sum('$fields.messages')
             ->group()
             ->field('_id')
-            ->expression(
-                $builder->expr()->toDate(
-                    $builder->expr()->add(
-                        $builder->expr()->toLong($gte),
-                        $builder->expr()->multiply(
-                            $builder->expr()->floor(
-                                $builder->expr()->divide(
-                                    $builder->expr()->subtract(
-                                        $builder->expr()->toLong('$_id'),
-                                        $builder->expr()->toLong($gte),
-                                    ),
-                                    $binSize,
+            ->toDate(
+                $builder->expr()->add(
+                    $builder->expr()->toLong($gte),
+                    $builder->expr()->multiply(
+                        $builder->expr()->floor(
+                            $builder->expr()->divide(
+                                $builder->expr()->subtract(
+                                    $builder->expr()->toLong('$_id'),
+                                    $builder->expr()->toLong($gte),
                                 ),
+                                $binSize,
                             ),
-                            $binSize,
                         ),
+                        $binSize,
                     ),
                 ),
             )
@@ -167,22 +165,20 @@ final class MetricLimitGraphAggregationFilter extends GridAggregationFilterAbstr
             ->dateTrunc('$fields.created', 'minute')
             ->group()
             ->field('_id')
-            ->expression(
-                $builder->expr()->toDate(
-                    $builder->expr()->add(
-                        $builder->expr()->toLong($gte),
-                        $builder->expr()->multiply(
-                            $builder->expr()->floor(
-                                $builder->expr()->divide(
-                                    $builder->expr()->subtract(
-                                        $builder->expr()->toLong('$_id'),
-                                        $builder->expr()->toLong($gte),
-                                    ),
-                                    $binSize,
+            ->toDate(
+                $builder->expr()->add(
+                    $builder->expr()->toLong($gte),
+                    $builder->expr()->multiply(
+                        $builder->expr()->floor(
+                            $builder->expr()->divide(
+                                $builder->expr()->subtract(
+                                    $builder->expr()->toLong('$_id'),
+                                    $builder->expr()->toLong($gte),
                                 ),
+                                $binSize,
                             ),
-                            $binSize,
                         ),
+                        $binSize,
                     ),
                 ),
             );
