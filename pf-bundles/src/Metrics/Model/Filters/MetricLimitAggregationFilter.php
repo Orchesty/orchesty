@@ -79,7 +79,16 @@ final class MetricLimitAggregationFilter extends GridAggregationFilterAbstract
             ->field('applicationId')
             ->first('$tags.applicationId')
             ->field('count')
-            ->last('$fields.messages')
+            ->last(
+                $builder->expr()->cond(
+                    $builder->expr()->gt(
+                        $builder->expr()->subtract('$$NOW', '$fields.created'),
+                        90_000,
+                    ),
+                    0,
+                    '$fields.messages',
+                ),
+            )
             ->field('maximumCount')
             ->max('$fields.messages');
 
@@ -97,9 +106,9 @@ final class MetricLimitAggregationFilter extends GridAggregationFilterAbstract
             ->field('applicationId')
             ->expression('$applicationId')
             ->field('count')
-            ->expression($builder->expr()->ifNull('$count', 0))
+            ->ifNull('$count', 0)
             ->field('maximumCount')
-            ->expression($builder->expr()->ifNull('$maximumCount', 0));
+            ->ifNull('$maximumCount', 0);
     }
 
     /**
