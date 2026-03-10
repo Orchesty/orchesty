@@ -194,6 +194,11 @@ class TopologyManager
         $topology = $this->setTopologyData($topology, $data);
         $this->dm->flush();
 
+        if (isset($data['enabled']) && $data['enabled']
+            && $topology->getVisibility() === TopologyStatusEnum::PUBLIC->value) {
+            $this->topologyRepository->disableOtherVersions($topology->getName(), $topology->getId());
+        }
+
         return $topology;
     }
 

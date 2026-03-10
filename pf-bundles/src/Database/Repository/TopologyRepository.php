@@ -218,4 +218,26 @@ final  class TopologyRepository extends DocumentRepository
         return $result->toArray();
     }
 
+    /**
+     * @param string $name
+     * @param string $excludeId
+     *
+     * @return void
+     * @throws MongoDBException
+     */
+    public function disableOtherVersions(string $name, string $excludeId): void
+    {
+        $this
+            ->createQueryBuilder()
+            ->updateMany()
+            ->field('name')->equals($name)
+            ->field('enabled')->equals(TRUE)
+            ->field('deleted')->equals(FALSE)
+            ->field('visibility')->equals(TopologyStatusEnum::PUBLIC->value)
+            ->field('id')->notEqual($excludeId)
+            ->field('enabled')->set(FALSE)
+            ->getQuery()
+            ->execute();
+    }
+
 }
