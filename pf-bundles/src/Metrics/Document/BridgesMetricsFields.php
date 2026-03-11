@@ -15,7 +15,6 @@ class BridgesMetricsFields
 {
 
     public const string CREATED = 'created';
-    // TODO unused metrics workerDuration
 
     /**
      * @var bool
@@ -28,6 +27,12 @@ class BridgesMetricsFields
      */
     #[ODM\Field(name: 'waiting_duration', type: 'int')]
     private int $waitingDuration;
+
+    /**
+     * @var int
+     */
+    #[ODM\Field(name: 'worker_duration', type: 'int')]
+    private int $workerDuration;
 
     /**
      * @var int
@@ -55,6 +60,14 @@ class BridgesMetricsFields
     public function getWaitingDuration(): int
     {
         return $this->waitingDuration;
+    }
+
+    /**
+     * @return int
+     */
+    public function getWorkerDuration(): int
+    {
+        return $this->workerDuration;
     }
 
     /**

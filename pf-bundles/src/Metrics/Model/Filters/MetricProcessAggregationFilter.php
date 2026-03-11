@@ -93,8 +93,8 @@ final class MetricProcessAggregationFilter extends GridAggregationFilterAbstract
             ->field('duration');
 
         $this->lastRunMode
-            ? $group->first('$fields.total_duration')
-            : $group->avg('$fields.total_duration');
+            ? $group->first('$fields.worker_duration')
+            : $group->avg('$fields.worker_duration');
 
         $addSortationsCallback();
         $addPaginationCallback();
