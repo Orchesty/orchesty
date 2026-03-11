@@ -4,8 +4,8 @@ import DataGrid from '@/components/ui/DataGrid.vue'
 import Card from '@/components/ui/Card.vue'
 import Button from '@/components/ui/Button.vue'
 import Confirm from '@/components/ui/Confirm.vue'
+import CopyValue from '@/components/ui/CopyValue.vue'
 import TokenModal from '@/components/settings/TokenModal.vue'
-import ViewTokenModal from '@/components/settings/ViewTokenModal.vue'
 import { useDataGrid } from '@/composables/useDataGrid'
 import {
   fetchTokens,
@@ -25,10 +25,6 @@ const availableScopes = ref<TokenScope[]>([])
 
 // Token modal state
 const tokenModalOpen = ref(false)
-
-// View token modal state
-const viewTokenModalOpen = ref(false)
-const generatedToken = ref<Token | null>(null)
 
 // Delete confirmation state
 const deleteConfirmOpen = ref(false)
@@ -81,17 +77,6 @@ const handleAddToken = () => {
   tokenModalOpen.value = true
 }
 
-// Open view token modal (for existing token - shows placeholder)
-const handleViewToken = (token: Token) => {
-  // For existing tokens, we don't have the tokenValue
-  // In a real app, this might trigger a re-generation or show an error
-  generatedToken.value = {
-    ...token,
-    tokenValue: '••••••••••••••••••••••••••••••••',
-  }
-  viewTokenModalOpen.value = true
-}
-
 // Open delete confirmation
 const handleDeleteToken = (token: Token) => {
   tokenToDelete.value = token
@@ -105,14 +90,8 @@ const handleGenerateToken = async (data: {
   scopes: string[]
 }) => {
   try {
-    const newToken = await createToken(data)
+    await createToken(data)
     tokenModalOpen.value = false
-
-    // Show the generated token in the view modal
-    generatedToken.value = newToken
-    viewTokenModalOpen.value = true
-
-    // Reload the list
     await loadData()
     showToast('Token generated successfully', 'success')
   } catch (error) {
@@ -212,27 +191,12 @@ onMounted(() => {
         <!-- Actions Column -->
         <template #cell-actions="{ row }">
           <div class="flex items-center justify-end gap-1">
-            <button
-              type="button"
-              @click="handleViewToken(row as Token)"
+            <CopyValue
+              v-if="(row as Token).tokenValue"
+              :value="(row as Token).tokenValue!"
+              hide-value
               title="Copy Token"
-              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            >
-              <svg
-                class="h-5 w-5"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                height="24px"
-                viewBox="0 -960 960 960"
-                width="24px"
-                fill="currentColor"
-              >
-                <path
-                  d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"
-                />
-              </svg>
-              <span class="sr-only">Copy Token</span>
-            </button>
+            />
             <button
               type="button"
               @click="handleDeleteToken(row as Token)"
@@ -263,9 +227,6 @@ onMounted(() => {
       :available-scopes="availableScopes"
       @generate="handleGenerateToken"
     />
-
-    <!-- View Token Modal -->
-    <ViewTokenModal v-model="viewTokenModalOpen" :token="generatedToken" />
 
     <!-- Delete Confirmation -->
     <Confirm

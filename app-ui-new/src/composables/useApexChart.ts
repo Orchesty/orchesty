@@ -38,7 +38,10 @@ export function useApexChart(options: UseApexChartOptions = {}) {
       }
       
       chartInstance.value = new ApexCharts(element, chartOptions)
-      chartInstance.value.render()
+      chartInstance.value.render().then(() => {
+        const svgTitle = element.querySelector('svg > title')
+        if (svgTitle) svgTitle.remove()
+      })
       
       return chartInstance.value
     } catch (error) {
@@ -180,6 +183,9 @@ export function getBaseChartOptions(isDark: boolean) {
       toolbar: {
         show: false,
       },
+    },
+    title: {
+      text: undefined,
     },
     grid: {
       borderColor: colors.border,

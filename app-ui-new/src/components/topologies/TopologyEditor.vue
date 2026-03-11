@@ -8,6 +8,7 @@ import BreakpointModal from '@/components/topologies/BreakpointModal.vue'
 import FailedMessageModal from '@/components/topologies/FailedMessageModal.vue'
 import CopyValue from '@/components/ui/CopyValue.vue'
 import { useCronNodeActions } from '@/composables/useCronNodeActions'
+import { getNextCronRun } from '@/utils/cronParser'
 import { useToast } from '@/composables/useToast'
 import { useDateFormat } from '@/composables/useDateFormat'
 import { useProcessPolling } from '@/composables/useProcessPolling'
@@ -70,7 +71,7 @@ const failedMessageNodeId = ref('')
 const failedMessageCorrelationId = ref('')
 const failedMessageNodeName = ref('')
 const selectedNode = ref<EditorNode | null>(null)
-const breakpointCounts = ref<Record<string, number>>({})
+const breakpointCounts = ref<Record<string, number | string>>({})
 const hasBreakpoints = ref(false)
 let cachedSchema: any = null
 
@@ -85,6 +86,12 @@ const nodeMetrics = ref<Record<string, NodeMetricsData>>({})
 
 const resolveBackendId = (editorNodeId: string): string => {
   return schemaToBackendId.value[editorNodeId] || editorNodeId
+}
+
+const getStartingPointUrl = (editorNodeId: string): string => {
+  const backendId = resolveBackendId(editorNodeId)
+  const baseUrl = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.66:8080'
+  return `${baseUrl}/topologies/${props.topologyId}/nodes/${backendId}/run`
 }
 
 const formatMs = (ms: number): string => {
@@ -217,7 +224,7 @@ const applyProcessDetailOverlays = async () => {
 
   const backendToEditor = buildBackendToEditorMap()
 
-  const counts: Record<string, number> = {}
+  const counts: Record<string, number | string> = {}
   const statuses: Record<string, boolean> = {}
   const metrics: Record<string, NodeMetricsData> = {}
 
@@ -244,7 +251,7 @@ const applyProcessDetailOverlays = async () => {
   }
 
   breakpointCounts.value = counts
-  hasBreakpoints.value = Object.values(counts).some(c => c > 0)
+  hasBreakpoints.value = Object.keys(counts).length > 0
   nodeStatuses.value = statuses
   nodeMetrics.value = metrics
 
@@ -286,6 +293,17 @@ const eventNodeActions = {
     const toggle = createToggleAction(node)
     if (toggle) actions.push(toggle)
     actions.push(runAction)
+    actions.push({
+      id: 'copy-url',
+      icon: '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
+      label: 'Copy URL',
+      tooltip: 'Copy URL',
+      onClick: async (n: EditorNode) => {
+        const url = getStartingPointUrl(n.id)
+        await navigator.clipboard.writeText(url)
+        showToast('URL copied to clipboard', 'success')
+      }
+    })
     return actions
   },
   getTopLeftSlot: getOverlayTopLeft,
@@ -306,14 +324,17 @@ const labelCustomization: LabelCustomizationMap = {
       const nodeData = nodesData.value[node.id]
       if (!nodeData) return []
 
+      let nextRunValue = 'N/A'
+      if (nodeData.crontab && props.topologyEnabled && nodeData.enabled) {
+        const nextRunDate = getNextCronRun(nodeData.crontab)
+        if (nextRunDate) {
+          nextRunValue = formatDateTime(nextRunDate.toISOString())
+        }
+      }
+
       return [
         { label: 'Crontab', value: nodeData.crontab || 'Not set' },
-        {
-          label: 'Next run',
-          value: nodeData.nextRun && props.topologyEnabled && nodeData.enabled
-            ? formatDateTime(nodeData.nextRun)
-            : 'N/A'
-        }
+        { label: 'Next run', value: nextRunValue },
       ]
     },
     getActions: (node: EditorNode) => {
@@ -386,7 +407,7 @@ const initNodesData = (editor: EditorCore, backendNodes: BackendNode[]) => {
         name: editorNode.name,
         crontab: backend?.cron_time || '',
         enabled: backend?.enabled ?? true,
-        nextRun: ''
+        nextRun: '',
       }
     } else if (label === 'event' || label === 'webhook') {
       nodesData.value[editorNode.id] = {
@@ -463,13 +484,18 @@ const selectedNodeAsTask = computed<ScheduledTask | null>(() => {
   const nodeData = nodesData.value[selectedNode.value.id]
   if (!nodeData) return null
 
+  const nextRunDate = nodeData.crontab ? getNextCronRun(nodeData.crontab) : null
   return {
     id: resolveBackendId(selectedNode.value.id),
+    nodeId: selectedNode.value.id,
+    nodeStatus: nodeData.enabled,
     name: selectedNode.value.name || selectedNode.value.label,
     topology: '',
     topologyId: props.topologyId,
     crontab: nodeData.crontab || '',
-    status: nodeData.enabled ? 'enabled' : 'disabled'
+    nextRun: nextRunDate,
+    params: '',
+    status: nodeData.enabled ? 'enabled' : 'disabled',
   }
 })
 
@@ -477,13 +503,12 @@ const handleCrontabSave = async (backendNodeId: string, crontab: string) => {
   if (!selectedNode.value) return
 
   try {
-    const nextRun = await updateCrontab(backendNodeId, crontab)
+    await updateCrontab(backendNodeId, crontab)
 
     const editorNodeId = selectedNode.value.id
     const nodeData = nodesData.value[editorNodeId]
     if (nodeData) {
       nodeData.crontab = crontab
-      nodeData.nextRun = props.topologyEnabled && nodeData.enabled ? nextRun : ''
     }
 
     editorCore.value?.refreshNodeLabel(editorNodeId)
@@ -644,6 +669,15 @@ watch(() => polling.processDetail.value, async () => {
 watch(() => polling.processCompleted.value, async (completed) => {
   if (completed) {
     await applyProcessDetailOverlays()
+  }
+})
+
+watch(() => props.topologyEnabled, () => {
+  if (!editorCore.value) return
+  for (const [editorId, data] of Object.entries(nodesData.value)) {
+    if (data.label.toLowerCase() === 'cron') {
+      editorCore.value.refreshNodeLabel(editorId)
+    }
   }
 })
 

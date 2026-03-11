@@ -134,6 +134,8 @@ services:
         build: ./../../worker-api/docker
         user: ${DEV_UID}:${DEV_GID}
         working_dir: /var/www
+        ports: 
+            - ${DEV_IP}:8081:8080
         volumes:
             - ./../../worker-api:/var/www
         environment:

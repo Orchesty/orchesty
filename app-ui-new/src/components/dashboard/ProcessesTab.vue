@@ -57,7 +57,7 @@ const skipAutoLoad = ref(hasExternalFilters)
 
 const dateTimeRange = ref<{ from: string | null; to: string | null }>({
   from: props.externalFilters?.timeRange?.from ?? initialRange.from,
-  to: props.externalFilters?.timeRange?.to ?? initialRange.to,
+  to: props.externalFilters?.timeRange?.to ?? null,
 })
 
 if (props.externalFilters?.topology) {
@@ -198,7 +198,7 @@ const loadChartData = async () => {
     const dateFrom = formatDateTimeForApi(range.from) || ''
     const dateTo = formatDateTimeForApi(range.to) || ''
 
-    const totals = await fetchProcessesTotalCounts(dateFrom, dateTo)
+    const totals = await fetchProcessesTotalCounts(dateFrom)
     const chartData = await fetchProcessesGraphData(props.heatmapFilter, dateFrom, dateTo, 40)
 
     processesChartData.value = {
@@ -219,7 +219,7 @@ watch(
     const range = convertTimeFilterToDateTimeRange(newFilter)
     dateTimeRange.value = {
       from: range.from,
-      to: range.to,
+      to: null,
     }
     invalidate()
     if (isActive.value) {

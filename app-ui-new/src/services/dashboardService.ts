@@ -34,11 +34,15 @@ import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
  */
 export async function fetchProcessesTotalCounts(
   dateFrom: string,
-  dateTo: string
+  dateTo?: string
 ): Promise<{ totalProcesses: number; failedProcesses: number }> {
+  const dateFilter = dateTo
+    ? { column: 'created', operator: 'BETWEEN', value: [dateFrom, dateTo] }
+    : { column: 'created', operator: 'GTE', value: [dateFrom] }
+
   const filterObj: ProcessApiFilter = {
     search: null,
-    filter: [[{ column: 'created', operator: 'BETWEEN', value: [dateFrom, dateTo] }]],
+    filter: [[dateFilter]],
     sorter: [],
     paging: { itemsPerPage: 10, page: 1 }
   }
@@ -241,7 +245,7 @@ export async function fetchLimiterData(params: {
   // Get date range
   const normalRange = convertTimeFilterToDateTimeRangeWithMultiplier(params.timeFilter, 1)
 
-  // 1. Fetch graph data (sorted by created ASC)
+  // 1. Fetch graph data (sorted by created ASC) — graph needs BETWEEN for densify bucketing
   const graphFilter: LimiterApiFilter = {
     search: null,
     filter: [[{
@@ -271,8 +275,8 @@ export async function fetchLimiterData(params: {
     search: null,
     filter: [[{
       column: 'created',
-      operator: 'BETWEEN',
-      value: [normalRange.from, normalRange.to]
+      operator: 'GTE',
+      value: [normalRange.from]
     }]],
     sorter: [],
     paging: { itemsPerPage: 1, page: 1 }
@@ -292,8 +296,8 @@ export async function fetchLimiterData(params: {
     search: null,
     filter: [[{
       column: 'created',
-      operator: 'BETWEEN',
-      value: [normalRange.from, normalRange.to]
+      operator: 'GTE',
+      value: [normalRange.from]
     }]],
     sorter: [{
       column: sortColumn,

@@ -144,6 +144,18 @@ const lastRequestStatusColor = computed(() => {
   return 'red'
 })
 
+const formatDuration = (ms: number): string => {
+  if (ms < 1000) return `${Math.round(ms)} ms`
+  const totalSeconds = ms / 1000
+  if (totalSeconds < 60) return `${totalSeconds.toFixed(1)} s`
+  const minutes = Math.floor(totalSeconds / 60)
+  const secs = Math.round(totalSeconds % 60)
+  if (minutes < 60) return `${minutes}m ${secs}s`
+  const hours = Math.floor(minutes / 60)
+  const mins = minutes % 60
+  return `${hours}h ${mins}m ${secs}s`
+}
+
 // Load data
 const loadData = async () => {
   if (!props.connector) return
@@ -276,24 +288,36 @@ const errorRecordActions: ActionConfig[] = [
       </div>
 
       <!-- Summary Stats -->
-      <div class="grid grid-cols-4 gap-3">
-        <div class="rounded-lg bg-gray-50 p-3 text-center dark:bg-gray-700">
-          <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-            {{ connectorDetail.errors400 }}
-          </div>
-          <div class="mt-1 text-sm font-medium text-gray-700 dark:text-gray-300">Total 400 Errors</div>
-        </div>
-        <div class="rounded-lg bg-gray-50 p-3 text-center dark:bg-gray-700">
-          <div class="text-2xl font-bold text-red-600 dark:text-red-400">
-            {{ connectorDetail.errors500 }}
-          </div>
-          <div class="mt-1 text-sm font-medium text-gray-700 dark:text-gray-300">Total 500 Errors</div>
-        </div>
+      <div class="grid grid-cols-3 gap-3">
         <div class="rounded-lg bg-gray-50 p-3 text-center dark:bg-gray-700">
           <div class="text-2xl font-bold text-gray-900 dark:text-white">
             {{ connectorDetail.totalRequests.toLocaleString() }}
           </div>
           <div class="mt-1 text-sm font-medium text-gray-700 dark:text-gray-300">Total requests</div>
+        </div>
+        <div class="rounded-lg bg-gray-50 p-3 text-center dark:bg-gray-700">
+          <div class="text-2xl font-bold text-gray-900 dark:text-white">
+            {{ formatDuration(connectorDetail.avgRequestTime) }}
+          </div>
+          <div class="mt-1 text-sm font-medium text-gray-700 dark:text-gray-300">Avg request time</div>
+        </div>
+        <div class="rounded-lg bg-gray-50 p-3 text-center dark:bg-gray-700">
+          <div class="text-2xl font-bold text-gray-900 dark:text-white">
+            {{ formatDuration(connectorDetail.lastRequestTime) }}
+          </div>
+          <div class="mt-1 text-sm font-medium text-gray-700 dark:text-gray-300">Last request time</div>
+        </div>
+        <div class="rounded-lg bg-gray-50 p-3 text-center dark:bg-gray-700">
+          <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+            {{ connectorDetail.errors400 }}
+          </div>
+          <div class="mt-1 text-sm font-medium text-gray-700 dark:text-gray-300">400 Errors</div>
+        </div>
+        <div class="rounded-lg bg-gray-50 p-3 text-center dark:bg-gray-700">
+          <div class="text-2xl font-bold text-red-600 dark:text-red-400">
+            {{ connectorDetail.errors500 }}
+          </div>
+          <div class="mt-1 text-sm font-medium text-gray-700 dark:text-gray-300">500 Errors</div>
         </div>
         <div
           :class="[
@@ -327,7 +351,7 @@ const errorRecordActions: ActionConfig[] = [
                 : 'text-red-600 dark:text-red-400',
             ]"
           >
-            Last request
+            Last status
           </div>
         </div>
       </div>

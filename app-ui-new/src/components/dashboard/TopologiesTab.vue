@@ -115,7 +115,7 @@ watch(
     const range = convertTimeFilterToDateTimeRange(newFilter)
     dateTimeRange.value = {
       from: range.from,
-      to: range.to,
+      to: null,
     }
     invalidate()
     if (isActive.value) loadData()

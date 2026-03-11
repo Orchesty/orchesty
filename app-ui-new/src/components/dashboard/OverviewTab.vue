@@ -44,7 +44,7 @@ const loadData = async () => {
     const dateFrom = formatDateTimeForApi(range.from) || ''
     const dateTo = formatDateTimeForApi(range.to) || ''
 
-    const totals = await fetchProcessesTotalCounts(dateFrom, dateTo)
+    const totals = await fetchProcessesTotalCounts(dateFrom)
     const chartData = await fetchProcessesGraphData(props.heatmapFilter, dateFrom, dateTo, 40)
 
     processesData.value = {
