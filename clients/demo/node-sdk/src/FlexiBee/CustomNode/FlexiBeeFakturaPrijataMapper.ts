@@ -7,6 +7,8 @@ import { DOCUMENT_ID } from '../../Wflow/CustomNode/WflowWebhookPayloadMapper';
 
 export const NAME = `${FLEXI_BEE_APPLICATION}-faktura-prijata-mapper`;
 
+export const INVOICE_ID = 'invoiceId';
+
 export default class FlexiBeeFakturaPrijataMapper extends ACommonNode {
 
     public getName(): string {
@@ -21,7 +23,7 @@ export default class FlexiBeeFakturaPrijataMapper extends ACommonNode {
             id,
             documentId: id,
             tag,
-        });
+        }).addHeader(INVOICE_ID, String(tag));
     }
 
 }

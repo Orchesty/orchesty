@@ -24,6 +24,7 @@ import DropboxApplication from '@orchesty/connector-dropbox/dist/DropboxApplicat
 import FacebookAdsApplication from '@orchesty/connector-facebook-ads/dist/FacebookAdsApplication';
 import FakturoidApplication from '@orchesty/connector-fakturoid/dist/FakturoidApplication';
 import FlexiBeeCreateFakturaPrijataConnector from '@orchesty/connector-flexi-bee/dist/Connector/FlexiBeeCreateFakturaPrijataConnector';
+import FlexiBeeCreateFakturaPrijataPrilohaConnector from '@orchesty/connector-flexi-bee/dist/Connector/FlexiBeeCreateFakturaPrijataPrilohaConnector';
 import FlexiBeeGetCompaniesConnector from '@orchesty/connector-flexi-bee/dist/Connector/FlexiBeeGetCompaniesConnector';
 import GitHubGetRepositoryConnector from '@orchesty/connector-git-hub/dist/Connector/GitHubGetRepositoryConnector';
 import GitHubApplication from '@orchesty/connector-git-hub/dist/GitHubApplication';
@@ -70,6 +71,7 @@ import WebflowApplication from '@orchesty/connector-webflow/dist/WebflowApplicat
 import WflowSubscribeWebhookBatch from '@orchesty/connector-wflow/dist/Batch/WflowSubscribeWebhookBatch';
 import WflowUnsubscribeWebhookBatch from '@orchesty/connector-wflow/dist/Batch/WflowUnsubscribeWebhookBatch';
 import WflowGetDocumentConnector from '@orchesty/connector-wflow/dist/Connector/WflowGetDocumentConnector';
+import WflowGetDocumentMainFileConnector from '@orchesty/connector-wflow/dist/Connector/WflowGetDocumentMainFileConnector';
 import WflowGetDocumentTypesConnector from '@orchesty/connector-wflow/dist/Connector/WflowGetDocumentTypesConnector';
 import WflowGetOrganizationsConnector from '@orchesty/connector-wflow/dist/Connector/WflowGetOrganizationsConnector';
 import WflowPutDocumentConnector from '@orchesty/connector-wflow/dist/Connector/WflowPutDocumentConnector';
@@ -152,6 +154,7 @@ import MySqlProductCategoryFindId from './Sql/CustomNode/MySqlProductCategoryFin
 import MySqlProductFindId from './Sql/CustomNode/MySqlProductFindId';
 import MySqlProductStoreId from './Sql/CustomNode/MySqlProductStoreId';
 import MySqlRepository from './Sql/Repository/MySqlRepository';
+import WflowDocumentMainFileToFlexiBeeFakturaPrijataPrilohaMapper from './Wflow/CustomNode/WflowDocumentMainFileToFlexiBeeFakturaPrijataPrilohaMapper';
 import WflowToFlexibeeMapper from './Wflow/CustomNode/WflowToFlexibeeMapper';
 import WflowWebhookPayloadMapper from './Wflow/CustomNode/WflowWebhookPayloadMapper';
 import WflowApplication from './Wflow/WflowApplication';
@@ -249,6 +252,7 @@ export async function start(): Promise<void> {
     const flexiBeeGetCompaniesConnector = new FlexiBeeGetCompaniesConnector(true);
     container.setNode(flexiBeeGetCompaniesConnector, flexiBeeApp);
     container.setNode(new FlexiBeeCreateFakturaPrijataConnector(), flexiBeeApp);
+    container.setNode(new FlexiBeeCreateFakturaPrijataPrilohaConnector(), flexiBeeApp);
     container.setNode(new FlexiBeeFindFirmaKodConnector(), flexiBeeApp);
     container.setNode(new FlexiBeeFakturaPrijataMapper(), flexiBeeApp);
 
@@ -377,6 +381,8 @@ export async function start(): Promise<void> {
     container.setNode(new WflowWebhookPayloadMapper(), wflowApplication);
     container.setNode(new WflowToFlexibeeMapper(), wflowApplication);
     container.setNode(new WflowGetDocumentConnector(), wflowApplication);
+    container.setNode(new WflowGetDocumentMainFileConnector(), wflowApplication);
+    container.setNode(new WflowDocumentMainFileToFlexiBeeFakturaPrijataPrilohaMapper(), wflowApplication);
     container.setNode(new WflowPutDocumentConnector(), wflowApplication);
     container.setNode(new WflowUpdateDocumentStateConnector(), wflowApplication);
 

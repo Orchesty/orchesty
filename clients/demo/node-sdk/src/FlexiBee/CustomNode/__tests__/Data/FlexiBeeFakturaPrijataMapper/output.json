@@ -1,7 +1,8 @@
 {
     "headers": {
         "user": "TestUser",
-        "documentId": "test-document"
+        "documentId": "test-document",
+        "invoiceId": "1"
     },
     "data": {
         "id": "test-document",

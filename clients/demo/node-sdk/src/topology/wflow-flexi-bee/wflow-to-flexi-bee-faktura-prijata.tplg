@@ -34,6 +34,7 @@
     <bpmn:task id="Activity_1vja3mz" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="flexibee-faktura-prijata-mapper" pipes:sdkHostName="node-sdk" pipes:appName="flexibee">
       <bpmn:incoming>Flow_0qgd6pt</bpmn:incoming>
       <bpmn:outgoing>Flow_0v5bgmt</bpmn:outgoing>
+      <bpmn:outgoing>Flow_09ym54b</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_0qgd6pt" sourceRef="Activity_01avso9" targetRef="Activity_1vja3mz"/>
     <bpmn:task id="Activity_1al0nod" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="wflow-put-document-connector" pipes:sdkHostName="node-sdk" pipes:appName="wflow">
@@ -42,6 +43,20 @@
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_0v5bgmt" sourceRef="Activity_1vja3mz" targetRef="Activity_1al0nod"/>
     <bpmn:sequenceFlow id="Flow_09ljp0u" sourceRef="Activity_1al0nod" targetRef="Activity_1jw3u0g"/>
+    <bpmn:task id="Activity_1xljm4k" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="wflow-get-document-main-file-connector" pipes:sdkHostName="node-sdk">
+      <bpmn:incoming>Flow_09ym54b</bpmn:incoming>
+      <bpmn:outgoing>Flow_16sgy54</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_09ym54b" sourceRef="Activity_1vja3mz" targetRef="Activity_1xljm4k"/>
+    <bpmn:task id="Activity_0jrn9zo" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="wflow-document-main-file-to-flexibee-faktura-prijata-priloha-mapper" pipes:sdkHostName="node-sdk">
+      <bpmn:incoming>Flow_16sgy54</bpmn:incoming>
+      <bpmn:outgoing>Flow_0jkojs3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_0wx4qn4" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="flexibee-create-faktura-prijata-priloha-connector" pipes:sdkHostName="node-sdk">
+      <bpmn:incoming>Flow_0jkojs3</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_16sgy54" sourceRef="Activity_1xljm4k" targetRef="Activity_0jrn9zo"/>
+    <bpmn:sequenceFlow id="Flow_0jkojs3" sourceRef="Activity_0jrn9zo" targetRef="Activity_0wx4qn4"/>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="wflow-to-flexi-bee-faktura-prijata">
@@ -71,6 +86,10 @@
         <dc:Bounds x="870" y="470" width="100" height="80"/>
         <bpmndi:BPMNLabel/>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1jw3u0g_di" bpmnElement="Activity_1jw3u0g">
+        <dc:Bounds x="1030" y="690" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1vja3mz_di" bpmnElement="Activity_1vja3mz">
         <dc:Bounds x="870" y="580" width="100" height="80"/>
         <bpmndi:BPMNLabel/>
@@ -79,8 +98,16 @@
         <dc:Bounds x="870" y="690" width="100" height="80"/>
         <bpmndi:BPMNLabel/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1jw3u0g_di" bpmnElement="Activity_1jw3u0g">
-        <dc:Bounds x="1030" y="690" width="100" height="80"/>
+      <bpmndi:BPMNShape id="Activity_1xljm4k_di" bpmnElement="Activity_1xljm4k">
+        <dc:Bounds x="1030" y="580" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0jrn9zo_di" bpmnElement="Activity_0jrn9zo">
+        <dc:Bounds x="1190" y="580" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0wx4qn4_di" bpmnElement="Activity_0wx4qn4">
+        <dc:Bounds x="1350" y="580" width="100" height="80"/>
         <bpmndi:BPMNLabel/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1yn0ppw_di" bpmnElement="Flow_1yn0ppw">
@@ -114,6 +141,18 @@
       <bpmndi:BPMNEdge id="Flow_09ljp0u_di" bpmnElement="Flow_09ljp0u">
         <di:waypoint x="970" y="730"/>
         <di:waypoint x="1030" y="730"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09ym54b_di" bpmnElement="Flow_09ym54b">
+        <di:waypoint x="970" y="620"/>
+        <di:waypoint x="1030" y="620"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_16sgy54_di" bpmnElement="Flow_16sgy54">
+        <di:waypoint x="1130" y="620"/>
+        <di:waypoint x="1190" y="620"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0jkojs3_di" bpmnElement="Flow_0jkojs3">
+        <di:waypoint x="1290" y="620"/>
+        <di:waypoint x="1350" y="620"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
