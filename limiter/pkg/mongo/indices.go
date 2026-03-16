@@ -40,5 +40,12 @@ func indices() []mongo.IndexModel {
 			},
 			Options: options.Index().SetName("IK_limiter_prioritize_created_messageHeadersNodeId_messageHeadersNodeName_messageHeadersUser_messageHeadersTopologyId_messageHeadersApplication"),
 		},
+		{
+			Keys: bson.D{
+				{"message.headers.correlation-id", 1},
+				{"prioritize", 1},
+			},
+			Options: options.Index().SetName("IK_limiter_messageHeadersCorrelationId_prioritize"),
+		},
 	}
 }
