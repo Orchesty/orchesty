@@ -81,20 +81,41 @@ final class MetricRequestAggregationFilter extends GridAggregationFilterAbstract
         $addConditionsCallback();
 
         if ($this->lastRunMode) {
-            $builder->sort(['fields.created' => 'desc']);
+            $builder
+                ->group()
+                ->field('_id')
+                ->expression(
+                    $builder
+                        ->expr()
+                        ->field('correlationId')
+                        ->expression('$tags.correlation_id')
+                        ->field('nodeId')
+                        ->expression('$tags.node_id'),
+                )
+                ->field('topologyId')
+                ->first('$tags.topology_id')
+                ->field('duration')
+                ->avg('$fields.sent_request_total_duration')
+                ->field('created')
+                ->max('$fields.created')
+                ->sort(['created' => 'desc'])
+                ->group()
+                ->field('_id')
+                ->expression('$_id.nodeId')
+                ->field('topologyId')
+                ->first('$topologyId')
+                ->field('duration')
+                ->first('$duration');
+        } else {
+            $builder
+                ->group()
+                ->field('_id')
+                ->expression('$tags.node_id')
+                ->field('topologyId')
+                ->first('$tags.topology_id')
+                ->field('duration')
+                ->avg('$fields.sent_request_total_duration');
         }
-
-        $group = $builder
-            ->group()
-            ->field('_id')
-            ->expression('$tags.node_id')
-            ->field('topologyId')
-            ->first('$tags.topology_id')
-            ->field('duration');
-
-        $this->lastRunMode
-            ? $group->first('$fields.sent_request_total_duration')
-            : $group->avg('$fields.sent_request_total_duration');
 
         $addSortationsCallback();
         $addPaginationCallback();

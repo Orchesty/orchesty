@@ -1,8 +1,7 @@
 import { ref, onBeforeUnmount } from 'vue'
-import type { RawNodeMetrics } from '@/services/topologyMetricsService'
-import { fetchRawTopologyMetrics } from '@/services/topologyMetricsService'
+import type { ProcessDetail } from '@/services/processDetailService'
+import { fetchProcessDetail } from '@/services/processDetailService'
 import { fetchLatestProcess } from '@/services/processesService'
-import { fetchTrashItems } from '@/services/trashService'
 import type { Process } from '@/types/processes'
 import {
   PROCESS_POLL_FAST_INTERVAL_MS,
@@ -11,25 +10,31 @@ import {
   PROCESS_POLL_MAX_DURATION_MS,
 } from '@/config/topology'
 
+function mapApiStatus(status: string): 'running' | 'completed' | 'failed' {
+  if (status === 'COMPLETED') return 'completed'
+  if (status === 'FAILED') return 'failed'
+  return 'running'
+}
+
 /**
- * Composable for polling process metrics and status after a topology run.
+ * Composable for polling process detail after a topology run.
  *
  * Progressive interval: first N ticks are fast (2s), then slow (10s).
  * Stops automatically when the process completes/fails or safety timeout is reached.
  *
- * On failure, fetches failed messages (trash) to identify which nodes had errors.
+ * Phase 1 (discovery): polls fetchLatestProcess until a recent correlation ID appears.
+ * Phase 2 (detail):    polls fetchProcessDetail for the full node-level data.
  */
 export function useProcessPolling(topologyId: string) {
   const isPolling = ref(false)
-  const rawMetrics = ref<RawNodeMetrics | null>(null)
-  const latestProcess = ref<Process | null>(null)
-  const failedNodeIds = ref<string[]>([])
+  const processDetail = ref<ProcessDetail | null>(null)
   const processCompleted = ref(false)
 
   let timeoutId: ReturnType<typeof setTimeout> | null = null
   let safetyTimeoutId: ReturnType<typeof setTimeout> | null = null
   let tickCount = 0
   let pollingStartedAt = 0
+  let correlationId: string | null = null
 
   const getInterval = (): number => {
     return tickCount < PROCESS_POLL_FAST_COUNT
@@ -37,10 +42,6 @@ export function useProcessPolling(topologyId: string) {
       : PROCESS_POLL_SLOW_INTERVAL_MS
   }
 
-  /**
-   * Check if a process was started around the time polling began
-   * (allow 30s of clock skew / backend delay).
-   */
   const isRecentProcess = (process: Process): boolean => {
     const processStart = new Date(process.startTime).getTime()
     return processStart >= pollingStartedAt - 30_000
@@ -50,28 +51,19 @@ export function useProcessPolling(topologyId: string) {
     if (!isPolling.value) return
 
     try {
-      const [metrics, process] = await Promise.all([
-        fetchRawTopologyMetrics(topologyId),
-        fetchLatestProcess(topologyId),
-      ])
+      if (!correlationId) {
+        const process = await fetchLatestProcess(topologyId)
+        if (process && isRecentProcess(process)) {
+          correlationId = process.id
+        }
+      }
 
-      rawMetrics.value = metrics
-      latestProcess.value = process
+      if (correlationId) {
+        const detail = await fetchProcessDetail(correlationId)
+        processDetail.value = detail
 
-      if (process && isRecentProcess(process)) {
-        if (process.status === 'completed' || process.status === 'failed') {
-          if (process.status === 'failed') {
-            try {
-              const trash = await fetchTrashItems({
-                correlationId: process.id,
-                perPage: 1000,
-              })
-              const uniqueIds = [...new Set(trash.data.map(item => item.nodeId))]
-              failedNodeIds.value = uniqueIds
-            } catch (err) {
-              console.error('Failed to fetch failed messages:', err)
-            }
-          }
+        const status = mapApiStatus(detail.status)
+        if (status === 'completed' || status === 'failed') {
           processCompleted.value = true
           stopPolling()
           return
@@ -91,9 +83,8 @@ export function useProcessPolling(topologyId: string) {
     stopPolling()
     isPolling.value = true
     processCompleted.value = false
-    failedNodeIds.value = []
-    latestProcess.value = null
-    rawMetrics.value = null
+    processDetail.value = null
+    correlationId = null
     tickCount = 0
     pollingStartedAt = Date.now()
 
@@ -105,6 +96,44 @@ export function useProcessPolling(topologyId: string) {
         stopPolling()
       }
     }, PROCESS_POLL_MAX_DURATION_MS)
+  }
+
+  /**
+   * Start polling with a known correlation ID (skips discovery phase).
+   * First tick runs immediately.
+   */
+  const startPollingWithId = (id: string) => {
+    stopPolling()
+    isPolling.value = true
+    processCompleted.value = false
+    processDetail.value = null
+    correlationId = id
+    tickCount = 0
+    pollingStartedAt = 0
+
+    poll()
+
+    safetyTimeoutId = setTimeout(() => {
+      if (isPolling.value) {
+        console.warn('Process polling safety timeout reached')
+        stopPolling()
+      }
+    }, PROCESS_POLL_MAX_DURATION_MS)
+  }
+
+  /**
+   * One-shot fetch for a known correlation ID (no polling).
+   * Used for initial page load to populate overlays.
+   */
+  const fetchOnce = async (id: string): Promise<ProcessDetail | null> => {
+    try {
+      const detail = await fetchProcessDetail(id)
+      processDetail.value = detail
+      return detail
+    } catch (err) {
+      console.error('Failed to fetch process detail:', err)
+      return null
+    }
   }
 
   const stopPolling = () => {
@@ -135,11 +164,11 @@ export function useProcessPolling(topologyId: string) {
 
   return {
     isPolling,
-    rawMetrics,
-    latestProcess,
-    failedNodeIds,
+    processDetail,
     processCompleted,
     startPolling,
+    startPollingWithId,
+    fetchOnce,
     stopPolling,
     resetToFastPolling,
   }

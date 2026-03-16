@@ -24,6 +24,10 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
     keys: ['tags.topology_id' => 'asc', 'tags.node_id' => 'asc', 'fields.created' => 'asc'],
     name: 'IK_pipesNode_tagsTopologyId_tagsNodeId_fieldsCreated',
 )]
+#[ODM\Index(
+    keys: ['tags.correlation_id' => 'asc', 'tags.node_id' => 'asc', 'fields.created' => 'asc'],
+    name: 'IK_pipesNode_tagsCorrelationId_tagsNodeId_fieldsCreated',
+)]
 class BridgesMetrics
 {
 

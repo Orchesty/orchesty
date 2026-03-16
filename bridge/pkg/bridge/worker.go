@@ -253,8 +253,9 @@ func (n *node) sendMetrics(dto model.ProcessResult) {
 	err := n.metrics.Send(
 		config.Metrics.Measurement,
 		map[string]interface{}{
-			"node_id":     msg.GetHeaderOrDefault(enum.Header_NodeId, ""),
-			"topology_id": msg.GetHeaderOrDefault(enum.Header_TopologyId, ""),
+			"node_id":        msg.GetHeaderOrDefault(enum.Header_NodeId, ""),
+			"topology_id":    msg.GetHeaderOrDefault(enum.Header_TopologyId, ""),
+			"correlation_id": msg.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
 		},
 		map[string]interface{}{
 			"waiting_duration": int(msg.ProcessStarted - msg.Published),

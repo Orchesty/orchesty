@@ -71,4 +71,14 @@ final readonly class ProcessHandler
         return $this->getGridResponse($dto, $this->manager->getProcessesTopologies($dto));
     }
 
+    /**
+     * @param string $id
+     *
+     * @return mixed[]
+     */
+    public function getProcessDetail(string $id): array
+    {
+        return $this->manager->getProcessDetail($id);
+    }
+
 }

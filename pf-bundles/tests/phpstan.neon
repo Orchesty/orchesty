@@ -24,7 +24,7 @@ parameters:
 		-
 			message: '#expects array, array|ArrayAccess given#'
 			path: ../tests/*
-		- 
+		-
 			identifier: missingType.generics
 		-
 			message: '#.*#'
@@ -64,6 +64,8 @@ parameters:
 			- Hanaboso\PipesFramework\Configurator\Document\NodeProgress
 			- Hanaboso\PipesFramework\Configurator\Document\Sdk
 			- Hanaboso\PipesFramework\Configurator\Document\TopologyProgress
+			- Hanaboso\PipesFramework\Configurator\Document\Limiter
+			- Hanaboso\PipesFramework\Configurator\Document\LimiterMessage
 			- Hanaboso\PipesFramework\Logs\Document\Logs
 			- Hanaboso\PipesFramework\Logs\Document\Pipes
 			- Hanaboso\PipesFramework\Logs\Document\Stacktrace

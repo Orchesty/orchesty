@@ -115,8 +115,8 @@ final class AuthorizationHandler
      * @param string $jweToken
      *
      * @return void
-     * @throws MongoDBException
      * @throws DateTimeException
+     * @throws MongoDBException
      */
     public function saveRestrictToken(string $jweToken): void
     {
