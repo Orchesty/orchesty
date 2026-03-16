@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onBeforeUnmount } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { ReteEditorKit } from 'rete-editor'
 import type { EditorCore, LabelCustomizationMap } from 'rete-editor'
 import CronSettingsModal from '@/components/scheduled-tasks/CronSettingsModal.vue'
@@ -12,12 +12,9 @@ import { useToast } from '@/composables/useToast'
 import { useDateFormat } from '@/composables/useDateFormat'
 import { useProcessPolling } from '@/composables/useProcessPolling'
 import { fetchTopologySchema, saveTopologySchema } from '@/services/topologiesService'
-import { fetchRawTopologyMetrics } from '@/services/topologyMetricsService'
 import {
-  fetchNodeOverlayCounts,
   approveAllBreakpoints,
   rejectAllBreakpoints,
-  hasBreakpointMessages,
 } from '@/services/breakpointService'
 import { fetchLatestProcess } from '@/services/processesService'
 import api from '@/services/api'
@@ -75,7 +72,6 @@ const failedMessageNodeName = ref('')
 const selectedNode = ref<EditorNode | null>(null)
 const breakpointCounts = ref<Record<string, number>>({})
 const hasBreakpoints = ref(false)
-let breakpointPollTimer: ReturnType<typeof setInterval> | null = null
 let cachedSchema: any = null
 
 const nodesData = ref<Record<string, CronNode>>({})
@@ -106,40 +102,6 @@ const isProcessTimeRelevant = (editorId: string): boolean => {
   return !label || !EXCLUDED_PROCESS_TIME_LABELS.has(label)
 }
 
-const loadNodeMetrics = async () => {
-  try {
-    const raw = await fetchRawTopologyMetrics(props.topologyId)
-
-    const backendToEditorId = new Map<string, string>()
-    for (const [editorId, backendId] of Object.entries(schemaToBackendId.value)) {
-      backendToEditorId.set(backendId, editorId)
-    }
-
-    const metrics: Record<string, NodeMetricsData> = {}
-
-    for (const [backendNodeId, duration] of Object.entries(raw.processTimeByNodeId)) {
-      const editorId = backendToEditorId.get(backendNodeId)
-      if (editorId && isProcessTimeRelevant(editorId)) {
-        if (!metrics[editorId]) metrics[editorId] = {}
-        metrics[editorId].processTime = duration
-      }
-    }
-
-    for (const [backendNodeId, duration] of Object.entries(raw.requestTimeByNodeId)) {
-      const editorId = backendToEditorId.get(backendNodeId)
-      if (editorId && isProcessTimeRelevant(editorId)) {
-        if (!metrics[editorId]) metrics[editorId] = {}
-        metrics[editorId].requestTime = duration
-      }
-    }
-
-    nodeMetrics.value = metrics
-    await editorCore.value?.updateNodeOverlays()
-  } catch (error) {
-    console.error('Failed to load node metrics:', error)
-  }
-}
-
 const runAction = {
   id: 'run',
   icon: '<path d="M8 5v14l11-7z"/>',
@@ -165,7 +127,7 @@ const errorIconSvg = '<svg style="width:40px;height:40px;" viewBox="0 0 24 24" f
 
 const handleErrorIconClick = (editorNodeId: string) => {
   const backendNodeId = resolveBackendId(editorNodeId)
-  const correlationId = polling.latestProcess.value?.id
+  const correlationId = polling.processDetail.value?.id
   if (!correlationId) return
 
   const nodeData = nodesData.value[editorNodeId]
@@ -176,7 +138,12 @@ const handleErrorIconClick = (editorNodeId: string) => {
 }
 
 const handleFailedMessageUpdate = async () => {
-  await refreshNodeOverlays()
+  if (polling.isPolling.value) {
+    polling.resetToFastPolling()
+  } else if (polling.processDetail.value?.id) {
+    await polling.fetchOnce(polling.processDetail.value.id)
+    applyProcessDetailOverlays()
+  }
 }
 
 const getOverlayTopLeft = (node: EditorNode) => {
@@ -244,79 +211,45 @@ const getBreakpointActions = (node: EditorNode) => {
   ]
 }
 
-const refreshNodeOverlays = async () => {
-  try {
-    const correlationId = polling.latestProcess.value?.id
-    const result = await fetchNodeOverlayCounts(props.topologyId, correlationId)
-    const backendToEditor = buildBackendToEditorMap()
+const applyProcessDetailOverlays = async () => {
+  const detail = polling.processDetail.value
+  if (!detail) return
 
-    const counts: Record<string, number> = {}
-    for (const [backendId, count] of Object.entries(result.breakpointCounts)) {
-      const editorId = backendToEditor.get(backendId)
-      if (editorId) {
-        counts[editorId] = count
-      }
-    }
-    breakpointCounts.value = counts
-    hasBreakpoints.value = Object.values(counts).some(c => c > 0)
+  const backendToEditor = buildBackendToEditorMap()
 
-    if (hasBreakpoints.value && !processStartNodeName.value) {
-      const startNode = Object.values(nodesData.value).find(n =>
-        ['event', 'webhook', 'cron'].includes(n.label.toLowerCase())
-      )
-      processStartNodeName.value = startNode?.name || 'topology'
-      try {
-        const process = await fetchLatestProcess(props.topologyId)
-        if (process) {
-          polling.latestProcess.value = process
-        }
-      } catch {
-        // fallback: at least show the correlation ID from breakpoint data
-        if (result.breakpointCorrelationId) {
-          polling.latestProcess.value = {
-            id: result.breakpointCorrelationId,
-            topology: '',
-            topologyId: props.topologyId,
-            startTime: '',
-            duration: 0,
-            status: 'running',
-          }
-        }
-      }
-      startBreakpointPolling(2000)
+  const counts: Record<string, number> = {}
+  const statuses: Record<string, boolean> = {}
+  const metrics: Record<string, NodeMetricsData> = {}
+
+  for (const [backendNodeId, node] of Object.entries(detail.nodes)) {
+    const editorId = backendToEditor.get(backendNodeId)
+    if (!editorId) continue
+
+    if (node.breakpointCount > 0) {
+      counts[editorId] = node.breakpointCount
     }
 
-    const statuses: Record<string, boolean> = {}
-    for (const backendNodeId of result.failedNodeIds) {
-      const editorId = backendToEditor.get(backendNodeId)
-      if (editorId) {
-        statuses[editorId] = true
+    if (node.trashCount > 0) {
+      statuses[editorId] = true
+    }
+
+    if (isProcessTimeRelevant(editorId)) {
+      if (node.processTime != null || node.requestTime != null) {
+        const m: NodeMetricsData = {}
+        if (node.processTime != null) m.processTime = node.processTime
+        if (node.requestTime != null) m.requestTime = node.requestTime
+        metrics[editorId] = m
       }
     }
-    nodeStatuses.value = statuses
-
-    await editorCore.value?.updateNodeOverlays()
-  } catch {
-    // silently ignore polling errors
   }
-}
 
-const startBreakpointPolling = (intervalMs = 2000) => {
-  stopBreakpointPolling()
-  refreshNodeOverlays()
-  breakpointPollTimer = setInterval(refreshNodeOverlays, intervalMs)
-}
+  breakpointCounts.value = counts
+  hasBreakpoints.value = Object.values(counts).some(c => c > 0)
+  nodeStatuses.value = statuses
+  nodeMetrics.value = metrics
 
-const stopBreakpointPolling = () => {
-  if (breakpointPollTimer) {
-    clearInterval(breakpointPollTimer)
-    breakpointPollTimer = null
-  }
+  await editorCore.value?.updateNodeOverlays()
 }
-
-onBeforeUnmount(() => {
-  stopBreakpointPolling()
-})
 
 const createToggleAction = (node: EditorNode) => {
   const nodeData = nodesData.value[node.id]
@@ -490,10 +423,37 @@ const onEditorReady = async (editor: EditorCore) => {
     }
 
     editor.zoomToFit()
-    loadNodeMetrics()
-    refreshNodeOverlays()
+    await loadInitialOverlays()
   } catch (error) {
     console.error('Failed to load topology data:', error)
+  }
+}
+
+const loadInitialOverlays = async () => {
+  try {
+    const process = await fetchLatestProcess(props.topologyId)
+    if (!process) return
+
+    const detail = await polling.fetchOnce(process.id)
+    if (!detail) return
+
+    await applyProcessDetailOverlays()
+
+    const hasBp = Object.values(detail.nodes).some(n => n.breakpointCount > 0)
+    const isRunning = detail.status === 'IN PROGRESS'
+
+    if (isRunning || hasBp) {
+      const startNode = Object.values(nodesData.value).find(n =>
+        ['event', 'webhook', 'cron'].includes(n.label.toLowerCase())
+      )
+      processStartNodeName.value = startNode?.name || 'topology'
+
+      if (isRunning) {
+        polling.startPollingWithId(process.id)
+      }
+    }
+  } catch {
+    // silently ignore init overlay errors
   }
 }
 
@@ -551,16 +511,16 @@ const reloadSchema = async () => {
   }
 }
 
-defineExpose({ reloadSchema, loadNodeMetrics })
+defineExpose({ reloadSchema })
 
 const processStartNodeName = ref<string | null>(null)
 const processStartedAt = ref<string | null>(null)
 
 const processStatus = computed(() => {
-  const process = polling.latestProcess.value
-  if (!process) return polling.isPolling.value ? 'running' : null
-  if (process.status === 'completed') return 'success'
-  if (process.status === 'failed') return 'failed'
+  const detail = polling.processDetail.value
+  if (!detail) return polling.isPolling.value ? 'running' : null
+  if (detail.status === 'COMPLETED') return 'success'
+  if (detail.status === 'FAILED') return 'failed'
   return 'running'
 })
 
@@ -584,20 +544,17 @@ const statusLabel = computed(() => {
 })
 
 const displayStartTime = computed(() =>
-  polling.latestProcess.value?.startTime || processStartedAt.value
+  polling.processDetail.value?.started || processStartedAt.value
 )
 
 const processEndTime = computed(() => {
-  const p = polling.latestProcess.value
-  if (!p?.startTime || !p?.duration) return null
-  const start = new Date(p.startTime).getTime()
-  return new Date(start + p.duration).toISOString()
+  return polling.processDetail.value?.finished || null
 })
 
 const processDuration = computed(() => {
-  const p = polling.latestProcess.value
-  if (!p?.duration) return null
-  return formatMs(p.duration)
+  const d = polling.processDetail.value?.duration
+  if (!d) return null
+  return formatMs(d)
 })
 
 const showProcessPanel = computed(() => !!processStartNodeName.value)
@@ -606,9 +563,11 @@ const dismissProcessPanel = () => {
   processStartNodeName.value = null
   processStartedAt.value = null
   polling.stopPolling()
-  polling.latestProcess.value = null
+  polling.processDetail.value = null
   polling.processCompleted.value = false
   nodeStatuses.value = {}
+  breakpointCounts.value = {}
+  hasBreakpoints.value = false
 }
 
 const handleRunProcess = async (jsonData: string) => {
@@ -630,10 +589,10 @@ const handleRunProcess = async (jsonData: string) => {
       jsonData
     )
     nodeStatuses.value = {}
+    breakpointCounts.value = {}
     processStartNodeName.value = selectedNode.value.name || selectedNode.value.label
     processStartedAt.value = new Date().toISOString()
     polling.startPolling()
-    startBreakpointPolling(2000)
     emit('process-run')
   } catch (error) {
     console.error('Failed to run process:', error)
@@ -641,12 +600,11 @@ const handleRunProcess = async (jsonData: string) => {
 }
 
 const handleBreakpointUpdate = async () => {
-  await refreshNodeOverlays()
   if (polling.isPolling.value) {
     polling.resetToFastPolling()
-  } else {
-    polling.startPolling()
-    startBreakpointPolling(2000)
+  } else if (polling.processDetail.value?.id) {
+    await polling.fetchOnce(polling.processDetail.value.id)
+    await applyProcessDetailOverlays()
   }
 }
 
@@ -679,56 +637,26 @@ const buildBackendToEditorMap = (): Map<string, string> => {
   return map
 }
 
-const applyPolledMetrics = () => {
-  const raw = polling.rawMetrics.value
-  if (!raw) return
-
-  const backendToEditor = buildBackendToEditorMap()
-  const metrics: Record<string, NodeMetricsData> = {}
-
-  for (const [backendNodeId, duration] of Object.entries(raw.processTimeByNodeId)) {
-    const editorId = backendToEditor.get(backendNodeId)
-    if (editorId && isProcessTimeRelevant(editorId)) {
-      if (!metrics[editorId]) metrics[editorId] = {}
-      metrics[editorId].processTime = duration
-    }
-  }
-
-  for (const [backendNodeId, duration] of Object.entries(raw.requestTimeByNodeId)) {
-    const editorId = backendToEditor.get(backendNodeId)
-    if (editorId && isProcessTimeRelevant(editorId)) {
-      if (!metrics[editorId]) metrics[editorId] = {}
-      metrics[editorId].requestTime = duration
-    }
-  }
-
-  nodeMetrics.value = metrics
-}
-
-watch(() => polling.rawMetrics.value, async () => {
-  applyPolledMetrics()
-  await editorCore.value?.updateNodeOverlays()
+watch(() => polling.processDetail.value, async () => {
+  await applyProcessDetailOverlays()
 })
 
 watch(() => polling.processCompleted.value, async (completed) => {
   if (completed) {
-    applyPolledMetrics()
-    stopBreakpointPolling()
-    await refreshNodeOverlays()
-    await editorCore.value?.updateNodeOverlays()
+    await applyProcessDetailOverlays()
   }
 })
 
 watch(() => props.refreshKey, () => {
   if (polling.isPolling.value) return
   nodeStatuses.value = {}
+  breakpointCounts.value = {}
   const startNode = Object.values(nodesData.value).find(n =>
     ['event', 'webhook', 'cron'].includes(n.label.toLowerCase())
   )
   processStartNodeName.value = startNode?.name || 'topology'
   processStartedAt.value = new Date().toISOString()
   polling.startPolling()
-  startBreakpointPolling(2000)
 })
 </script>
 
@@ -757,10 +685,10 @@ watch(() => props.refreshKey, () => {
               </span>
               <span :class="statusBadgeClass">{{ statusLabel }}</span>
             </div>
-            <div v-if="polling.latestProcess.value?.id" class="text-gray-500 dark:text-gray-400">
+            <div v-if="polling.processDetail.value?.id" class="text-gray-500 dark:text-gray-400">
               Correl. ID:
-              <CopyValue :value="polling.latestProcess.value.id">
-                <span class="font-mono">{{ polling.latestProcess.value.id.slice(0, 16) }}...</span>
+              <CopyValue :value="polling.processDetail.value.id">
+                <span class="font-mono">{{ polling.processDetail.value.id.slice(0, 16) }}...</span>
               </CopyValue>
             </div>
             <div v-if="displayStartTime" class="text-gray-500 dark:text-gray-400">
