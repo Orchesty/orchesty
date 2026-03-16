@@ -5,8 +5,9 @@
         "invoiceId": "1"
     },
     "data": {
-        "id": "test-document",
-        "documentId": "test-document",
-        "tag": "1"
+        "id": "1",
+        "kod": "FP-001/2026",
+        "nazFirmy": "Test Company",
+        "sumCelkem": "847"
     }
 }

@@ -1,0 +1,10 @@
+{
+    "headers": {
+        "user": "TestUser",
+        "documentId": "test-document",
+        "invoiceId": "1"
+    },
+    "data": {
+        "id": "1"
+    }
+}

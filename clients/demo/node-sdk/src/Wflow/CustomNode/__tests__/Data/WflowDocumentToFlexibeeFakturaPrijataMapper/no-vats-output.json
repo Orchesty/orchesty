@@ -29,40 +29,18 @@
           "mena": "code:CZK",
           "polozkyFaktury": [
             {
-              "cenaMj": 2000,
+              "cenaMj": 4200,
               "mnozMj": 1,
-              "nazev": "Vedení účetnictví 11_2025",
-              "szbDph": 21,
-              "typPolozkyK": "typPolozky.obecny",
-              "typSzbDphK": "typSzbDph.dphZakl"
-            },
-            {
-              "cenaMj": 200,
-              "mnozMj": 6,
-              "nazev": "Zpracování mezd 11_2025",
-              "szbDph": 21,
-              "typPolozkyK": "typPolozky.obecny",
-              "typSzbDphK": "typSzbDph.dphZakl"
-            },
-            {
-              "cenaMj": 650,
-              "mnozMj": 1,
-              "nazev": "DPH + Kontrolní hlášení 11_2025",
-              "szbDph": 21,
-              "typPolozkyK": "typPolozky.obecny",
-              "typSzbDphK": "typSzbDph.dphZakl"
-            },
-            {
-              "cenaMj": 350,
-              "mnozMj": 1,
-              "nazev": "Souhrnné hlášení 11_2025",
+              "nazev": "Fakturujeme Vám za dodané zboží či služby:\r\nDovolujeme si Vás upozornit, že v případě nedodržení data splatnosti uvedeného na faktuře Vám můžeme účtovat zákonný úrok z prodlení.",
               "szbDph": 21,
               "typPolozkyK": "typPolozky.obecny",
               "typSzbDphK": "typSzbDph.dphZakl"
             }
           ],
           "popis": "Fakturujeme Vám za dodané zboží či služby:\r\nDovolujeme si Vás upozornit, že v případě nedodržení data splatnosti uvedeného na faktuře Vám můžeme účtovat zákonný úrok z prodlení.",
-          "typDokl": "code:FAKTURA"
+          "stredisko": "code:SALES&MARKETING",
+          "typDokl": "code:FAKTURA",
+          "typUcOp": "code:NÁKUP SLUŽBY"
         }
       ]
     }

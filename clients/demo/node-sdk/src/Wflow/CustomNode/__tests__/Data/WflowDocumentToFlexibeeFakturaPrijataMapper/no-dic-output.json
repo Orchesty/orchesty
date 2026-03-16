@@ -8,9 +8,7 @@
       "@version": "1.0",
       "adresar": [
         {
-          "dic": "CZ17864810",
-          "ic": "17864810",
-          "kod": "17864810",
+          "kod": "249308B9162718F72713",
           "mesto": "Hradec Králové CZ",
           "nazev": "1. Account s.r.o.",
           "psc": "50012",
@@ -24,21 +22,47 @@
           "clenKonVykDph": "code:B.2-3.AUTO",
           "datSplat": "2025-12-26T00:00:00",
           "datVyst": "2025-12-19T00:00:00",
-          "firma": "code:17864810",
+          "firma": "code:249308B9162718F72713",
           "id": "ext:40830940-fc60-4ffd-a143-37ed2022bd21",
           "mena": "code:CZK",
           "polozkyFaktury": [
             {
-              "cenaMj": 4200,
+              "cenaMj": 2000,
               "mnozMj": 1,
-              "nazev": "Fakturujeme Vám za dodané zboží či služby:\r\nDovolujeme si Vás upozornit, že v případě nedodržení data splatnosti uvedeného na faktuře Vám můžeme účtovat zákonný úrok z prodlení.",
+              "nazev": "Vedení účetnictví 11_2025",
+              "szbDph": 21,
+              "typPolozkyK": "typPolozky.obecny",
+              "typSzbDphK": "typSzbDph.dphZakl"
+            },
+            {
+              "cenaMj": 200,
+              "mnozMj": 6,
+              "nazev": "Zpracování mezd 11_2025",
+              "szbDph": 21,
+              "typPolozkyK": "typPolozky.obecny",
+              "typSzbDphK": "typSzbDph.dphZakl"
+            },
+            {
+              "cenaMj": 650,
+              "mnozMj": 1,
+              "nazev": "DPH + Kontrolní hlášení 11_2025",
+              "szbDph": 21,
+              "typPolozkyK": "typPolozky.obecny",
+              "typSzbDphK": "typSzbDph.dphZakl"
+            },
+            {
+              "cenaMj": 350,
+              "mnozMj": 1,
+              "nazev": "Souhrnné hlášení 11_2025",
               "szbDph": 21,
               "typPolozkyK": "typPolozky.obecny",
               "typSzbDphK": "typSzbDph.dphZakl"
             }
           ],
           "popis": "Fakturujeme Vám za dodané zboží či služby:\r\nDovolujeme si Vás upozornit, že v případě nedodržení data splatnosti uvedeného na faktuře Vám můžeme účtovat zákonný úrok z prodlení.",
-          "typDokl": "code:FAKTURA"
+          "stredisko": "code:SALES&MARKETING",
+          "typDokl": "code:FAKTURA",
+          "typUcOp": "code:NÁKUP SLUŽBY"
         }
       ]
     }

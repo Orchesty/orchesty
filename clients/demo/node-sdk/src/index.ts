@@ -26,6 +26,7 @@ import FakturoidApplication from '@orchesty/connector-fakturoid/dist/FakturoidAp
 import FlexiBeeCreateFakturaPrijataConnector from '@orchesty/connector-flexi-bee/dist/Connector/FlexiBeeCreateFakturaPrijataConnector';
 import FlexiBeeCreateFakturaPrijataPrilohaConnector from '@orchesty/connector-flexi-bee/dist/Connector/FlexiBeeCreateFakturaPrijataPrilohaConnector';
 import FlexiBeeGetCompaniesConnector from '@orchesty/connector-flexi-bee/dist/Connector/FlexiBeeGetCompaniesConnector';
+import FlexiBeeGetFakturaPrijataConnector from '@orchesty/connector-flexi-bee/dist/Connector/FlexiBeeGetFakturaPrijataConnector';
 import GitHubGetRepositoryConnector from '@orchesty/connector-git-hub/dist/Connector/GitHubGetRepositoryConnector';
 import GitHubApplication from '@orchesty/connector-git-hub/dist/GitHubApplication';
 import GoogleCalendarApplication
@@ -117,7 +118,8 @@ import { HubspotListIdsEnums } from './Common/Enum/HubspotListIdsEnums';
 import { PageEnum } from './Common/Enum/PageEnum';
 import SESApplication from './Common/SESApplication';
 import FlexiBeeFindFirmaKodConnector from './FlexiBee/Connector/FlexiBeeFindFirmaKodConnector';
-import FlexiBeeFakturaPrijataMapper from './FlexiBee/CustomNode/FlexiBeeFakturaPrijataMapper';
+import FlexiBeeCreateFakturaPrijataToFlexiBeeGetFakturaPrijataMapper from './FlexiBee/CustomNode/FlexiBeeCreateFakturaPrijataToFlexiBeeGetFakturaPrijataMapper';
+import FlexiBeeFakturaPrijataToWflowDocumentMapper from './FlexiBee/CustomNode/FlexiBeeFakturaPrijataToWflowDocumentMapper';
 import { FlexiBeeApplication } from './FlexiBee/FlexiBeeApplication';
 import GoogleDriveCreateDirectoryConnector from './Google/GoogleDrive/Connector/GoogleDriveCreateDirectoryConnector';
 import GoogleDriveUpdateFileConnector from './Google/GoogleDrive/Connector/GoogleDriveUpdateFileConnector';
@@ -155,7 +157,7 @@ import MySqlProductFindId from './Sql/CustomNode/MySqlProductFindId';
 import MySqlProductStoreId from './Sql/CustomNode/MySqlProductStoreId';
 import MySqlRepository from './Sql/Repository/MySqlRepository';
 import WflowDocumentMainFileToFlexiBeeFakturaPrijataPrilohaMapper from './Wflow/CustomNode/WflowDocumentMainFileToFlexiBeeFakturaPrijataPrilohaMapper';
-import WflowToFlexibeeMapper from './Wflow/CustomNode/WflowToFlexibeeMapper';
+import WflowDocumentToFlexibeeFakturaPrijataMapper from './Wflow/CustomNode/WflowDocumentToFlexibeeFakturaPrijataMapper';
 import WflowWebhookPayloadMapper from './Wflow/CustomNode/WflowWebhookPayloadMapper';
 import WflowApplication from './Wflow/WflowApplication';
 
@@ -254,7 +256,9 @@ export async function start(): Promise<void> {
     container.setNode(new FlexiBeeCreateFakturaPrijataConnector(), flexiBeeApp);
     container.setNode(new FlexiBeeCreateFakturaPrijataPrilohaConnector(), flexiBeeApp);
     container.setNode(new FlexiBeeFindFirmaKodConnector(), flexiBeeApp);
-    container.setNode(new FlexiBeeFakturaPrijataMapper(), flexiBeeApp);
+    container.setNode(new FlexiBeeGetFakturaPrijataConnector(), flexiBeeApp);
+    container.setNode(new FlexiBeeCreateFakturaPrijataToFlexiBeeGetFakturaPrijataMapper(), flexiBeeApp);
+    container.setNode(new FlexiBeeFakturaPrijataToWflowDocumentMapper(), flexiBeeApp);
 
     const googleDriveApp = new GoogleDriveApplication(provider);
     container.setApplication(googleDriveApp);
@@ -379,7 +383,7 @@ export async function start(): Promise<void> {
     container.setNode(new WflowSubscribeWebhookBatch(), wflowApplication);
     container.setNode(new WflowUnsubscribeWebhookBatch(), wflowApplication);
     container.setNode(new WflowWebhookPayloadMapper(), wflowApplication);
-    container.setNode(new WflowToFlexibeeMapper(), wflowApplication);
+    container.setNode(new WflowDocumentToFlexibeeFakturaPrijataMapper(), wflowApplication);
     container.setNode(new WflowGetDocumentConnector(), wflowApplication);
     container.setNode(new WflowGetDocumentMainFileConnector(), wflowApplication);
     container.setNode(new WflowDocumentMainFileToFlexiBeeFakturaPrijataPrilohaMapper(), wflowApplication);

@@ -1,0 +1,17 @@
+{
+    "http": "GET https://demo.flexibee.eu/c/demo/faktura-prijata/1.json?detail=full",
+    "code": 200,
+    "body": {
+        "winstrom": {
+            "@version": "1.0",
+            "faktura-prijata": [
+                {
+                    "id": "1",
+                    "kod": "FP-001/2026",
+                    "nazFirmy": "TAXPOINT s.r.o.",
+                    "sumCelkem": "847"
+                }
+            ]
+        }
+    }
+}

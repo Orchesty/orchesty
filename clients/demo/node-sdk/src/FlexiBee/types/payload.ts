@@ -38,6 +38,8 @@ export interface FakturaPayload {
         popis?: string;
         mena?: `code:${string}`;
         firma?: `code:${string}`;
+        stredisko?: `code:${string}`;
+        typUcOp?: `code:${string}`;
         polozkyFaktury?: PolozkaFaktury[];
     }[];
 }

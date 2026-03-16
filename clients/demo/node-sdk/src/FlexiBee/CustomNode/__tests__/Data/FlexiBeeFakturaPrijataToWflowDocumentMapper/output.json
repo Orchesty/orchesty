@@ -1,0 +1,13 @@
+{
+    "headers": {
+        "user": "TestUser",
+        "documentId": "test-document",
+        "invoiceId": "1"
+    },
+    "data": {
+        "id": "test-document",
+        "documentId": "test-document",
+        "tag": "1",
+        "internalCode": "FP-001/2026"
+    }
+}

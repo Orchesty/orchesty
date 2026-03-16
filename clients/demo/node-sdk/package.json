@@ -31,7 +31,7 @@
     "@orchesty/connector-dropbox": "^1.0.1",
     "@orchesty/connector-facebook-ads": "^1.0.1",
     "@orchesty/connector-fakturoid": "^1.0.1",
-    "@orchesty/connector-flexi-bee": "^1.0.4",
+    "@orchesty/connector-flexi-bee": "^1.0.5",
     "@orchesty/connector-git-hub": "^1.0.1",
     "@orchesty/connector-google-calendar": "^1.0.2",
     "@orchesty/connector-google-drive": "^1.0.2",
@@ -60,7 +60,7 @@
     "@orchesty/connector-twilio": "^1.0.1",
     "@orchesty/connector-upgates": "^1.0.1",
     "@orchesty/connector-webflow": "^1.0.1",
-    "@orchesty/connector-wflow": "^1.0.3",
+    "@orchesty/connector-wflow": "^1.0.4",
     "@orchesty/connector-wisepops": "^1.0.2",
     "@orchesty/connector-woocommerce": "^1.0.1",
     "@orchesty/connector-xero": "^1.0.1",
@@ -72,7 +72,7 @@
     "lodash": "^4.17.23",
     "luxon": "^3.7.2",
     "mongodb": "^7.1.0",
-    "mysql2": "^3.19.1"
+    "mysql2": "^3.20.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",

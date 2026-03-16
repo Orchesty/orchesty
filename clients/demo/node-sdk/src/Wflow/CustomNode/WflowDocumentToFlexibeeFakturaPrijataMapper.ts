@@ -7,9 +7,9 @@ import { FIRMA_KOD } from '../../FlexiBee/Connector/FlexiBeeFindFirmaKodConnecto
 import { FlexiBeeApplication } from '../../FlexiBee/FlexiBeeApplication';
 import { FakturaPayload, FirmaPayload, Payload, PolozkaFaktury } from '../../FlexiBee/types/payload';
 
-export const NAME = `${WFLOW_APP_NAME}-to-${FLEXI_BEE_APPLICATION}-mapper`;
+export const NAME = `${WFLOW_APP_NAME}-document-to-${FLEXI_BEE_APPLICATION}-faktura-prijata-mapper`;
 
-export default class WflowToFlexibeeMapper extends ACommonNode {
+export default class WflowDocumentToFlexibeeFakturaPrijataMapper extends ACommonNode {
 
     public getName(): string {
         return NAME;
@@ -52,6 +52,11 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
             clenKonVykDph = 'code:0.0.';
         }
 
+        const stredisko = accounting?.costCenter?.code
+            ? `code:${accounting.costCenter.code}` as const : undefined;
+        const typUcOp = accounting?.accountingRule?.code
+            ? `code:${accounting.accountingRule.code}` as const : undefined;
+
         const mena = `code:${currency}` as const;
         const polozkyFaktury = lines.length
             ? this.getPolozkyFaktury(lines as WflowLine[])
@@ -77,6 +82,8 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
                         popis,
                         mena,
                         firma,
+                        stredisko,
+                        typUcOp,
                         polozkyFaktury,
                     }],
                 },
@@ -106,6 +113,8 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
                     popis,
                     mena,
                     firma: `code:${firmaKod}`,
+                    stredisko,
+                    typUcOp,
                     polozkyFaktury,
                 }],
             },

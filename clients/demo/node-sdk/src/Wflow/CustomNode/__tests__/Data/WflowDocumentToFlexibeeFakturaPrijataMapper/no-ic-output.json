@@ -8,7 +8,8 @@
       "@version": "1.0",
       "adresar": [
         {
-          "kod": "249308B9162718F72713",
+          "dic": "CZ17864810",
+          "kod": "CZ17864810",
           "mesto": "Hradec Králové CZ",
           "nazev": "1. Account s.r.o.",
           "psc": "50012",
@@ -22,7 +23,7 @@
           "clenKonVykDph": "code:B.2-3.AUTO",
           "datSplat": "2025-12-26T00:00:00",
           "datVyst": "2025-12-19T00:00:00",
-          "firma": "code:249308B9162718F72713",
+          "firma": "code:CZ17864810",
           "id": "ext:40830940-fc60-4ffd-a143-37ed2022bd21",
           "mena": "code:CZK",
           "polozkyFaktury": [
@@ -60,7 +61,9 @@
             }
           ],
           "popis": "Fakturujeme Vám za dodané zboží či služby:\r\nDovolujeme si Vás upozornit, že v případě nedodržení data splatnosti uvedeného na faktuře Vám můžeme účtovat zákonný úrok z prodlení.",
-          "typDokl": "code:FAKTURA"
+          "stredisko": "code:SALES&MARKETING",
+          "typDokl": "code:FAKTURA",
+          "typUcOp": "code:NÁKUP SLUŽBY"
         }
       ]
     }
