@@ -30,8 +30,8 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
     /**
      * @return void
      * @throws EnumException
-     * @throws MongoDBException
      * @throws Exception
+     * @throws MongoDBException
      */
     public function testGetTrashItems(): void
     {
@@ -50,8 +50,8 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
     /**
      * @return void
      * @throws EnumException
-     * @throws MongoDBException
      * @throws Exception
+     * @throws MongoDBException
      */
     public function testGetTrashItemDetail(): void
     {
@@ -70,8 +70,8 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
     /**
      * @return void
      * @throws EnumException
-     * @throws MongoDBException
      * @throws Exception
+     * @throws MongoDBException
      */
     public function testUpdateTrashItem(): void
     {
@@ -90,8 +90,8 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
     /**
      * @return void
      * @throws EnumException
-     * @throws MongoDBException
      * @throws Exception
+     * @throws MongoDBException
      */
     public function testAcceptTrashItem(): void
     {
@@ -105,8 +105,8 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
     /**
      * @return void
      * @throws EnumException
-     * @throws MongoDBException
      * @throws Exception
+     * @throws MongoDBException
      */
     public function testRejectTrashItem(): void
     {
@@ -120,8 +120,8 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
     /**
      * @return void
      * @throws EnumException
-     * @throws MongoDBException
      * @throws Exception
+     * @throws MongoDBException
      */
     public function testAcceptTrashItems(): void
     {
@@ -138,8 +138,8 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
     /**
      * @return void
      * @throws EnumException
-     * @throws MongoDBException
      * @throws Exception
+     * @throws MongoDBException
      */
     public function testRejectTrashItems(): void
     {
@@ -158,8 +158,8 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
      * @param int    $amount
      *
      * @return void
-     * @throws MongoDBException
      * @throws EnumException
+     * @throws MongoDBException
      */
     private function prepData(string $state = 'accept', int $amount = 1): void
     {

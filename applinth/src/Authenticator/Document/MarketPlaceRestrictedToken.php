@@ -20,8 +20,8 @@ use Hanaboso\Utils\Exception\DateTimeException;
 class MarketPlaceRestrictedToken
 {
 
-    use IdTrait;
     use CreatedTrait;
+    use IdTrait;
 
     public const string VALUE = 'value';
 
