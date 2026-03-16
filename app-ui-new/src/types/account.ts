@@ -6,7 +6,7 @@ export interface NotificationSettings {
 }
 
 export interface ProfileUpdateData {
-  username: string
+  username?: string
 }
 
 export interface PasswordUpdateData {

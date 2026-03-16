@@ -17,6 +17,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
+  'hidden': []
 }>()
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -65,6 +66,10 @@ watch(
         drawerInstance.value.show()
       } else {
         drawerInstance.value.hide()
+        const el = document.getElementById(props.id)
+        if (el) {
+          el.addEventListener('transitionend', () => emit('hidden'), { once: true })
+        }
       }
     }
   },

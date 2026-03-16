@@ -1,18 +1,18 @@
 import axios, { type InternalAxiosRequestConfig } from 'axios'
 import type { LoginResponse } from '@/types/auth'
 
-// Create axios instance with base configuration
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.66:8080',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Enable cookies (for refreshToken)
+  withCredentials: true,
 })
 
 // --- Token refresh queue ---
 let isRefreshing = false
+let refreshPromise: Promise<string> | null = null
 let failedQueue: Array<{
   resolve: (token: string) => void
   reject: (error: unknown) => void
@@ -29,10 +29,9 @@ const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue = []
 }
 
-/** URLs that should never trigger a token refresh retry */
 const SKIP_REFRESH_URLS = ['/api/user/check_logged', '/api/user/login']
+const PROACTIVE_REFRESH_MS = 4 * 60_000
 
-/** Clear auth data and redirect to sign-in */
 function forceLogout() {
   localStorage.removeItem('auth_token')
   localStorage.removeItem('auth_user')
@@ -41,9 +40,59 @@ function forceLogout() {
   }
 }
 
-// Request interceptor - Add JWT token to all requests
+/**
+ * Shared refresh call that coalesces concurrent callers
+ * so only one network request is made at a time.
+ */
+async function doRefresh(): Promise<string> {
+  if (refreshPromise) return refreshPromise
+
+  refreshPromise = (async () => {
+    const response = await api.get<LoginResponse>('/api/user/check_logged')
+    const newToken = response.data.token
+
+    localStorage.setItem('auth_token', newToken)
+    localStorage.setItem('lastTokenRefreshTime', String(Date.now()))
+
+    if (response.data.email && response.data.id) {
+      localStorage.setItem(
+        'auth_user',
+        JSON.stringify({
+          id: response.data.id,
+          email: response.data.email,
+          settings: response.data.settings,
+        }),
+      )
+    }
+
+    return newToken
+  })()
+
+  try {
+    return await refreshPromise
+  } finally {
+    refreshPromise = null
+  }
+}
+
+// Request interceptor — proactive refresh + attach token
 api.interceptors.request.use(
-  (config) => {
+  async (config) => {
+    const isAuthUrl = SKIP_REFRESH_URLS.some((url) => config.url?.includes(url))
+
+    if (!isAuthUrl) {
+      const lastRefresh = Number(localStorage.getItem('lastTokenRefreshTime') || '0')
+      const tokenAge = Date.now() - lastRefresh
+
+      if (tokenAge > PROACTIVE_REFRESH_MS && localStorage.getItem('auth_token')) {
+        try {
+          await doRefresh()
+        } catch {
+          // Will be handled by response interceptor if the actual request 401s
+        }
+      }
+    }
+
     const token = localStorage.getItem('auth_token')
     if (token) {
       // Note: Backend expects token directly without "Bearer " prefix
@@ -51,34 +100,28 @@ api.interceptors.request.use(
     }
     return config
   },
-  (error) => {
-    return Promise.reject(error)
-  }
+  (error) => Promise.reject(error),
 )
 
-// Response interceptor - Handle 401 with token refresh and retry
+// Response interceptor — fallback 401 retry
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
 
-    // Only handle 401 responses
     if (error.response?.status !== 401 || !originalRequest) {
       return Promise.reject(error)
     }
 
-    // Don't retry for auth endpoints (prevent infinite loop)
     if (SKIP_REFRESH_URLS.some((url) => originalRequest.url?.includes(url))) {
       return Promise.reject(error)
     }
 
-    // Don't retry if this request was already retried
     if (originalRequest._retry) {
       forceLogout()
       return Promise.reject(error)
     }
 
-    // If another refresh is already in progress, queue this request
     if (isRefreshing) {
       return new Promise<string>((resolve, reject) => {
         failedQueue.push({ resolve, reject })
@@ -88,36 +131,17 @@ api.interceptors.response.use(
       })
     }
 
-    // Start token refresh
     originalRequest._retry = true
     isRefreshing = true
 
     try {
-      const response = await api.get<LoginResponse>('/api/user/check_logged')
-      const newToken = response.data.token
+      const newToken = await doRefresh()
 
-      // Update localStorage with new token
-      localStorage.setItem('auth_token', newToken)
-
-      if (response.data.email && response.data.id) {
-        localStorage.setItem(
-          'auth_user',
-          JSON.stringify({
-            id: response.data.id,
-            email: response.data.email,
-            settings: response.data.settings,
-          }),
-        )
-      }
-
-      // Process all queued requests with new token
       processQueue(null, newToken)
 
-      // Retry original request with new token
       originalRequest.headers.Authorization = newToken
       return api(originalRequest)
     } catch (refreshError) {
-      // Refresh failed - reject all queued requests and logout
       processQueue(refreshError, null)
       forceLogout()
       return Promise.reject(refreshError)

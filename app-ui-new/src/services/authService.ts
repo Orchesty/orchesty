@@ -55,6 +55,22 @@ export async function setNewPassword(token: string, password: string): Promise<v
 }
 
 /**
+ * Check if any users exist in the system
+ * Used to determine whether to show setup or login page
+ */
+export async function checkUsersExist(): Promise<boolean> {
+  const response = await api.get<{ hasUser: boolean }>('/api/user/exists')
+  return response.data.hasUser
+}
+
+/**
+ * Create initial admin user during first-time setup (public endpoint, no auth required)
+ */
+export async function registerUser(email: string, password: string): Promise<void> {
+  await api.post('/api/user/setup', { email, password })
+}
+
+/**
  * Logout user
  * Clears local authentication data
  * Note: Backend logout endpoint can be added here if available

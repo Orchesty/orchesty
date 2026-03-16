@@ -5,16 +5,20 @@ import Toast from '@/components/ui/Toast.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import { useToast } from '@/composables/useToast'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { useActivityTracker } from '@/composables/useActivityTracker'
 import { useAuthStore } from '@/stores/auth'
 
 const { toasts, removeToast } = useToast()
 const route = useRoute()
 const authStore = useAuthStore()
 
+const { startTracking } = useActivityTracker()
+startTracking()
+
 const { loadMappings, isReady } = useTopologyNodeMappings()
 loadMappings()
 
-const publicPaths = ['/sign-in', '/forgot-password', '/reset-password']
+const publicPaths = ['/sign-in', '/setup', '/forgot-password', '/reset-password']
 const isPublicRoute = computed(() =>
   publicPaths.some(p => route.path === p || route.path.startsWith(p + '/'))
 )

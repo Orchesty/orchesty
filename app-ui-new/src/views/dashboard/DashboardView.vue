@@ -9,7 +9,10 @@ import ProcessesTab from '@/components/dashboard/ProcessesTab.vue'
 import LimiterTab from '@/components/dashboard/LimiterTab.vue'
 import ApplicationsTab from '@/components/dashboard/ApplicationsTab.vue'
 import ConnectorDetailDrawer from '@/components/dashboard/ConnectorDetailDrawer.vue'
+import ProcessesDrawer from '@/components/dashboard/ProcessesDrawer.vue'
+import ProcessAuditDrawer from '@/components/dashboard/ProcessAuditDrawer.vue'
 import type { Connector } from '@/types/connectors'
+import type { Process } from '@/types/processes'
 import type { TimeFilter as TimeFilterType, ProcessFilter, HeatmapClickData, ProcessesExternalFilters } from '@/types/dashboard'
 import { formatDateTimeLocal } from '@/utils/timeRangeConverter'
 
@@ -76,17 +79,48 @@ const processesFilters = ref<ProcessesExternalFilters>({
 })
 
 const handleHeatmapClick = (data: HeatmapClickData) => {
-  const timeRange = {
+  processesDrawerTopology.value = data.topology
+  processesDrawerTimeRange.value = {
     from: formatDateTimeLocal(new Date(data.timeSlot)),
     to: formatDateTimeLocal(new Date(data.timeSlotEnd)),
   }
+  processesDrawerOpen.value = true
+}
 
-  processesFilters.value = {
-    topology: data.topology,
-    timeRange: timeRange,
+// Processes drawer state (opened from heatmap click)
+const processesDrawerOpen = ref(false)
+const processesDrawerTopology = ref<string | null>(null)
+const processesDrawerTimeRange = ref<{ from: string; to: string } | null>(null)
+
+// Audit drawer state (opened from processes drawer magnifier)
+const auditDrawerOpen = ref(false)
+const auditDrawerProcess = ref<Process | null>(null)
+const pendingAuditOpen = ref(false)
+const pendingProcessesOpen = ref(false)
+
+const handleOpenAudit = (process: Process) => {
+  auditDrawerProcess.value = process
+  pendingAuditOpen.value = true
+  processesDrawerOpen.value = false
+}
+
+const onProcessesDrawerHidden = () => {
+  if (pendingAuditOpen.value) {
+    pendingAuditOpen.value = false
+    auditDrawerOpen.value = true
   }
+}
 
-  switchToTab('processes')
+const handleAuditBack = () => {
+  pendingProcessesOpen.value = true
+  auditDrawerOpen.value = false
+}
+
+const onAuditDrawerHidden = () => {
+  if (pendingProcessesOpen.value) {
+    pendingProcessesOpen.value = false
+    processesDrawerOpen.value = true
+  }
 }
 
 // Connector detail drawer (shared by ConnectorsTab and ApplicationsTab)
@@ -202,10 +236,8 @@ const handleTopologyProcessesClick = (topologyId: string) => {
       <ProcessesTab
         v-else-if="activeTab === 'processes'"
         :global-time-filter="activeTimeFilter"
-        :heatmap-filter="activeHeatmapFilter"
         :external-filters="processesFilters"
         :refresh-key="refreshKey"
-        @heatmap-filter-change="handleHeatmapFilterChange"
       />
 
       <LimiterTab
@@ -220,6 +252,25 @@ const handleTopologyProcessesClick = (topologyId: string) => {
       v-model="connectorDrawerOpen"
       :connector="selectedConnector"
       :global-time-filter="activeTimeFilter"
+    />
+
+    <!-- Processes Drawer (opened from heatmap click) -->
+    <ProcessesDrawer
+      v-model="processesDrawerOpen"
+      :topology-id="processesDrawerTopology"
+      :time-range="processesDrawerTimeRange"
+      @open-audit="handleOpenAudit"
+      @hidden="onProcessesDrawerHidden"
+    />
+
+    <!-- Process Audit Drawer (opened from processes drawer magnifier) -->
+    <ProcessAuditDrawer
+      v-model="auditDrawerOpen"
+      :process="auditDrawerProcess"
+      :show-back-button="true"
+      drawer-id="dashboard-audit-drawer"
+      @back="handleAuditBack"
+      @hidden="onAuditDrawerHidden"
     />
   </DashboardLayout>
 </template>

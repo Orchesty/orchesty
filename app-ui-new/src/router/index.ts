@@ -1,10 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import SignInView from '@/views/auth/SignInView.vue'
+import SetupView from '@/views/auth/SetupView.vue'
 import ForgotPasswordView from '@/views/auth/ForgotPasswordView.vue'
 import ResetPasswordView from '@/views/auth/ResetPasswordView.vue'
 import DashboardView from '@/views/dashboard/DashboardView.vue'
 import { useAuthStore } from '@/stores/auth'
+import { checkUsersExist } from '@/services/authService'
+
+let usersExistCache: boolean | null = null
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,6 +21,11 @@ const router = createRouter({
       path: '/dashboard',
       name: 'dashboard',
       component: DashboardView,
+    },
+    {
+      path: '/setup',
+      name: 'setup',
+      component: SetupView,
     },
     {
       path: '/sign-in',
@@ -104,27 +113,38 @@ const router = createRouter({
   ],
 })
 
-// Navigation guard for authentication
-router.beforeEach((to, from, next) => {
+// Navigation guard for authentication and setup detection
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
-  // Define public routes that don't require authentication
-  const publicRoutes = ['/sign-in', '/forgot-password']
+  const publicRoutes = ['/sign-in', '/setup', '/forgot-password']
   const isPublicRoute = publicRoutes.includes(to.path) || to.path.startsWith('/reset-password')
-
-  // Check if route requires authentication
   const requiresAuth = !isPublicRoute
 
+  // Resolve setup state on first navigation
+  if (usersExistCache === null) {
+    try {
+      usersExistCache = await checkUsersExist()
+    } catch {
+      usersExistCache = true
+    }
+  }
+
   if (requiresAuth && !authStore.isAuthenticated) {
-    // Redirect to sign-in if trying to access protected route without auth
+    next(usersExistCache ? '/sign-in' : '/setup')
+  } else if (to.path === '/sign-in' && !usersExistCache) {
+    next('/setup')
+  } else if (to.path === '/setup' && usersExistCache) {
     next('/sign-in')
-  } else if (isPublicRoute && authStore.isAuthenticated && to.path === '/sign-in') {
-    // Redirect to dashboard if already authenticated and trying to access sign-in
+  } else if (to.path === '/sign-in' && authStore.isAuthenticated) {
     next('/dashboard')
   } else {
-    // Allow navigation
     next()
   }
 })
+
+export function invalidateUsersExistCache() {
+  usersExistCache = null
+}
 
 export default router

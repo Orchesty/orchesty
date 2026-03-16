@@ -1,41 +1,18 @@
 import api from './api'
-import type { ProfileUpdateData, PasswordUpdateData, NotificationSettings } from '@/types/account'
+import type { PasswordUpdateData, NotificationSettings } from '@/types/account'
+import type { UserSettings } from '@/types/auth'
 
 /**
- * Simulate API delay
+ * Save user settings (profile data like username)
  */
-const simulateDelay = () => {
-  const delay = Math.floor(Math.random() * 300) + 500 // 500-800ms
-  return new Promise((resolve) => setTimeout(resolve, delay))
-}
-
-/**
- * Simulate random error (10% chance)
- */
-const simulateRandomError = () => {
-  if (Math.random() < 0.1) {
-    throw new Error('Network error occurred')
-  }
-}
-
-/**
- * Update user profile (username)
- * Email is readonly and cannot be changed
- */
-export async function updateProfile(data: ProfileUpdateData): Promise<void> {
-  await simulateDelay()
-  simulateRandomError()
-
-  console.log('Profile updated:', data)
-  // In production: return axios.put('/api/account/profile', data)
+export async function updateProfile(userId: string, settings: UserSettings): Promise<void> {
+  await api.post(`/api/user/${userId}/saveSettings`, { settings })
 }
 
 /**
  * Update user password
- * Validates that new password and confirm password match
  */
 export async function updatePassword(data: PasswordUpdateData): Promise<void> {
-  // Validate passwords match
   if (data.newPassword !== data.confirmPassword) {
     throw new Error('Passwords do not match')
   }
@@ -47,13 +24,8 @@ export async function updatePassword(data: PasswordUpdateData): Promise<void> {
 }
 
 /**
- * Update notification preferences
+ * Update notification preferences (not yet connected to backend)
  */
-export async function updateNotifications(settings: NotificationSettings[]): Promise<void> {
-  await simulateDelay()
-  simulateRandomError()
-
-  console.log('Notifications updated:', settings)
-  // In production: return axios.put('/api/account/notifications', settings)
+export async function updateNotifications(_settings: NotificationSettings[]): Promise<void> {
+  // TODO: Connect to backend when notification API is available
 }
-

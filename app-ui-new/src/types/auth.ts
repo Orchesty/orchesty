@@ -1,7 +1,8 @@
 export interface UserSettings {
-  show: boolean
-  darkMode: boolean
-  language: string
+  show?: boolean
+  darkMode?: boolean
+  language?: string
+  username?: string
 }
 
 export interface User {

@@ -931,6 +931,123 @@ paths:
                 "500":
                     $ref: '#/components/responses/InternalServerError'
 
+    /api/processes/{id}:
+        get:
+            tags: [ Process ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                "200":
+                    description: ''
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    id:
+                                        type: string
+                                    started:
+                                        type: string
+                                        format: date-time
+                                    finished:
+                                        type: string
+                                        format: date-time
+                                        nullable: true
+                                    duration:
+                                        type: integer
+                                    status:
+                                        type: string
+                                        enum: [ IN PROGRESS, FAILED, COMPLETED ]
+                                    okCount:
+                                        type: integer
+                                    nokCount:
+                                        type: integer
+                                    totalCount:
+                                        type: integer
+                                    topology:
+                                        type: object
+                                        properties:
+                                            name:
+                                                type: string
+                                            trashCount:
+                                                type: integer
+                                            limiterCount:
+                                                type: integer
+                                            repeaterCount:
+                                                type: integer
+                                            breakpointCount:
+                                                type: integer
+                                    nodes:
+                                        type: object
+                                        additionalProperties:
+                                            type: object
+                                            properties:
+                                                name:
+                                                    type: string
+                                                processTime:
+                                                    type: integer
+                                                requestTime:
+                                                    type: integer
+                                                trashCount:
+                                                    type: integer
+                                                limiterCount:
+                                                    type: integer
+                                                repeaterCount:
+                                                    type: integer
+                                                breakpointCount:
+                                                    type: integer
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+    /api/user/exists:
+        get:
+            tags: [ Users ]
+            responses:
+                "200":
+                    description: ''
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    hasUser:
+                                        type: boolean
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+    /api/user/setup:
+        post:
+            tags: [ Users ]
+            requestBody:
+                description: ''
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                email:
+                                    type: string
+                                password:
+                                    type: string
+            responses:
+                "200":
+                    description: ''
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    email:
+                                        type: string
+                                    id:
+                                        type: string
+                "400":
+                    $ref: '#/components/responses/BadRequest'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
     /api/user/login:
         post:
             tags: [ Users ]

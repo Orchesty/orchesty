@@ -37,6 +37,30 @@ final class UserController extends AbstractController
     }
 
     /**
+     * @return Response
+     */
+    #[Route('/user/exists', methods: ['GET'])]
+    public function userExistsAction(): Response
+    {
+        return $this->getResponse($this->userHandler->hasUser());
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     * @throws MongoDBException
+     * @throws PipesFrameworkException
+     */
+    #[Route('/user/setup', methods: ['POST'])]
+    public function setupAction(Request $request): Response
+    {
+        return $this->getResponse(
+            $this->userHandler->setupUser($request->request->all()),
+        );
+    }
+
+    /**
      * @param Request $request
      *
      * @return Response
