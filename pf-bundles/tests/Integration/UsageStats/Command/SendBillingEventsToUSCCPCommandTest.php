@@ -246,6 +246,11 @@ final class SendBillingEventsToUSCCPCommandTest extends DatabaseTestCaseAbstract
             ->setOperationBillingData(new OperationBillingData('2023-01-03', 23))
             ->setSent(1_687_261_631)
             ->setVersion(1);
+        $this->setProperty($multiCounterData, 'id', uniqid());
+        $this->setProperty($multiCounterData2, 'id', uniqid());
+        $this->setProperty($multiCounterData3, 'id', uniqid());
+        $this->setProperty($multiCounterData4, 'id', uniqid());
+        $this->setProperty($multiCounterData5, 'id', uniqid());
         $dm->persist($multiCounterData);
         $dm->persist($multiCounterData2);
         $dm->persist($multiCounterData3);

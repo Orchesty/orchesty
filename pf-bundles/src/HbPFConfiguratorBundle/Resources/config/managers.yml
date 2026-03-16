@@ -48,6 +48,8 @@ services:
     hbpf.configurator.manager.process:
         class: Hanaboso\PipesFramework\Configurator\Model\ProcessManager
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@doctrine_mongodb.odm.metrics_document_manager'
             - '@hbpf.process.aggregation-filter'
             - '@hbpf.process-total.aggregation-filter'
             - '@hbpf.process-graph.aggregation-filter'
