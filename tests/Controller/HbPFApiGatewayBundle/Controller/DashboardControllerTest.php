@@ -85,6 +85,8 @@ final class DashboardControllerTest extends ControllerTestCaseAbstract
             ->setTopologyId($topology->getId())
             ->setStartedAt(new DateTime())
             ->setNok(1);
+        $this->setProperty($multiCounterData, 'id', uniqid());
+        $this->setProperty($multiCounterData2, 'id', uniqid());
         $pipesDatabase->persist($multiCounterData);
         $pipesDatabase->persist($multiCounterData2);
 

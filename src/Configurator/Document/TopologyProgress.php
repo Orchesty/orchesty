@@ -58,6 +58,12 @@ class TopologyProgress
     /**
      * @var string
      */
+    #[ODM\Id(type: 'string', strategy: 'NONE')]
+    protected string $id;
+
+    /**
+     * @var string
+     */
     #[ODM\Field(type: 'string')]
     private string $topologyId;
 

@@ -74,4 +74,18 @@ final class ProcessController extends AbstractController
         );
     }
 
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route('/processes/{id}', methods: [Request::METHOD_GET])]
+    public function getProcessDetailAction(string $id): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\ProcessController::getProcessDetailAction',
+            ['id' => $id],
+        );
+    }
+
 }

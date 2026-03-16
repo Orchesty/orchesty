@@ -8,6 +8,7 @@ use Hanaboso\PipesFramework\Configurator\Model\Filters\AggregationFilterUtils;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\ProcessHandler;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\Traits\ControllerTrait;
+use LogicException;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -96,6 +97,21 @@ final class ProcessController
                 new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
             ),
         );
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route('/processes/{id}', methods: [Request::METHOD_GET])]
+    public function getProcessDetailAction(string $id): Response
+    {
+        try {
+            return $this->getResponse($this->handler->getProcessDetail($id));
+        } catch (LogicException $e) {
+            return $this->getErrorResponse($e, 404);
+        }
     }
 
 }
