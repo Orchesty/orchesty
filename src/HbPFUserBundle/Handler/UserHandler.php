@@ -105,6 +105,28 @@ final class UserHandler
         return $this->getUserData($user, $jwt);
     }
 
+    /**
+     * @return mixed[]
+     */
+    public function hasUser(): array
+    {
+        return ['hasUser' => $this->usersManager->hasUser()];
+    }
+
+    /**
+     * @param mixed[] $data
+     *
+     * @return mixed[]
+     * @throws MongoDBException
+     * @throws PipesFrameworkException
+     */
+    public function setupUser(array $data): array
+    {
+        ControllerUtils::checkParameters(['email', 'password'], $data);
+
+        return $this->usersManager->setupUser($data['email'], $data['password'])->toArray();
+    }
+
     /*
      * ----------------------------------- HELPERS -----------------------------------
      */
