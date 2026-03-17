@@ -1,0 +1,55 @@
+{
+    "http": "GET https://demo.flexibee.eu/c/demo/zakazka.json?detail=full&add-row-count=true&start=0&limit=100",
+    "code": 200,
+    "body": {
+        "winstrom": {
+            "@version": "1.0",
+            "@rowCount": "1",
+            "zakazka": [
+                {
+                    "id": "1370",
+                    "lastUpdate": "2024-07-24T14:56:45.877+02:00",
+                    "kod": "AAAA",
+                    "nazev": "aaaa",
+                    "nazevA": "",
+                    "nazevB": "",
+                    "nazevC": "",
+                    "poznam": "",
+                    "popis": "",
+                    "platiOd": "0",
+                    "platiDo": "9999",
+                    "datZahaj": "",
+                    "datKonec": "",
+                    "procVyh": "0.0",
+                    "termin": "",
+                    "splatDny": "",
+                    "rozsah": "0.0",
+                    "nakladyPredpoklad": "0.0",
+                    "ziskPredpoklad": "0.0",
+                    "pocetPriloh": "0",
+                    "varSym": "",
+                    "stitky": "",
+                    "cisObj": "",
+                    "cisSml": "",
+                    "datZahajPlan": "",
+                    "datPredaniPlan": "",
+                    "datPredani": "",
+                    "zaruka": "false",
+                    "datZaruky": "",
+                    "createdDate": "",
+                    "firma": "",
+                    "mistUrc": "",
+                    "stredisko": "",
+                    "stavZakazky": "",
+                    "typZakazky": "",
+                    "zodpPrac": "",
+                    "vyhZakazky": "",
+                    "kontaktOsoba": "",
+                    "mena": "",
+                    "updatedBy": "",
+                    "createdBy": ""
+                }
+            ]
+        }
+    }
+}

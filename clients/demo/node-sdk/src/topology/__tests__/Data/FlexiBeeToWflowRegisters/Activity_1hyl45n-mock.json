@@ -1,0 +1,33 @@
+{
+    "http": "GET https://demo.flexibee.eu/c/demo/cleneni-kontrolni-hlaseni.json?detail=full&add-row-count=true&start=0&limit=100",
+    "code": 200,
+    "body": {
+        "winstrom": {
+            "@version": "1.0",
+            "@rowCount": "1",
+            "cleneni-kontrolni-hlaseni": [
+                {
+                    "id": "1",
+                    "lastUpdate": "2016-01-01T00:00:00+01:00",
+                    "kod": "A.4.",
+                    "nazev": "Uskutečněná plnění, u kterých je povinen přiznat daň příjemce",
+                    "nazevA": "",
+                    "nazevB": "",
+                    "nazevC": "",
+                    "poznam": "",
+                    "popis": "Uskutečněná plnění, u kterých je povinen přiznat daň příjemce",
+                    "platiOd": "0",
+                    "platiDo": "9999",
+                    "vyplnCisKod": "false",
+                    "vyplnDruh": "false",
+                    "kodTransakce": "A4",
+                    "typPohybuK": "",
+                    "uuid": "CZ A.4.",
+                    "stat": "code:CZ",
+                    "stat@ref": "/c/demo/stat/39.json",
+                    "stat@showAs": "Česká republika"
+                }
+            ]
+        }
+    }
+}

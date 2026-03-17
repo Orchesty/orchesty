@@ -1,3 +1,5 @@
+import { NAME as FLEXI_BEE_CREATE_FAKTURA_PRIJATA_NAME } from '@orchesty/connector-flexi-bee/dist/Connector/FlexiBeeCreateFakturaPrijataConnector';
+import { NAME as FLEXI_BEE_CREATE_ZAVAZEK_NAME } from '@orchesty/connector-flexi-bee/dist/Connector/FlexiBeeCreateZavazekConnector';
 import { FLEXI_BEE_APPLICATION } from '@orchesty/connector-flexi-bee/dist/FexiBeeApplication';
 import { IOutput as IInput } from '@orchesty/connector-wflow/dist/Connector/WflowGetDocumentConnector';
 import { NAME as WFLOW_APP_NAME } from '@orchesty/connector-wflow/dist/WflowApplication';
@@ -5,9 +7,13 @@ import ACommonNode from '@orchesty/nodejs-sdk/dist/lib/Commons/ACommonNode';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import { FIRMA_KOD } from '../../FlexiBee/Connector/FlexiBeeFindFirmaKodConnector';
 import { FlexiBeeApplication } from '../../FlexiBee/FlexiBeeApplication';
-import { FakturaPayload, FirmaPayload, Payload, PolozkaFaktury } from '../../FlexiBee/types/payload';
+import { FakturaPayload, FirmaPayload, Payload, PolozkaFaktury, ZavazekPayload } from '../../FlexiBee/types/payload';
 
 export const NAME = `${WFLOW_APP_NAME}-document-to-${FLEXI_BEE_APPLICATION}-faktura-prijata-mapper`;
+
+export const DOCUMENT_TYPE = 'documentType';
+export const KIND_INCOMING_INVOICE = 'IncomingInvoice';
+export const KIND_EXPENDITURE_CASH_SLIP = 'ExpenditureCashSlip';
 
 export default class WflowDocumentToFlexibeeFakturaPrijataMapper extends ACommonNode {
 
@@ -36,7 +42,7 @@ export default class WflowDocumentToFlexibeeFakturaPrijataMapper extends ACommon
         const id = `ext:${wflowId}` as const;
         const firmaKod = ic ?? dic ?? FlexiBeeApplication.createCode(nazev);
         const typDokl = this.getTypDokl(kind);
-        const isPrijataProforma = kind === 'IncomingInvoice' && invoiceType === 'Proforma';
+        const isPrijataProforma = kind === KIND_INCOMING_INVOICE && invoiceType === 'Proforma';
         let clenDph: `code:${string}` | undefined;
         let clenKonVykDph: `code:${string}` | undefined;
 
@@ -66,12 +72,37 @@ export default class WflowDocumentToFlexibeeFakturaPrijataMapper extends ACommon
 
         const { ulice, mesto, psc } = this.parseAddress(partnerAddress);
 
+        dto.addHeader(DOCUMENT_TYPE, kind);
+
         /* eslint-disable @typescript-eslint/naming-convention */
         if (firma) {
+            if (kind === KIND_INCOMING_INVOICE) {
+                return dto.setNewJsonData({
+                    winstrom: {
+                        '@version': '1.0',
+                        'faktura-prijata': [{
+                            id,
+                            typDokl,
+                            clenDph,
+                            clenKonVykDph,
+                            cisDosle,
+                            datSplat: datSplat ?? datVyst,
+                            datVyst,
+                            popis,
+                            mena,
+                            firma,
+                            stredisko,
+                            typUcOp,
+                            polozkyFaktury,
+                        }],
+                    },
+                }).setForceFollowers(FLEXI_BEE_CREATE_FAKTURA_PRIJATA_NAME);
+            }
+
             return dto.setNewJsonData({
                 winstrom: {
                     '@version': '1.0',
-                    'faktura-prijata': [{
+                    zavazek: [{
                         id,
                         typDokl,
                         clenDph,
@@ -84,10 +115,42 @@ export default class WflowDocumentToFlexibeeFakturaPrijataMapper extends ACommon
                         firma,
                         stredisko,
                         typUcOp,
+                        polozkyZavazku: polozkyFaktury,
+                    }],
+                },
+            }).setForceFollowers(FLEXI_BEE_CREATE_ZAVAZEK_NAME);
+        }
+
+        if (kind === KIND_INCOMING_INVOICE) {
+            return dto.setNewJsonData({
+                winstrom: {
+                    '@version': '1.0',
+                    adresar: [{
+                        kod: firmaKod,
+                        nazev,
+                        ulice,
+                        mesto,
+                        psc,
+                        ic,
+                        dic,
+                    }],
+                    'faktura-prijata': [{
+                        id,
+                        typDokl,
+                        clenDph,
+                        clenKonVykDph,
+                        cisDosle,
+                        datSplat: datSplat ?? datVyst,
+                        datVyst,
+                        popis,
+                        mena,
+                        firma: `code:${firmaKod}` as const,
+                        stredisko,
+                        typUcOp,
                         polozkyFaktury,
                     }],
                 },
-            });
+            }).setForceFollowers(FLEXI_BEE_CREATE_FAKTURA_PRIJATA_NAME);
         }
 
         return dto.setNewJsonData({
@@ -102,7 +165,7 @@ export default class WflowDocumentToFlexibeeFakturaPrijataMapper extends ACommon
                     ic,
                     dic,
                 }],
-                'faktura-prijata': [{
+                zavazek: [{
                     id,
                     typDokl,
                     clenDph,
@@ -112,20 +175,22 @@ export default class WflowDocumentToFlexibeeFakturaPrijataMapper extends ACommon
                     datVyst,
                     popis,
                     mena,
-                    firma: `code:${firmaKod}`,
+                    firma: `code:${firmaKod}` as const,
                     stredisko,
                     typUcOp,
-                    polozkyFaktury,
+                    polozkyZavazku: polozkyFaktury,
                 }],
             },
-        });
+        }).setForceFollowers(FLEXI_BEE_CREATE_ZAVAZEK_NAME);
         /* eslint-enable @typescript-eslint/naming-convention */
     }
 
     private getTypDokl(kind: string): `code:${string}` {
         switch (kind) {
-            case 'IncomingInvoice':
+            case KIND_INCOMING_INVOICE:
                 return 'code:FAKTURA';
+            case KIND_EXPENDITURE_CASH_SLIP:
+                return 'code:OST. ZÁVAZKY';
             default:
                 throw new Error(`Unsupported document kind [${kind}]`);
         }
@@ -214,4 +279,6 @@ interface WflowLine {
     vatType: 'Basic' | 'Exempt' | 'FirstReduced' | 'SecondReduced';
 }
 
-export type IOutput = Payload<FirmaPayload & FakturaPayload | FakturaPayload>;
+export type IOutput = Payload<
+    FirmaPayload & FakturaPayload | FakturaPayload | FirmaPayload & ZavazekPayload | ZavazekPayload
+>;

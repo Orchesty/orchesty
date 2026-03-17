@@ -1,0 +1,36 @@
+{
+    "http": "GET https://demo.flexibee.eu/c/demo/cleneni-dph.json?detail=full&add-row-count=true&start=0&limit=100",
+    "code": 200,
+    "body": {
+        "winstrom": {
+            "@version": "1.0",
+            "@rowCount": "1",
+            "cleneni-dph": [
+                {
+                    "id": "18",
+                    "lastUpdate": "2008-01-04T00:00:00+01:00",
+                    "kod": "000P",
+                    "nazev": "Doklad bez vlivu na DPH",
+                    "nazevA": "",
+                    "nazevB": "",
+                    "nazevC": "",
+                    "poznam": "",
+                    "popis": "",
+                    "platiOd": "0",
+                    "platiDo": "9999",
+                    "typPlneniK": "typPlneni.prijata",
+                    "typPlneniK@showAs": "Přijatá",
+                    "typObchoduK": "",
+                    "kodPlneniK": "",
+                    "jeDph": "false",
+                    "poradi": "0",
+                    "kodPlneniSH": "",
+                    "typPlneniEetK": "",
+                    "stat": "code:CZ",
+                    "stat@ref": "/c/demo/stat/39.json",
+                    "stat@showAs": "Česká republika"
+                }
+            ]
+        }
+    }
+}

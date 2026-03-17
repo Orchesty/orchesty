@@ -1,0 +1,41 @@
+{
+    "http": "GET https://demo.flexibee.eu/c/demo/stredisko.json?detail=full&add-row-count=true&start=0&limit=100",
+    "code": 200,
+    "body": {
+        "winstrom": {
+            "@version": "1.0",
+            "@rowCount": "1",
+            "stredisko": [
+                {
+                    "id": "22",
+                    "lastUpdate": "2024-11-15T22:35:17.555+01:00",
+                    "kod": "ADMIN",
+                    "nazev": "Admin",
+                    "nazevA": "asrwerfwerf",
+                    "nazevB": "",
+                    "nazevC": "",
+                    "poznam": "",
+                    "popis": "",
+                    "platiOd": "0",
+                    "platiDo": "9999",
+                    "ulice": "",
+                    "mesto": "",
+                    "psc": "",
+                    "tel": "",
+                    "mobil": "",
+                    "fax": "",
+                    "email": "",
+                    "www": "",
+                    "stat": "",
+                    "region": "",
+                    "tisknout": "false",
+                    "nazev2": "",
+                    "nazev2A": "",
+                    "nazev2B": "",
+                    "nazev2C": "",
+                    "stitky": ""
+                }
+            ]
+        }
+    }
+}

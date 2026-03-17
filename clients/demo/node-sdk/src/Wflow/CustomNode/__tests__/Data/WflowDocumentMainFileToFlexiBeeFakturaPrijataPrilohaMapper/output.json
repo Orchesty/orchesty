@@ -1,7 +1,12 @@
 {
     "headers": {
         "user": "TestUser",
-        "invoiceId": "1"
+        "invoiceId": "1",
+        "documentType": "IncomingInvoice",
+        "worker-followers": "[{\"name\":\"flexibee-create-faktura-prijata-priloha-connector\",\"id\":\"faktura-priloha-queue\"},{\"name\":\"flexibee-create-zavazek-priloha-connector\",\"id\":\"zavazek-priloha-queue\"}]",
+        "force-target-queue": "faktura-priloha-queue",
+        "result-code": "1002",
+        "result-message": "Message will be force re-routed to [faktura-priloha-queue] follower(s)."
     },
     "data": {
         "id": "1",

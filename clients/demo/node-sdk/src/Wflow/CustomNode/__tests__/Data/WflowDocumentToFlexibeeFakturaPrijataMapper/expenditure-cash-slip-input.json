@@ -1,0 +1,118 @@
+{
+  "headers": {
+    "user": "TestUser",
+    "documentId": "test-document",
+    "worker-followers": "[{\"name\":\"flexibee-create-faktura-prijata-connector\",\"id\":\"faktura-queue\"},{\"name\":\"flexibee-create-zavazek-connector\",\"id\":\"zavazek-queue\"}]"
+  },
+  "data": {
+    "type": {
+      "erpExclude": false,
+      "filesExtendName": false,
+      "docCreatingMethod": "Upload",
+      "autoStamp": "None",
+      "id": "53b4b60a-30dc-4ac4-92cc-f7ceaf7b250a",
+      "name": "Účtenky",
+      "kind": "ExpenditureCashSlip",
+      "default": false
+    },
+    "accounting": {
+      "accountingRule": {
+        "kind": "ExpenditureCashSlip",
+        "description": "Nákup ostatních služeb",
+        "isValid": true,
+        "code": "NÁKUP SLUŽBY",
+        "id": "9c658826-c34f-431c-9b6a-1f3c526be287",
+        "externalId": "NÁKUP SLUŽBY"
+      },
+      "costCenter": {
+        "description": "Sales & Marketing",
+        "isValid": true,
+        "code": "SALES&MARKETING",
+        "id": "10accb91-99d6-4aab-8040-7ecd24f40c46",
+        "externalId": "SALES&MARKETING"
+      },
+      "vatControlStatementLine": {
+        "description": "Přijatá zdanitelná plnění skupiny B.2. nebo B.3. dle částky (automaticky)",
+        "isValid": true,
+        "code": "B.2-3.AUTO",
+        "id": "fa4233cc-d166-406d-9cdb-87686c9dc2c8",
+        "externalId": "B.2-3.AUTO"
+      },
+      "vatReturnLine": {
+        "reverseCharge": false,
+        "description": "Z přijatých zdanitelných plnění od plátců",
+        "isValid": true,
+        "code": "40-41",
+        "id": "22764c34-8973-40e0-9f18-a8a9ae905993",
+        "externalId": "40-41"
+      },
+      "vatSupplyModeCode": "Normal",
+      "vatApplyReductionCoefficient": false,
+      "vatFixedAssets": false,
+      "vatMode": "Standard"
+    },
+    "vaTs": [
+      {
+        "rate": 21,
+        "type": "Basic",
+        "base": 100,
+        "tax": 21
+      }
+    ],
+    "lines": [
+      {
+        "id": "1fb14742-4c10-481b-971e-ad0115fadb70",
+        "totalAmount": 121,
+        "description": "Nákup z Wflow",
+        "quantity": 1,
+        "unitPrice": 100,
+        "vatType": "Basic",
+        "vatRate": 21,
+        "order": 1,
+        "accounting": {
+          "vatSupplyModeCode": "Normal",
+          "vatApplyReductionCoefficient": false,
+          "vatFixedAssets": false,
+          "vatMode": "Standard"
+        }
+      }
+    ],
+    "id": "40830940-fc60-4ffd-a143-37ed2022bd21",
+    "number": "20260101",
+    "variableSymbol": "20260101",
+    "constantSymbol": "0308",
+    "issueDate": "2026-01-01T00:00:00",
+    "dueDate": "2026-01-15T00:00:00",
+    "vatDate": "2026-01-01T00:00:00",
+    "acceptDate": "2026-01-01T00:00:00",
+    "caseDate": "2026-01-01T00:00:00",
+    "taxExclusiveAmount": 100,
+    "totalAmount": 121,
+    "roundingAmount": 0,
+    "advanceAmount": 0,
+    "currency": "CZK",
+    "partnerIC": "17864810",
+    "partnerVAT": "CZ17864810",
+    "partnerName": "1. Account s.r.o.",
+    "partnerAddress": "třída Edvarda Beneše 1415/29, 50012 Hradec Králové, CZ",
+    "partnerEmail": "m.kos@1account.cz",
+    "meIC": "02063450",
+    "exchangeRate": 1,
+    "exchangeRateUnits": 1,
+    "description": "Účtenka z Wflow",
+    "invoiceType": "TaxInvoice",
+    "doNotPay": false,
+    "created": "2026-01-07T15:38:23.26",
+    "updated": "2026-01-07T15:38:23.26",
+    "lastAction": "2026-01-07T15:38:23.593",
+    "locked": false,
+    "approvalStatus": "None",
+    "flowStatus": "Extracted",
+    "payment": {
+      "paymentStatus": "NotPaid"
+    },
+    "dataSource": "ISDOC",
+    "source": "WebApp",
+    "createdBy": "lunhul.v@orchesty-solutions.com"
+  }
+}

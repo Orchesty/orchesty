@@ -1,0 +1,39 @@
+{
+    "http": "GET https://demo.flexibee.eu/c/demo/ucet.json?detail=full&add-row-count=true&start=0&limit=100",
+    "code": 200,
+    "body": {
+        "winstrom": {
+            "@version": "1.0",
+            "@rowCount": "1",
+            "ucet": [
+                {
+                    "id": "112",
+                    "lastUpdate": "2020-07-11T22:35:42.525+02:00",
+                    "kod": "AAA",
+                    "nazev": "AAA",
+                    "nazevA": "",
+                    "nazevB": "",
+                    "nazevC": "",
+                    "poznam": "",
+                    "popis": "",
+                    "ucetObdobiOd": "code:2019",
+                    "ucetObdobiOd@ref": "/c/demo/ucetni-obdobi/3.json",
+                    "ucetObdobiOd@showAs": "2019",
+                    "ucetObdobiDo": "",
+                    "danovy": "true",
+                    "saldo": "true",
+                    "typUctuK": "typUctu.vnitropodnikovy",
+                    "typUctuK@showAs": "vnitropodnikový",
+                    "druhUctuK": "",
+                    "mena": "code:CZK",
+                    "mena@ref": "/c/demo/mena/31.json",
+                    "mena@showAs": "CZK: Česká koruna",
+                    "stdUcet": "",
+                    "typOrganizace": "code:PODNIKATELE",
+                    "typOrganizace@ref": "/c/demo/typ-organizace/1.json",
+                    "typOrganizace@showAs": "PODNIKATELE: Podnikatelé"
+                }
+            ]
+        }
+    }
+}

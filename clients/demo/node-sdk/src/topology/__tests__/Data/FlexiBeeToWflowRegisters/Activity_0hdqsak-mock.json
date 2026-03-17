@@ -1,0 +1,43 @@
+{
+    "http": "GET https://demo.flexibee.eu/c/demo/predpis-zauctovani.json?detail=full&add-row-count=true&start=0&limit=100",
+    "code": 200,
+    "body": {
+        "winstrom": {
+            "@version": "1.0",
+            "@rowCount": "1",
+            "predpis-zauctovani": [
+                {
+                    "id": "65",
+                    "lastUpdate": "2025-01-31T20:37:40.021+01:00",
+                    "kod": "AAAA",
+                    "nazev": "aaaa",
+                    "nazevA": "",
+                    "nazevB": "",
+                    "nazevC": "",
+                    "poznam": "",
+                    "popis": "",
+                    "ucetObdobiOd": "",
+                    "ucetObdobiDo": "",
+                    "modulFav": "true",
+                    "modulFap": "false",
+                    "modulPhl": "false",
+                    "modulZav": "false",
+                    "modulTxz": "false",
+                    "modulBanP": "false",
+                    "modulBanV": "false",
+                    "modulPokP": "false",
+                    "modulPokV": "false",
+                    "modulSklP": "false",
+                    "modulSklV": "false",
+                    "modulInt": "false",
+                    "kodPlneniK": "",
+                    "protiUcetPrijem": "",
+                    "protiUcetVydej": "",
+                    "dphSnizUcet": "",
+                    "dphSniz2Ucet": "",
+                    "dphZaklUcet": ""
+                }
+            ]
+        }
+    }
+}

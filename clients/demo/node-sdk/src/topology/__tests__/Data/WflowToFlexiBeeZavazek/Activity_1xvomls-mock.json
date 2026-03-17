@@ -1,0 +1,24 @@
+{
+    "http": "POST https://demo.flexibee.eu/c/demo/zavazek",
+    "code": 200,
+    "body": {
+        "winstrom": {
+            "@version": "1.0",
+            "success": "true",
+            "stats": {
+                "created": "1",
+                "updated": "0",
+                "deleted": "0",
+                "skipped": "0",
+                "failed": "0"
+            },
+            "results": [
+                {
+                    "id": "1",
+                    "request-id": "ext:test-document",
+                    "ref": "/c/test/zavazek/1"
+                }
+            ]
+        }
+    }
+}

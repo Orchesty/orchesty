@@ -1,0 +1,27 @@
+{
+    "headers": {
+        "user": "TestUser"
+    },
+    "data": [{
+        "id": "13",
+        "lastUpdate": "2015-11-10T15:33:00+01:00",
+        "kod": "A.1.",
+        "nazev": "Uskutečněná zdanitelná plnění v režimu PDP, § 92a",
+        "nazevA": "",
+        "nazevB": "",
+        "nazevC": "",
+        "poznam": "",
+        "popis": "Uskutečněná zdanitelná plnění v režimu přenesení daňové povinnosti, u kterých je povinen přiznat daň příjemce plnění podle § 92a",
+        "platiOd": "0",
+        "platiDo": "9999",
+        "vyplnCisKod": "false",
+        "vyplnDruh": "false",
+        "kodTransakce": "A1",
+        "typPohybuK": "typPohybu.prijem",
+        "typPohybuK@showAs": "Příjem",
+        "uuid": "CZ A.1.",
+        "stat": "code:CZ",
+        "stat@ref": "/c/demo/stat/39.json",
+        "stat@showAs": "Česká republika"
+    }]
+}

@@ -1,0 +1,5 @@
+{
+    "http": "PATCH https://api.wflow.com/api/test-organization/registers/costcenters",
+    "code": 200,
+    "body": ""
+}

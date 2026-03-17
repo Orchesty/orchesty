@@ -43,4 +43,22 @@ export interface FakturaPayload {
         polozkyFaktury?: PolozkaFaktury[];
     }[];
 }
+
+export interface ZavazekPayload {
+    zavazek: {
+        id: `ext:${string}`;
+        typDokl: `code:${string}`;
+        clenDph?: `code:${string}`;
+        clenKonVykDph?: `code:${string}`;
+        cisDosle: string;
+        datSplat: string;
+        datVyst?: string;
+        popis?: string;
+        mena?: `code:${string}`;
+        firma?: `code:${string}`;
+        stredisko?: `code:${string}`;
+        typUcOp?: `code:${string}`;
+        polozkyZavazku?: PolozkaFaktury[];
+    }[];
+}
 /* eslint-enable @typescript-eslint/naming-convention */

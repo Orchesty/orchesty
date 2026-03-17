@@ -1,0 +1,11 @@
+{
+    "headers": {
+        "user": "TestUser"
+    },
+    "data": [{
+        "code": "DD",
+        "description": "Zálohový daňový doklad",
+        "isValid": true,
+        "kind": "IncomingInvoice"
+    }]
+}

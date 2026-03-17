@@ -1,0 +1,10 @@
+{
+    "headers": {
+        "user": "TestUser"
+    },
+    "data": [{
+        "code": "AAA",
+        "description": "AAA",
+        "isValid": true
+    }]
+}

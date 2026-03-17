@@ -14,4 +14,8 @@ describe('Tests for WflowDocumentMainFileToFlexiBeeFakturaPrijataPrilohaMapper',
     it('process - ok', async () => {
         await tester.testCustomNode(WFLOW_DOCUMENT_MAIN_FILE_TO_FLEXIBEE_FAKTURA_PRIJATA_PRILOHA_MAPPER);
     });
+
+    it('process - expenditure cash slip', async () => {
+        await tester.testCustomNode(WFLOW_DOCUMENT_MAIN_FILE_TO_FLEXIBEE_FAKTURA_PRIJATA_PRILOHA_MAPPER, 'expenditure-cash-slip');
+    });
 });

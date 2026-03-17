@@ -42,4 +42,8 @@ describe('Tests for WflowDocumentToFlexibeeFakturaPrijataMapper', () => {
     it('process - no vats', async () => {
         await tester.testCustomNode(WFLOW_DOCUMENT_TO_FLEXIBEE_FAKTURA_PRIJATA_MAPPER, 'no-vats');
     });
+
+    it('process - expenditure cash slip', async () => {
+        await tester.testCustomNode(WFLOW_DOCUMENT_TO_FLEXIBEE_FAKTURA_PRIJATA_MAPPER, 'expenditure-cash-slip');
+    });
 });
