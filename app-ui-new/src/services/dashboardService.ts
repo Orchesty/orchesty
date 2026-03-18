@@ -375,7 +375,9 @@ export async function fetchTrashData(params: {
   // 2. Fetch graph data from metrics (per-topology aggregation for chart)
   const graphFilter: TrashApiFilter = {
     search: null,
-    filter: [],
+    filter: [
+      [{ column: 'type', operator: 'EQ', value: ['trash'] }]
+    ],
     sorter: [{ column: 'count', direction: 'DESC' }],
     paging: { itemsPerPage: 9999, page: 1 }
   }
@@ -397,7 +399,9 @@ export async function fetchTrashData(params: {
 
   const tableFilter: TrashApiFilter = {
     search: null,
-    filter: [],
+    filter: [
+      [{ column: 'type', operator: 'EQ', value: ['trash'] }]
+    ],
     sorter: [{
       column: sortColumn,
       direction: (params.sortOrder || 'desc').toUpperCase()
