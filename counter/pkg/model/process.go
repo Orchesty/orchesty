@@ -21,6 +21,7 @@ type Process struct {
 	Created        time.Time  `bson:"created"`
 	Finished       *time.Time `bson:"finished"`
 	SystemEvent    bool       `bson:"systemEvent"`
+	Source         string     `bson:"source"`
 	AuditData      []string   `bson:"auditData"`
 }
 
