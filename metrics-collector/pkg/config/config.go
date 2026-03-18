@@ -20,10 +20,13 @@ type rabbitMQConfig struct {
 	User     string `env:"RABBITMQ_USER" default:"guest"`
 	Password string `env:"RABBITMQ_PASSWORD" default:"guest"`
 	VHost    string `env:"RABBITMQ_VHOST" default:"/"`
+	HaMode   bool   `env:"RABBITMQ_HA_MODE" default:"true"`
 }
 
 type mongoDBConfig struct {
-	Dsn string `env:"MONGODB_DSN" default:"mongodb://localhost:27017/k8smetrics"`
+	DataDsn    string `env:"MONGODB_DSN" default:"mongodb://localhost:27017/k8s"`
+	MetricsDsn string `env:"METRICS_DSN" default:"mongodb://localhost:27017/k8smetrics"`
+	HaMode     bool   `env:"MONGODB_HA_MODE" default:"true"`
 }
 
 type kubernetesConfig struct {
@@ -38,9 +41,10 @@ type lokiConfig struct {
 }
 
 type app struct {
-	Debug    bool `default:"false" env:"APP_DEBUG"`
-	Tick     int  `default:"60" env:"TICK"`      // in seconds
-	TickLoki int  `default:"12" env:"TICK_LOKI"` // in hours
+	Debug       bool `default:"false" env:"APP_DEBUG"`
+	Tick        int  `default:"10" env:"TICK"`         // in seconds
+	TickMongoDB int  `default:"10" env:"TICK_MONGODB"` // in minutes
+	TickLoki    int  `default:"12" env:"TICK_LOKI"`    // in hours
 }
 
 var (

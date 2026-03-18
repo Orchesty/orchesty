@@ -200,15 +200,20 @@ global:
   metricsCollector:
     enabled: false # Enable it, if you want use Metrics Collector
     debug: false # Enable it, if you want to see debug logs
+    rabbitmqHaMode: true # Set to true if RabbitMQ is in HA mode
+    mongodbHaMode: true # Set to true if MongoDB is in HA mode
     manageServiceAccount: true
     manageRBAC: true
+    tick: 10 # in seconds, how often collect metrics for RabbitMQ and Kubernetes
+    tickMongoDB: 10 # in minutes, how often collect metrics for MongoDB
+    tickLoki: 12 # in hours, how often collect metrics for Loki
     resources:
       requests:
         memory: 64Mi
-        cpu: 20m
+        cpu: 50m
       limits:
-        memory: 128Mi
-        cpu: 100m
+        memory: 256Mi
+        cpu: 200m
 
   worker:
     hostPathMounts: []

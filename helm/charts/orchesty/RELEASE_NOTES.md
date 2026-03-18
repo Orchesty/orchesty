@@ -1,5 +1,12 @@
 # Release Notes
 
+## 2.1.16
+
+### Changes
+
+- Metrics-collector: added HA mode for RabbitMQ and MongoDB
+
+
 ## 2.1.15
 
 ### Changes

@@ -21,6 +21,8 @@ const (
 	BytesQuery = `sum(bytes_over_time({job="loki.source.kubernetes.pod_logs"}[24h]))`
 )
 
+const CollectorName = "Loki"
+
 type Collector struct {
 	client *http.Client
 }
@@ -43,7 +45,7 @@ func NewCollector() *Collector {
 }
 
 func (c *Collector) Name() string {
-	return "Loki"
+	return CollectorName
 }
 
 func (c *Collector) Collect(ctx context.Context, repo *storage.MongoRepository) error {
@@ -147,7 +149,7 @@ func (c *Collector) fetchMetrics(ctx context.Context) (*models.LokiMetric, error
 	}
 
 	metric.DailyDataSizeMB = utils.RoundFloat(float64(dailySizeBytes)/(1024*1024), 2)
-	metric.TotalDataSizeMB = utils.RoundFloat(metric.DailyDataSizeMB * float64(metric.RetentionDays), 2)
+	metric.TotalDataSizeMB = utils.RoundFloat(metric.DailyDataSizeMB*float64(metric.RetentionDays), 2)
 
 	return metric, nil
 }

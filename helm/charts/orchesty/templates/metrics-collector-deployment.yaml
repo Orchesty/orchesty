@@ -35,7 +35,11 @@ spec:
             - name: APP_DEBUG
               value: "{{ .Values.global.metricsCollector.debug}}"
             - name: TICK
-              value: "60"
+              value: "{{ .Values.global.metricsCollector.tick}}"
+            - name: TICK_MONGODB
+              value: "{{ .Values.global.metricsCollector.tickMongoDB}}"
+            - name: TICK_LOKI
+              value: "{{ .Values.global.metricsCollector.tickLoki}}"
             
             - name: LOKI_URL
               value: "http://{{ .Values.global.logs.lokiHostname }}"
@@ -44,6 +48,8 @@ spec:
             
             - name: RABBITMQ_VHOST
               value: "{{ .Release.Namespace }}"
+            - name: RABBITMQ_HA_MODE
+              value: "{{ .Values.global.metricsCollector.rabbitmqHaMode }}"
             - name: RABBITMQ_URL
               valueFrom:
                 secretKeyRef:
@@ -60,10 +66,17 @@ spec:
                   key: rabbitmq_password
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             
+            - name: MONGODB_HA_MODE
+              value: "{{ .Values.global.metricsCollector.mongodbHaMode }}"
             - name: MONGODB_DSN
               valueFrom:
                 secretKeyRef:
                   key: mongodb_dsn
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: METRICS_DSN
+              valueFrom:
+                secretKeyRef:
+                  key: metrics_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             
             - name: K8S_NAMESPACE

@@ -10,20 +10,30 @@ import (
 	"metrics-collector/pkg/storage"
 	"metrics-collector/pkg/utils"
 
+	"github.com/hanaboso/go-mongodb"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
+const CollectorName = "MongoDB"
+
 type Collector struct {
-	db *mongo.Database
+	db        *mongo.Database
+	metricsDb *mongo.Database
 }
 
-func NewCollector(db *mongo.Database) *Collector {
-	return &Collector{db: db}
+func NewCollector() *Collector {
+	mongoDbCon := &mongodb.Connection{}
+	mongoDbCon.Connect(config.Mongo.DataDsn)
+
+	mongoMetricsCon := &mongodb.Connection{}
+	mongoMetricsCon.Connect(config.Mongo.MetricsDsn)
+
+	return &Collector{db: mongoDbCon.Database, metricsDb: mongoMetricsCon.Database}
 }
 
 func (c *Collector) Name() string {
-	return "MongoDB"
+	return CollectorName
 }
 
 func (c *Collector) Collect(ctx context.Context, repo *storage.MongoRepository) error {
@@ -51,21 +61,44 @@ func (c *Collector) Collect(ctx context.Context, repo *storage.MongoRepository) 
 }
 
 func (c *Collector) fetchMetrics(ctx context.Context) (*models.MongoDBMetric, error) {
-	var stats bson.M
-	if err := c.db.RunCommand(ctx, bson.M{"dbStats": 1}).Decode(&stats); err != nil {
-		return nil, fmt.Errorf("failed to get dbStats: %w", err)
+	var statsData bson.M
+	if err := c.db.RunCommand(ctx, bson.M{"dbStats": 1}).Decode(&statsData); err != nil {
+		return nil, fmt.Errorf("failed to get dbStats from data database: %w", err)
 	}
 
-	dataSizeBytes := stats["dataSize"].(float64)
-	storageSizeBytes := stats["storageSize"].(float64)
-	objects := stats["objects"].(int64)
-	collections := int(stats["collections"].(int64))
+	var statsMetrics bson.M
+	if err := c.metricsDb.RunCommand(ctx, bson.M{"dbStats": 1}).Decode(&statsMetrics); err != nil {
+		return nil, fmt.Errorf("failed to get dbStats from metrics database: %w", err)
+	}
+
+	dataSizeBytesData := statsData["dataSize"].(float64)
+	storageSizeBytesData := statsData["storageSize"].(float64)
+	objectsData := statsData["objects"].(int64)
+	collectionsData := int(statsData["collections"].(int64))
+
+	dataSizeBytesMetrics := statsMetrics["dataSize"].(float64)
+	storageSizeBytesMetrics := statsMetrics["storageSize"].(float64)
+	objectsMetrics := statsMetrics["objects"].(int64)
+	collectionsMetrics := int(statsMetrics["collections"].(int64))
+
+	totalDataSizeBytes := dataSizeBytesData + dataSizeBytesMetrics
+	totalStorageSizeBytes := storageSizeBytesData + storageSizeBytesMetrics
+	totalObjects := objectsData + objectsMetrics
+	totalCollections := collectionsData + collectionsMetrics
+
+	replicasCount := 1
+	if config.Mongo.HaMode {
+		replicasCount = 3
+	}
+
+	dataSize := totalDataSizeBytes / (1024 * 1024) * float64(replicasCount)
+	storageSize := totalStorageSizeBytes / (1024 * 1024) * float64(replicasCount)
 
 	return &models.MongoDBMetric{
-		TotalDocuments:   objects,
-		DataSizeMB:       utils.RoundFloat(dataSizeBytes/(1024*1024), 2),
-		StorageSizeMB:    utils.RoundFloat(storageSizeBytes/(1024*1024), 2),
-		CollectionsCount: collections,
+		TotalDocuments:   totalObjects,
+		DataSizeMB:       utils.RoundFloat(dataSize, 2),
+		StorageSizeMB:    utils.RoundFloat(storageSize, 2),
+		CollectionsCount: totalCollections,
 		Timestamp:        time.Now(),
 	}, nil
 }

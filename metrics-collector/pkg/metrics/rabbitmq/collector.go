@@ -16,24 +16,40 @@ import (
 	"metrics-collector/pkg/utils"
 )
 
+const CollectorName = "RabbitMQ"
+
 type Collector struct {
-	client *http.Client
+	client           *http.Client
+	lastAggregatedAt time.Time
+	authHeader       string
 }
 
 type queueInfo struct {
-	Messages               int64 `json:"messages"`
-	MessageBytesPersistent int64 `json:"message_bytes_persistent"`
-	MessageBytesRAM        int64 `json:"message_bytes_ram"`
+	Messages               int64    `json:"messages"`
+	MessageBytesPersistent int64    `json:"message_bytes_persistent"`
+	MessageBytesRAM        int64    `json:"message_bytes_ram"`
+	Members                []string `json:"members"`
+}
+
+type paginatedResponse struct {
+	Items      []queueInfo `json:"items"`
+	PageCount  int         `json:"page_count"`
+	TotalCount int         `json:"total_count"`
 }
 
 func NewCollector() *Collector {
+	auth := base64.StdEncoding.EncodeToString(
+		[]byte(config.RabbitMQ.User + ":" + config.RabbitMQ.Password),
+	)
+
 	return &Collector{
-		client: &http.Client{Timeout: 10 * time.Second},
+		client:     &http.Client{Timeout: 10 * time.Second},
+		authHeader: "Basic " + auth,
 	}
 }
 
 func (c *Collector) Name() string {
-	return "RabbitMQ"
+	return CollectorName
 }
 
 func (c *Collector) Collect(ctx context.Context, repo *storage.MongoRepository) error {
@@ -48,8 +64,12 @@ func (c *Collector) Collect(ctx context.Context, repo *storage.MongoRepository) 
 		return err
 	}
 
-	if err := c.aggregateMetrics(ctx, repo); err != nil {
-		config.Logger.ErrorWrap("failed to aggregate RabbitMQ metrics", err)
+	now := time.Now()
+	if now.Sub(c.lastAggregatedAt) >= time.Hour {
+		if err := c.aggregateMetrics(ctx, repo); err != nil {
+			config.Logger.ErrorWrap("failed to aggregate RabbitMQ metrics", err)
+		}
+		c.lastAggregatedAt = now
 	}
 
 	config.Logger.Debug("RabbitMQ metrics collected", map[string]interface{}{
@@ -63,39 +83,57 @@ func (c *Collector) Collect(ctx context.Context, repo *storage.MongoRepository) 
 
 func (c *Collector) fetchMetrics(ctx context.Context) (*models.RabbitMQMetric, error) {
 	vHostEncoded := url.QueryEscape(config.RabbitMQ.VHost)
-	endpoint := fmt.Sprintf("%s/api/queues/%s", config.RabbitMQ.Url, vHostEncoded)
+	baseEndpoint := fmt.Sprintf("%s/api/queues/%s", config.RabbitMQ.Url, vHostEncoded)
 
-	req, err := http.NewRequestWithContext(ctx, "GET", endpoint, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
-	}
-
-	auth := base64.StdEncoding.EncodeToString([]byte(config.RabbitMQ.User + ":" + config.RabbitMQ.Password))
-	req.Header.Add("Authorization", "Basic "+auth)
-
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to fetch queues: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("unexpected status code %d: %s", resp.StatusCode, string(body))
-	}
-
-	var queues []queueInfo
-	if err := json.NewDecoder(resp.Body).Decode(&queues); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %w", err)
-	}
+	page := 1
+	pageSize := 100
 
 	var totalMessages int64
 	var totalDiskMB, totalRamMB float64
 
-	for _, q := range queues {
-		totalMessages += q.Messages
-		totalDiskMB += float64(q.MessageBytesPersistent) / (1024 * 1024)
-		totalRamMB += float64(q.MessageBytesRAM) / (1024 * 1024)
+	for {
+		endpoint := fmt.Sprintf("%s?page=%d&page_size=%d", baseEndpoint, page, pageSize)
+
+		req, err := http.NewRequestWithContext(ctx, "GET", endpoint, nil)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create request: %w", err)
+		}
+
+		req.Header.Add("Authorization", c.authHeader)
+
+		resp, err := c.client.Do(req)
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch queues: %w", err)
+		}
+
+		items, pageCount, err := c.parseResponse(resp)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(items) == 0 {
+			break
+		}
+
+		for _, q := range items {
+			diskMb := float64(q.MessageBytesPersistent) / (1024 * 1024)
+			ramMb := float64(q.MessageBytesRAM) / (1024 * 1024)
+
+			if config.RabbitMQ.HaMode {
+				diskMb *= float64(len(q.Members))
+				ramMb *= float64(len(q.Members))
+			}
+
+			totalMessages += q.Messages
+			totalDiskMB += diskMb
+			totalRamMB += ramMb
+		}
+
+		if page >= pageCount {
+			break
+		}
+
+		page++
 	}
 
 	return &models.RabbitMQMetric{
@@ -104,6 +142,22 @@ func (c *Collector) fetchMetrics(ctx context.Context) (*models.RabbitMQMetric, e
 		TotalRamMB:    utils.RoundFloat(totalRamMB, 2),
 		Timestamp:     time.Now(),
 	}, nil
+}
+
+func (c *Collector) parseResponse(resp *http.Response) ([]queueInfo, int, error) {
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, 0, fmt.Errorf("unexpected status code %d: %s", resp.StatusCode, string(body))
+	}
+
+	var paginatedResp paginatedResponse
+	if err := json.NewDecoder(resp.Body).Decode(&paginatedResp); err != nil {
+		return nil, 0, fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	return paginatedResp.Items, paginatedResp.PageCount, nil
 }
 
 func (c *Collector) aggregateMetrics(ctx context.Context, repo *storage.MongoRepository) error {

@@ -28,7 +28,7 @@ func main() {
 	defer repo.Close()
 
 	config.Logger.Info("Connected to MongoDB", map[string]interface{}{
-		"dsn": config.Mongo.Dsn,
+		"dsn": config.Mongo.MetricsDsn,
 	})
 
 	collectors := []metrics.Collector{}
@@ -36,7 +36,7 @@ func main() {
 	rmqCollector := rabbitmq.NewCollector()
 	collectors = append(collectors, rmqCollector)
 
-	mongoDbCollector := mongodb.NewCollector(repo.GetDB())
+	mongoDbCollector := mongodb.NewCollector()
 	collectors = append(collectors, mongoDbCollector)
 
 	if config.Kubernetes.Enabled {

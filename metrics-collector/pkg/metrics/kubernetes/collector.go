@@ -2,7 +2,6 @@ package kubernetes
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"time"
 
@@ -18,31 +17,30 @@ import (
 	metricsv1beta1 "k8s.io/metrics/pkg/client/clientset/versioned"
 )
 
+const CollectorName = "Kubernetes"
+
+const collectorCtxTimeout = 10 * time.Second
+
 type Collector struct {
-	clientset     kubernetes.Interface
-	metricsClient metricsv1beta1.Interface
+	clientset        kubernetes.Interface
+	metricsClient    metricsv1beta1.Interface
+	lastAggregatedAt time.Time
 }
 
 func NewCollector() (*Collector, error) {
-	// get config from k8s cluster itself
-	cfg, err := rest.InClusterConfig()
-	if err != nil {
-		return nil, fmt.Errorf("error getting config from cluster: %v", err)
-	}
+	var cfg *rest.Config
+	var err error
 
-	// check if path to k8s was given in env param. if so, use its config
 	if clusterConfig := config.Kubernetes.ClusterConfig; clusterConfig != "" {
-		kubeconfig := flag.String("kubeconfig", clusterConfig, "absolute path to the kubeconfig file")
-		flag.Parse()
-
-		cfg, err = clientcmd.BuildConfigFromFlags("", *kubeconfig)
+		cfg, err = clientcmd.BuildConfigFromFlags("", clusterConfig)
 		if err != nil {
 			return nil, fmt.Errorf("error building kubernetes config from flags: %v", err)
 		}
-	}
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to load kubeconfig: %w", err)
+	} else {
+		cfg, err = rest.InClusterConfig()
+		if err != nil {
+			return nil, fmt.Errorf("error getting config from cluster: %v", err)
+		}
 	}
 
 	clientset, err := kubernetes.NewForConfig(cfg)
@@ -62,7 +60,7 @@ func NewCollector() (*Collector, error) {
 }
 
 func (c *Collector) Name() string {
-	return "Kubernetes"
+	return CollectorName
 }
 
 func (c *Collector) Collect(ctx context.Context, repo *storage.MongoRepository) error {
@@ -77,8 +75,12 @@ func (c *Collector) Collect(ctx context.Context, repo *storage.MongoRepository) 
 		return err
 	}
 
-	if err := c.aggregateMetrics(ctx, repo); err != nil {
-		config.Logger.ErrorWrap("failed to aggregate K8s metrics", err)
+	now := time.Now()
+	if now.Sub(c.lastAggregatedAt) >= time.Hour {
+		if err := c.aggregateMetrics(ctx, repo); err != nil {
+			config.Logger.ErrorWrap("failed to aggregate K8s metrics", err)
+		}
+		c.lastAggregatedAt = now
 	}
 
 	config.Logger.Debug("K8s metrics collected", map[string]interface{}{
@@ -90,21 +92,71 @@ func (c *Collector) Collect(ctx context.Context, repo *storage.MongoRepository) 
 }
 
 func (c *Collector) fetchMetrics(ctx context.Context) (*models.K8sMetric, error) {
-	podMetrics, err := c.metricsClient.MetricsV1beta1().PodMetricses(config.Kubernetes.Namespace).List(ctx, metav1.ListOptions{})
+	podMetricsCtx, cancel := context.WithTimeout(ctx, collectorCtxTimeout)
+	defer cancel()
+
+	podMetrics, err := c.metricsClient.MetricsV1beta1().PodMetricses(config.Kubernetes.Namespace).List(podMetricsCtx, metav1.ListOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get pod metrics: %w", err)
+	}
+
+	podsCtx, podsCancel := context.WithTimeout(ctx, collectorCtxTimeout)
+	defer podsCancel()
+
+	pods, err := c.clientset.CoreV1().Pods(config.Kubernetes.Namespace).List(podsCtx, metav1.ListOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get pods: %w", err)
+	}
+
+	totalContainers := 0
+	for i := range podMetrics.Items {
+		totalContainers += len(podMetrics.Items[i].Containers)
+	}
+
+	usageCPUByContainer := make(map[string]int64, totalContainers)
+	usageMemByContainer := make(map[string]int64, totalContainers)
+
+	for i := range podMetrics.Items {
+		podMetric := &podMetrics.Items[i]
+		for j := range podMetric.Containers {
+			container := &podMetric.Containers[j]
+			key := fmt.Sprintf("%s/%s", podMetric.Name, container.Name)
+			usageCPUByContainer[key] = container.Usage.Cpu().MilliValue() * 1e6
+			usageMemByContainer[key] = container.Usage.Memory().Value()
+		}
 	}
 
 	var totalCpuNanoCores int64
 	var totalMemoryBytes int64
 
-	for _, podMetric := range podMetrics.Items {
-		for _, container := range podMetric.Containers {
-			cpuQuantity := container.Usage.Cpu()
-			memQuantity := container.Usage.Memory()
+	for i := range pods.Items {
+		pod := &pods.Items[i]
+		if pod.Status.Phase == "Succeeded" || pod.Status.Phase == "Failed" {
+			continue
+		}
 
-			totalCpuNanoCores += cpuQuantity.MilliValue() * 1e6
-			totalMemoryBytes += memQuantity.Value()
+		for j := range pod.Spec.Containers {
+			container := &pod.Spec.Containers[j]
+			key := pod.Name + "/" + container.Name
+
+			reqCPU := container.Resources.Requests.Cpu().MilliValue() * 1e6
+			reqMem := container.Resources.Requests.Memory().Value()
+
+			actCPU := usageCPUByContainer[key]
+			actMem := usageMemByContainer[key]
+
+			effectiveCPU := reqCPU
+			if actCPU > effectiveCPU {
+				effectiveCPU = actCPU
+			}
+
+			effectiveMem := reqMem
+			if actMem > effectiveMem {
+				effectiveMem = actMem
+			}
+
+			totalCpuNanoCores += effectiveCPU
+			totalMemoryBytes += effectiveMem
 		}
 	}
 
@@ -119,8 +171,11 @@ func (c *Collector) fetchMetrics(ctx context.Context) (*models.K8sMetric, error)
 }
 
 func (c *Collector) aggregateMetrics(ctx context.Context, repo *storage.MongoRepository) error {
+	aggCtx, cancel := context.WithTimeout(ctx, collectorCtxTimeout)
+	defer cancel()
+
 	now := time.Now()
-	metrics, err := repo.GetK8sMetricsForMonth(ctx)
+	metrics, err := repo.GetK8sMetricsForMonth(aggCtx)
 	if err != nil {
 		return fmt.Errorf("failed to get metrics for month: %w", err)
 	}
@@ -157,5 +212,8 @@ func (c *Collector) aggregateMetrics(ctx context.Context, repo *storage.MongoRep
 		LastUpdated: now,
 	}
 
-	return repo.SaveK8sAggregation(ctx, agg)
+	aggSaveCtx, aggSaveCancel := context.WithTimeout(ctx, collectorCtxTimeout)
+	defer aggSaveCancel()
+
+	return repo.SaveK8sAggregation(aggSaveCtx, agg)
 }

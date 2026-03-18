@@ -38,7 +38,7 @@ type MongoRepository struct {
 
 func NewMongoRepository(ctx context.Context) (*MongoRepository, error) {
 	mongoDbCon := &mongodb.Connection{}
-	mongoDbCon.Connect(config.Mongo.Dsn)
+	mongoDbCon.Connect(config.Mongo.MetricsDsn)
 
 	repo := &MongoRepository{
 		connection: mongoDbCon,
@@ -55,51 +55,58 @@ func NewMongoRepository(ctx context.Context) (*MongoRepository, error) {
 func (r *MongoRepository) createIndexes(ctx context.Context) error {
 	month := int32(30 * 24 * 60 * 60)
 
-	collections := map[string][]mongo.IndexModel{
-		CollectionRabbitMQMetrics: {
+	collections := make(map[string][]mongo.IndexModel)
+
+	collections[CollectionRabbitMQMetrics] = []mongo.IndexModel{
+		{
+			Keys:    bson.M{FieldTimestamp: 1},
+			Options: options.Index().SetExpireAfterSeconds(month),
+		},
+	}
+	collections[CollectionMonthlyRabbitAggregates] = []mongo.IndexModel{
+		{
+			Keys: bson.M{FieldMonth: 1},
+		},
+	}
+
+	collections[CollectionDBStorageMetrics] = []mongo.IndexModel{
+		{
+			Keys:    bson.M{FieldTimestamp: 1},
+			Options: options.Index().SetExpireAfterSeconds(month),
+		},
+	}
+	collections[CollectionMonthlyStorageAggregates] = []mongo.IndexModel{
+		{
+			Keys: bson.M{FieldMonth: 1},
+		},
+	}
+
+	if config.Kubernetes.Enabled {
+		collections[CollectionNamespaceMetrics] = []mongo.IndexModel{
 			{
 				Keys:    bson.M{FieldTimestamp: 1},
 				Options: options.Index().SetExpireAfterSeconds(month),
 			},
-		},
-		CollectionDBStorageMetrics: {
+		}
+		collections[CollectionMonthlyAggregates] = []mongo.IndexModel{
+			{
+				Keys: bson.M{FieldMonth: 1},
+			},
+		}
+	}
+
+	if config.Loki.Enabled {
+		collections[CollectionLokiRetentionMetrics] = []mongo.IndexModel{
 			{
 				Keys:    bson.M{FieldTimestamp: 1},
 				Options: options.Index().SetExpireAfterSeconds(month),
 			},
-		},
-		CollectionMonthlyStorageAggregates: {
+		}
+		collections[CollectionMonthlyLokiAggregates] = []mongo.IndexModel{
 			{
 				Keys: bson.M{FieldMonth: 1},
 			},
-		},
-		CollectionNamespaceMetrics: {
-			{
-				Keys:    bson.M{FieldTimestamp: 1},
-				Options: options.Index().SetExpireAfterSeconds(month),
-			},
-		},
-		CollectionMonthlyAggregates: {
-			{
-				Keys: bson.M{FieldMonth: 1},
-			},
-		},
-		CollectionLokiRetentionMetrics: {
-			{
-				Keys:    bson.M{FieldTimestamp: 1},
-				Options: options.Index().SetExpireAfterSeconds(month),
-			},
-		},
-		CollectionMonthlyRabbitAggregates: {
-			{
-				Keys: bson.M{FieldMonth: 1},
-			},
-		},
-		CollectionMonthlyLokiAggregates: {
-			{
-				Keys: bson.M{FieldMonth: 1},
-			},
-		},
+		}
 	}
 
 	for collName, indexes := range collections {

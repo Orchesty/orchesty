@@ -8,6 +8,8 @@ import (
 
 	"metrics-collector/pkg/config"
 	"metrics-collector/pkg/metrics"
+	lokicollector "metrics-collector/pkg/metrics/loki"
+	mongodbcollector "metrics-collector/pkg/metrics/mongodb"
 	"metrics-collector/pkg/storage"
 )
 
@@ -32,8 +34,14 @@ func NewScheduler(
 
 	for _, collector := range collectors {
 		interval := time.Duration(config.App.Tick) * time.Second
-		if collector.Name() == "Loki" {
+
+		switch collector.Name() {
+		case lokicollector.CollectorName:
 			interval = time.Duration(config.App.TickLoki) * time.Hour
+		case mongodbcollector.CollectorName:
+			interval = time.Duration(config.App.TickMongoDB) * time.Minute
+		default:
+			interval = time.Duration(config.App.Tick) * time.Second
 		}
 
 		collectorsWithIntervals = append(collectorsWithIntervals, CollectorWithInterval{
