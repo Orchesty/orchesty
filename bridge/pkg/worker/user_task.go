@@ -13,6 +13,11 @@ type UserTask struct {
 }
 
 func (u UserTask) BeforeProcess(node types.Node, dto *model.ProcessMessage) model.ProcessResult {
+	source, _ := dto.GetHeader(enum.Header_Source)
+	if source == enum.Source_Auto {
+		return dto.Ok()
+	}
+
 	state, err := dto.GetHeader(enum.Header_UserTaskState)
 	// If header does not exists, it's first visit -> send to storage
 	if err != nil {

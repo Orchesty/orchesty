@@ -116,6 +116,7 @@ func (pm ParsedMessage) ProcessInitQuery() mongo.WriteModel {
 			"user":           user,
 			"finished":       nil,
 			"systemEvent":    pm.ProcessMessage.GetBoolHeaderOrDefault(enum.Header_SystemEvent, false),
+			"source":         pm.ProcessMessage.GetHeaderOrDefault(enum.Header_Source, "auto"),
 		},
 	}
 	t := true
@@ -173,6 +174,7 @@ func (pm ParsedMessage) SubProcessInitQuery() mongo.WriteModel {
 			"correlationId":  corrId,
 			"parentId":       pm.ProcessMessage.GetHeaderOrDefault(enum.Header_ParentProcessId, corrId),
 			"systemEvent":    pm.ProcessMessage.GetBoolHeaderOrDefault(enum.Header_SystemEvent, false),
+			"source":         pm.ProcessMessage.GetHeaderOrDefault(enum.Header_Source, "auto"),
 		},
 	}
 	t := true

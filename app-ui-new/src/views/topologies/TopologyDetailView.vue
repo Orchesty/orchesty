@@ -212,13 +212,6 @@ const handleTabModalUpdate = () => {
   refreshKey.value++
 }
 
-// Topology action handlers (from detail page header, delegating to layout)
-const handleRunTopology = async () => {
-  if (!topology.value) return
-  await layout.handleRunTopologyAction(topology.value._id, topology.value.name)
-  refreshKey.value++
-}
-
 const handleProcessRun = () => {
   refreshKey.value++
 }

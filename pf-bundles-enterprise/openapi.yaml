@@ -1053,6 +1053,9 @@ paths:
                                         type: integer
                                     totalCount:
                                         type: integer
+                                    source:
+                                        type: string
+                                        enum: [ ui, auto ]
                                     topology:
                                         type: object
                                         properties:
@@ -3227,6 +3230,9 @@ components:
                                         type: string
                                     duration:
                                         type: integer
+                                    source:
+                                        type: string
+                                        enum: [ ui, auto ]
                                     messages:
                                         type: array
                                         items:

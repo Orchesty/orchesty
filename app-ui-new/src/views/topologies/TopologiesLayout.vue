@@ -12,7 +12,7 @@ import MoveTopologyModal from '@/components/topologies/MoveTopologyModal.vue'
 import EditTopologyModal from '@/components/topologies/EditTopologyModal.vue'
 import Confirm from '@/components/ui/Confirm.vue'
 import type { FolderItem, TopologiesTreeNode } from '@/types/topologies-page'
-import { fetchCategories, deleteCategory, deleteTopology, runTopology, cloneTopology, fetchTopologySchema } from '@/services/topologiesService'
+import { fetchCategories, deleteCategory, deleteTopology, cloneTopology, fetchTopologySchema } from '@/services/topologiesService'
 import { useLastTopology } from '@/composables/useLastTopology'
 import { useToast } from '@/composables/useToast'
 import { Dropdown } from 'flowbite'
@@ -185,16 +185,6 @@ const openDeleteTopologyConfirm = (id: string, name: string) => {
   deleteTopologyConfirmOpen.value = true
 }
 
-const handleRunTopologyAction = async (id: string, name: string) => {
-  try {
-    await runTopology(id)
-    showToast(`Topology "${name}" run started`, 'success')
-  } catch (error) {
-    console.error('Failed to run topology:', error)
-    showToast('Failed to run topology', 'error')
-  }
-}
-
 const handleCloneTopologyAction = async (id: string) => {
   try {
     const result = await cloneTopology(id)
@@ -310,7 +300,6 @@ const layoutContext: TopologyLayoutContext = {
   openEditTopologyModal,
   openMoveTopologyModal,
   openDeleteTopologyConfirm,
-  handleRunTopologyAction,
   handleCloneTopologyAction,
   handleExportTopologyAction,
   refreshSidebar: refreshAfterCrud,
