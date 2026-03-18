@@ -30,6 +30,7 @@ final class MetricUserTaskGraphAggregationFilter extends GridAggregationFilterAb
     {
         return [
             'created' => 'created',
+            'type' => 'type',
         ];
     }
 
