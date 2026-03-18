@@ -15,12 +15,19 @@ import { useDateFormat } from '@/composables/useDateFormat'
 interface Props {
   modelValue: boolean
   process: Process | null
+  showBackButton?: boolean
+  drawerId?: string
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  showBackButton: false,
+  drawerId: 'process-audit-drawer',
+})
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
+  'back': []
+  'hidden': []
 }>()
 
 const router = useRouter()
@@ -155,14 +162,28 @@ const handleClose = () => {
 <template>
   <Drawer
     :model-value="modelValue"
-    id="process-audit-drawer"
+    :id="drawerId"
     label="Process Audit"
     width="w-1/2 min-w-[600px]"
     @update:model-value="handleClose"
+    @hidden="emit('hidden')"
   >
     <LoadingSpinner v-if="loading" message="Loading process details..." />
 
     <div v-else-if="processDetail" class="space-y-6">
+      <!-- Back button -->
+      <button
+        v-if="showBackButton"
+        type="button"
+        class="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+        @click="emit('back')"
+      >
+        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to Processes
+      </button>
+
       <!-- Topology Header -->
       <div class="mb-6 border-b border-gray-200 pb-6 dark:border-gray-700">
         <div class="mb-3 flex items-start justify-between">

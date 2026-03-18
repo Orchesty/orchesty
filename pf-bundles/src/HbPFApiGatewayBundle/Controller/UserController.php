@@ -58,6 +58,24 @@ final class UserController extends AbstractController
     /**
      * @return Response
      */
+    #[Route('/user/exists', methods: ['GET'])]
+    public function userExistsAction(): Response
+    {
+        return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::userExistsAction');
+    }
+
+    /**
+     * @return Response
+     */
+    #[Route('/user/setup', methods: ['POST'])]
+    public function setupAction(): Response
+    {
+        return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::setupAction');
+    }
+
+    /**
+     * @return Response
+     */
     #[Route('/user/register', methods: ['POST'])]
     public function registerAction(): Response
     {

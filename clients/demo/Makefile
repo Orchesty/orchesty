@@ -56,7 +56,6 @@ init: up
 	$(DCB) bin/console topology:install -c -u --force ''
 	#$(DCB) bin/console topology:install -c -u -m --force ''
 	$(DCB) bin/console api-token:create --key "$(shell grep 'ORCHESTY_API_KEY' .env | cut -d "=" -f2)"
-	$(DCB) bin/console user:create "$(shell grep 'ORCHESTY_USER' .env | cut -d "=" -f2)" "$(shell grep 'ORCHESTY_PASSWORD' .env | cut -d "=" -f2)"
 
 destroy: .env topology-destroy
 	$(DC) down -v
@@ -68,7 +67,8 @@ topology-destroy:
 applinth-link:
 	echo "http://$(shell grep 'DEV_IP' .env | cut -d "=" -f2):81/?u=$$($(DE) applinth-marketplace-ui /bin/bash -c 'node JWEGen.js')"
 
-application-install:
+init-more: init
+	$(DCB) bin/console user:create "$(shell grep 'ORCHESTY_USER' .env | cut -d "=" -f2)" "$(shell grep 'ORCHESTY_PASSWORD' .env | cut -d "=" -f2)"
 	$(DCB) sh -c '\
 		TOKEN=$$(curl -s -X POST http://localhost/api/user/login \
 			-H "Content-Type: application/json" \

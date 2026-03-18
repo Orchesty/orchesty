@@ -1,8 +1,8 @@
 doctrine_mongodb:
     default_document_manager: default
     default_connection: default
-    auto_generate_proxy_classes: true
-    auto_generate_hydrator_classes: true
+    auto_generate_proxy_classes: 3
+    auto_generate_hydrator_classes: 3
     auto_generate_persistent_collection_classes: 3
     proxy_namespace: OdmProxies
     proxy_dir: "%kernel.cache_dir%/doctrine/odm/mongodb/Proxies"

@@ -113,23 +113,18 @@ export async function fetchTrashItems(
   // Handle time range filter
   if (params.dateFrom && params.dateTo) {
     filterObj.filter.push([
-      {
-        column: 'created',
-        operator: 'BETWEEN',
-        value: [params.dateFrom, params.dateTo]
-      }
+      { column: 'created', operator: 'BETWEEN', value: [params.dateFrom, params.dateTo] }
+    ])
+  } else if (params.dateFrom) {
+    filterObj.filter.push([
+      { column: 'created', operator: 'GTE', value: [params.dateFrom] }
     ])
   } else if (params.timeRange) {
     const dateRange = convertTimeFilterToDateTimeRange(params.timeRange)
     const fromISO = formatDateTimeForApiFilter(dateRange.from)
-    const toISO = formatDateTimeForApiFilter(dateRange.to)
 
     filterObj.filter.push([
-      {
-        column: 'created',
-        operator: 'BETWEEN',
-        value: [fromISO, toISO]
-      }
+      { column: 'created', operator: 'GTE', value: [fromISO] }
     ])
   }
 

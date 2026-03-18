@@ -126,12 +126,11 @@ export async function fetchConnectors(
   }
 
   // Add date range filter
-  if (params.dateFrom && params.dateTo) {
-    filterObj.filter.push([{
-      column: 'created',
-      operator: 'BETWEEN',
-      value: [params.dateFrom, params.dateTo]
-    }])
+  if (params.dateFrom) {
+    filterObj.filter.push([params.dateTo
+      ? { column: 'created', operator: 'BETWEEN', value: [params.dateFrom, params.dateTo] }
+      : { column: 'created', operator: 'GTE', value: [params.dateFrom] }
+    ])
   }
 
   // Add sorting
@@ -174,28 +173,38 @@ export async function fetchConnectorDetail(
 ): Promise<ConnectorDetail> {
   const dateRange = convertTimeFilterToDateTimeRange(timeFilter)
   const dateFrom = formatDateTimeForApi(dateRange.from) || ''
-  const dateTo = formatDateTimeForApi(dateRange.to) || ''
 
-  const filterObj: ConnectorApiFilter = {
+  const overviewFilter: ConnectorApiFilter = {
     search: null,
     filter: [
-      [{ column: 'created', operator: 'BETWEEN', value: [dateFrom, dateTo] }],
+      [{ column: 'created', operator: 'GTE', value: [dateFrom] }],
       [{ column: 'nodeId', operator: 'EQ', value: nodeIds }]
     ],
     sorter: [],
-    paging: {
-      itemsPerPage: 1,
-      page: 1
-    }
+    paging: { itemsPerPage: 1, page: 1 }
   }
 
-  const response = await api.get<ConnectorApiResponse>('/api/metrics/connectors/overview', {
-    params: {
-      filter: JSON.stringify(filterObj)
-    }
-  })
+  const lastRecordFilter: ConnectorApiFilter = {
+    search: null,
+    filter: [
+      [{ column: 'created', operator: 'GTE', value: [dateFrom] }],
+      [{ column: 'nodeId', operator: 'EQ', value: nodeIds }]
+    ],
+    sorter: [{ column: 'created', direction: 'DESC' }],
+    paging: { itemsPerPage: 1, page: 1 }
+  }
 
-  const items = response.data.items
+  const [overviewRes, lastRecordRes] = await Promise.all([
+    api.get<ConnectorApiResponse>('/api/metrics/connectors/overview', {
+      params: { filter: JSON.stringify(overviewFilter) }
+    }),
+    api.get<ConnectorErrorApiResponse>('/api/metrics/connectors', {
+      params: { filter: JSON.stringify(lastRecordFilter) }
+    }),
+  ])
+
+  const items = overviewRes.data.items
+  const lastRecord = lastRecordRes.data.items[0]
 
   if (items.length === 0) {
     return {
@@ -213,6 +222,8 @@ export async function fetchConnectorDetail(
       errors500: 0,
       totalRequests: 0,
       lastRequestStatus: 0,
+      lastRequestTime: 0,
+      avgRequestTime: 0,
       errorRecords: [],
     }
   }
@@ -224,6 +235,8 @@ export async function fetchConnectorDetail(
     errors500: items[0].status500,
     totalRequests: items[0].count,
     lastRequestStatus: items[0].lastStatus,
+    lastRequestTime: lastRecord?.duration || 0,
+    avgRequestTime: items[0].duration,
     errorRecords: [],
   }
 }
@@ -242,12 +255,11 @@ export async function fetchConnectorErrorRecords(
 ): Promise<PaginatedResponse<ConnectorErrorRecord>> {
   const dateRange = convertTimeFilterToDateTimeRange(timeFilter)
   const dateFrom = formatDateTimeForApi(dateRange.from) || ''
-  const dateTo = formatDateTimeForApi(dateRange.to) || ''
 
   const filterObj: ConnectorApiFilter = {
     search: null,
     filter: [
-      [{ column: 'created', operator: 'BETWEEN', value: [dateFrom, dateTo] }],
+      [{ column: 'created', operator: 'GTE', value: [dateFrom] }],
       [{ column: 'nodeId', operator: 'EQ', value: nodeIds }],
       [{ column: 'status', operator: 'EQ', value: ['FAILED'] }]
     ],

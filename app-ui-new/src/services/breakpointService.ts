@@ -69,9 +69,31 @@ export async function fetchBreakpointItems(params: {
 }
 
 export interface NodeOverlayCounts {
-  breakpointCounts: Record<string, number>
+  breakpointCounts: Record<string, number | string>
   failedNodeIds: string[]
   breakpointCorrelationId?: string
+}
+
+function buildBreakpointCounts(
+  data: TrashApiResponse,
+): Record<string, number | string> {
+  const perNode: Record<string, number> = {}
+  for (const item of data.items) {
+    perNode[item.nodeId] = (perNode[item.nodeId] || 0) + 1
+  }
+  const total = data.paging.total
+  const fetched = data.items.length
+  if (total <= fetched) return perNode
+
+  const nodeIds = Object.keys(perNode)
+  if (nodeIds.length === 1) {
+    return { [nodeIds[0]]: total }
+  }
+  const result: Record<string, number | string> = {}
+  for (const [nodeId, count] of Object.entries(perNode)) {
+    result[nodeId] = `${count}+`
+  }
+  return result
 }
 
 /**
@@ -107,10 +129,7 @@ export async function fetchNodeOverlayCounts(
     const breakpointRes = await api.get<TrashApiResponse>(
       `/api/user-tasks?filter=${encodeURIComponent(JSON.stringify(breakpointFilter))}`,
     )
-    const breakpointCounts: Record<string, number> = {}
-    for (const item of breakpointRes.data.items) {
-      breakpointCounts[item.nodeId] = (breakpointCounts[item.nodeId] || 0) + 1
-    }
+    const breakpointCounts = buildBreakpointCounts(breakpointRes.data)
     const firstItem = breakpointRes.data.items[0]
     return {
       breakpointCounts,
@@ -132,10 +151,7 @@ export async function fetchNodeOverlayCounts(
     ),
   ])
 
-  const breakpointCounts: Record<string, number> = {}
-  for (const item of breakpointRes.data.items) {
-    breakpointCounts[item.nodeId] = (breakpointCounts[item.nodeId] || 0) + 1
-  }
+  const breakpointCounts = buildBreakpointCounts(breakpointRes.data)
 
   const failedNodeIdSet = new Set<string>()
   for (const item of trashRes.data.items) {

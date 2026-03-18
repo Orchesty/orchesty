@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watch, computed, nextTick, onActivated, onDeactivated } from 'vue'
-import ProcessesChart from './ProcessesChart.vue'
 import ProcessAuditDrawer from './ProcessAuditDrawer.vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
@@ -8,10 +7,9 @@ import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
 import SearchableDropdownFilter from '@/components/ui/datagrid/SearchableDropdownFilter.vue'
 import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
 import type { Process, ProcessStatus } from '@/types/processes'
-import type { ProcessFilter, TimeFilter, TableColumn, ProcessesChartData, ProcessesExternalFilters, HeatmapClickData } from '@/types/dashboard'
+import type { TimeFilter, TableColumn, ProcessesExternalFilters } from '@/types/dashboard'
 import type { QuickFilterOption, DropdownFilterOption } from '@/types/datagrid'
 import { fetchProcesses } from '@/services/processesService'
-import { fetchProcessesTotalCounts, fetchProcessesGraphData } from '@/services/dashboardService'
 import { convertTimeFilterToDateTimeRange, formatDateTimeForApi, formatDateTimeLocal } from '@/utils/timeRangeConverter'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useDateFormat } from '@/composables/useDateFormat'
@@ -20,31 +18,20 @@ import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 
 interface Props {
   globalTimeFilter: TimeFilter
-  heatmapFilter?: ProcessFilter
   externalFilters?: ProcessesExternalFilters
   refreshKey?: number
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  heatmapFilter: 'all',
-})
-
-const emit = defineEmits<{
-  heatmapFilterChange: [filter: ProcessFilter]
-}>()
+const props = defineProps<Props>()
 
 // Use topology/node mappings composable
-const { getTopologyName, getTopologyNameWithVersion, topologyNameWithVersionMap, deduplicatedTopologyOptions, getTopologyIdsByName } = useTopologyNodeMappings()
+const { getTopologyName, getTopologyNameWithVersion, deduplicatedTopologyOptions, getTopologyIdsByName } = useTopologyNodeMappings()
 const { formatDateTime } = useDateFormat()
 const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 // Drawer state
 const drawerOpen = ref(false)
 const selectedProcess = ref<Process | null>(null)
-
-// Heatmap data
-const processesChartData = ref<ProcessesChartData | null>(null)
-const chartLoading = ref(true)
 
 // Grid filters
 const processes = ref<Process[]>([])
@@ -57,7 +44,7 @@ const skipAutoLoad = ref(hasExternalFilters)
 
 const dateTimeRange = ref<{ from: string | null; to: string | null }>({
   from: props.externalFilters?.timeRange?.from ?? initialRange.from,
-  to: props.externalFilters?.timeRange?.to ?? initialRange.to,
+  to: props.externalFilters?.timeRange?.to ?? null,
 })
 
 if (props.externalFilters?.topology) {
@@ -165,81 +152,21 @@ const handleAuditClick = (process: Process) => {
   console.log('Drawer state:', { drawerOpen: drawerOpen.value, selectedProcess: selectedProcess.value })
 }
 
-const handleHeatmapClick = (data: HeatmapClickData) => {
-  console.log('Heatmap clicked in ProcessesTab:', data)
-
-  // Use exact slot boundaries from the heatmap
-  // Pause auto-reload to set both filters atomically
-  skipAutoLoad.value = true
-
-  // Resolve topology ID to name (filter uses grouped names)
-  topologyFilter.value = getTopologyName(data.topology)
-  dateTimeRange.value = {
-    from: formatDateTimeLocal(new Date(data.timeSlot)),
-    to: formatDateTimeLocal(new Date(data.timeSlotEnd)),
-  }
-
-  // Resume and trigger single reload
-  nextTick(() => {
-    skipAutoLoad.value = false
-    loadData()
-  })
-}
-
-const handleProcessFilterChange = async (filter: ProcessFilter) => {
-  emit('heatmapFilterChange', filter)
-  // Chart data will reload via watch on props.heatmapFilter
-}
-
-const loadChartData = async () => {
-  chartLoading.value = true
-  try {
-    const range = convertTimeFilterToDateTimeRange(props.globalTimeFilter)
-    const dateFrom = formatDateTimeForApi(range.from) || ''
-    const dateTo = formatDateTimeForApi(range.to) || ''
-
-    const totals = await fetchProcessesTotalCounts(dateFrom, dateTo)
-    const chartData = await fetchProcessesGraphData(props.heatmapFilter, dateFrom, dateTo, 40)
-
-    processesChartData.value = {
-      ...chartData,
-      totalProcesses: totals.totalProcesses,
-      failedProcesses: totals.failedProcesses,
-    }
-  } catch (error) {
-    console.error('Error loading processes chart data:', error)
-  } finally {
-    chartLoading.value = false
-  }
-}
-
 watch(
   () => props.globalTimeFilter,
   (newFilter) => {
     const range = convertTimeFilterToDateTimeRange(newFilter)
     dateTimeRange.value = {
       from: range.from,
-      to: range.to,
+      to: null,
     }
     invalidate()
-    if (isActive.value) {
-      loadChartData()
-    }
   },
-)
-
-watch(
-  () => props.heatmapFilter,
-  () => {
-    invalidate()
-    if (isActive.value) loadChartData()
-  }
 )
 
 watch(() => props.refreshKey, () => {
   invalidate()
   loadData()
-  loadChartData()
 })
 
 watch(
@@ -273,7 +200,6 @@ onActivated(() => {
   isActive.value = true
   if (isStale()) {
     loadData()
-    loadChartData()
   }
 })
 
@@ -285,48 +211,6 @@ onDeactivated(() => {
 
 <template>
   <div>
-    <!-- Processes Chart -->
-    <div class="mb-6">
-      <Card v-if="chartLoading" class="flex items-center justify-center p-12">
-        <div class="text-center">
-          <svg
-            class="mx-auto h-12 w-12 animate-spin text-primary-600"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              class="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              stroke-width="4"
-            ></circle>
-            <path
-              class="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
-          <p class="mt-4 text-gray-500 dark:text-gray-400">Loading chart...</p>
-        </div>
-      </Card>
-      <ProcessesChart
-        v-else-if="processesChartData"
-        chart-id="processes"
-        :total-processes="processesChartData.totalProcesses || 0"
-        :total-failed="processesChartData.failedProcesses || 0"
-        :time-range="processesChartData.timeRange || ''"
-        :filter="props.heatmapFilter"
-        :series="processesChartData.series"
-        :x-categories="processesChartData.xCategories || []"
-        :y-label-map="topologyNameWithVersionMap"
-        @filter-change="handleProcessFilterChange"
-        @heatmap-click="handleHeatmapClick"
-      />
-    </div>
-
     <!-- Processes Grid Card -->
     <Card>
       <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">Processes</h3>

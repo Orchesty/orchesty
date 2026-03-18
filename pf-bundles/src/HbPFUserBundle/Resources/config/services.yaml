@@ -10,6 +10,8 @@ services:
         class: Hanaboso\PipesFramework\User\Manager\UserManager
         arguments:
             - '@hbpf.user.filter'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@security.password_hasher_factory'
 
     hbpf.user.filter:
         class: Hanaboso\PipesFramework\User\Filter\UserDocumentFilter

@@ -95,12 +95,11 @@ export async function fetchProcesses(
   }
 
   // Add date range filter
-  if (params.dateFrom && params.dateTo) {
-    filterObj.filter.push([{
-      column: 'created',
-      operator: 'BETWEEN',
-      value: [params.dateFrom, params.dateTo]
-    }])
+  if (params.dateFrom) {
+    filterObj.filter.push([params.dateTo
+      ? { column: 'created', operator: 'BETWEEN', value: [params.dateFrom, params.dateTo] }
+      : { column: 'created', operator: 'GTE', value: [params.dateFrom] }
+    ])
   }
 
   // Add sorting

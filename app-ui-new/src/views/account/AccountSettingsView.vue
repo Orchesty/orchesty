@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import Tabs from '@/components/ui/Tabs.vue'
 import TextInput from '@/components/ui/TextInput.vue'
@@ -7,9 +7,9 @@ import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import type { Tab } from '@/components/ui/Tabs.vue'
 import { useToast } from '@/composables/useToast'
+import { useAuthStore } from '@/stores/auth'
 import { updateProfile, updatePassword, updateNotifications } from '@/services/accountService'
 
-// Tabs configuration
 const tabs: Tab[] = [
   {
     id: 'profile',
@@ -27,41 +27,25 @@ const tabs: Tab[] = [
   },
 ]
 
-// Toast notifications
 const { showToast } = useToast()
+const authStore = useAuthStore()
 
-// Loading states
 const savingProfile = ref(false)
 const savingPassword = ref(false)
 const savingNotifications = ref(false)
 
-// Profile form data
-const username = ref('BonnieG')
-const email = ref('bonnie@example.com')
+const username = ref('')
+const email = ref('')
 
-// Password form data
 const currentPassword = ref('')
 const newPassword = ref('')
 const confirmPassword = ref('')
 
-// Notifications
 const notifications = ref([
-  {
-    id: 'flowbite-comm',
-    label: 'Flowbite Communication',
-    description: 'Get Flowbite news, announcements, and product updates',
-    enabled: false,
-  },
   {
     id: 'account-activity',
     label: 'Account Activity',
     description: "Get important notifications about you or activity you've missed",
-    enabled: true,
-  },
-  {
-    id: 'push-notifications',
-    label: 'Mobile push notifications',
-    description: 'Receive push notifications whenever your company requires your attention',
     enabled: true,
   },
   {
@@ -70,21 +54,24 @@ const notifications = ref([
     description: 'Receive email notifications whenever your company requires your attention',
     enabled: false,
   },
-  {
-    id: 'meetups',
-    label: 'Meetups near me',
-    description: 'Get an email when a Flowbite Meetup is posted close to my location',
-    enabled: true,
-  },
 ])
 
-// Handlers
+onMounted(() => {
+  if (authStore.user) {
+    email.value = authStore.user.email
+    username.value = authStore.user.settings?.username || ''
+  }
+})
+
 const handleSaveProfile = async () => {
-  if (savingProfile.value) return
+  if (savingProfile.value || !authStore.user) return
   
   savingProfile.value = true
   try {
-    await updateProfile({ username: username.value })
+    const mergedSettings = { ...authStore.user.settings, username: username.value }
+    await updateProfile(authStore.user.id, mergedSettings)
+    authStore.user.settings = mergedSettings
+    localStorage.setItem('auth_user', JSON.stringify(authStore.user))
     showToast('Profile updated successfully', 'success')
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to update profile'

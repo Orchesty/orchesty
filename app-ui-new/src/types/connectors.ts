@@ -41,6 +41,8 @@ export interface ConnectorDetail {
   errors500: number
   totalRequests: number
   lastRequestStatus: number
+  lastRequestTime: number
+  avgRequestTime: number
   errorRecords: ConnectorErrorRecord[]
 }
 

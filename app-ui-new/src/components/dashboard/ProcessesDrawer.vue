@@ -1,0 +1,240 @@
+<script setup lang="ts">
+import { ref, watch, computed } from 'vue'
+import Drawer from '@/components/ui/Drawer.vue'
+import Button from '@/components/ui/Button.vue'
+import DataGrid from '@/components/ui/DataGrid.vue'
+import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
+import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
+import type { Process, ProcessStatus } from '@/types/processes'
+import type { TableColumn } from '@/types/dashboard'
+import type { QuickFilterOption } from '@/types/datagrid'
+import { fetchProcesses } from '@/services/processesService'
+import { formatDateTimeForApi } from '@/utils/timeRangeConverter'
+import { useDataGrid } from '@/composables/useDataGrid'
+import { useDateFormat } from '@/composables/useDateFormat'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+
+interface Props {
+  modelValue: boolean
+  topologyId: string | null
+  timeRange: { from: string; to: string } | null
+}
+
+const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  'update:modelValue': [value: boolean]
+  'open-audit': [process: Process]
+  'hidden': []
+}>()
+
+const { getTopologyName, getTopologyNameWithVersion } = useTopologyNodeMappings()
+const { formatDateTime } = useDateFormat()
+
+const topologyLabel = computed(() => {
+  if (!props.topologyId) return ''
+  return getTopologyNameWithVersion(props.topologyId)
+})
+
+const processes = ref<Process[]>([])
+const statusFilter = ref<ProcessStatus>('all')
+
+const dateTimeRange = ref<{ from: string | null; to: string | null }>({
+  from: props.timeRange?.from ?? null,
+  to: props.timeRange?.to ?? null,
+})
+
+const columns: TableColumn[] = [
+  { key: 'startTime', label: 'Start time', sortable: true },
+  { key: 'duration', label: 'Duration', sortable: true },
+  { key: 'status', label: 'Status', sortable: false },
+  { key: 'actions', label: '', className: 'text-right' },
+]
+
+const quickFilterOptions: QuickFilterOption[] = [
+  { value: 'all', label: 'All' },
+  { value: 'completed', label: 'Completed' },
+  { value: 'running', label: 'Running' },
+  { value: 'failed', label: 'Failed' },
+]
+
+const formatDuration = (ms: number): string => {
+  if (ms < 1000) return `${Math.round(ms)}ms`
+  const totalSeconds = ms / 1000
+  if (totalSeconds < 60) return `${totalSeconds.toFixed(1)}s`
+  const minutes = Math.floor(totalSeconds / 60)
+  const secs = Math.round(totalSeconds % 60)
+  if (minutes < 60) return `${minutes}m ${secs}s`
+  const hours = Math.floor(minutes / 60)
+  const mins = minutes % 60
+  return `${hours}h ${mins}m ${secs}s`
+}
+
+const loadData = async () => {
+  loading.value = true
+  try {
+    const response = await fetchProcesses({
+      status: statusFilter.value,
+      topology: props.topologyId || undefined,
+      dateFrom: formatDateTimeForApi(dateTimeRange.value.from) || undefined,
+      dateTo: formatDateTimeForApi(dateTimeRange.value.to) || undefined,
+      page: currentPage.value,
+      limit: itemsPerPage.value,
+      sort: sortField.value,
+      order: sortDirection.value,
+    })
+
+    processes.value = response.data
+    totalPages.value = response.meta.totalPages
+    totalItems.value = response.meta.totalItems
+  } catch (error) {
+    console.error('Error loading processes:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+const {
+  currentPage,
+  itemsPerPage,
+  totalPages,
+  totalItems,
+  sortField,
+  sortDirection,
+  loading,
+  handlePageChange,
+  handlePerPageChange,
+  handleSort,
+} = useDataGrid({
+  defaultSort: { field: 'startTime', direction: 'desc' },
+  onDataLoad: loadData,
+  filters: [statusFilter, dateTimeRange],
+})
+
+watch(
+  () => props.modelValue,
+  (open) => {
+    if (open) {
+      dateTimeRange.value = {
+        from: props.timeRange?.from ?? null,
+        to: props.timeRange?.to ?? null,
+      }
+      statusFilter.value = 'all'
+      currentPage.value = 1
+      loadData()
+    }
+  },
+)
+
+const handleAuditClick = (process: Process) => {
+  emit('open-audit', process)
+}
+
+const handleClose = () => {
+  emit('update:modelValue', false)
+}
+</script>
+
+<template>
+  <Drawer
+    :model-value="modelValue"
+    id="processes-drawer"
+    label="Processes"
+    width="w-1/2 min-w-[600px]"
+    @update:model-value="handleClose"
+    @hidden="emit('hidden')"
+  >
+    <!-- Topology Header -->
+    <div class="mb-6 border-b border-gray-200 pb-6 dark:border-gray-700">
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+        {{ topologyLabel }}
+      </h2>
+    </div>
+
+    <!-- Time Range Filter -->
+    <div class="mb-4">
+      <DateTimeRangeFilter v-model="dateTimeRange" />
+    </div>
+
+    <DataGrid
+      :columns="columns"
+      :data="processes"
+      :loading="loading"
+      :current-page="currentPage"
+      :total-pages="totalPages"
+      :total-items="totalItems"
+      :items-per-page="itemsPerPage"
+      :sort-field="sortField"
+      :sort-direction="sortDirection"
+      @page-change="handlePageChange"
+      @per-page-change="handlePerPageChange"
+      @sort="handleSort"
+    >
+      <template #quick-filters>
+        <QuickFilter
+          v-model="statusFilter"
+          name="processes-drawer-filter"
+          label="Show only:"
+          :options="quickFilterOptions"
+        />
+      </template>
+
+      <template #cell-startTime="{ value }">
+        <span class="whitespace-nowrap">{{ formatDateTime(value) }}</span>
+      </template>
+
+      <template #cell-duration="{ value }">
+        <span class="whitespace-nowrap">{{ formatDuration(value) }}</span>
+      </template>
+
+      <template #cell-status="{ value }">
+        <span
+          :class="[
+            'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
+            value === 'completed'
+              ? 'bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-300'
+              : value === 'running'
+                ? 'bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-300'
+                : 'bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-300',
+          ]"
+        >
+          {{ value.charAt(0).toUpperCase() + value.slice(1) }}
+        </span>
+      </template>
+
+      <template #cell-actions="{ row }">
+        <div class="flex items-center justify-end">
+          <button
+            type="button"
+            title="Audit"
+            @click="handleAuditClick(row)"
+            class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+          >
+            <svg
+              class="h-5 w-5"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+              />
+            </svg>
+            <span class="sr-only">Audit</span>
+          </button>
+        </div>
+      </template>
+    </DataGrid>
+
+    <template #footer-actions>
+      <Button variant="outline" @click="handleClose">
+        Close
+      </Button>
+    </template>
+  </Drawer>
+</template>

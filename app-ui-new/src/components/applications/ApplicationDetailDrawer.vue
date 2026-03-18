@@ -256,6 +256,12 @@ const handleSave = async () => {
       return;
     }
 
+    // For basic (non-OAuth) apps, saving credentials is the authorization step
+    if (updatedInstall.authorized && currentStatus.value === 'installed') {
+      currentStatus.value = 'authorized';
+      emit('refresh');
+    }
+
     showToast('Settings saved successfully', 'success');
   } catch (error: any) {
     console.error('Failed to save settings:', error);

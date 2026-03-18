@@ -2,55 +2,62 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import type { User } from '@/types/auth'
 import * as authService from '@/services/authService'
+import { useActivityTracker } from '@/composables/useActivityTracker'
+
+const CHECK_INTERVAL_MS = 60_000
+const REFRESH_IF_OLDER_THAN_MS = 4 * 60_000
+const INACTIVITY_LIMIT_MS = 30 * 60_000
 
 export const useAuthStore = defineStore('auth', () => {
-  // State
   const token = ref<string | null>(null)
   const user = ref<User | null>(null)
-  const refreshIntervalId = ref<number | null>(null)
+  const lastTokenRefreshTime = ref(Date.now())
+  const sessionTimerId = ref<number | null>(null)
 
-  // Computed
   const isAuthenticated = computed(() => !!token.value && !!user.value)
 
-  // Actions
-  /**
-   * Start automatic token refresh
-   */
-  function startTokenRefresh(): void {
-    // Clear any existing interval
-    stopTokenRefresh()
+  const { lastActivityTime, touch: touchActivity } = useActivityTracker()
 
-    // Refresh every 5 minutes (300000 ms)
-    refreshIntervalId.value = window.setInterval(async () => {
-      await refreshAuthToken()
-    }, 300000)
+  function startSessionTimer(): void {
+    stopSessionTimer()
+
+    sessionTimerId.value = window.setInterval(async () => {
+      if (!isAuthenticated.value) return
+
+      const now = Date.now()
+      const inactiveFor = now - lastActivityTime.value
+
+      if (inactiveFor > INACTIVITY_LIMIT_MS) {
+        await logout()
+        window.location.href = '/sign-in'
+        return
+      }
+
+      const tokenAge = now - lastTokenRefreshTime.value
+      if (tokenAge > REFRESH_IF_OLDER_THAN_MS) {
+        await refreshAuthToken()
+      }
+    }, CHECK_INTERVAL_MS)
   }
 
-  /**
-   * Stop automatic token refresh
-   */
-  function stopTokenRefresh(): void {
-    if (refreshIntervalId.value !== null) {
-      clearInterval(refreshIntervalId.value)
-      refreshIntervalId.value = null
+  function stopSessionTimer(): void {
+    if (sessionTimerId.value !== null) {
+      clearInterval(sessionTimerId.value)
+      sessionTimerId.value = null
     }
   }
 
-  /**
-   * Refresh the authentication token
-   * Note: On failure, does NOT logout - the API interceptor handles 401 responses
-   * and will force logout if the refresh truly fails. This prevents double-logout
-   * and allows recovery from temporary network issues.
-   */
   async function refreshAuthToken(): Promise<void> {
     try {
       const response = await authService.refreshToken()
 
-      // Update token in state and localStorage
       token.value = response.token
       localStorage.setItem('auth_token', response.token)
 
-      // User data typically doesn't change, but update if provided
+      const now = Date.now()
+      lastTokenRefreshTime.value = now
+      localStorage.setItem('lastTokenRefreshTime', String(now))
+
       if (response.email && response.id) {
         user.value = {
           id: response.id,
@@ -61,19 +68,12 @@ export const useAuthStore = defineStore('auth', () => {
       }
     } catch (error) {
       console.error('Token refresh failed:', error)
-      // Don't logout here - the API interceptor handles 401 and will
-      // force logout if refresh is not possible. Temporary network errors
-      // will be retried on the next interval.
     }
   }
 
-  /**
-   * Login user with email and password
-   */
   async function login(email: string, password: string): Promise<void> {
     const response = await authService.login(email, password)
 
-    // Store token and user in state
     token.value = response.token
     user.value = {
       id: response.id,
@@ -81,32 +81,25 @@ export const useAuthStore = defineStore('auth', () => {
       settings: response.settings,
     }
 
-    // Persist to localStorage
     localStorage.setItem('auth_token', response.token)
     localStorage.setItem('auth_user', JSON.stringify(user.value))
 
-    // Start token refresh timer
-    startTokenRefresh()
+    const now = Date.now()
+    lastTokenRefreshTime.value = now
+    localStorage.setItem('lastTokenRefreshTime', String(now))
+    touchActivity()
+    startSessionTimer()
   }
 
-  /**
-   * Logout user and clear session
-   */
   async function logout(): Promise<void> {
-    // Stop token refresh timer
-    stopTokenRefresh()
+    stopSessionTimer()
 
     await authService.logout()
 
-    // Clear state
     token.value = null
     user.value = null
   }
 
-  /**
-   * Initialize auth from localStorage
-   * Call this on app start to restore session
-   */
   function initializeAuth(): void {
     const storedToken = localStorage.getItem('auth_token')
     const storedUser = localStorage.getItem('auth_user')
@@ -116,11 +109,13 @@ export const useAuthStore = defineStore('auth', () => {
         token.value = storedToken
         user.value = JSON.parse(storedUser)
 
-        // Start token refresh timer for existing session
-        startTokenRefresh()
+        const now = Date.now()
+        lastTokenRefreshTime.value = now
+        localStorage.setItem('lastTokenRefreshTime', String(now))
+        touchActivity()
+        startSessionTimer()
       } catch (error) {
         console.error('Failed to parse stored user data:', error)
-        // Clear invalid data
         localStorage.removeItem('auth_token')
         localStorage.removeItem('auth_user')
       }
@@ -128,17 +123,13 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   return {
-    // State
     token,
     user,
-    // Computed
     isAuthenticated,
-    // Actions
+    lastTokenRefreshTime,
     login,
     logout,
     initializeAuth,
     refreshAuthToken,
-    startTokenRefresh,
-    stopTokenRefresh,
   }
 })

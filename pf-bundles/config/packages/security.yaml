@@ -13,7 +13,7 @@ security:
             pattern: ^/api/applications/authorize/token
             security: false
         unsecured_user_api:
-            pattern: ^/api/(user/login|user/logout|user/\w+/activate|user/\w+/set_password|user/reset_password|user/register|user/\w+/verify)
+            pattern: ^/api/(user/login|user/logout|user/\w+/activate|user/\w+/set_password|user/reset_password|user/register|user/exists|user/setup|user/\w+/verify)
             security: false
         unsecured_status_api:
             pattern: ^/api/status

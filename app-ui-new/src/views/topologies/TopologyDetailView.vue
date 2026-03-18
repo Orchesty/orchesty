@@ -244,14 +244,24 @@ const handleTopologyDeleted = async (data: { topologyId: string; versionIds: str
   const label = data.isFullDelete ? 'Topology deleted successfully' : 'Version(s) deleted successfully'
   showToast(label, 'success')
 
-  if (data.isFullDelete || data.versionIds.includes(props.id)) {
+  const currentVersionId = topology.value?._id
+  const currentVersionDeleted = currentVersionId && data.versionIds.includes(currentVersionId)
+
+  if (data.isFullDelete || currentVersionDeleted) {
     const { clearLastTopology } = useLastTopology()
     clearLastTopology()
     await layout.refreshSidebar()
     router.push({ name: 'topologies' })
-  } else {
-    topology.value = await fetchTopologyDetail(props.id, versionId.value)
+  } else if (currentVersionId) {
+    topology.value = await fetchTopologyDetail(currentVersionId)
     await layout.refreshSidebar()
+
+    if (props.id !== currentVersionId || versionId.value) {
+      router.replace({
+        name: 'topology-detail',
+        params: { id: currentVersionId },
+      })
+    }
   }
 }
 
