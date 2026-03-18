@@ -102,6 +102,11 @@ export async function fetchProcesses(
     ])
   }
 
+  // Add source filter
+  if (params.source) {
+    filterObj.filter.push([{ column: 'source', operator: 'EQ', value: [params.source] }])
+  }
+
   // Add sorting
   if (params.sort && params.order) {
     const apiColumn = mapSortFieldToApiColumn(params.sort)
@@ -149,6 +154,7 @@ export async function fetchLatestProcess(topologyId: string): Promise<Process | 
     order: 'desc',
     limit: 1,
     page: 1,
+    source: 'ui',
   })
   return result.data.length > 0 ? result.data[0] : null
 }

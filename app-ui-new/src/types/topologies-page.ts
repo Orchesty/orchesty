@@ -49,7 +49,6 @@ export interface TopologyLayoutContext {
   openEditTopologyModal: (id: string, name: string, currentDescription?: string) => void
   openMoveTopologyModal: (id: string, name: string, currentCategoryId?: string | null) => void
   openDeleteTopologyConfirm: (id: string, name: string) => void
-  handleRunTopologyAction: (id: string, name: string) => Promise<void>
   handleCloneTopologyAction: (id: string) => Promise<void>
   handleExportTopologyAction: (id: string, name: string) => Promise<void>
   refreshSidebar: () => Promise<void>

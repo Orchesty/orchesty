@@ -18,6 +18,7 @@ export interface ProcessQueryParams extends QueryParams {
   topologyIds?: string[]
   dateFrom?: string
   dateTo?: string
+  source?: string
 }
 
 export interface ProcessConnector {
