@@ -113,6 +113,10 @@ func handleByID(w http.ResponseWriter, r *http.Request) {
 
 	r.Header.Set(utils.UserID, getUser(r))
 
+	if uiRun {
+		r.Header.Set(string(enum.Source_Header), string(enum.Source_UI))
+	}
+
 	processMessage(w, r, topology, init)
 }
 
