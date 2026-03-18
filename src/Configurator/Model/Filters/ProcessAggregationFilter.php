@@ -35,6 +35,7 @@ final class ProcessAggregationFilter extends GridAggregationFilterAbstract
     {
         return [
             'created' => 'startedAt',
+            'source' => 'source',
             'status' => 'status',
             'topologyId' => 'topologyId',
         ];
@@ -172,6 +173,8 @@ final class ProcessAggregationFilter extends GridAggregationFilterAbstract
                 $builder->expr()->ifNull('$finished', new UTCDateTime(DateTimeUtils::getUtcDateTime())),
                 '$created',
             )
+            ->field('source')
+            ->expression('$source')
             ->field('messages')
             ->map('$logs', 'log', '$$log.message');
     }

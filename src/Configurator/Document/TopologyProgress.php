@@ -110,6 +110,12 @@ class TopologyProgress
     private ?string $user = NULL;
 
     /**
+     * @var string
+     */
+    #[ODM\Field(type: 'string')]
+    private string $source = 'auto';
+
+    /**
      * @return string
      */
     public function getId(): string
@@ -278,6 +284,26 @@ class TopologyProgress
     }
 
     /**
+     * @return string
+     */
+    public function getSource(): string
+    {
+        return $this->source;
+    }
+
+    /**
+     * @param string $source
+     *
+     * @return TopologyProgress
+     */
+    public function setSource(string $source): self
+    {
+        $this->source = $source;
+
+        return $this;
+    }
+
+    /**
      * @return mixed[]
      * @throws DateTimeException
      */
@@ -295,6 +321,7 @@ class TopologyProgress
             'id'             => $this->topologyId,
             'nodesProcessed' => $count,
             'nodesTotal'     => $this->total,
+            'source'         => $this->source,
             'started'        => $this->startedAt->format(DateTimeUtils::DATE_TIME_UTC),
             'status'         => $count < $this->total ? 'IN PROGRESS' : ($this->nok > 0 ? 'FAILED' : 'SUCCESS'),
             'user'           => $this->user ?? '',
