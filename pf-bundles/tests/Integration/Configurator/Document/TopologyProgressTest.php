@@ -52,6 +52,7 @@ final class TopologyProgressTest extends DatabaseTestCaseAbstract
                 'id'             => 'id',
                 'nodesProcessed' => 2,
                 'nodesTotal'     => 2,
+                'source'         => 'auto',
                 'started'        => $t->format(DateTimeUtils::DATE_TIME_UTC),
                 'status'         => 'FAILED',
                 'user'           => '',
