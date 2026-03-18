@@ -4,13 +4,16 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@orchesty/nodejs-sdk': ^5.0.0
+
 importers:
 
   .:
     dependencies:
       '@aws-sdk/client-ses':
-        specifier: ^3.1010.0
-        version: 3.1010.0
+        specifier: ^3.1011.0
+        version: 3.1011.0
       '@orchesty/connector-airtable':
         specifier: ^1.0.1
         version: 1.0.1(bare-events@2.8.2)
@@ -168,8 +171,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1(bare-events@2.8.2)
       '@orchesty/nodejs-sdk':
-        specifier: ^4.3.6
-        version: 4.3.6(bare-events@2.8.2)
+        specifier: ^5.0.0
+        version: 5.0.2(bare-events@2.8.2)
       copyfiles:
         specifier: ^2.4.1
         version: 2.4.1
@@ -254,24 +257,24 @@ packages:
   '@aws-crypto/util@5.2.0':
     resolution: {integrity: sha512-4RkU9EsI6ZpBve5fseQlGNUWKMa1RLPQ1dnjnQoe07ldfIzcsGb5hC5W0Dm7u423KWzawlrpbjXBrXCEv9zazQ==}
 
-  '@aws-sdk/client-lambda@3.1010.0':
-    resolution: {integrity: sha512-PSXcGjUd68umeJp5cneeIsWRMGDf9l9vRiKVHK90CANZxie5boQce3ldBJ+4+OHov5pCbN8dr8yd4Umq3U+yWw==}
+  '@aws-sdk/client-lambda@3.1011.0':
+    resolution: {integrity: sha512-qX8QYpTU4jSiYQB/zEguvGLKAkwhFf60Gp+xtkO4yJNpu6680DsXHX3UND/seYXL5zOyUXIwsiH14oUditvu4Q==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/client-rds@3.1010.0':
-    resolution: {integrity: sha512-FXdQ6gqjaZ1kgKK+P4BtmuFfXc+l229Odourr/KO6gRuLKaYD2+QblsY6as+RlfIWVBYi41gwx8LZa2F+s4JTQ==}
+  '@aws-sdk/client-rds@3.1011.0':
+    resolution: {integrity: sha512-ZRyiftLko3DvMxzCWaCBhMrdUVIxrXfVdrgb29hadoeJT4pW4a5wDL5KFczmAnLgsxL7qy7eYRaC3waHCI5+oQ==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/client-redshift@3.1010.0':
-    resolution: {integrity: sha512-/lg+6xd6gPkGLikGc39sJwWlhVMxxAfYSAtYM6BLB3T0+FiahH54sIor4ynUBhFnIj0uNRKQTH+b1B3y+HFPgw==}
+  '@aws-sdk/client-redshift@3.1011.0':
+    resolution: {integrity: sha512-eTLJGEsLsP08syXN+dPALq89+ZenGHhckO/SYMg6scD/Fgd1qvQdlhdL8sHv+C5vaDnNny9GAifXngbSOVOmWg==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/client-s3@3.1010.0':
-    resolution: {integrity: sha512-XUqXFrn/FGLLzO5OXu9iAtt492kj9Z7Yk8b0iPFxeJoIhaa61YOgR84chOExvnjm2+JTYyGNZiVPmgnFB3jxXA==}
+  '@aws-sdk/client-s3@3.1011.0':
+    resolution: {integrity: sha512-jY7CGX+vfM/DSi4K8UwaZKoXnhqchmAbKFB1kIuHMfPPqW7l3jC/fUVDb95/njMsB2ymYOTusZEzoCTeUB/4qA==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/client-ses@3.1010.0':
-    resolution: {integrity: sha512-7bmFmJQZLLbyuzQZ9JBbmUvb9w3vBJ5xV5Dac2m1qa0HJchH2+nn1j1I5sRantTR5w9DuozhIcnGbVMNcqFMgw==}
+  '@aws-sdk/client-ses@3.1011.0':
+    resolution: {integrity: sha512-4YVXkkvle1klpiYVa4HRViciu5jsSFqgObWR8d6+XjRs9esR/ed0n/uCyYXItA4aTUmCFwJRFHyMBTQntwzwfg==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/core@3.973.20':
@@ -1056,8 +1059,8 @@ packages:
     resolution: {integrity: sha512-8BIhWmeXyTrPJX6YIhG8Lnexfro993ix2H1v2tc5K06Au2BjIk3IvShEKbED7R22TRyClV43eTC4Tm9yyAvJVg==}
     engines: {node: '>=24'}
 
-  '@orchesty/nodejs-sdk@4.3.6':
-    resolution: {integrity: sha512-Y0o2vWk0kLVqDFwD734vrcpr5ilAaqqwSDANEMi7VOaMk6KFNeRU+1pfFPWDiQ7WFxmEhxdQsS7yBbaTLxEm3Q==}
+  '@orchesty/nodejs-sdk@5.0.2':
+    resolution: {integrity: sha512-ebCsT/hxz2BGDwWTsO6n1XqX/ffUlrZ+J4wnbG+9ualpOVZrTNiVb5EYoe53B94UfKYPosAAmPvVGGgg0fWBPw==}
 
   '@pinojs/redact@0.4.0':
     resolution: {integrity: sha512-k2ENnmBugE/rzQfEcdWHcCY+/FM3VLzH9cYEsbdsoqrvzAKRhUZeRNhAZvB8OitQJ1TBed3yqWtdjzS6wJKBwg==}
@@ -4095,7 +4098,7 @@ snapshots:
       '@smithy/util-utf8': 2.3.0
       tslib: 2.8.1
 
-  '@aws-sdk/client-lambda@3.1010.0':
+  '@aws-sdk/client-lambda@3.1011.0':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
@@ -4144,7 +4147,7 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-rds@3.1010.0':
+  '@aws-sdk/client-rds@3.1011.0':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
@@ -4190,7 +4193,7 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-redshift@3.1010.0':
+  '@aws-sdk/client-redshift@3.1011.0':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
@@ -4235,7 +4238,7 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-s3@3.1010.0':
+  '@aws-sdk/client-s3@3.1011.0':
     dependencies:
       '@aws-crypto/sha1-browser': 5.2.0
       '@aws-crypto/sha256-browser': 5.2.0
@@ -4295,7 +4298,7 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-ses@3.1010.0':
+  '@aws-sdk/client-ses@3.1011.0':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
@@ -5283,7 +5286,7 @@ snapshots:
 
   '@orchesty/connector-airtable@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5302,7 +5305,7 @@ snapshots:
 
   '@orchesty/connector-amazon-apps-common@1.0.2(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5321,9 +5324,9 @@ snapshots:
 
   '@orchesty/connector-amazon-apps-lambda@1.0.2(bare-events@2.8.2)':
     dependencies:
-      '@aws-sdk/client-lambda': 3.1010.0
+      '@aws-sdk/client-lambda': 3.1011.0
       '@orchesty/connector-amazon-apps-common': 1.0.2(bare-events@2.8.2)
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5343,9 +5346,9 @@ snapshots:
 
   '@orchesty/connector-amazon-apps-rds@1.0.2(bare-events@2.8.2)':
     dependencies:
-      '@aws-sdk/client-rds': 3.1010.0
+      '@aws-sdk/client-rds': 3.1011.0
       '@orchesty/connector-amazon-apps-common': 1.0.2(bare-events@2.8.2)
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5365,9 +5368,9 @@ snapshots:
 
   '@orchesty/connector-amazon-apps-redshift@1.0.3(bare-events@2.8.2)':
     dependencies:
-      '@aws-sdk/client-redshift': 3.1010.0
+      '@aws-sdk/client-redshift': 3.1011.0
       '@orchesty/connector-amazon-apps-common': 1.0.2(bare-events@2.8.2)
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
       pg: 8.20.0
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
@@ -5389,9 +5392,9 @@ snapshots:
 
   '@orchesty/connector-amazon-apps-s3@1.0.2(bare-events@2.8.2)':
     dependencies:
-      '@aws-sdk/client-s3': 3.1010.0
+      '@aws-sdk/client-s3': 3.1011.0
       '@orchesty/connector-amazon-apps-common': 1.0.2(bare-events@2.8.2)
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5411,9 +5414,9 @@ snapshots:
 
   '@orchesty/connector-amazon-apps-simple-email-service@1.0.2(bare-events@2.8.2)':
     dependencies:
-      '@aws-sdk/client-ses': 3.1010.0
+      '@aws-sdk/client-ses': 3.1011.0
       '@orchesty/connector-amazon-apps-common': 1.0.2(bare-events@2.8.2)
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5433,7 +5436,7 @@ snapshots:
 
   '@orchesty/connector-asana@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5453,7 +5456,7 @@ snapshots:
   '@orchesty/connector-authentica@1.0.1(bare-events@2.8.2)':
     dependencies:
       '@orchesty/connector-git-hub': 1.0.1(bare-events@2.8.2)
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
       http-status-codes: 2.3.0
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
@@ -5473,7 +5476,7 @@ snapshots:
 
   '@orchesty/connector-beeceptor@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5492,7 +5495,7 @@ snapshots:
 
   '@orchesty/connector-bigcommerce@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5511,7 +5514,7 @@ snapshots:
 
   '@orchesty/connector-box@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5530,7 +5533,7 @@ snapshots:
 
   '@orchesty/connector-common@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5549,7 +5552,7 @@ snapshots:
 
   '@orchesty/connector-digitoo@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5568,7 +5571,7 @@ snapshots:
 
   '@orchesty/connector-discord@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5587,7 +5590,7 @@ snapshots:
 
   '@orchesty/connector-dropbox@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5606,7 +5609,7 @@ snapshots:
 
   '@orchesty/connector-facebook-ads@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5625,7 +5628,7 @@ snapshots:
 
   '@orchesty/connector-fakturoid@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5644,7 +5647,7 @@ snapshots:
 
   '@orchesty/connector-flexi-bee@1.0.7(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5663,7 +5666,7 @@ snapshots:
 
   '@orchesty/connector-git-hub@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
       http-status-codes: 2.3.0
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
@@ -5684,7 +5687,7 @@ snapshots:
   '@orchesty/connector-google-calendar@1.0.2(bare-events@2.8.2)':
     dependencies:
       '@orchesty/connector-google-common': 1.0.2(bare-events@2.8.2)
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5703,7 +5706,7 @@ snapshots:
 
   '@orchesty/connector-google-common@1.0.2(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5723,7 +5726,7 @@ snapshots:
   '@orchesty/connector-google-drive@1.0.2(bare-events@2.8.2)':
     dependencies:
       '@orchesty/connector-google-common': 1.0.2(bare-events@2.8.2)
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
       form-data: 4.0.5
       joi: 18.0.2
     transitivePeerDependencies:
@@ -5745,7 +5748,7 @@ snapshots:
   '@orchesty/connector-google-sheet@1.0.2(bare-events@2.8.2)':
     dependencies:
       '@orchesty/connector-google-common': 1.0.2(bare-events@2.8.2)
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5765,7 +5768,7 @@ snapshots:
   '@orchesty/connector-google-youtube@1.0.2(bare-events@2.8.2)':
     dependencies:
       '@orchesty/connector-google-common': 1.0.2(bare-events@2.8.2)
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5784,7 +5787,7 @@ snapshots:
 
   '@orchesty/connector-hubspot@1.0.2(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
       http-status-codes: 2.3.0
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
@@ -5804,7 +5807,7 @@ snapshots:
 
   '@orchesty/connector-idoklad@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5823,7 +5826,7 @@ snapshots:
 
   '@orchesty/connector-jira@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5842,7 +5845,7 @@ snapshots:
 
   '@orchesty/connector-json-placeholder@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5861,7 +5864,7 @@ snapshots:
 
   '@orchesty/connector-magento2@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5880,7 +5883,7 @@ snapshots:
 
   '@orchesty/connector-mailchimp@1.0.2(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
       http-status-codes: 2.3.0
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
@@ -5900,7 +5903,7 @@ snapshots:
 
   '@orchesty/connector-moneys4-5@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
       http-status-codes: 2.3.0
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
@@ -5920,7 +5923,7 @@ snapshots:
 
   '@orchesty/connector-nutshell@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5939,7 +5942,7 @@ snapshots:
 
   '@orchesty/connector-pipedrive@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
       http-status-codes: 2.3.0
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
@@ -5959,7 +5962,7 @@ snapshots:
 
   '@orchesty/connector-quick-books@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
       form-data: 4.0.5
       http-status-codes: 2.3.0
     transitivePeerDependencies:
@@ -5980,7 +5983,7 @@ snapshots:
 
   '@orchesty/connector-sales-force@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -5999,7 +6002,7 @@ snapshots:
 
   '@orchesty/connector-send-grid@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -6018,7 +6021,7 @@ snapshots:
 
   '@orchesty/connector-shipstation@1.0.2(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
       http-status-codes: 2.3.0
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
@@ -6038,7 +6041,7 @@ snapshots:
 
   '@orchesty/connector-shopify@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
       http-status-codes: 2.3.0
       ts-mixer: 6.0.4
     transitivePeerDependencies:
@@ -6059,7 +6062,7 @@ snapshots:
 
   '@orchesty/connector-shoptet@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
       http-status-codes: 2.3.0
       luxon: 3.7.2
     transitivePeerDependencies:
@@ -6080,7 +6083,7 @@ snapshots:
 
   '@orchesty/connector-slack@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -6099,7 +6102,7 @@ snapshots:
 
   '@orchesty/connector-sql@1.0.1(bare-events@2.8.2)(mysql2@3.20.0(@types/node@25.5.0))(pg@8.20.0)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
       oracledb: 6.10.0
       sequelize: 6.37.8(mysql2@3.20.0(@types/node@25.5.0))(oracledb@6.10.0)(pg@8.20.0)
     transitivePeerDependencies:
@@ -6128,7 +6131,7 @@ snapshots:
 
   '@orchesty/connector-stripe@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -6147,7 +6150,7 @@ snapshots:
 
   '@orchesty/connector-tableau@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -6166,7 +6169,7 @@ snapshots:
 
   '@orchesty/connector-trello@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -6185,7 +6188,7 @@ snapshots:
 
   '@orchesty/connector-twilio@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
       form-data: 4.0.5
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
@@ -6205,7 +6208,7 @@ snapshots:
 
   '@orchesty/connector-upgates@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
       http-status-codes: 2.3.0
       luxon: 3.7.2
     transitivePeerDependencies:
@@ -6226,7 +6229,7 @@ snapshots:
 
   '@orchesty/connector-webflow@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -6245,7 +6248,7 @@ snapshots:
 
   '@orchesty/connector-wflow@1.0.5(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -6264,7 +6267,7 @@ snapshots:
 
   '@orchesty/connector-wisepops@1.0.2(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
       http-status-codes: 2.3.0
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
@@ -6285,7 +6288,7 @@ snapshots:
   '@orchesty/connector-woocommerce@1.0.1(bare-events@2.8.2)':
     dependencies:
       '@orchesty/connector-authentica': 1.0.1(bare-events@2.8.2)
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
       http-status-codes: 2.3.0
       luxon: 3.7.2
     transitivePeerDependencies:
@@ -6307,7 +6310,7 @@ snapshots:
   '@orchesty/connector-xero@1.0.1(bare-events@2.8.2)':
     dependencies:
       '@orchesty/connector-digitoo': 1.0.1(bare-events@2.8.2)
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
       form-data: 4.0.5
       http-status-codes: 2.3.0
       joi: 18.0.2
@@ -6329,7 +6332,7 @@ snapshots:
 
   '@orchesty/connector-zendesk@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
       http-status-codes: 2.3.0
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
@@ -6349,7 +6352,7 @@ snapshots:
 
   '@orchesty/connector-zoho@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -6368,7 +6371,7 @@ snapshots:
 
   '@orchesty/connector-zoom@1.0.1(bare-events@2.8.2)':
     dependencies:
-      '@orchesty/nodejs-sdk': 4.3.6(bare-events@2.8.2)
+      '@orchesty/nodejs-sdk': 5.0.2(bare-events@2.8.2)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -6385,7 +6388,7 @@ snapshots:
       - socks
       - supports-color
 
-  '@orchesty/nodejs-sdk@4.3.6(bare-events@2.8.2)':
+  '@orchesty/nodejs-sdk@5.0.2(bare-events@2.8.2)':
     dependencies:
       async-mutex: 0.5.0
       axios: 1.13.6
