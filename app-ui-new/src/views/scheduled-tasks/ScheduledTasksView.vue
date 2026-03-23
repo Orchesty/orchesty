@@ -8,6 +8,7 @@ import type { ScheduledTask } from '@/types/scheduled-tasks'
 import type { TableColumn } from '@/types/dashboard'
 import { fetchScheduledTasks, updateTaskStatus, updateTaskCrontab } from '@/services/scheduledTasksService'
 import { getNextCronRun, formatNextRun } from '@/utils/cronParser'
+import StatusBadge from '@/components/ui/StatusBadge.vue'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useToast } from '@/composables/useToast'
 import { useCronAlerts } from '@/composables/useCronAlerts'
@@ -108,28 +109,6 @@ const handleCronSave = async (taskId: string, crontab: string, params: string) =
   } catch (error) {
     console.error('Failed to update crontab:', error)
     showToast('Failed to update crontab', 'error')
-  }
-}
-
-const getStatusBadgeClass = (status: string) => {
-  switch (status) {
-    case 'enabled':
-      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-    case 'disabled':
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-    default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-  }
-}
-
-const getStatusLabel = (status: string) => {
-  switch (status) {
-    case 'enabled':
-      return 'Enabled'
-    case 'disabled':
-      return 'Disabled'
-    default:
-      return status
   }
 }
 
@@ -249,14 +228,9 @@ onBeforeUnmount(() => {
 
         <!-- Status Cell -->
         <template #cell-status="{ row }">
-          <span
-            :class="[
-              'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-              getStatusBadgeClass(row.status),
-            ]"
-          >
-            {{ getStatusLabel(row.status) }}
-          </span>
+          <StatusBadge :variant="row.status === 'enabled' ? 'green' : 'gray'">
+            {{ row.status === 'enabled' ? 'Enabled' : row.status === 'disabled' ? 'Disabled' : row.status }}
+          </StatusBadge>
         </template>
 
         <!-- Actions Cell -->

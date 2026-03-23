@@ -10,8 +10,9 @@ import type { LimiterData, TableColumn, TimeFilter, AppLimiterSetting } from '@/
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import GridLink from '@/components/ui/datagrid/GridLink.vue'
+import LimiterMessagesCell from './LimiterMessagesCell.vue'
 
-const { formatChartLabel } = useDateFormat()
+const { formatChartLabel, formatDurationSeconds } = useDateFormat()
 
 /**
  * Get granularity in minutes matching backend's getDateTruncBinSize logic
@@ -26,13 +27,17 @@ function getGranularityMinutes(timeFilter: TimeFilter): number {
 }
 
 interface Props {
-  globalTimeFilter: TimeFilter
+  timeFilter: TimeFilter
   refreshKey?: number
 }
 
 const props = defineProps<Props>()
 
-const { getNodeName, getTopologyName, getApplicationNameByNodeId } = useTopologyNodeMappings()
+const emit = defineEmits<{
+  'open-app-processes': [data: { applicationId: string; topologyIds: string[] }]
+}>()
+
+const { getNodeName, getTopologyName, getApplicationNameByNodeId, mappings } = useTopologyNodeMappings()
 const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 const limiterData = ref<LimiterData | null>(null)
@@ -48,11 +53,10 @@ const maxDiffPercent = computed(() => {
   return Math.round(((maxMessages - totalMessages) / totalMessages) * 100)
 })
 
-const { initChart, setupResizeObserver, isDarkMode } = useApexChart({
+const { initChart, isDarkMode } = useApexChart({
   onDarkModeChange: () => {
     if (chartMounted.value && chartEl.value) {
       initChart(chartEl.value, getChartOptions())
-      setupResizeObserver(chartEl.value)
     }
   },
 })
@@ -62,14 +66,25 @@ const summaryColumns: TableColumn[] = [
   { key: 'limitSetting', label: 'Limit', sortable: false },
   { key: 'messages', label: 'Max (actual)', sortable: true },
   { key: 'remainingTime', label: 'Remaining time', sortable: false },
+  { key: 'actions', label: '', className: 'text-right w-16' },
 ]
 
-const formatDuration = (seconds: number): string => {
-  if (seconds < 60) return `${Math.ceil(seconds)}s`
-  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ${Math.ceil(seconds % 60)}s`
-  const h = Math.floor(seconds / 3600)
-  const m = Math.ceil((seconds % 3600) / 60)
-  return `${h}h ${m}m`
+const getTopologyIdsForApp = (applicationId: string): string[] => {
+  if (!mappings.value?.applicationTree) return []
+  const appKey = applicationId === '-' ? '' : applicationId
+  const nodeIds = mappings.value.applicationTree[appKey]
+    || mappings.value.applicationTree[applicationId]
+    || []
+  if (nodeIds.length === 0) return []
+
+  const nodeIdSet = new Set(nodeIds)
+  const topologyIds: string[] = []
+  for (const [topoId, topoNodeIds] of Object.entries(mappings.value.topologyTree)) {
+    if (topoNodeIds.some(nId => nodeIdSet.has(nId))) {
+      topologyIds.push(topoId)
+    }
+  }
+  return topologyIds
 }
 
 const summaryData = computed(() => {
@@ -98,7 +113,7 @@ const summaryData = computed(() => {
       let remainingTime = '-'
       if (row.messages > 0 && setting?.useLimit && setting.value && setting.time) {
         const rate = setting.value / setting.time
-        remainingTime = formatDuration(row.messages / rate)
+        remainingTime = formatDurationSeconds(row.messages / rate)
       }
 
       return { ...row, limitSetting, remainingTime }
@@ -124,7 +139,7 @@ const loadData = async () => {
       limit: itemsPerPage.value,
       sortBy: sortField.value,
       sortOrder: sortDirection.value,
-      timeFilter: props.globalTimeFilter,
+      timeFilter: props.timeFilter,
       appSettings: appSettings.value,
       buckets: 40,
     })
@@ -137,7 +152,6 @@ const loadData = async () => {
     await nextTick()
     if (chartMounted.value && chartEl.value) {
       initChart(chartEl.value, getChartOptions())
-      setupResizeObserver(chartEl.value)
     }
   } catch (error) {
     console.error('Error loading limiter data:', error)
@@ -164,7 +178,7 @@ const {
   onDataLoad: loadData,
 })
 
-watch(() => props.globalTimeFilter, () => {
+watch(() => props.timeFilter, () => {
   invalidate()
   if (isActive.value) loadData()
 })
@@ -204,7 +218,6 @@ onMounted(async () => {
     }
 
     initChart(chartEl.value, getChartOptions())
-    setupResizeObserver(chartEl.value)
     chartMounted.value = true
   } catch (error) {
     console.error('LimiterTab mount error:', error)
@@ -215,7 +228,7 @@ const getChartOptions = () => {
   const colors = getChartColors(isDarkMode.value)
   const categories = limiterData.value?.chartData.categories || []
   const seriesData = limiterData.value?.chartData.series || []
-  const granularity = getGranularityMinutes(props.globalTimeFilter)
+  const granularity = getGranularityMinutes(props.timeFilter)
 
   const pairedData = categories.map((cat, i) => ({
     x: new Date(cat).getTime(),
@@ -416,21 +429,37 @@ const getChartOptions = () => {
           </span>
         </template>
         <template #cell-messages="{ row }">
-          {{ row.maxMessages }}
-          <span
-            :class="row.messages < row.maxMessages
-              ? 'text-green-600 dark:text-green-400'
-              : row.messages > row.maxMessages
-                ? 'text-red-600 dark:text-red-400'
-                : 'text-gray-500 dark:text-gray-400'"
-          >
-            <svg v-if="row.messages < row.maxMessages" class="inline h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 14-4-4m4 4 4-4"/></svg>
-            <svg v-else-if="row.messages > row.maxMessages" class="inline h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0-14 4 4m-4-4-4 4"/></svg>
-            ({{ row.messages }})
-          </span>
+          <LimiterMessagesCell :messages="row.messages" :max-messages="row.maxMessages" />
         </template>
         <template #cell-remainingTime="{ value }">
           <span class="whitespace-nowrap font-medium text-gray-900 dark:text-white">{{ value }}</span>
+        </template>
+        <template #cell-actions="{ row }">
+          <div class="flex items-center justify-end">
+            <button
+              type="button"
+              title="Running processes"
+              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              @click="emit('open-app-processes', { applicationId: row.applicationId, topologyIds: getTopologyIdsForApp(row.applicationId) })"
+            >
+              <svg
+                class="h-5 w-5"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                />
+              </svg>
+              <span class="sr-only">Running processes</span>
+            </button>
+          </div>
         </template>
       </DataGrid>
     </Card>
@@ -474,18 +503,7 @@ const getChartOptions = () => {
           </span>
         </template>
         <template #cell-messages="{ row }">
-          {{ row.maxMessages }}
-          <span
-            :class="row.messages < row.maxMessages
-              ? 'text-green-600 dark:text-green-400'
-              : row.messages > row.maxMessages
-                ? 'text-red-600 dark:text-red-400'
-                : 'text-gray-500 dark:text-gray-400'"
-          >
-            <svg v-if="row.messages < row.maxMessages" class="inline h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 14-4-4m4 4 4-4"/></svg>
-            <svg v-else-if="row.messages > row.maxMessages" class="inline h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0-14 4 4m-4-4-4 4"/></svg>
-            ({{ row.messages }})
-          </span>
+          <LimiterMessagesCell :messages="row.messages" :max-messages="row.maxMessages" />
         </template>
       </DataGrid>
     </Card>

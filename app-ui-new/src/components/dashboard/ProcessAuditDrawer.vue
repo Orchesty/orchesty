@@ -14,6 +14,7 @@ import type { TableColumn } from '@/types/dashboard'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import { fetchProcessAuditConnectors, fetchProcessAuditTrash } from '@/services/processesService'
 import { useDateFormat } from '@/composables/useDateFormat'
+import StatusBadge from '@/components/ui/StatusBadge.vue'
 
 interface Props {
   modelValue: boolean
@@ -269,18 +270,9 @@ const handleClose = () => {
           <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
             >Status</label
           >
-          <span
-            :class="[
-              'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-              processDetail.status === 'completed'
-                ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-300'
-                : processDetail.status === 'running'
-                ? 'bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-300'
-                : 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-300',
-            ]"
-          >
+          <StatusBadge :variant="processDetail.status === 'completed' ? 'green' : processDetail.status === 'running' ? 'blue' : 'red'">
             {{ processDetail.status.charAt(0).toUpperCase() + processDetail.status.slice(1) }}
-          </span>
+          </StatusBadge>
         </div>
       </div>
 
@@ -309,18 +301,12 @@ const handleClose = () => {
           </template>
 
           <template #cell-errors400="{ value }">
-            <span
-              v-if="value > 0"
-              class="inline-flex items-center rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700 dark:bg-yellow-800 dark:text-yellow-300"
-            >{{ value }}</span>
+            <StatusBadge v-if="value > 0" variant="yellow">{{ value }}</StatusBadge>
             <span v-else>-</span>
           </template>
 
           <template #cell-errors500="{ value }">
-            <span
-              v-if="value > 0"
-              class="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700 dark:bg-red-800 dark:text-red-300"
-            >{{ value }}</span>
+            <StatusBadge v-if="value > 0" variant="red">{{ value }}</StatusBadge>
             <span v-else>-</span>
           </template>
         </DataGrid>

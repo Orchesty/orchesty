@@ -30,8 +30,6 @@ export function useDarkMode() {
         localStorage.theme = 'light'
       }
       
-      // Dispatch custom event to re-render charts (like original Flowbite template)
-      console.log('🌓 Dark mode toggled, dispatching rerender-charts event')
       document.dispatchEvent(new Event('rerender-charts'))
     }
 

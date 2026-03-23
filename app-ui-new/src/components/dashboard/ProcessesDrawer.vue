@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
 import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
+import StatusBadge from '@/components/ui/StatusBadge.vue'
 import type { Process, ProcessStatus } from '@/types/processes'
 import type { TableColumn } from '@/types/dashboard'
 import type { QuickFilterOption } from '@/types/datagrid'
@@ -31,7 +32,7 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const { getTopologyName, getTopologyNameWithVersion } = useTopologyNodeMappings()
-const { formatDateTime } = useDateFormat()
+const { formatDateTime, formatDurationMs } = useDateFormat()
 
 const topologyLabel = computed(() => {
   if (!props.topologyId) return ''
@@ -59,18 +60,6 @@ const quickFilterOptions: QuickFilterOption[] = [
   { value: 'running', label: 'Running' },
   { value: 'failed', label: 'Failed' },
 ]
-
-const formatDuration = (ms: number): string => {
-  if (ms < 1000) return `${Math.round(ms)}ms`
-  const totalSeconds = ms / 1000
-  if (totalSeconds < 60) return `${totalSeconds.toFixed(1)}s`
-  const minutes = Math.floor(totalSeconds / 60)
-  const secs = Math.round(totalSeconds % 60)
-  if (minutes < 60) return `${minutes}m ${secs}s`
-  const hours = Math.floor(minutes / 60)
-  const mins = minutes % 60
-  return `${hours}h ${mins}m ${secs}s`
-}
 
 const loadData = async () => {
   loading.value = true
@@ -199,22 +188,13 @@ const handleClose = () => {
       </template>
 
       <template #cell-duration="{ value }">
-        <span class="whitespace-nowrap">{{ formatDuration(value) }}</span>
+        <span class="whitespace-nowrap">{{ formatDurationMs(value) }}</span>
       </template>
 
       <template #cell-status="{ value }">
-        <span
-          :class="[
-            'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
-            value === 'completed'
-              ? 'bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-300'
-              : value === 'running'
-                ? 'bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-300'
-                : 'bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-300',
-          ]"
-        >
+        <StatusBadge :variant="value === 'completed' ? 'green' : value === 'running' ? 'blue' : 'red'">
           {{ value.charAt(0).toUpperCase() + value.slice(1) }}
-        </span>
+        </StatusBadge>
       </template>
 
       <template #cell-actions="{ row }">

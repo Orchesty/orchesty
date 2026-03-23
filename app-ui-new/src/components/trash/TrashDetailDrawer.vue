@@ -8,6 +8,7 @@ import EditMessageModal from './EditMessageModal.vue'
 import type { TrashItem } from '@/types/trash'
 import { useDateFormat } from '@/composables/useDateFormat'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { formatJson } from '@/utils/formatters'
 
 const { formatDateTime } = useDateFormat()
 const { getTopologyName, getNodeName } = useTopologyNodeMappings()
@@ -37,11 +38,6 @@ const formattedTimestamp = computed(() => {
   if (!props.item) return ''
   return formatDateTime(props.item.timestamp)
 })
-
-// Format JSON for display
-const formatJson = (obj: Record<string, any>): string => {
-  return JSON.stringify(obj, null, 2)
-}
 
 const handleApprove = () => {
   emit('approve')

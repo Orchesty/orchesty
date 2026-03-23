@@ -21,7 +21,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-const { formatDateTime } = useDateFormat()
+const { formatDateTime, formatDurationMs } = useDateFormat()
 const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 // Drawer state
@@ -54,18 +54,6 @@ const quickFilterOptions: QuickFilterOption[] = [
   { value: 'running', label: 'Running' },
   { value: 'failed', label: 'Failed' },
 ]
-
-const formatDuration = (ms: number): string => {
-  if (ms < 1000) return `${Math.round(ms)}ms`
-  const totalSeconds = ms / 1000
-  if (totalSeconds < 60) return `${totalSeconds.toFixed(1)}s`
-  const minutes = Math.floor(totalSeconds / 60)
-  const secs = Math.round(totalSeconds % 60)
-  if (minutes < 60) return `${minutes}m ${secs}s`
-  const hours = Math.floor(minutes / 60)
-  const mins = minutes % 60
-  return `${hours}h ${mins}m ${secs}s`
-}
 
 // Load data function
 const loadData = async () => {
@@ -113,10 +101,8 @@ const {
 })
 
 const handleAuditClick = (process: Process) => {
-  console.log('Audit button clicked for process:', process)
   selectedProcess.value = process
   drawerOpen.value = true
-  console.log('Drawer state:', { drawerOpen: drawerOpen.value, selectedProcess: selectedProcess.value })
 }
 
 onMounted(() => {
@@ -182,7 +168,7 @@ watch(() => props.refreshKey, () => {
         </template>
 
         <template #cell-duration="{ value }">
-          <span class="whitespace-nowrap">{{ formatDuration(value) }}</span>
+          <span class="whitespace-nowrap">{{ formatDurationMs(value) }}</span>
         </template>
 
         <template #cell-status="{ value }">

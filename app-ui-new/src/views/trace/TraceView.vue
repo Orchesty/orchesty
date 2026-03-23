@@ -98,8 +98,6 @@ const handleSaveReport = async (message: ChatMessageType) => {
     
     reports.value.unshift(newReport)
     
-    // Show success feedback (could be a toast notification)
-    console.log('Report saved successfully')
   } catch (error) {
     console.error('Failed to save report:', error)
   }
@@ -122,7 +120,6 @@ const handleRenameReport = async (id: string, newTitle: string) => {
       report.title = newTitle
     }
     
-    console.log('Report renamed successfully')
   } catch (error) {
     console.error('Failed to rename report:', error)
   }
@@ -140,7 +137,6 @@ const handleDeleteReport = async (id: string) => {
       selectedReport.value = null
     }
     
-    console.log('Report deleted successfully')
   } catch (error) {
     console.error('Failed to delete report:', error)
   }
@@ -152,14 +148,12 @@ const handleDeleteFromModal = async (id: string) => {
   reportModalOpen.value = false
 }
 
-// Copy handler
 const handleCopy = () => {
-  console.log('Content copied to clipboard')
+  // clipboard handled by ChatMessage component
 }
 
-// Export PDF handler
 const handleExportPdf = () => {
-  console.log('Export to PDF - functionality to be implemented')
+  // TODO: implement PDF export
 }
 </script>
 

@@ -139,11 +139,11 @@ const handleSaveReport = (message: ChatMessageType) => {
 }
 
 const handleCopy = () => {
-  console.log('Content copied to clipboard')
+  // clipboard handled by ChatMessage component
 }
 
 const handleExportPdf = () => {
-  console.log('Export to PDF - functionality to be implemented')
+  // TODO: implement PDF export
 }
 
 const handleClose = () => {

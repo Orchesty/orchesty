@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import Card from '@/components/ui/Card.vue'
@@ -24,23 +24,22 @@ import {
   updateTrashItem,
 } from '@/services/trashService'
 import { useDataGrid } from '@/composables/useDataGrid'
-import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { useTopologyNodeFilter } from '@/composables/useTopologyNodeFilter'
 import { useToast } from '@/composables/useToast'
 import { useDateFormat } from '@/composables/useDateFormat'
 
 const route = useRoute()
 const { formatDateTime } = useDateFormat()
 
-// Topology/Node mappings composable
 const {
+  topologyFilter,
+  nodeFilter,
+  topologyOptions,
+  nodeOptions,
   getTopologyName,
   getNodeName,
   getNodeIdsByName,
-  topologyOptions: topologyOptionsFromMappings,
-  deduplicatedNodeOptions: deduplicatedNodeOptionsFromMappings,
-  nodeOptions: nodeOptionsFromMappings,
-  mappings
-} = useTopologyNodeMappings()
+} = useTopologyNodeFilter()
 
 // Toast notifications
 const { showToast } = useToast()
@@ -52,58 +51,9 @@ const selectedRows = ref<Set<string>>(new Set())
 // Filters
 const searchFilter = ref('')
 const correlationIdFilter = ref('')
-const nodeFilter = ref<string | null>(null)
-const topologyFilter = ref<string | null>(null)
 const dateTimeRange = ref<{ from: string | null; to: string | null }>({
   from: null,
   to: null,
-})
-
-// Topology options for dropdown with "All" option
-const topologyOptions = computed(() => [
-  { value: null, label: 'All Topologies' },
-  ...topologyOptionsFromMappings.value
-])
-
-// Node options for dropdown - deduplicated by name, filtered by selected topology
-const nodeOptions = computed(() => {
-  const baseOptions = [{ value: null, label: 'All Nodes' }]
-
-  if (!topologyFilter.value || !mappings.value) {
-    return [...baseOptions, ...deduplicatedNodeOptionsFromMappings.value]
-  }
-
-  // Get node IDs for the selected topology from the tree
-  const nodeIdsInTopology = mappings.value.topologyTree[topologyFilter.value] || []
-
-  // Get unique names of nodes in this topology
-  const namesInTopology = new Set(
-    nodeIdsInTopology
-      .map(id => mappings.value?.nodes[id])
-      .filter((name): name is string => !!name)
-  )
-
-  const filteredNodes = Array.from(namesInTopology)
-    .map(name => ({ value: name, label: name }))
-    .sort((a, b) => a.label.localeCompare(b.label))
-
-  return [...baseOptions, ...filteredNodes]
-})
-
-// Clear node filter when topology changes if selected node name is not in new topology
-watch(topologyFilter, () => {
-  if (nodeFilter.value && topologyFilter.value && mappings.value) {
-    const nodeIdsInTopology = mappings.value.topologyTree[topologyFilter.value] || []
-    const namesInTopology = new Set(
-      nodeIdsInTopology
-        .map(id => mappings.value?.nodes[id])
-        .filter(Boolean)
-    )
-
-    if (!namesInTopology.has(nodeFilter.value)) {
-      nodeFilter.value = null
-    }
-  }
 })
 
 // Drawer state

@@ -3,31 +3,36 @@ import { ref, onMounted, onActivated, nextTick, computed, watch } from 'vue'
 import { useApexChart } from '@/composables/useApexChart'
 import type { ApexOptions } from 'apexcharts'
 
-interface NodeProcessTime {
-  nodeName: string
-  time: number
+export interface BarChartItem {
+  label: string
+  value: number
 }
 
 interface Props {
-  data: NodeProcessTime[]
+  data: BarChartItem[]
+  seriesName?: string
+  color?: string
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  seriesName: 'Time (ms)',
+  color: '#0D9E58',
+})
 
 const chartEl = ref<HTMLElement | null>(null)
 const ROW_HEIGHT = 36
 
 const chartHeight = computed(() => (props.data.length * ROW_HEIGHT) + 60)
 
-const chartData = computed(() => 
-  props.data.map(item => ({ x: item.nodeName, y: item.time }))
+const chartData = computed(() =>
+  props.data.map(item => ({ x: item.label, y: item.value })),
 )
 
 const getChartOptions = (): ApexOptions => ({
-  colors: ['#0D9E58'],
+  colors: [props.color],
   series: [
     {
-      name: 'Time (ms)',
+      name: props.seriesName,
       data: chartData.value,
     },
   ],
@@ -127,4 +132,3 @@ watch(() => props.data, (newData) => {
 <template>
   <div ref="chartEl"></div>
 </template>
-

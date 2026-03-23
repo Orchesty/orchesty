@@ -38,17 +38,14 @@ export const saveReport = async (report: Omit<TraceReport, 'id'>): Promise<Trace
     ...report
   }
   
-  console.log('Report saved:', newReport)
   return newReport
 }
 
 export const updateReportTitle = async (id: string, title: string): Promise<void> => {
   await new Promise(resolve => setTimeout(resolve, 300))
-  console.log(`Report ${id} renamed to: ${title}`)
 }
 
 export const deleteReport = async (id: string): Promise<void> => {
   await new Promise(resolve => setTimeout(resolve, 300))
-  console.log(`Report ${id} deleted`)
 }
 

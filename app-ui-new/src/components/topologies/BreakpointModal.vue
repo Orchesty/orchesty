@@ -10,6 +10,7 @@ import {
   approveAllBreakpoints,
 } from '@/services/breakpointService'
 import type { TrashItem } from '@/types/trash'
+import { formatJson } from '@/utils/formatters'
 
 interface Props {
   modelValue: boolean
@@ -33,10 +34,6 @@ const loading = ref(false)
 const actionLoading = ref(false)
 
 const modalTitle = computed(() => `Breakpoint: ${props.nodeName}`)
-
-const formatJson = (obj: Record<string, unknown>): string => {
-  return JSON.stringify(obj, null, 2)
-}
 
 const loadFirstItem = async () => {
   loading.value = true

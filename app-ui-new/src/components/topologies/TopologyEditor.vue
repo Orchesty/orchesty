@@ -41,7 +41,7 @@ const emit = defineEmits<{
 const { Editor, createConfig } = ReteEditorKit
 const { toggleNodeState, runProcess, updateCrontab } = useCronNodeActions()
 const { showToast } = useToast()
-const { formatDateTime } = useDateFormat()
+const { formatDateTime, formatDurationMs } = useDateFormat()
 const polling = useProcessPolling(props.topologyId)
 
 interface EditorNode {
@@ -97,13 +97,6 @@ const getStartingPointUrl = (editorNodeId: string): string => {
   return `${baseUrl}/topologies/${props.topologyId}/nodes/${backendId}/run`
 }
 
-const formatMs = (ms: number): string => {
-  if (ms < 1000) return `${Math.round(ms)}ms`
-  if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`
-  const minutes = Math.floor(ms / 60000)
-  const seconds = Math.round((ms % 60000) / 1000)
-  return `${minutes}m ${seconds}s`
-}
 
 const EXCLUDED_PROCESS_TIME_LABELS = new Set(['event', 'webhook', 'cron', 'breakpoint'])
 
@@ -139,7 +132,7 @@ const buildMetricsLabelHtml = (node: EditorNode, isCustomAction: boolean): strin
     .filter((def) => m[def.key] != null)
     .map((def) => {
       const raw = m[def.key]!
-      const display = def.isTime ? formatMs(raw) : String(raw)
+      const display = def.isTime ? formatDurationMs(raw) : String(raw)
       return `<div style="${boxStyle}"><div style="${labelStyle}">${def.label}</div><div style="${valueStyle}">${display}</div></div>`
     })
 
@@ -164,7 +157,7 @@ const getOverlayTopRight = (node: EditorNode) => {
   const m = nodeMetrics.value[node.id]
   if (!m?.processTime) return null
   return {
-    content: `<span style="font-size:.75rem;font-weight:600;color:#f9fafb;background:#374151;padding:2px 6px;border-radius:9999px;white-space:nowrap;">${formatMs(m.processTime)}</span>`,
+    content: `<span style="font-size:.75rem;font-weight:600;color:#f9fafb;background:#374151;padding:2px 6px;border-radius:9999px;white-space:nowrap;">${formatDurationMs(m.processTime)}</span>`,
   }
 }
 
@@ -627,7 +620,7 @@ const processEndTime = computed(() => {
 const processDuration = computed(() => {
   const d = polling.processDetail.value?.duration
   if (!d) return null
-  return formatMs(d)
+  return formatDurationMs(d)
 })
 
 const showProcessPanel = computed(() => !!processStartNodeName.value)

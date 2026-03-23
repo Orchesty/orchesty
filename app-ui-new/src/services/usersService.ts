@@ -75,7 +75,6 @@ export async function fetchUserDetail(id: string): Promise<User | null> {
 export async function inviteUsers(emails: string[]): Promise<{ success: boolean; message: string }> {
   await delay(500)
 
-  console.log('Inviting users:', emails)
   return {
     success: true,
     message: `Successfully sent invitations to ${emails.length} user(s)`
@@ -89,7 +88,6 @@ export async function updateUserRole(
 ): Promise<{ success: boolean; message: string }> {
   await delay(400)
 
-  console.log(`Updating user ${id}:`, { role, groups })
   return {
     success: true,
     message: 'User updated successfully'
@@ -99,7 +97,6 @@ export async function updateUserRole(
 export async function removeUser(id: string): Promise<{ success: boolean; message: string }> {
   await delay(400)
 
-  console.log('Removing user:', id)
   return {
     success: true,
     message: 'User removed successfully'

@@ -17,6 +17,7 @@ import {
   rejectAllTrashItems,
 } from '@/services/trashService'
 import type { TrashItem } from '@/types/trash'
+import { formatJson } from '@/utils/formatters'
 
 interface Props {
   modelValue: boolean
@@ -50,10 +51,6 @@ const resultMessage = computed(() => {
   if (!currentItem.value) return ''
   return (currentItem.value.headers['result-message'] as string) || ''
 })
-
-const formatJson = (obj: Record<string, unknown>): string => {
-  return JSON.stringify(obj, null, 2)
-}
 
 const loadFirstItem = async () => {
   loading.value = true

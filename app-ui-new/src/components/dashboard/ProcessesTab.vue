@@ -7,6 +7,7 @@ import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
 import SearchableDropdownFilter from '@/components/ui/datagrid/SearchableDropdownFilter.vue'
 import GridLink from '@/components/ui/datagrid/GridLink.vue'
 import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
+import StatusBadge from '@/components/ui/StatusBadge.vue'
 import type { Process, ProcessStatus } from '@/types/processes'
 import type { TimeFilter, TableColumn, ProcessesExternalFilters } from '@/types/dashboard'
 import type { QuickFilterOption, DropdownFilterOption } from '@/types/datagrid'
@@ -18,7 +19,7 @@ import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 
 interface Props {
-  globalTimeFilter: TimeFilter
+  timeFilter: TimeFilter
   externalFilters?: ProcessesExternalFilters
   refreshKey?: number
 }
@@ -27,7 +28,7 @@ const props = defineProps<Props>()
 
 // Use topology/node mappings composable
 const { getTopologyName, getTopologyNameWithVersion, deduplicatedTopologyOptions, getTopologyIdsByName } = useTopologyNodeMappings()
-const { formatDateTime } = useDateFormat()
+const { formatDateTime, formatDurationMs } = useDateFormat()
 const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 // Drawer state
@@ -39,7 +40,7 @@ const processes = ref<Process[]>([])
 const statusFilter = ref<ProcessStatus>('all')
 const topologyFilter = ref<string | null>(null)
 
-const initialRange = convertTimeFilterToDateTimeRange(props.globalTimeFilter)
+const initialRange = convertTimeFilterToDateTimeRange(props.timeFilter)
 const hasExternalFilters = !!(props.externalFilters?.topology || props.externalFilters?.timeRange)
 const skipAutoLoad = ref(hasExternalFilters)
 
@@ -75,18 +76,6 @@ const topologyOptions = computed<DropdownFilterOption[]>(() => [
   { value: null, label: 'All Topologies' },
   ...deduplicatedTopologyOptions.value
 ])
-
-const formatDuration = (ms: number): string => {
-  if (ms < 1000) return `${Math.round(ms)}ms`
-  const totalSeconds = ms / 1000
-  if (totalSeconds < 60) return `${totalSeconds.toFixed(1)}s`
-  const minutes = Math.floor(totalSeconds / 60)
-  const secs = Math.round(totalSeconds % 60)
-  if (minutes < 60) return `${minutes}m ${secs}s`
-  const hours = Math.floor(minutes / 60)
-  const mins = minutes % 60
-  return `${hours}h ${mins}m ${secs}s`
-}
 
 // Load data function
 const loadData = async () => {
@@ -147,14 +136,12 @@ if (hasExternalFilters) {
 }
 
 const handleAuditClick = (process: Process) => {
-  console.log('Audit button clicked for process:', process)
   selectedProcess.value = process
   drawerOpen.value = true
-  console.log('Drawer state:', { drawerOpen: drawerOpen.value, selectedProcess: selectedProcess.value })
 }
 
 watch(
-  () => props.globalTimeFilter,
+  () => props.timeFilter,
   (newFilter) => {
     const range = convertTimeFilterToDateTimeRange(newFilter)
     dateTimeRange.value = {
@@ -267,22 +254,13 @@ onDeactivated(() => {
         </template>
 
         <template #cell-duration="{ value }">
-          <span class="whitespace-nowrap">{{ formatDuration(value) }}</span>
+          <span class="whitespace-nowrap">{{ formatDurationMs(value) }}</span>
         </template>
 
         <template #cell-status="{ value }">
-          <span
-            :class="[
-              'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
-              value === 'completed'
-                ? 'bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-300'
-                : value === 'running'
-                ? 'bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-300'
-                : 'bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-300',
-            ]"
-          >
+          <StatusBadge :variant="value === 'completed' ? 'green' : value === 'running' ? 'blue' : 'red'">
             {{ value.charAt(0).toUpperCase() + value.slice(1) }}
-          </span>
+          </StatusBadge>
         </template>
 
         <template #cell-errorMessage="{ value }">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import Card from '@/components/ui/Card.vue'
@@ -11,22 +11,23 @@ import SearchableDropdownFilter from '@/components/ui/datagrid/SearchableDropdow
 import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
 import CopyValue from '@/components/ui/CopyValue.vue'
 import LogDetailModal from '@/components/logs/LogDetailModal.vue'
+import StatusBadge from '@/components/ui/StatusBadge.vue'
 import type { LogEntry, LogQueryParams, LogSeverity } from '@/types/logs'
 import type { TableColumn } from '@/types/dashboard'
 import { fetchLogs } from '@/services/logsService'
 import { useDateFormat } from '@/composables/useDateFormat'
 import { useDataGrid } from '@/composables/useDataGrid'
-import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { useTopologyNodeFilter } from '@/composables/useTopologyNodeFilter'
 
-// Topology/Node mappings composable
 const {
+  topologyFilter,
+  nodeFilter,
+  topologyOptions,
+  nodeOptions,
   getTopologyName,
   getNodeName,
   getNodeIdsByName,
-  topologyOptions: topologyOptionsFromMappings,
-  deduplicatedNodeOptions: deduplicatedNodeOptionsFromMappings,
-  mappings,
-} = useTopologyNodeMappings()
+} = useTopologyNodeFilter()
 const { formatDateTime } = useDateFormat()
 
 // State
@@ -40,8 +41,6 @@ const selectedLog = ref<LogEntry | null>(null)
 const searchFilter = ref('')
 const correlationIdFilter = ref('')
 const severityFilter = ref<LogSeverity | null>(null)
-const topologyFilter = ref<string | null>(null)
-const nodeFilter = ref<string | null>(null)
 const dateTimeRange = ref<{ from: string | null; to: string | null }>({
   from: null,
   to: null,
@@ -56,53 +55,6 @@ const severityOptions = ref<{ value: LogSeverity | null; label: string }[]>([
   { value: 'debug', label: 'Debug' },
 ])
 
-// Topology options from mappings with "All" option
-const topologyOptions = computed(() => [
-  { value: null, label: 'All Topologies' },
-  ...topologyOptionsFromMappings.value,
-])
-
-// Node options filtered by selected topology, deduplicated by name
-const nodeOptions = computed(() => {
-  const baseOptions = [{ value: null, label: 'All Nodes' }]
-
-  if (!topologyFilter.value || !mappings.value) {
-    return [...baseOptions, ...deduplicatedNodeOptionsFromMappings.value]
-  }
-
-  // Get node IDs for the selected topology from the tree
-  const nodeIdsInTopology = mappings.value.topologyTree[topologyFilter.value] || []
-
-  // Get unique names of nodes in this topology
-  const namesInTopology = new Set(
-    nodeIdsInTopology
-      .map(id => mappings.value?.nodes[id])
-      .filter((name): name is string => !!name)
-  )
-
-  const filteredNodes = Array.from(namesInTopology)
-    .map(name => ({ value: name, label: name }))
-    .sort((a, b) => a.label.localeCompare(b.label))
-
-  return [...baseOptions, ...filteredNodes]
-})
-
-// Clear node filter when topology changes if selected node name is not in new topology
-watch(topologyFilter, () => {
-  if (nodeFilter.value && topologyFilter.value && mappings.value) {
-    const nodeIdsInTopology = mappings.value.topologyTree[topologyFilter.value] || []
-    const namesInTopology = new Set(
-      nodeIdsInTopology
-        .map(id => mappings.value?.nodes[id])
-        .filter(Boolean)
-    )
-
-    if (!namesInTopology.has(nodeFilter.value)) {
-      nodeFilter.value = null
-    }
-  }
-})
-
 // Table columns
 const columns: TableColumn[] = [
   { key: 'timestamp', label: 'Timestamp', sortable: true },
@@ -114,15 +66,11 @@ const columns: TableColumn[] = [
   { key: 'actions', label: '', className: 'text-right w-16' },
 ]
 
-// Get severity badge classes
-const getSeverityClass = (severity: LogSeverity): string => {
-  const classes = {
-    error: 'bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-300',
-    warning: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-800 dark:text-yellow-300',
-    info: 'bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-300',
-    debug: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
-  }
-  return classes[severity] || classes.info
+const severityVariant: Record<LogSeverity, 'red' | 'yellow' | 'blue' | 'gray'> = {
+  error: 'red',
+  warning: 'yellow',
+  info: 'blue',
+  debug: 'gray',
 }
 
 // Open drawer with selected log
@@ -284,14 +232,9 @@ onMounted(() => {
         </template>
 
         <template #cell-severity="{ value }">
-          <span
-            :class="[
-              'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
-              getSeverityClass(value),
-            ]"
-          >
+          <StatusBadge :variant="severityVariant[value as LogSeverity] || 'blue'">
             {{ value.charAt(0).toUpperCase() + value.slice(1) }}
-          </span>
+          </StatusBadge>
         </template>
 
         <template #cell-message="{ value }">

@@ -8,8 +8,7 @@ import type { ChatMessage } from '@/types/trace'
 // TraceDrawer state from composable
 const { isTraceDrawerOpen } = useTraceDrawer()
 
-const handleSaveReport = (message: ChatMessage) => {
-  console.log('Save report from TraceDrawer:', message)
+const handleSaveReport = (_message: ChatMessage) => {
   // TODO: Implement save report functionality
 }
 </script>

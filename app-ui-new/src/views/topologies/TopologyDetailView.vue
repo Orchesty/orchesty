@@ -4,8 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import TopologyProcessesTab from '@/components/topologies/TopologyProcessesTab.vue'
 import TopologyLogsTab from '@/components/topologies/TopologyLogsTab.vue'
 import TopologyFailedMessagesTab from '@/components/topologies/TopologyFailedMessagesTab.vue'
-import NodeProcessTimeChart from '@/components/topologies/NodeProcessTimeChart.vue'
-import ConnectorRequestTimeChart from '@/components/topologies/ConnectorRequestTimeChart.vue'
+import HorizontalBarChart from '@/components/ui/HorizontalBarChart.vue'
 import VersionHistoryDrawer from '@/components/topologies/VersionHistoryDrawer.vue'
 import TopologyDesignerDrawer from '@/components/topologies/TopologyDesignerDrawer.vue'
 import TopologyEditor from '@/components/topologies/TopologyEditor.vue'
@@ -843,13 +842,13 @@ onMounted(async () => {
           <Card>
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Node Process Time</h3>
             <div class="mb-4 relative overflow-visible">
-              <NodeProcessTimeChart :data="metricsData.nodeProcessTimes" />
+              <HorizontalBarChart :data="metricsData.nodeProcessTimes.map(n => ({ label: n.nodeName, value: n.time }))" />
             </div>
           </Card>
           <Card>
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Connector Request Time</h3>
             <div class="mb-4 relative overflow-visible">
-              <ConnectorRequestTimeChart :data="metricsData.connectorRequestTimes" />
+              <HorizontalBarChart :data="metricsData.connectorRequestTimes.map(c => ({ label: c.connectorName, value: c.time }))" />
             </div>
           </Card>
         </div>

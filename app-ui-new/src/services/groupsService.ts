@@ -89,8 +89,6 @@ export async function createGroup(data: {
     users: []
   }
 
-  console.log('Creating group:', newGroup)
-  
   return {
     success: true,
     message: 'Group created successfully',
@@ -104,7 +102,6 @@ export async function updateGroup(
 ): Promise<{ success: boolean; message: string }> {
   await delay(400)
 
-  console.log(`Updating group ${id}:`, data)
   return {
     success: true,
     message: 'Group updated successfully'
@@ -114,7 +111,6 @@ export async function updateGroup(
 export async function removeGroup(id: string): Promise<{ success: boolean; message: string }> {
   await delay(400)
 
-  console.log('Removing group:', id)
   return {
     success: true,
     message: 'Group removed successfully'
@@ -127,7 +123,6 @@ export async function addUserToGroup(
 ): Promise<{ success: boolean; message: string }> {
   await delay(300)
 
-  console.log(`Adding user ${userId} to group ${groupId}`)
   return {
     success: true,
     message: 'User added to group successfully'
@@ -140,7 +135,6 @@ export async function removeUserFromGroup(
 ): Promise<{ success: boolean; message: string }> {
   await delay(300)
 
-  console.log(`Removing user ${userId} from group ${groupId}`)
   return {
     success: true,
     message: 'User removed from group successfully'
