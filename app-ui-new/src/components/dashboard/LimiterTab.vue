@@ -57,6 +57,55 @@ const { initChart, setupResizeObserver, isDarkMode } = useApexChart({
   },
 })
 
+const summaryColumns: TableColumn[] = [
+  { key: 'application', label: 'Application', sortable: false },
+  { key: 'limitSetting', label: 'Limit', sortable: false },
+  { key: 'messages', label: 'Max (actual)', sortable: true },
+  { key: 'remainingTime', label: 'Remaining time', sortable: false },
+]
+
+const formatDuration = (seconds: number): string => {
+  if (seconds < 60) return `${Math.ceil(seconds)}s`
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ${Math.ceil(seconds % 60)}s`
+  const h = Math.floor(seconds / 3600)
+  const m = Math.ceil((seconds % 3600) / 60)
+  return `${h}h ${m}m`
+}
+
+const summaryData = computed(() => {
+  if (!limiterData.value) return []
+
+  const byApp = new Map<string, { applicationId: string; messages: number; maxMessages: number }>()
+
+  for (const row of limiterData.value.tableData) {
+    const key = row.applicationId || '-'
+    const existing = byApp.get(key)
+    if (existing) {
+      existing.messages += row.messages
+      existing.maxMessages += row.maxMessages
+    } else {
+      byApp.set(key, { applicationId: key, messages: row.messages, maxMessages: row.maxMessages })
+    }
+  }
+
+  return [...byApp.values()]
+    .map(row => {
+      const setting = appSettings.value.get(row.applicationId)
+      const limitSetting = setting && setting.useLimit && setting.value && setting.time
+        ? `${setting.value} / ${setting.time}s`
+        : 'off'
+
+      let remainingTime = '-'
+      if (row.messages > 0 && setting?.useLimit && setting.value && setting.time) {
+        const rate = setting.value / setting.time
+        remainingTime = formatDuration(row.messages / rate)
+      }
+
+      return { ...row, limitSetting, remainingTime }
+    })
+    .sort((a, b) => b.messages - a.messages)
+})
+
 const columns: TableColumn[] = [
   { key: 'application', label: 'Application', sortable: false },
   { key: 'connector', label: 'Connector', sortable: false },
@@ -165,14 +214,20 @@ onMounted(async () => {
 const getChartOptions = () => {
   const colors = getChartColors(isDarkMode.value)
   const categories = limiterData.value?.chartData.categories || []
+  const seriesData = limiterData.value?.chartData.series || []
   const granularity = getGranularityMinutes(props.globalTimeFilter)
+
+  const pairedData = categories.map((cat, i) => ({
+    x: new Date(cat).getTime(),
+    y: seriesData[i] ?? 0,
+  }))
 
   return {
     ...getBaseChartOptions(isDarkMode.value),
     series: [
       {
         name: 'Messages',
-        data: limiterData.value?.chartData.series || [],
+        data: pairedData,
       },
     ],
     chart: {
@@ -204,7 +259,7 @@ const getChartOptions = () => {
       enabled: false,
     },
     xaxis: {
-      categories,
+      type: 'datetime',
       labels: {
         show: true,
         rotate: -45,
@@ -212,19 +267,15 @@ const getChartOptions = () => {
         hideOverlappingLabels: true,
         trim: true,
         maxHeight: 60,
+        datetimeUTC: false,
         style: {
           colors: colors.text,
           fontSize: '10px',
           fontFamily: 'Inter, sans-serif',
         },
-        formatter: (value: string) => {
-          if (!value) return ''
-          const index = categories.indexOf(value)
-          const step = Math.max(1, Math.floor(categories.length / 8))
-          if (index !== -1 && index % step !== 0 && index !== categories.length - 1) {
-            return ''
-          }
-          return formatChartLabel(value, granularity)
+        formatter: (_value: string, timestamp?: number) => {
+          if (!timestamp) return ''
+          return formatChartLabel(new Date(timestamp).toISOString(), granularity)
         },
       },
       axisBorder: {
@@ -235,7 +286,7 @@ const getChartOptions = () => {
       },
     },
     yaxis: {
-      show: false,
+      show: true,
       labels: {
         style: {
           colors: colors.text,
@@ -251,9 +302,10 @@ const getChartOptions = () => {
         fontFamily: 'Inter, sans-serif',
       },
       custom: ({ dataPointIndex, w }: { dataPointIndex: number; w: any }) => {
-        const value = w.config.series[0].data[dataPointIndex]
-        const rawCategory = categories[dataPointIndex] || ''
-        const formattedDate = formatChartLabel(rawCategory, granularity)
+        const point = w.config.series[0].data[dataPointIndex]
+        const value = point?.y ?? point
+        const timestamp = point?.x ? new Date(point.x).toISOString() : ''
+        const formattedDate = formatChartLabel(timestamp, granularity)
         const dark = isDarkMode.value
         const bg = dark ? '#1f2937' : '#ffffff'
         const textPrimary = dark ? '#f9fafb' : '#111827'
@@ -337,6 +389,50 @@ const getChartOptions = () => {
       <div v-else class="flex h-80 items-center justify-center">
         <div class="text-gray-500 dark:text-gray-400">Loading...</div>
       </div>
+    </Card>
+
+    <!-- Section: Summary by application -->
+    <Card>
+      <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Summary by application</h3>
+
+      <DataGrid
+        :columns="summaryColumns"
+        :data="summaryData"
+        :loading="loading"
+        :current-page="1"
+        :items-per-page="100"
+        hide-pagination
+      >
+        <template #cell-application="{ row }">
+          <span class="font-medium text-gray-900 dark:text-white">{{ row.applicationId && row.applicationId !== '-' ? getApplicationName(row.applicationId) : '-' }}</span>
+        </template>
+        <template #cell-limitSetting="{ value }">
+          <span
+            :class="value === 'off'
+              ? 'text-gray-400 dark:text-gray-500'
+              : 'text-gray-900 dark:text-white font-medium'"
+          >
+            {{ value }}
+          </span>
+        </template>
+        <template #cell-messages="{ row }">
+          {{ row.maxMessages }}
+          <span
+            :class="row.messages < row.maxMessages
+              ? 'text-green-600 dark:text-green-400'
+              : row.messages > row.maxMessages
+                ? 'text-red-600 dark:text-red-400'
+                : 'text-gray-500 dark:text-gray-400'"
+          >
+            <svg v-if="row.messages < row.maxMessages" class="inline h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 14-4-4m4 4 4-4"/></svg>
+            <svg v-else-if="row.messages > row.maxMessages" class="inline h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0-14 4 4m-4-4-4 4"/></svg>
+            ({{ row.messages }})
+          </span>
+        </template>
+        <template #cell-remainingTime="{ value }">
+          <span class="whitespace-nowrap font-medium text-gray-900 dark:text-white">{{ value }}</span>
+        </template>
+      </DataGrid>
     </Card>
 
     <!-- Section: Grid card -->

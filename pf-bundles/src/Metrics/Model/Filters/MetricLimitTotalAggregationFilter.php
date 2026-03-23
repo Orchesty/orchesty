@@ -94,7 +94,7 @@ final class MetricLimitTotalAggregationFilter extends GridAggregationFilterAbstr
                 ->sortBy('created', 'asc')
                 ->output()
                 ->field('countAtMinute')
-                ->value(0);
+                ->locf();
         }
 
         $builder

@@ -145,6 +145,7 @@ onActivated(() => {
 const getColumnChartOptions = () => {
   const colors = getChartColors(isDarkMode.value)
   const categories = limiterData.value?.chartData.categories || []
+  const seriesData = limiterData.value?.chartData.series || []
   const granularity = getGranularityMinutes(props.timeFilter)
 
   return {
@@ -152,7 +153,7 @@ const getColumnChartOptions = () => {
     series: [
       {
         name: 'Messages',
-        data: limiterData.value?.chartData.series || [],
+        data: seriesData,
       },
     ],
     chart: {

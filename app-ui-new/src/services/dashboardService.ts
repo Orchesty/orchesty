@@ -242,84 +242,81 @@ export async function fetchLimiterData(params: {
 }): Promise<LimiterData> {
   const page = params.page || 1
   const itemsPerPage = params.limit || 5
+  const buckets = params.buckets || 40
+  const sortColumn = 'count'
 
-  // Get date range
   const normalRange = convertTimeFilterToDateTimeRangeWithMultiplier(params.timeFilter, 1)
+  const maxRange = convertTimeFilterToDateTimeRangeWithMultiplier('30d', 1)
 
-  // 1. Fetch graph data (sorted by created ASC) — graph needs BETWEEN for densify bucketing
+  // Build filters
   const graphFilter: LimiterApiFilter = {
     search: null,
-    filter: [[{
-      column: 'created',
-      operator: 'BETWEEN',
-      value: [normalRange.from, normalRange.to]
-    }]],
+    filter: [[{ column: 'created', operator: 'BETWEEN', value: [normalRange.from, normalRange.to] }]],
     sorter: [{ column: 'created', direction: 'ASC' }],
     paging: { itemsPerPage: 9999, page: 1 }
   }
 
-  const buckets = params.buckets || 40
-  const graphResponse = await api.get<LimiterGraphApiResponse>(
-    '/api/metrics/limits/graph',
-    { params: { filter: JSON.stringify(graphFilter), buckets } }
-  )
-
-  // Transform graph data
-  const seriesValues = graphResponse.data.items.map(item => item.count)
-  const chartData = {
-    categories: graphResponse.data.items.map(item => item.created),
-    series: seriesValues
-  }
-
-  // 2. Fetch total current state (sum of last values per node)
-  const totalFilter: LimiterApiFilter = {
+  const timeTotalFilter: LimiterApiFilter = {
     search: null,
-    filter: [[{
-      column: 'created',
-      operator: 'GTE',
-      value: [normalRange.from]
-    }]],
+    filter: [[{ column: 'created', operator: 'GTE', value: [normalRange.from] }]],
     sorter: [],
     paging: { itemsPerPage: 1, page: 1 }
   }
 
-  const totalResponse = await api.get<LimiterTotalApiResponse>(
-    `/api/metrics/limits/total?filter=${encodeURIComponent(JSON.stringify(totalFilter))}`
-  )
-
-  const totalMessages = totalResponse.data.items[0]?.count || 0
-  const maxMessages = totalResponse.data.items[0]?.maximumCount || 0
-
-  // Replace the trailing zero (empty current bucket) with the actual total
-  if (chartData.series.length > 0 && chartData.series[chartData.series.length - 1] === 0) {
-    chartData.series[chartData.series.length - 1] = totalMessages
-  } else {
-    chartData.categories.push(new Date().toISOString())
-    chartData.series.push(totalMessages)
+  const currentTotalFilter: LimiterApiFilter = {
+    search: null,
+    filter: [[{ column: 'created', operator: 'GTE', value: [maxRange.from] }]],
+    sorter: [],
+    paging: { itemsPerPage: 1, page: 1 }
   }
-
-  // 3. Fetch table data (per-node breakdown, paginated)
-  const sortColumn = 'count'
 
   const tableFilter: LimiterApiFilter = {
     search: null,
-    filter: [[{
-      column: 'created',
-      operator: 'GTE',
-      value: [normalRange.from]
-    }]],
-    sorter: [{
-      column: sortColumn,
-      direction: (params.sortOrder || 'desc').toUpperCase()
-    }],
+    filter: [[{ column: 'created', operator: 'GTE', value: [maxRange.from] }]],
+    sorter: [{ column: sortColumn, direction: (params.sortOrder || 'desc').toUpperCase() }],
     paging: { itemsPerPage, page }
   }
 
-  const tableResponse = await api.get<LimiterTableApiResponse>(
-    `/api/metrics/limits?filter=${encodeURIComponent(JSON.stringify(tableFilter))}`
-  )
+  // Run all queries in parallel
+  const [graphResponse, timeTotalResponse, currentTotalResponse, tableResponse] = await Promise.all([
+    api.get<LimiterGraphApiResponse>(
+      '/api/metrics/limits/graph',
+      { params: { filter: JSON.stringify(graphFilter), buckets } }
+    ),
+    api.get<LimiterTotalApiResponse>(
+      `/api/metrics/limits/total?filter=${encodeURIComponent(JSON.stringify(timeTotalFilter))}`
+    ),
+    api.get<LimiterTotalApiResponse>(
+      `/api/metrics/limits/total?filter=${encodeURIComponent(JSON.stringify(currentTotalFilter))}`
+    ),
+    api.get<LimiterTableApiResponse>(
+      `/api/metrics/limits?filter=${encodeURIComponent(JSON.stringify(tableFilter))}`
+    ),
+  ])
 
-  // Transform table data (raw IDs; names resolved reactively in template)
+  const totalMessages = currentTotalResponse.data.items[0]?.count || 0
+  const maxMessages = Math.max(timeTotalResponse.data.items[0]?.maximumCount || 0, totalMessages)
+
+  const chartData = {
+    categories: graphResponse.data.items.map(item => item.created),
+    series: graphResponse.data.items.map(item => item.count)
+  }
+
+  // Fill leading zeros with the first real value (zeros = no metrics written, not empty limiter)
+  const firstRealValue = chartData.series.find(v => v > 0) ?? totalMessages
+  for (let i = 0; i < chartData.series.length; i++) {
+    if (chartData.series[i] > 0) break
+    chartData.series[i] = firstRealValue
+  }
+
+  // Prepend a point at the start of the range
+  chartData.categories.unshift(normalRange.from)
+  chartData.series.unshift(firstRealValue)
+
+  // Append actual current total as the last point
+  chartData.categories.push(new Date().toISOString())
+  chartData.series.push(totalMessages)
+
   const tableData: LimiterTableRow[] = tableResponse.data.items.map(item => {
     const appKey = item.applicationId || ''
     const appSetting = params.appSettings?.get(appKey)
