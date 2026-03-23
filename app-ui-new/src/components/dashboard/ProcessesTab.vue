@@ -5,6 +5,7 @@ import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
 import SearchableDropdownFilter from '@/components/ui/datagrid/SearchableDropdownFilter.vue'
+import GridLink from '@/components/ui/datagrid/GridLink.vue'
 import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
 import type { Process, ProcessStatus } from '@/types/processes'
 import type { TimeFilter, TableColumn, ProcessesExternalFilters } from '@/types/dashboard'
@@ -256,9 +257,9 @@ onDeactivated(() => {
 
         <!-- Custom Cells -->
         <template #cell-topologyId="{ value }">
-          <span class="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+          <GridLink :to="{ name: 'topology-detail', params: { id: value } }">
             {{ getTopologyNameWithVersion(value) }}
-          </span>
+          </GridLink>
         </template>
 
         <template #cell-startTime="{ value }">

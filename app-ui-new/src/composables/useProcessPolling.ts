@@ -7,7 +7,6 @@ import {
   PROCESS_POLL_FAST_INTERVAL_MS,
   PROCESS_POLL_FAST_COUNT,
   PROCESS_POLL_SLOW_INTERVAL_MS,
-  PROCESS_POLL_MAX_DURATION_MS,
 } from '@/config/topology'
 
 function mapApiStatus(status: string): 'running' | 'completed' | 'failed' {
@@ -20,7 +19,7 @@ function mapApiStatus(status: string): 'running' | 'completed' | 'failed' {
  * Composable for polling process detail after a topology run.
  *
  * Progressive interval: first N ticks are fast (2s), then slow (10s).
- * Stops automatically when the process completes/fails or safety timeout is reached.
+ * Stops automatically when the process completes/fails or the component unmounts.
  *
  * Phase 1 (discovery): polls fetchLatestProcess until a recent correlation ID appears.
  * Phase 2 (detail):    polls fetchProcessDetail for the full node-level data.
@@ -31,7 +30,6 @@ export function useProcessPolling(topologyId: string) {
   const processCompleted = ref(false)
 
   let timeoutId: ReturnType<typeof setTimeout> | null = null
-  let safetyTimeoutId: ReturnType<typeof setTimeout> | null = null
   let tickCount = 0
   let pollingStartedAt = 0
   let correlationId: string | null = null
@@ -89,13 +87,6 @@ export function useProcessPolling(topologyId: string) {
     pollingStartedAt = Date.now()
 
     timeoutId = setTimeout(poll, PROCESS_POLL_FAST_INTERVAL_MS)
-
-    safetyTimeoutId = setTimeout(() => {
-      if (isPolling.value) {
-        console.warn('Process polling safety timeout reached')
-        stopPolling()
-      }
-    }, PROCESS_POLL_MAX_DURATION_MS)
   }
 
   /**
@@ -112,13 +103,6 @@ export function useProcessPolling(topologyId: string) {
     pollingStartedAt = 0
 
     poll()
-
-    safetyTimeoutId = setTimeout(() => {
-      if (isPolling.value) {
-        console.warn('Process polling safety timeout reached')
-        stopPolling()
-      }
-    }, PROCESS_POLL_MAX_DURATION_MS)
   }
 
   /**
@@ -141,10 +125,6 @@ export function useProcessPolling(topologyId: string) {
     if (timeoutId) {
       clearTimeout(timeoutId)
       timeoutId = null
-    }
-    if (safetyTimeoutId) {
-      clearTimeout(safetyTimeoutId)
-      safetyTimeoutId = null
     }
   }
 

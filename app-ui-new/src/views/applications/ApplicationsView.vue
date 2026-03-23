@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import type { WorkerGroup, ApplicationStatus } from '@/types/applications';
 import { fetchApplications, installApplication } from '@/services/applicationsService';
 import DashboardLayout from '@/layouts/DashboardLayout.vue';
@@ -8,7 +8,11 @@ import ApplicationDetailDrawer from '@/components/applications/ApplicationDetail
 import SearchInput from '@/components/ui/SearchInput.vue';
 import { useToast } from '@/composables/useToast';
 
-const selectedFilter = ref<ApplicationStatus | 'all' | 'all-installed'>('all');
+const FILTER_KEY = 'orchesty_apps_filter';
+const DRAWER_KEY = 'orchesty_apps_drawer';
+
+const savedFilter = localStorage.getItem(FILTER_KEY) as ApplicationStatus | 'all' | 'all-installed' | null;
+const selectedFilter = ref<ApplicationStatus | 'all' | 'all-installed'>(savedFilter || 'all');
 const workers = ref<WorkerGroup[]>([]);
 const workersExpanded = ref<Record<string, boolean>>({});
 const loading = ref(false);
@@ -62,6 +66,7 @@ const loadApplications = async () => {
 
 const handleFilterChange = (newFilter: ApplicationStatus | 'all' | 'all-installed') => {
   selectedFilter.value = newFilter;
+  localStorage.setItem(FILTER_KEY, newFilter);
   loadApplications();
 };
 
@@ -69,12 +74,29 @@ const toggleWorker = (workerName: string) => {
   workersExpanded.value[workerName] = !workersExpanded.value[workerName];
 };
 
+const saveDrawerState = () => {
+  localStorage.setItem(DRAWER_KEY, JSON.stringify({
+    key: selectedAppKey.value,
+    worker: selectedWorkerName.value,
+    status: selectedAppStatus.value,
+  }));
+};
+
+const clearDrawerState = () => {
+  localStorage.removeItem(DRAWER_KEY);
+};
+
 const handleOpenDetail = (appKey: string, workerName: string, status: ApplicationStatus) => {
   selectedAppKey.value = appKey;
   selectedWorkerName.value = workerName;
   selectedAppStatus.value = status;
   drawerOpen.value = true;
+  saveDrawerState();
 };
+
+watch(drawerOpen, (open) => {
+  if (!open) clearDrawerState();
+});
 
 const handleDrawerRefresh = () => {
   loadApplications();
@@ -102,6 +124,7 @@ const handleInstall = async (appKey: string, workerName: string) => {
 
     // Open the drawer with the installed app
     drawerOpen.value = true;
+    saveDrawerState();
   } catch (error) {
     console.error('Failed to install application:', error);
     showToast(`Failed to install application: ${error instanceof Error ? error.message : String(error)}`, 'error');
@@ -110,8 +133,29 @@ const handleInstall = async (appKey: string, workerName: string) => {
   }
 };
 
-onMounted(() => {
-  loadApplications();
+onMounted(async () => {
+  await loadApplications();
+
+  // Restore drawer state (handles OAuth redirect, refresh, back navigation)
+  const savedDrawer = localStorage.getItem(DRAWER_KEY);
+  if (savedDrawer) {
+    try {
+      const { key, worker, status } = JSON.parse(savedDrawer);
+      if (key && worker) {
+        // Look up the current status from freshly loaded data
+        const app = workers.value
+          .flatMap(w => w.applications)
+          .find(a => a.key === key);
+
+        selectedAppKey.value = key;
+        selectedWorkerName.value = worker;
+        selectedAppStatus.value = app?.status ?? status ?? 'installed';
+        drawerOpen.value = true;
+      }
+    } catch {
+      localStorage.removeItem(DRAWER_KEY);
+    }
+  }
 });
 </script>
 

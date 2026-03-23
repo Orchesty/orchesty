@@ -8,6 +8,7 @@ import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import type { LimiterData, TableColumn, TimeFilter } from '@/types/dashboard'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
+import GridLink from '@/components/ui/datagrid/GridLink.vue'
 
 const { formatChartLabel } = useDateFormat()
 const { getNodeName, getTopologyName } = useTopologyNodeMappings()
@@ -328,7 +329,9 @@ const getColumnChartOptions = () => {
           <span class="font-medium text-gray-900 dark:text-white">{{ getNodeName(row.nodeId) }}</span>
         </template>
         <template #cell-topology="{ row }">
-          <span class="text-gray-900 dark:text-white">{{ getTopologyName(row.topologyId) }}</span>
+          <GridLink :to="{ name: 'topology-detail', params: { id: row.topologyId } }">
+            {{ getTopologyName(row.topologyId) }}
+          </GridLink>
         </template>
         <template #cell-messages="{ row }">
           {{ row.maxMessages }}

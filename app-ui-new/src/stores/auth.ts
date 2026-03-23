@@ -4,8 +4,8 @@ import type { User } from '@/types/auth'
 import * as authService from '@/services/authService'
 import { useActivityTracker } from '@/composables/useActivityTracker'
 
-const CHECK_INTERVAL_MS = 60_000
-const REFRESH_IF_OLDER_THAN_MS = 4 * 60_000
+const CHECK_INTERVAL_MS = 30_000
+const REFRESH_IF_OLDER_THAN_MS = 2 * 60_000
 const INACTIVITY_LIMIT_MS = 30 * 60_000
 
 export const useAuthStore = defineStore('auth', () => {

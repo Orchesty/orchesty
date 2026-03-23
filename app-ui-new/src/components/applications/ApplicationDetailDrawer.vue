@@ -32,6 +32,12 @@ const emit = defineEmits<{
 
 const { showToast } = useToast();
 
+function stripEmpty<T extends Record<string, unknown>>(obj: T): Partial<T> {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, v]) => v !== undefined && v !== null && v !== ''),
+  ) as Partial<T>;
+}
+
 const loading = ref(false);
 const saving = ref(false);
 const showUninstallConfirm = ref(false);
@@ -62,11 +68,27 @@ const groupedSettings = computed(() => {
   return groups;
 });
 
-// Create tab definitions
+// Identify the authorization tab by its formKey
+const authTabId = computed<string | null>(() => {
+  for (const [tabName, settings] of Object.entries(groupedSettings.value)) {
+    if (settings.some(s => s.formKey?.toLowerCase().includes('authorization'))) {
+      return tabName;
+    }
+  }
+  return null;
+});
+
+const isAuthorized = computed(() => applicationInstall.value?.authorized ?? false);
+
+const isAuthTab = (tabId: string) => tabId === authTabId.value;
+
+// Create tab definitions — non-auth tabs are disabled until authorized
 const tabs = computed<TabDefinition[]>(() => {
+  const hasMultipleTabs = Object.keys(groupedSettings.value).length > 1;
   return Object.keys(groupedSettings.value).map(tabKey => ({
     id: tabKey,
     label: tabKey.charAt(0).toUpperCase() + tabKey.slice(1),
+    disabled: hasMultipleTabs && !isAuthTab(tabKey) && !isAuthorized.value,
   }));
 });
 
@@ -108,19 +130,17 @@ const isInstallDisabled = computed(() => {
   return applicationInstall.value?.authorized ?? false;
 });
 
-const needsOAuthAuthorization = computed(() => {
-  if (!applicationInstall.value) return false;
-  return (
-    ['oauth', 'oauth2'].includes(applicationInstall.value.authorization_type) &&
-    !applicationInstall.value.authorized
-  );
-});
+const isOAuthApp = computed(() =>
+  ['oauth', 'oauth2'].includes(applicationInstall.value?.authorization_type ?? '')
+);
 
-const saveButtonLabel = computed(() => {
+const needsOAuthAuthorization = computed(() => isOAuthApp.value && !isAuthorized.value);
+
+const getSaveButtonLabel = (tabId: string): string => {
   if (saving.value) return 'Saving...';
-  if (needsOAuthAuthorization.value) return 'Save & Authorize';
+  if (isAuthTab(tabId) && needsOAuthAuthorization.value) return 'Save & Authorize';
   return 'Save';
-});
+};
 
 const loadApplicationData = async () => {
   if (!props.applicationKey || !props.worker) return;
@@ -147,10 +167,10 @@ const loadApplicationData = async () => {
     // Wait for DOM to be ready
     await nextTick();
 
-    // Set active tab to first tab
+    // Set active tab to auth tab (if exists), otherwise first tab
     const tabsList = Object.keys(groupedSettings.value);
     if (tabsList.length > 0) {
-      activeTab.value = tabsList[0];
+      activeTab.value = authTabId.value ?? tabsList[0];
     }
 
     loading.value = false;
@@ -208,21 +228,19 @@ const confirmUninstall = async () => {
   }
 };
 
-const handleSave = async () => {
+const handleTabSave = async (tabId: string) => {
   if (!applicationInstall.value) return;
 
-  // Validate all required fields across all tabs
-  let isValid = true;
-  for (const formRef of Object.values(formRefs.value)) {
-    if (formRef?.validate && !formRef.validate()) {
-      isValid = false;
-    }
-  }
+  // Validate only the active tab's form
+  const formRef = formRefs.value[tabId];
+  if (formRef?.validate && !formRef.validate()) return;
 
-  if (!isValid) return;
+  // Collect only settings that belong to this tab
+  const tabSettings = groupedSettings.value[tabId] || [];
+  const tabFormValues: Record<string, unknown> = {};
+  tabSettings.forEach(s => { tabFormValues[s.key] = formValues.value[s.key]; });
 
-  // Capture OAuth need before save — the response may flip `authorized` to true
-  const shouldAuthorize = needsOAuthAuthorization.value;
+  const shouldAuthorize = isAuthTab(tabId) && needsOAuthAuthorization.value;
 
   saving.value = true;
   try {
@@ -230,33 +248,23 @@ const handleSave = async () => {
     const updatedInstall = await updateApplicationSettings(
       props.applicationKey,
       props.worker,
-      formValues.value,
-      applicationInstall.value.applicationSettings
+      tabFormValues,
+      tabSettings,
     );
 
-    // Preserve fields the PUT response may not include
-    if (!updatedInstall.logo && previousData.logo) {
-      updatedInstall.logo = previousData.logo;
-    }
+    applicationInstall.value = { ...previousData, ...stripEmpty(updatedInstall) };
 
-    // Update the local state with fresh data from API
-    applicationInstall.value = updatedInstall;
-
-    // Reinitialize form values from updated settings
     const initialValues: Record<string, unknown> = {};
     updatedInstall.applicationSettings.forEach((setting) => {
       initialValues[setting.key] = setting.value ?? '';
     });
     formValues.value = initialValues;
 
-    // Trigger OAuth redirect before anything else — uses window.location.href
-    // so no further code runs after this point
     if (shouldAuthorize) {
       authorizeApplication(props.applicationKey, props.worker);
       return;
     }
 
-    // For basic (non-OAuth) apps, saving credentials is the authorization step
     if (updatedInstall.authorized && currentStatus.value === 'installed') {
       currentStatus.value = 'authorized';
       emit('refresh');
@@ -269,6 +277,10 @@ const handleSave = async () => {
   } finally {
     saving.value = false;
   }
+};
+
+const handleReauthorize = () => {
+  authorizeApplication(props.applicationKey, props.worker);
 };
 
 const handleChangeState = async (enabled: boolean) => {
@@ -430,9 +442,17 @@ watch(() => props.modelValue, async (newValue) => {
             />
 
             <!-- Save button for this tab -->
-            <div class="flex items-center justify-start pt-4">
-              <Button variant="primary" :disabled="saving" @click="handleSave">
-                {{ saveButtonLabel }}
+            <div class="flex items-center justify-start gap-3 pt-4">
+              <Button variant="primary" :disabled="saving" @click="handleTabSave(tab.id)">
+                {{ getSaveButtonLabel(tab.id) }}
+              </Button>
+              <Button
+                v-if="isAuthTab(tab.id) && isOAuthApp && isAuthorized"
+                variant="outline"
+                :disabled="saving"
+                @click="handleReauthorize"
+              >
+                Re-authorize
               </Button>
             </div>
           </div>

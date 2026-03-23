@@ -11,6 +11,7 @@ import { fetchTopologies } from '@/services/topologiesService'
 import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import GridLink from '@/components/ui/datagrid/GridLink.vue'
 import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 
 interface Props {
@@ -170,12 +171,9 @@ onDeactivated(() => {
 
         <!-- Custom Cells -->
         <template #cell-name="{ row }">
-          <RouterLink
-            :to="`/topologies/${(row as Topology).id}`"
-            class="whitespace-nowrap font-medium text-gray-900 hover:underline dark:text-white"
-          >
+          <GridLink :to="{ name: 'topology-detail', params: { id: (row as Topology).id } }">
             {{ getTopologyNameWithVersion((row as Topology).id) }}
-          </RouterLink>
+          </GridLink>
         </template>
 
         <template #cell-processesRun="{ value }">

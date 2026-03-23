@@ -290,6 +290,14 @@ export async function fetchLimiterData(params: {
   const totalMessages = totalResponse.data.items[0]?.count || 0
   const maxMessages = totalResponse.data.items[0]?.maximumCount || 0
 
+  // Replace the trailing zero (empty current bucket) with the actual total
+  if (chartData.series.length > 0 && chartData.series[chartData.series.length - 1] === 0) {
+    chartData.series[chartData.series.length - 1] = totalMessages
+  } else {
+    chartData.categories.push(new Date().toISOString())
+    chartData.series.push(totalMessages)
+  }
+
   // 3. Fetch table data (per-node breakdown, paginated)
   const sortColumn = 'count'
 
@@ -380,7 +388,7 @@ export async function fetchTrashData(params: {
       [{ column: 'type', operator: 'EQ', value: ['trash'] }]
     ],
     sorter: [{ column: 'count', direction: 'DESC' }],
-    paging: { itemsPerPage: 9999, page: 1 }
+    paging: { itemsPerPage: 5, page: 1 }
   }
 
   const graphResponse = await api.get<TrashGraphApiResponse>(

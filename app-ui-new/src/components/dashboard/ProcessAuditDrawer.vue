@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Drawer from '@/components/ui/Drawer.vue'
 import Button from '@/components/ui/Button.vue'
 import CopyValue from '@/components/ui/CopyValue.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
+import MoreActions from '@/components/ui/MoreActions.vue'
+import type { MoreActionsSection } from '@/components/ui/MoreActions.vue'
+import FailedMessageModal from '@/components/topologies/FailedMessageModal.vue'
 import type { Process, ProcessAuditDetail, ProcessConnector } from '@/types/processes'
 import type { TableColumn } from '@/types/dashboard'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
@@ -154,6 +157,49 @@ const calculateEndTime = (startTime: string, durationMs: number): Date => {
   return new Date(start.getTime() + durationMs)
 }
 
+const moreActionsSections = computed<MoreActionsSection[]>(() => {
+  const sections: MoreActionsSection[] = [
+    {
+      items: [
+        { type: 'button', label: 'Export PDF', onClick: () => {} },
+        { type: 'button', label: 'Get Payload', onClick: () => {} },
+      ],
+    },
+    {
+      items: [
+        {
+          type: 'button',
+          label: 'Go to Topology',
+          onClick: () => {
+            if (props.process?.topologyId) {
+              router.push({ name: 'topology-detail', params: { id: props.process.topologyId } })
+            }
+          },
+        },
+        {
+          type: 'button',
+          label: 'Go to Failed Messages',
+          onClick: () => {
+            if (processDetail.value?.corelId) {
+              router.push({ name: 'trash', query: { correlationId: processDetail.value.corelId } })
+            }
+          },
+        },
+      ],
+    },
+  ]
+  return sections
+})
+
+// Failed message modal state
+const failedModalOpen = ref(false)
+const failedModalNodeId = ref('')
+
+const handleOpenFailedMessage = (nodeId: string) => {
+  failedModalNodeId.value = nodeId
+  failedModalOpen.value = true
+}
+
 const handleClose = () => {
   emit('update:modelValue', false)
 }
@@ -200,53 +246,10 @@ const handleClose = () => {
               </CopyValue>
             </div>
           </div>
-          <div class="flex items-center gap-2">
-            <button
-              type="button"
-              class="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-            >
-              <svg
-                class="-ms-0.5 me-1.5 h-4 w-4"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M9 2.221V7H4.221a2 2 0 0 1 .365-.5L8.5 2.586A2 2 0 0 1 9 2.22ZM11 2v5a2 2 0 0 1-2 2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2 2 2 0 0 0 2 2h12a2 2 0 0 0 2-2 2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2V4a2 2 0 0 0-2-2h-7Zm-6 9a1 1 0 0 0-1 1v5a1 1 0 1 0 2 0v-1h.5a2.5 2.5 0 0 0 0-5H5Zm1.5 3H6v-1h.5a.5.5 0 0 1 0 1Zm4.5-3a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h1.376A2.626 2.626 0 0 0 15 15.375v-1.75A2.626 2.626 0 0 0 12.375 11H11Zm1 5v-3h.375a.626.626 0 0 1 .625.626v1.748a.625.625 0 0 1-.626.626H12Zm5-5a1 1 0 0 0-1 1v5a1 1 0 1 0 2 0v-1h1a1 1 0 1 0 0-2h-1v-1h1a1 1 0 1 0 0-2h-2Z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              Export PDF
-            </button>
-            <button
-              type="button"
-              class="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-            >
-              <svg
-                class="me-1.5 h-4 w-4"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M13 11.15V4a1 1 0 1 0-2 0v7.15L8.78 8.374a1 1 0 1 0-1.56 1.25l4 5a1 1 0 0 0 1.56 0l4-5a1 1 0 1 0-1.56-1.25L13 11.15Z"
-                  clip-rule="evenodd"
-                />
-                <path
-                  fill-rule="evenodd"
-                  d="M9.657 15.874 7.358 13H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2.358l-2.3 2.874a3 3 0 0 1-4.685 0ZM17 16a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H17Z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              Get Payload
-            </button>
-          </div>
+          <MoreActions
+            :id="`${drawerId}-more-actions`"
+            :sections="moreActionsSections"
+          />
         </div>
       </div>
 
@@ -325,30 +328,29 @@ const handleClose = () => {
 
       <!-- Trash Status -->
       <div v-if="trashError">
-        <h4 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Trash Status</h4>
+        <h4 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Failed Messages</h4>
         <p class="text-sm text-yellow-600 dark:text-yellow-400">
           Failed to load trash data. The server may be temporarily unavailable.
         </p>
       </div>
       <div v-else-if="processDetail.trashCount > 0">
-        <h4 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Trash Status</h4>
+        <h4 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Failed Messages</h4>
         <div class="flex items-center gap-3">
           <div
             class="inline-flex items-center rounded bg-red-100 px-3 py-1.5 text-sm font-medium text-red-800 dark:bg-red-800 dark:text-red-300"
           >
-            {{ processDetail.trashCount }} messages in trash
+            {{ processDetail.trashCount }} messages failed
           </div>
           <router-link
             :to="{ name: 'trash', query: { correlationId: processDetail.corelId } }"
             class="flex shrink-0 items-center text-sm font-medium text-primary-700 hover:underline dark:text-primary-500"
           >
-            Go to trash
+            Go to Failed Messages
           </router-link>
         </div>
 
         <!-- Trash Table -->
         <div class="mt-4">
-          <h4 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Trash Details</h4>
           <div class="overflow-hidden">
             <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
               <thead
@@ -357,6 +359,7 @@ const handleClose = () => {
                 <tr>
                   <th scope="col" class="px-4 py-3">Where it failed</th>
                   <th scope="col" class="px-4 py-3">Error message</th>
+                  <th scope="col" class="w-12 px-4 py-3"><span class="sr-only">Actions</span></th>
                 </tr>
               </thead>
               <tbody class="divide-y bg-white dark:divide-gray-700 dark:bg-gray-800">
@@ -365,6 +368,18 @@ const handleClose = () => {
                     {{ getNodeName(item.whereItFailed) }}
                   </td>
                   <td class="px-4 py-3 break-words">{{ item.errorMessage }}</td>
+                  <td class="px-4 py-3">
+                    <button
+                      type="button"
+                      class="inline-flex items-center rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                      title="View detail"
+                      @click="handleOpenFailedMessage(item.whereItFailed)"
+                    >
+                      <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -385,5 +400,15 @@ const handleClose = () => {
       </Button>
     </template>
   </Drawer>
+
+  <FailedMessageModal
+    v-if="processDetail && process"
+    v-model="failedModalOpen"
+    :topology-id="process.topologyId"
+    :node-id="failedModalNodeId"
+    :correlation-id="processDetail.corelId"
+    node-name=""
+    hide-bulk-actions
+  />
 </template>
 

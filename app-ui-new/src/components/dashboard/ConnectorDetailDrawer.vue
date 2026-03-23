@@ -11,6 +11,7 @@ import type { ActionConfig } from '@/types/datagrid'
 import { fetchConnectorDetail, fetchConnectorErrorRecords, fetchConnectorChartData } from '@/services/connectorsService'
 import { useApexChart } from '@/composables/useApexChart'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import GridLink from '@/components/ui/datagrid/GridLink.vue'
 
 interface Props {
   modelValue: boolean
@@ -389,9 +390,9 @@ const errorRecordActions: ActionConfig[] = [
 
           <!-- Custom cell for topology -->
           <template #cell-topology="{ row }">
-            <span class="max-w-xs truncate whitespace-nowrap" :title="getTopologyName(row.topologyId)">
+            <GridLink :to="{ name: 'topology-detail', params: { id: row.topologyId } }">
               {{ getTopologyName(row.topologyId) }}
-            </span>
+            </GridLink>
           </template>
 
           <!-- Custom cell for code -->

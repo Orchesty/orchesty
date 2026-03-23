@@ -33,7 +33,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  width: 'w-44',
+  width: 'w-auto min-w-[11rem]',
   placement: 'bottom-end',
 })
 
@@ -71,7 +71,7 @@ onMounted(async () => {
     <div
       :id="id"
       :class="[
-        'z-50 hidden divide-y divide-gray-100 rounded-lg bg-white shadow dark:divide-gray-600 dark:bg-gray-700',
+        'z-50 hidden whitespace-nowrap divide-y divide-gray-100 rounded-lg bg-white shadow dark:divide-gray-600 dark:bg-gray-700',
         width
       ]"
     >

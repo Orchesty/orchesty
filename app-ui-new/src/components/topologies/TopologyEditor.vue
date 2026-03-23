@@ -81,6 +81,9 @@ const schemaToBackendId = ref<Record<string, string>>({})
 interface NodeMetricsData {
   processTime?: number
   requestTime?: number
+  trashCount?: number
+  limiterCount?: number
+  repeaterCount?: number
 }
 const nodeMetrics = ref<Record<string, NodeMetricsData>>({})
 
@@ -109,6 +112,43 @@ const isProcessTimeRelevant = (editorId: string): boolean => {
   return !label || !EXCLUDED_PROCESS_TIME_LABELS.has(label)
 }
 
+const buildMetricsLabelHtml = (node: EditorNode, isCustomAction: boolean): string | null => {
+  const m = nodeMetrics.value[node.id]
+  if (!m) return null
+
+  const boxStyle = 'text-align:center;padding:3px 10px;'
+  const labelStyle = 'font-size:.8rem;opacity:.6;line-height:1.6;'
+  const valueStyle = 'font-size:1rem;line-height:1.8;'
+
+  interface MetricDef { key: keyof NodeMetricsData; label: string; isTime: boolean }
+
+  const allMetrics: MetricDef[] = isCustomAction
+    ? [
+        { key: 'processTime', label: 'Process', isTime: true },
+        { key: 'trashCount', label: 'Trash', isTime: false },
+      ]
+    : [
+        { key: 'processTime', label: 'Process', isTime: true },
+        { key: 'requestTime', label: 'Request', isTime: true },
+        { key: 'trashCount', label: 'Trash', isTime: false },
+        { key: 'limiterCount', label: 'Limiter', isTime: false },
+        { key: 'repeaterCount', label: 'Repeater', isTime: false },
+      ]
+
+  const boxes = allMetrics
+    .filter((def) => m[def.key] != null)
+    .map((def) => {
+      const raw = m[def.key]!
+      const display = def.isTime ? formatMs(raw) : String(raw)
+      return `<div style="${boxStyle}"><div style="${labelStyle}">${def.label}</div><div style="${valueStyle}">${display}</div></div>`
+    })
+
+  if (boxes.length === 0) return null
+
+  const defaultLabel = (node as any).getLabel?.() ?? ''
+  return `${defaultLabel}<div style="display:flex;justify-content:center;gap:6px;margin-top:6px;">${boxes.join('')}</div>`
+}
+
 const runAction = {
   id: 'run',
   icon: '<path d="M8 5v14l11-7z"/>',
@@ -128,9 +168,10 @@ const getOverlayTopRight = (node: EditorNode) => {
   }
 }
 
-const nodeStatuses = ref<Record<string, boolean>>({})
+const nodeStatuses = ref<Record<string, 'error' | 'warning'>>({})
 
 const errorIconSvg = '<svg style="width:40px;height:40px;" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="#dc2626" stroke="#dc2626"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+const warningIconSvg = '<svg style="width:40px;height:40px;" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="#d97706" stroke="#d97706"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
 
 const handleErrorIconClick = (editorNodeId: string) => {
   const backendNodeId = resolveBackendId(editorNodeId)
@@ -154,9 +195,10 @@ const handleFailedMessageUpdate = async () => {
 }
 
 const getOverlayTopLeft = (node: EditorNode) => {
-  if (!nodeStatuses.value[node.id]) return null
+  const status = nodeStatuses.value[node.id]
+  if (!status) return null
   return {
-    content: errorIconSvg,
+    content: status === 'error' ? errorIconSvg : warningIconSvg,
     onClick: () => handleErrorIconClick(node.id),
   }
 }
@@ -225,7 +267,7 @@ const applyProcessDetailOverlays = async () => {
   const backendToEditor = buildBackendToEditorMap()
 
   const counts: Record<string, number | string> = {}
-  const statuses: Record<string, boolean> = {}
+  const statuses: Record<string, 'error' | 'warning'> = {}
   const metrics: Record<string, NodeMetricsData> = {}
 
   for (const [backendNodeId, node] of Object.entries(detail.nodes)) {
@@ -237,14 +279,19 @@ const applyProcessDetailOverlays = async () => {
     }
 
     if (node.trashCount > 0) {
-      statuses[editorId] = true
+      statuses[editorId] = 'error'
+    } else if (node.limiterCount > 0 || node.repeaterCount > 0) {
+      statuses[editorId] = 'warning'
     }
 
     if (isProcessTimeRelevant(editorId)) {
-      if (node.processTime != null || node.requestTime != null) {
-        const m: NodeMetricsData = {}
-        if (node.processTime != null) m.processTime = node.processTime
-        if (node.requestTime != null) m.requestTime = node.requestTime
+      const m: NodeMetricsData = {}
+      if (node.processTime != null) m.processTime = node.processTime
+      if (node.requestTime != null) m.requestTime = node.requestTime
+      if (node.trashCount > 0) m.trashCount = node.trashCount
+      if (node.limiterCount > 0) m.limiterCount = node.limiterCount
+      if (node.repeaterCount > 0) m.repeaterCount = node.repeaterCount
+      if (Object.keys(m).length > 0) {
         metrics[editorId] = m
       }
     }
@@ -256,6 +303,7 @@ const applyProcessDetailOverlays = async () => {
   nodeMetrics.value = metrics
 
   await editorCore.value?.updateNodeOverlays()
+  editorCore.value?.refreshAllLabels()
 }
 
 const createToggleAction = (node: EditorNode) => {
@@ -312,9 +360,9 @@ const eventNodeActions = {
 const labelCustomization: LabelCustomizationMap = {
   Event: eventNodeActions,
   Webhook: eventNodeActions,
-  Connector: { ...overlayMethods },
-  'Custom Action': { ...overlayMethods },
-  Batch: { ...overlayMethods },
+  Connector: { ...overlayMethods, getCustomLabel: (node: EditorNode) => buildMetricsLabelHtml(node, false) },
+  'Custom Action': { ...overlayMethods, getCustomLabel: (node: EditorNode) => buildMetricsLabelHtml(node, true) },
+  Batch: { ...overlayMethods, getCustomLabel: (node: EditorNode) => buildMetricsLabelHtml(node, false) },
   Breakpoint: {
     getTopLeftSlot: getBreakpointOverlay,
     getActions: getBreakpointActions,

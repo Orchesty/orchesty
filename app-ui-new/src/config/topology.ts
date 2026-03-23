@@ -12,7 +12,4 @@ export const PROCESS_POLL_FAST_INTERVAL_MS = 2_000
 export const PROCESS_POLL_FAST_COUNT = 5
 
 /** Interval between polls during the slow phase (ms) */
-export const PROCESS_POLL_SLOW_INTERVAL_MS = 10_000
-
-/** Safety timeout -- stop polling even if process is still RUNNING (ms) */
-export const PROCESS_POLL_MAX_DURATION_MS = 300_000
+export const PROCESS_POLL_SLOW_INTERVAL_MS = 2_000

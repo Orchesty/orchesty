@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import Drawer from '@/components/ui/Drawer.vue'
 import Button from '@/components/ui/Button.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
@@ -28,6 +29,7 @@ const emit = defineEmits<{
   'hidden': []
 }>()
 
+const router = useRouter()
 const { getTopologyName, getTopologyNameWithVersion } = useTopologyNodeMappings()
 const { formatDateTime } = useDateFormat()
 
@@ -139,16 +141,29 @@ const handleClose = () => {
   <Drawer
     :model-value="modelValue"
     id="processes-drawer"
-    label="Processes"
+    label="Topology Processes"
     width="w-1/2 min-w-[600px]"
     @update:model-value="handleClose"
     @hidden="emit('hidden')"
   >
     <!-- Topology Header -->
     <div class="mb-6 border-b border-gray-200 pb-6 dark:border-gray-700">
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-        {{ topologyLabel }}
-      </h2>
+      <div class="flex items-start justify-between">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+          {{ topologyLabel }}
+        </h2>
+        <button
+          v-if="topologyId"
+          type="button"
+          class="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+          @click="router.push({ name: 'topology-detail', params: { id: topologyId } })"
+        >
+          Go to Topology
+          <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+          </svg>
+        </button>
+      </div>
     </div>
 
     <!-- Time Range Filter -->

@@ -131,6 +131,10 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (requiresAuth && !authStore.isAuthenticated) {
+    authStore.initializeAuth()
+  }
+
+  if (requiresAuth && !authStore.isAuthenticated) {
     next(usersExistCache ? '/sign-in' : '/setup')
   } else if (to.path === '/sign-in' && !usersExistCache) {
     next('/setup')
