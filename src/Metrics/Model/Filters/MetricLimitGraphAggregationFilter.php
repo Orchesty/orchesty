@@ -126,7 +126,7 @@ final class MetricLimitGraphAggregationFilter extends GridAggregationFilterAbstr
                 ->sortBy('created', 'asc')
                 ->output()
                 ->field('count')
-                ->locf();
+                ->value(0);
         }
 
         $addSortationsCallback();
