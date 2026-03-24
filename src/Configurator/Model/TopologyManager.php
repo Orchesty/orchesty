@@ -467,16 +467,18 @@ class TopologyManager
             'type'    => TypeEnum::CRON->value,
         ]);
 
-        $ids = array_unique(array_map(
+        $ids = array_values(array_unique(array_map(
             static fn(Node $node): string => $node->getTopology(),
             $cronNodes,
-        ));
+        )));
 
         $topologies = [];
 
-        /** @var Topology $topology */
-        foreach ($this->topologyRepository->findBy(['id' => ['$in' => $ids], 'deleted' => FALSE]) as $topology) {
-            $topologies[$topology->getId()] = $topology;
+        if ($ids) {
+            /** @var Topology $topology */
+            foreach ($this->topologyRepository->findBy(['id' => ['$in' => $ids], 'deleted' => FALSE]) as $topology) {
+                $topologies[$topology->getId()] = $topology;
+            }
         }
 
         $result = [];
