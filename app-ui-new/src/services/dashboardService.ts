@@ -302,18 +302,11 @@ export async function fetchLimiterData(params: {
     series: graphResponse.data.items.map(item => item.count)
   }
 
-  // Fill leading zeros with the first real value (zeros = no metrics written, not empty limiter)
-  const firstRealValue = chartData.series.find(v => v > 0) ?? totalMessages
-  for (let i = 0; i < chartData.series.length; i++) {
-    if (chartData.series[i] > 0) break
-    chartData.series[i] = firstRealValue
+  while (chartData.series.length > 0 && chartData.series[chartData.series.length - 1] === 0) {
+    chartData.series.pop()
+    chartData.categories.pop()
   }
 
-  // Prepend a point at the start of the range
-  chartData.categories.unshift(normalRange.from)
-  chartData.series.unshift(firstRealValue)
-
-  // Append actual current total as the last point
   chartData.categories.push(new Date().toISOString())
   chartData.series.push(totalMessages)
 

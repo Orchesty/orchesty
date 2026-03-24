@@ -10,17 +10,18 @@ import TopologyDesignerDrawer from '@/components/topologies/TopologyDesignerDraw
 import TopologyEditor from '@/components/topologies/TopologyEditor.vue'
 import DeleteTopologyModal from '@/components/topologies/DeleteTopologyModal.vue'
 import Modal from '@/components/ui/Modal.vue'
+import Confirm from '@/components/ui/Confirm.vue'
 import Button from '@/components/ui/Button.vue'
 import MoreActions from '@/components/ui/MoreActions.vue'
 import type { MoreActionsSection } from '@/components/ui/MoreActions.vue'
 import Card from '@/components/ui/Card.vue'
 import TabCard from '@/components/ui/TabCard.vue'
 import Textarea from '@/components/ui/datagrid/Textarea.vue'
-import { fetchTopologyDetail, fetchTopologySchema, publishTopology, toggleTopologyEnabled, updateTopology, fetchCategoryBreadcrumb } from '@/services/topologiesService'
+import { fetchTopologyDetail, fetchTopologySchema, fetchTopologyVersions, publishTopology, toggleTopologyEnabled, updateTopology, fetchCategoryBreadcrumb } from '@/services/topologiesService'
 import { validateMcpManifest } from '@/utils/mcpManifestValidator'
 import { fetchTopologyMetrics } from '@/services/topologyMetricsService'
 import { useToast } from '@/composables/useToast'
-import type { TopologyDetail, TopologyLayoutContext } from '@/types/topologies-page'
+import type { TopologyDetail, TopologyVersion, TopologyLayoutContext } from '@/types/topologies-page'
 import type { TopologyMetrics, MetricsMode } from '@/types/topology-metrics'
 import { useLastTopology } from '@/composables/useLastTopology'
 import TraceDrawer from '@/components/trace/TraceDrawer.vue'
@@ -60,11 +61,19 @@ layout.onTopologyMoved(async () => {
 const topologyEditorRef = ref<InstanceType<typeof TopologyEditor> | null>(null)
 
 const topology = ref<TopologyDetail | null>(null)
+const topologyVersions = ref<TopologyVersion[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
 const categoryPath = ref<string[]>([])
 const versionDrawerOpen = ref(false)
 const designerDrawerOpen = ref(false)
+
+const showDisabledWarning = computed(() => {
+  if (!topology.value) return false
+  const hasPublished = topologyVersions.value.some(v => v.visibility === 'public')
+  const anyEnabled = topologyVersions.value.some(v => v.enabled)
+  return hasPublished && !anyEnabled
+})
 
 // Description popup
 const descriptionPopupOpen = ref(false)
@@ -225,6 +234,10 @@ const handleMoveTopology = () => {
   layout.openMoveTopologyModal(topology.value._id, topology.value.name, topology.value.category)
 }
 
+const enableDisableConfirmOpen = ref(false)
+const pendingToggleAction = ref<'enable' | 'disable' | null>(null)
+const enabledSiblingVersion = ref<{ id: string; version: string } | null>(null)
+
 const deleteTopologyModalOpen = ref(false)
 
 const handleDeleteTopologyAction = () => {
@@ -305,6 +318,12 @@ const loadTopologyDetail = async () => {
   try {
     topology.value = await fetchWithRetry(() => fetchTopologyDetail(props.id, versionId.value))
 
+    if (topology.value) {
+      fetchTopologyVersions(topology.value.name)
+        .then(v => { topologyVersions.value = v })
+        .catch(() => { topologyVersions.value = [] })
+    }
+
     const lastTopology = getLastTopology()
     if (lastTopology && lastTopology.id === props.id && lastTopology.activeTab) {
       activeTopologyTab.value = lastTopology.activeTab
@@ -379,16 +398,51 @@ const handlePublish = async () => {
 
 const handleToggleEnabled = async () => {
   if (!topology.value) return
-  const newEnabled = !topology.value.enabled
+  if (topology.value.enabled) {
+    pendingToggleAction.value = 'disable'
+    enabledSiblingVersion.value = null
+    enableDisableConfirmOpen.value = true
+  } else {
+    try {
+      const versions = await fetchTopologyVersions(topology.value.name)
+      const sibling = versions.find(v => v.enabled && v.id !== topology.value!._id)
+      if (sibling) {
+        enabledSiblingVersion.value = sibling
+        pendingToggleAction.value = 'enable'
+        enableDisableConfirmOpen.value = true
+      } else {
+        executeToggleEnabled(true)
+      }
+    } catch {
+      executeToggleEnabled(true)
+    }
+  }
+}
+
+const executeToggleEnabled = async (newEnabled: boolean) => {
+  if (!topology.value) return
   try {
     await toggleTopologyEnabled(topology.value._id, newEnabled)
     showToast(`Topology ${newEnabled ? 'enabled' : 'disabled'} successfully`, 'success')
     topology.value = await fetchTopologyDetail(props.id, versionId.value)
+    if (topology.value) {
+      topologyVersions.value = await fetchTopologyVersions(topology.value.name)
+    }
     await layout.refreshSidebar()
   } catch (error) {
     console.error('Failed to toggle topology:', error)
     showToast('Failed to toggle topology state', 'error')
   }
+}
+
+const handleConfirmToggle = () => {
+  enableDisableConfirmOpen.value = false
+  if (pendingToggleAction.value === 'enable') {
+    executeToggleEnabled(true)
+  } else if (pendingToggleAction.value === 'disable') {
+    executeToggleEnabled(false)
+  }
+  pendingToggleAction.value = null
 }
 
 const handleVersionsClick = () => {
@@ -620,6 +674,14 @@ onMounted(async () => {
               class="shrink-0 text-xs text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
             >...</button>
           </div>
+        </div>
+
+        <!-- Topology disabled warning -->
+        <div v-if="showDisabledWarning" class="flex items-center gap-3 rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-3 text-yellow-800 dark:border-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-300">
+          <svg class="h-6 w-6 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM10 15a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-4a1 1 0 0 1-2 0V6a1 1 0 0 1 2 0v5Z"/>
+          </svg>
+          <span class="text-sm font-semibold">Topology disabled!</span>
         </div>
 
         <div class="flex items-center gap-2">
@@ -899,6 +961,29 @@ onMounted(async () => {
     :current-version-id="topology._id"
     @deleted="handleTopologyDeleted"
   />
+
+  <!-- Enable/Disable Confirm -->
+  <Confirm
+    v-model="enableDisableConfirmOpen"
+    id="enable-disable-confirm"
+    :confirm-text="pendingToggleAction === 'enable' ? 'Yes, switch' : 'Yes, disable'"
+    :confirm-variant="pendingToggleAction === 'enable' ? 'primary' : 'danger'"
+    @confirm="handleConfirmToggle"
+    @cancel="pendingToggleAction = null"
+  >
+    <template v-if="pendingToggleAction === 'enable'">
+      <p class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">Switch active version?</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400">
+        Enabling version {{ topology?.version }} will disable currently active version {{ enabledSiblingVersion?.version }}.
+      </p>
+    </template>
+    <template v-else>
+      <p class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">Disable topology?</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400">
+        No version of <strong>{{ topology?.name }}</strong> will be active after this action.
+      </p>
+    </template>
+  </Confirm>
 
   <!-- Trace Drawer -->
   <TraceDrawer v-model="isTraceDrawerOpen" />
