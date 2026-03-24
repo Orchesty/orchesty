@@ -16,7 +16,7 @@ const previewDate = new Date('2026-02-09T14:30:05')
 <template>
   <div class="space-y-6">
     <!-- Section: Date & Time Format -->
-    <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+    <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-xs dark:border-gray-700 dark:bg-gray-800">
       <h3 class="mb-1 text-lg font-semibold text-gray-900 dark:text-white">Date & Time Format</h3>
       <p class="mb-5 text-sm text-gray-500 dark:text-gray-400">
         Choose how dates and times are displayed throughout the application.

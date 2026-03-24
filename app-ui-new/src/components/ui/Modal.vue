@@ -101,7 +101,7 @@ const sizeClass = {
   >
     <div :class="['relative max-h-full w-full p-4', sizeClass[size]]">
       <!-- Modal content -->
-      <div class="relative rounded-lg bg-white shadow dark:bg-gray-800">
+      <div class="relative rounded-lg bg-white shadow-sm dark:bg-gray-800">
         <!-- Modal header -->
         <div
           class="flex items-center justify-between rounded-t border-b p-4 dark:border-gray-600 md:p-5"

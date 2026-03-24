@@ -377,7 +377,7 @@ watch(() => props.modelValue, async (newValue) => {
             <div class="flex items-center gap-2">
               <span
                 v-if="showStatusBadge"
-                class="text-xs font-medium px-2.5 py-0.5 rounded"
+                class="text-xs font-medium px-2.5 py-0.5 rounded-sm"
                 :class="statusBadgeClass"
               >
                 {{ statusLabel }}

@@ -43,7 +43,7 @@ const copyToClipboard = async () => {
     <button
       type="button"
       :title="copied ? 'Copied!' : title"
-      class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium transition-colors focus:outline-none"
+      class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium transition-colors focus:outline-hidden"
       :class="
         copied
           ? 'text-green-600 dark:text-green-400'
@@ -84,7 +84,7 @@ const copyToClipboard = async () => {
     v-else
     type="button"
     :title="copied ? 'Copied!' : title"
-    class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium transition-colors focus:outline-none"
+    class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium transition-colors focus:outline-hidden"
     :class="
       copied
         ? 'text-green-600 dark:text-green-400'

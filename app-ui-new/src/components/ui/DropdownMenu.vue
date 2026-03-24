@@ -67,7 +67,7 @@ onMounted(async () => {
     <div
       :id="id"
       :class="[
-        'z-50 hidden list-none divide-y divide-gray-100 rounded-lg bg-white text-base shadow dark:divide-gray-600 dark:bg-gray-700',
+        'z-50 hidden list-none divide-y divide-gray-100 rounded-lg bg-white text-base shadow-sm dark:divide-gray-600 dark:bg-gray-700',
         width
       ]"
     >

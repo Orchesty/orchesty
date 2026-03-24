@@ -186,7 +186,7 @@ const handleExportPdf = () => {
           />
           
           <!-- Loading Indicator -->
-          <div v-if="sending" class="p-6 bg-white dark:bg-gray-800 shadow-sm rounded-lg flex items-start gap-6">
+          <div v-if="sending" class="p-6 bg-white dark:bg-gray-800 shadow-xs rounded-lg flex items-start gap-6">
             <Bot class="h-7 w-7 shrink-0 text-primary-600 dark:text-primary-500" aria-hidden="true" />
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2">

@@ -464,7 +464,7 @@ onMounted(async () => {
     v-for="folder in allFolders"
     :key="'dropdown-' + folder.id"
     :id="`folderActionsDropdown-${folder.id}`"
-    class="z-10 hidden w-44 divide-y divide-gray-100 rounded-lg bg-white shadow-sm dark:divide-gray-600 dark:bg-gray-700"
+    class="z-10 hidden w-44 divide-y divide-gray-100 rounded-lg bg-white shadow-xs dark:divide-gray-600 dark:bg-gray-700"
   >
     <ul class="p-2 text-sm font-medium text-gray-500 dark:text-gray-400">
       <li>

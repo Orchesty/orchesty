@@ -119,7 +119,7 @@ const isModuleChecked = (moduleId: string) => {
   >
     <div v-if="group" class="space-y-6">
       <!-- Group Information -->
-      <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
+      <div class="bg-white dark:bg-gray-800 shadow-xs rounded-lg">
         <div class="py-3 mb-4 border-b border-gray-200 dark:border-gray-700">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Group Information</h3>
         </div>
@@ -140,7 +140,7 @@ const isModuleChecked = (moduleId: string) => {
       </div>
 
       <!-- Modules -->
-      <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
+      <div class="bg-white dark:bg-gray-800 shadow-xs rounded-lg">
         <div class="py-3 mb-4 border-b border-gray-200 dark:border-gray-700">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Modules</h3>
         </div>
@@ -151,7 +151,7 @@ const isModuleChecked = (moduleId: string) => {
               type="checkbox"
               :checked="isModuleChecked(module.id)"
               @change="handleModuleChange(module.id, ($event.target as HTMLInputElement).checked)"
-              class="w-3 h-3 text-primary-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              class="w-3 h-3 text-primary-600 bg-gray-100 border-gray-300 rounded-xs focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
             >
             <label :for="`module-${module.id}`" class="ms-2 text-sm text-gray-900 dark:text-gray-300">
               {{ module.label }}
@@ -161,7 +161,7 @@ const isModuleChecked = (moduleId: string) => {
       </div>
 
       <!-- Users -->
-      <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
+      <div class="bg-white dark:bg-gray-800 shadow-xs rounded-lg">
         <div class="py-3 mb-4 border-b border-gray-200 dark:border-gray-700">
           <div class="flex items-center justify-between gap-4">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Users</h3>
@@ -184,7 +184,7 @@ const isModuleChecked = (moduleId: string) => {
                     v-for="user in availableUsers"
                     :key="user.id"
                     @click="handleAddUser(user.id)"
-                    class="px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded cursor-pointer"
+                    class="px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-sm cursor-pointer"
                   >
                     {{ user.name }}
                   </li>

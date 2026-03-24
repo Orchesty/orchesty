@@ -311,7 +311,7 @@ const pageNumbers = () => {
                 ref="selectAllCheckbox"
                 type="checkbox"
                 :checked="allRowsSelected"
-                class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
+                class="h-4 w-4 rounded-sm border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
                 @change="toggleSelectAll"
               />
               <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -345,7 +345,7 @@ const pageNumbers = () => {
             type="button"
             title="Refresh"
             :disabled="loading"
-            class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:text-gray-900 focus:outline-none dark:text-gray-500 dark:hover:text-white"
+            class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:text-gray-900 focus:outline-hidden dark:text-gray-500 dark:hover:text-white"
             @click="emit('refresh')"
           >
             <svg
@@ -437,7 +437,7 @@ const pageNumbers = () => {
                 <input
                   type="checkbox"
                   :checked="isRowSelected(row[rowIdKey])"
-                  class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
+                  class="h-4 w-4 rounded-sm border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
                   @change="toggleRowSelection(row[rowIdKey])"
                 />
               </template>

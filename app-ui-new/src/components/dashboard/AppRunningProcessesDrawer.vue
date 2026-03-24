@@ -194,7 +194,7 @@ const handleClose = () => {
           <div class="flex items-center justify-end">
             <router-link
               :to="{ name: 'topology-detail', params: { id: row.topologyId } }"
-              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               title="View topology"
             >
               <svg

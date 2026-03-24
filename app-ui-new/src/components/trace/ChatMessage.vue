@@ -43,7 +43,7 @@ const handleExportPdf = () => {
 </script>
 
 <template>
-  <div class="p-6 bg-white dark:bg-gray-800 shadow-sm rounded-lg flex items-start gap-6 group relative pe-14">
+  <div class="p-6 bg-white dark:bg-gray-800 shadow-xs rounded-lg flex items-start gap-6 group relative pe-14">
     <!-- Avatar / Icon -->
     <template v-if="isUser">
       <svg class="h-6 w-6 rounded-full text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">

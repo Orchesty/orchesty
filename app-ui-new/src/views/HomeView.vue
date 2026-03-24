@@ -62,7 +62,7 @@ const { x, y } = useMouse()
           <h2 class="text-2xl font-bold text-gray-800">VueUse Demo: Mouse Position</h2>
         </div>
         <p class="text-gray-600 mb-4">
-          Move your mouse around to see VueUse in action with the <code class="bg-white px-2 py-1 rounded text-sm">useMouse()</code> composable:
+          Move your mouse around to see VueUse in action with the <code class="bg-white px-2 py-1 rounded-sm text-sm">useMouse()</code> composable:
         </p>
         <div class="bg-white rounded-lg p-6 shadow-inner">
           <div class="grid grid-cols-2 gap-4 text-center">

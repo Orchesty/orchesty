@@ -167,7 +167,7 @@ const getVersionBadge = (visibility: string, enabled: boolean) => ({
         <input
           type="checkbox"
           :checked="selectedVersionIds.has(version.id)"
-          class="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500 dark:border-gray-600 dark:bg-gray-700"
+          class="h-4 w-4 rounded-sm border-gray-300 text-red-600 focus:ring-red-500 dark:border-gray-600 dark:bg-gray-700"
           @click.stop
           @change="toggleVersion(version.id)"
         />

@@ -323,7 +323,7 @@ const handleClose = () => {
         <h4 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Failed Messages</h4>
         <div class="flex items-center gap-3">
           <div
-            class="inline-flex items-center rounded bg-red-100 px-3 py-1.5 text-sm font-medium text-red-800 dark:bg-red-800 dark:text-red-300"
+            class="inline-flex items-center rounded-sm bg-red-100 px-3 py-1.5 text-sm font-medium text-red-800 dark:bg-red-800 dark:text-red-300"
           >
             {{ processDetail.trashCount }} messages failed
           </div>

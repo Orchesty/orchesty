@@ -615,7 +615,7 @@ onMounted(async () => {
             <button
               type="button"
               @click="layout.topologySidebarCollapsed.value = !layout.topologySidebarCollapsed.value"
-              class="inline-flex items-center justify-center rounded-lg p-0 relative -left-1 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              class="inline-flex items-center justify-center rounded-lg p-0 relative -left-1 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
             >
               <svg
                 v-show="layout.topologySidebarCollapsed.value"
@@ -660,7 +660,7 @@ onMounted(async () => {
           <div class="flex items-center gap-3">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ topology.name }}</h1>
             <span class="text-sm text-gray-400 dark:text-gray-500 font-normal">v.{{ topology.version }}</span>
-            <span :class="['text-xs font-medium px-2.5 py-0.5 rounded', statusBadgeClass]">
+            <span :class="['text-xs font-medium px-2.5 py-0.5 rounded-sm', statusBadgeClass]">
               {{ statusLabel }}
             </span>
           </div>
@@ -742,7 +742,7 @@ onMounted(async () => {
 
     <!-- Topology (editor) -->
     <div v-show="activeTopologyTab === 'topology'">
-      <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+      <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
         <div class="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden">
           <TopologyEditor ref="topologyEditorRef" :topology-id="topology._id" :topology-enabled="topology.enabled" :refresh-key="refreshKey" @process-run="handleProcessRun" />
         </div>
@@ -782,7 +782,7 @@ onMounted(async () => {
             </svg>
             Group
           </Button>
-          <div id="add-group-dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-60 dark:bg-gray-700">
+          <div id="add-group-dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-60 dark:bg-gray-700">
             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
               <li v-for="groupName in availableGroups" :key="groupName">
                 <button
@@ -801,7 +801,7 @@ onMounted(async () => {
           <div
             v-for="group in accessGroups"
             :key="group.id"
-            class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+            class="rounded-lg border border-gray-200 bg-white p-6 shadow-xs dark:border-gray-700 dark:bg-gray-800"
           >
             <div class="mb-4 flex items-center justify-between">
               <h4 class="text-base font-semibold text-gray-900 dark:text-white">{{ group.name }}</h4>
@@ -882,7 +882,7 @@ onMounted(async () => {
               type="button"
               class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors"
               :class="metricsMode === 'last-run'
-                ? 'bg-primary-600 text-white shadow-sm'
+                ? 'bg-primary-600 text-white shadow-xs'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
               @click="handleMetricsModeChange('last-run')"
             >
@@ -892,7 +892,7 @@ onMounted(async () => {
               type="button"
               class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors"
               :class="metricsMode === 'average'
-                ? 'bg-primary-600 text-white shadow-sm'
+                ? 'bg-primary-600 text-white shadow-xs'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
               @click="handleMetricsModeChange('average')"
             >
@@ -916,7 +916,7 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div v-else class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+      <div v-else class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
         <p class="text-sm text-gray-500 dark:text-gray-400">No metrics data available</p>
       </div>
     </div>

@@ -68,7 +68,7 @@ const topologyActionsSections = computed<MoreActionsSection[]>(() => [
       <button
         type="button"
         @click="toggleFolder"
-        class="flex-1 flex items-center gap-2 px-2 py-1.5 rounded text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+        class="flex-1 flex items-center gap-2 px-2 py-1.5 rounded-sm text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
       >
         <svg
           :class="[
@@ -98,7 +98,7 @@ const topologyActionsSections = computed<MoreActionsSection[]>(() => [
           :id="`folderActionsButton-${item.id}`"
           :data-dropdown-toggle="`folderActionsDropdown-${item.id}`"
           title="Folder actions"
-          class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+          class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
         >
           <svg
             class="w-4 h-4"
@@ -138,7 +138,7 @@ const topologyActionsSections = computed<MoreActionsSection[]>(() => [
     <button
       type="button"
       @click="handleSelectTopology"
-      class="flex-1 flex items-center gap-2 px-2 py-1.5 rounded text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+      class="flex-1 flex items-center gap-2 px-2 py-1.5 rounded-sm text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
     >
       <svg
         class="w-4 h-4 shrink-0"

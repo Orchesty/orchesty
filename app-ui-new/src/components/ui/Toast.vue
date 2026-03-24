@@ -71,12 +71,12 @@ const getIcon = () => {
 
 <template>
   <div
-    class="flex items-center w-[22rem] p-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800 dark:border dark:border-gray-700 animate-slide-up"
+    class="flex items-center w-[22rem] p-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800 dark:border dark:border-gray-700 animate-slide-up"
     role="alert"
   >
     <div
       :class="[
-        'inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg',
+        'inline-flex items-center justify-center shrink-0 w-8 h-8 rounded-lg',
         getIconColor(),
       ]"
     >

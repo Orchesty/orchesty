@@ -180,7 +180,7 @@ onBeforeUnmount(() => {
             />
             <div
               :class="[
-                'relative h-5 w-9 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[\'\'] peer-checked:bg-primary-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:border-gray-600 dark:bg-gray-700 dark:peer-checked:bg-primary-600 dark:peer-focus:ring-primary-800 rtl:peer-checked:after:-translate-x-full',
+                'relative h-5 w-9 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[\'\'] peer-checked:bg-primary-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-hidden peer-focus:ring-4 peer-focus:ring-primary-300 dark:border-gray-600 dark:bg-gray-700 dark:peer-checked:bg-primary-600 dark:peer-focus:ring-primary-800 rtl:peer-checked:after:-translate-x-full',
                 {
                   'cursor-not-allowed opacity-50': updatingTasks.has(row.id),
                 },
@@ -230,7 +230,7 @@ onBeforeUnmount(() => {
             <button
               type="button"
               title="Settings"
-              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               @click="handleSettingsClick(row as ScheduledTask)"
             >
               <svg

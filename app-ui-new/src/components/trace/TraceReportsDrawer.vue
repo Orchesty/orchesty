@@ -185,7 +185,7 @@ onMounted(() => {
                       type="text"
                       @keydown="handleKeydown($event, report.id)"
                       @blur="saveRename(report.id)"
-                      class="w-full px-2 py-1 text-sm font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-primary-600 rounded focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      class="w-full px-2 py-1 text-sm font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-primary-600 rounded-sm focus:outline-hidden focus:ring-2 focus:ring-primary-500"
                       autofocus
                     />
                   </div>
@@ -209,7 +209,7 @@ onMounted(() => {
                   <button
                     :id="`report-menu-${report.id}`"
                     :data-dropdown-toggle="`report-dropdown-${report.id}`"
-                    class="inline-flex items-center p-1.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-gray-100 rounded-lg focus:outline-none opacity-0 group-hover/item:opacity-100 transition-opacity"
+                    class="inline-flex items-center p-1.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-gray-100 rounded-lg focus:outline-hidden opacity-0 group-hover/item:opacity-100 transition-opacity"
                     type="button"
                   >
                     <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 4 15">
@@ -220,7 +220,7 @@ onMounted(() => {
                   <!-- Dropdown menu -->
                   <div
                     :id="`report-dropdown-${report.id}`"
-                    class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-40 dark:bg-gray-700 dark:divide-gray-600"
+                    class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-40 dark:bg-gray-700 dark:divide-gray-600"
                   >
                     <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
                       <li>

@@ -66,19 +66,19 @@ onMounted(async () => {
     >
       <div class="flex w-full items-center justify-between">
         <!-- Logo -->
-        <div class="flex w-16 flex-shrink-0 items-center justify-center">
+        <div class="flex w-16 shrink-0 items-center justify-center">
           <RouterLink to="/dashboard" class="flex items-center">
             <img src="/logo.svg" alt="Orchesty" class="h-8 w-8" />
           </RouterLink>
         </div>
 
         <!-- Right side buttons -->
-        <div class="flex flex-shrink-0 items-center justify-end">
+        <div class="flex shrink-0 items-center justify-end">
           <!-- Trace Drawer Toggle Button -->
           <button
             type="button"
             @click="toggleDrawer"
-            class="mx-2 inline-flex items-center rounded-lg p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+            class="mx-2 inline-flex items-center rounded-lg p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           >
             <span class="sr-only">Toggle Trace</span>
             <BotMessageSquare class="h-6 w-6" aria-hidden="true" />
@@ -90,7 +90,7 @@ onMounted(async () => {
             :sections="accountMenuSections"
           >
             <template #trigger>
-              <button class="mx-3 inline-flex items-center focus:outline-none md:mr-0">
+              <button class="mx-3 inline-flex items-center focus:outline-hidden md:mr-0">
                 <span class="sr-only">Open user menu</span>
                 <svg
                   class="h-8 w-8 cursor-pointer text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
@@ -119,7 +119,7 @@ onMounted(async () => {
                     class="peer sr-only"
                   />
                   <div
-                    class="peer relative h-5 w-9 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-primary-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:border-gray-500 dark:bg-gray-600 dark:peer-focus:ring-primary-800 rtl:peer-checked:after:-translate-x-full"
+                    class="peer relative h-5 w-9 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-primary-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-hidden peer-focus:ring-4 peer-focus:ring-primary-300 dark:border-gray-500 dark:bg-gray-600 dark:peer-focus:ring-primary-800 rtl:peer-checked:after:-translate-x-full"
                   ></div>
                   <span class="sr-only">Toggle dark mode</span>
                 </div>
@@ -143,7 +143,7 @@ onMounted(async () => {
           <button
             type="button"
             id="toggleMobileMenuButton"
-            class="items-center rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:ml-2 md:hidden"
+            class="items-center rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:ml-2 md:hidden"
           >
             <span class="sr-only">Open menu</span>
             <svg

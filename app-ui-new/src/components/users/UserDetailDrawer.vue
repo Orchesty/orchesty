@@ -49,7 +49,7 @@ const handleConfirmRemove = async () => {
     @update:model-value="emit('update:modelValue', $event)"
   >
     <div v-if="user" class="space-y-6">
-      <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
+      <div class="bg-white dark:bg-gray-800 shadow-xs rounded-lg">
         <div class="py-3 mb-4 border-b border-gray-200 dark:border-gray-700">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">User Information</h3>
         </div>

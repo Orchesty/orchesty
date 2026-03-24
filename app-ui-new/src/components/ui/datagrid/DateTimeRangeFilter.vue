@@ -76,9 +76,9 @@ const uiConfig = {
   input: 'rounded-lg border border-gray-200 bg-white pl-9 pr-3 py-2 text-sm text-gray-900 placeholder-gray-500 hover:bg-gray-50 focus:border-primary-600 focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:hover:bg-gray-700 dark:focus:border-primary-500 dark:focus:ring-primary-500',
   menu: 'rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-600 dark:bg-gray-800 pb-3',
   calendar: 'px-4',
-  calendarCell: 'hover:bg-gray-100 dark:hover:bg-gray-700 rounded',
-  navBtnNext: 'text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 rounded p-2',
-  navBtnPrev: 'text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 rounded p-2',
+  calendarCell: 'hover:bg-gray-100 dark:hover:bg-gray-700 rounded-sm',
+  navBtnNext: 'text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 rounded-sm p-2',
+  navBtnPrev: 'text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 rounded-sm p-2',
 }
 
 // Store observer reference

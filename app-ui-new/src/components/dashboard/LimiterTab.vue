@@ -37,7 +37,7 @@ const emit = defineEmits<{
   'open-app-processes': [data: { applicationId: string; topologyIds: string[] }]
 }>()
 
-const { getNodeName, getTopologyName, getApplicationNameByNodeId, mappings } = useTopologyNodeMappings()
+const { getNodeName, getTopologyName, getApplicationName, getApplicationNameByNodeId, mappings } = useTopologyNodeMappings()
 const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 const limiterData = ref<LimiterData | null>(null)
@@ -439,7 +439,7 @@ const getChartOptions = () => {
             <button
               type="button"
               title="Running processes"
-              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               @click="emit('open-app-processes', { applicationId: row.applicationId, topologyIds: getTopologyIdsForApp(row.applicationId) })"
             >
               <svg

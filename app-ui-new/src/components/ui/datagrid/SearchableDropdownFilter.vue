@@ -96,14 +96,14 @@ onBeforeUnmount(() => {
     <button
       :id="`${dropdownIdValue}-button`"
       :class="[
-        'flex items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white',
+        'flex items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white',
         props.fullWidth ? 'w-full' : props.minWidth,
       ]"
       type="button"
     >
       <span class="text-left">{{ displayLabel }}</span>
       <svg
-        class="ms-1.5 h-4 w-4 flex-shrink-0"
+        class="ms-1.5 h-4 w-4 shrink-0"
         aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -122,7 +122,7 @@ onBeforeUnmount(() => {
     <!-- Dropdown Menu -->
     <div
       :id="dropdownIdValue"
-      class="z-50 hidden w-60 list-none divide-y divide-gray-100 rounded-lg bg-white text-sm font-medium shadow-sm dark:divide-gray-600 dark:bg-gray-700"
+      class="z-50 hidden w-60 list-none divide-y divide-gray-100 rounded-lg bg-white text-sm font-medium shadow-xs dark:divide-gray-600 dark:bg-gray-700"
     >
       <!-- Search Input -->
       <div class="p-2">

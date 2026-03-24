@@ -191,7 +191,7 @@ const handleOpenAppProcesses = (data: { applicationId: string; topologyIds: stri
         <button
           type="button"
           title="Refresh"
-          class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:text-gray-900 focus:outline-none dark:text-gray-500 dark:hover:text-white"
+          class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:text-gray-900 focus:outline-hidden dark:text-gray-500 dark:hover:text-white"
           @click="handleRefresh"
         >
           <svg

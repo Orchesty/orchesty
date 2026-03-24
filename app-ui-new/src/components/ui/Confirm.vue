@@ -106,7 +106,7 @@ const sizeClass = {
   >
     <div :class="['relative max-h-full w-full p-4', sizeClass[size]]">
       <!-- Modal content -->
-      <div class="relative rounded-lg bg-white shadow dark:bg-gray-800">
+      <div class="relative rounded-lg bg-white shadow-sm dark:bg-gray-800">
         <!-- Close button (top right) -->
         <button
           type="button"

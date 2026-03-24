@@ -106,7 +106,7 @@ onBeforeUnmount(() => {
     <button
       ref="buttonRef"
       type="button"
-      class="inline-flex items-center justify-center h-10 w-10 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+      class="inline-flex items-center justify-center h-10 w-10 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
       @click.stop="toggle"
     >
       <Ellipsis class="h-5 w-5" aria-hidden="true" />
