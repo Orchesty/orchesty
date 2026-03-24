@@ -7,13 +7,18 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\User\Document\UserSettings;
 use Hanaboso\PipesFramework\User\Manager\UserManager as UsersManager;
+use Hanaboso\UserBundle\Document\TmpUser;
 use Hanaboso\UserBundle\Document\User;
+use Hanaboso\UserBundle\Enum\ResourceEnum;
 use Hanaboso\UserBundle\Model\Security\SecurityManagerException;
+use Hanaboso\UserBundle\Model\Token\TokenManager;
 use Hanaboso\UserBundle\Model\User\UserManager;
 use Hanaboso\UserBundle\Model\User\UserManagerException;
+use Hanaboso\UserBundle\Provider\ResourceProvider;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\System\ControllerUtils;
+use Throwable;
 
 /**
  * Class UserHandler
@@ -23,19 +28,24 @@ use Hanaboso\Utils\System\ControllerUtils;
 final class UserHandler
 {
 
-    private const string SETTINGS = 'settings';
+    private const string SETTINGS            = 'settings';
+    private const int    USER_ALREADY_EXISTS = 1_202;
 
     /**
      * UserHandler constructor.
      *
-     * @param UserManager     $userManager
-     * @param UsersManager    $usersManager
-     * @param DocumentManager $dm
+     * @param UserManager      $userManager
+     * @param UsersManager     $usersManager
+     * @param DocumentManager  $dm
+     * @param TokenManager     $tokenManager
+     * @param ResourceProvider $resourceProvider
      */
     public function __construct(
         private UserManager $userManager,
         private UsersManager $usersManager,
         private DocumentManager $dm,
+        private TokenManager $tokenManager,
+        private ResourceProvider $resourceProvider,
     )
     {
     }
@@ -125,6 +135,86 @@ final class UserHandler
         ControllerUtils::checkParameters(['email', 'password'], $data);
 
         return $this->usersManager->setupUser($data['email'], $data['password'])->toArray();
+    }
+
+    /**
+     * @param string $email
+     *
+     * @return mixed[]
+     * @throws UserManagerException
+     */
+    public function inviteUser(string $email): array
+    {
+        if ($this->dm->getRepository(User::class)->findOneBy(['email' => $email])) {
+            throw new UserManagerException(
+                sprintf('User with email [%s] already exists.', $email),
+                self::USER_ALREADY_EXISTS,
+            );
+        }
+
+        try {
+            /** @var class-string<TmpUser> $tmpUserClass */
+            $tmpUserClass = $this->resourceProvider->getResource(ResourceEnum::TMP_USER);
+            /** @var TmpUser|null $tmpUser */
+            $tmpUser = $this->dm->getRepository($tmpUserClass)->findOneBy(['email' => $email]);
+
+            if (!$tmpUser) {
+                $tmpUser = new $tmpUserClass();
+                $tmpUser->setEmail($email);
+                $this->dm->persist($tmpUser);
+                $this->dm->flush();
+            }
+
+            $token = $this->tokenManager->create($tmpUser);
+
+            return ['hash' => $token->getHash(), 'email' => $email];
+        } catch (UserManagerException $e) {
+            throw $e;
+        } catch (Throwable $t) {
+            throw new UserManagerException($t->getMessage(), $t->getCode(), $t);
+        }
+    }
+
+    /**
+     * @param GridRequestDto $dto
+     *
+     * @return mixed[]
+     * @throws MongoDBException
+     */
+    public function getAllInvitedUsers(GridRequestDto $dto): array
+    {
+        return $this->usersManager->getArrayOfInvitedUsers($dto);
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return mixed[]
+     * @throws UserManagerException
+     */
+    public function regenerateInvite(string $id): array
+    {
+        try {
+            $tmpUser = $this->usersManager->getInvitedUser($id);
+            $token   = $this->tokenManager->create($tmpUser);
+
+            return ['hash' => $token->getHash(), 'email' => $tmpUser->getEmail()];
+        } catch (UserManagerException $e) {
+            throw $e;
+        } catch (Throwable $t) {
+            throw new UserManagerException($t->getMessage(), $t->getCode(), $t);
+        }
+    }
+
+    /**
+     * @param string $id
+     *
+     * @throws MongoDBException
+     * @throws UserManagerException
+     */
+    public function deleteInvitedUser(string $id): void
+    {
+        $this->usersManager->deleteInvitedUser($id);
     }
 
     /*

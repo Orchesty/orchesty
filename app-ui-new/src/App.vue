@@ -18,7 +18,7 @@ startTracking()
 const { loadMappings, isReady } = useTopologyNodeMappings()
 loadMappings()
 
-const publicPaths = ['/sign-in', '/setup', '/forgot-password', '/reset-password']
+const publicPaths = ['/sign-in', '/setup', '/forgot-password', '/reset-password', '/accept-invite']
 const isPublicRoute = computed(() =>
   publicPaths.some(p => route.path === p || route.path.startsWith(p + '/'))
 )

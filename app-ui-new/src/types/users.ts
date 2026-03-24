@@ -1,30 +1,69 @@
-import type { QueryParams } from './api'
-
-export type UserStatus = 'active' | 'inactive'
-export type UserRole = 'Admin' | 'Developer' | 'Viewer'
-
 export interface User {
   id: string
-  name: string
   email: string
-  role: UserRole
-  status: UserStatus
-  groups: string[] // group IDs
+  created: string
 }
 
-export interface UserQueryParams extends QueryParams {
-  status?: UserStatus
-  search?: string
+export interface UserApiResponse {
+  items: UserApiItem[]
+  paging: {
+    itemsPerPage: number
+    lastPage: number
+    nextPage: number
+    page: number
+    previousPage: number
+    total: number
+  }
+  filter: unknown[]
+  search: string | null
+  sorter: unknown[]
+}
+
+export interface UserApiItem {
+  id: string
+  email: string
+  created: string
+}
+
+export interface UserApiFilter {
+  search: string | null
+  filter: Array<Array<{ column: string; operator: string; value: unknown[] }>>
+  sorter: Array<{ column: string; direction: string }>
+  paging: {
+    itemsPerPage: number
+    page: number
+  }
+}
+
+export type InvitedUser = User
+
+export interface InvitedUserApiResponse {
+  items: UserApiItem[]
+  paging: {
+    itemsPerPage: number
+    lastPage: number
+    nextPage: number
+    page: number
+    previousPage: number
+    total: number
+  }
+  filter: unknown[]
+  search: string | null
+  sorter: unknown[]
 }
 
 export interface Group {
   id: string
   name: string
   modules: string[]
-  users: string[] // user IDs
+  users: string[]
 }
 
-export interface GroupQueryParams extends QueryParams {
+export interface GroupQueryParams {
+  page?: number
+  limit?: number
+  sort?: string
+  order?: string
   search?: string
 }
 

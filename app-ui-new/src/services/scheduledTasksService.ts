@@ -73,8 +73,10 @@ export async function fetchScheduledTasks(
     `/api/topologies/cron?filter=${encodedFilter}`
   )
 
-  // Map API response to component format
-  const mappedItems = response.data.items.map(mapApiItemToScheduledTask)
+  // Only include tasks from enabled topologies
+  const mappedItems = response.data.items
+    .filter(item => item.topology.status)
+    .map(mapApiItemToScheduledTask)
 
   return {
     data: mappedItems,

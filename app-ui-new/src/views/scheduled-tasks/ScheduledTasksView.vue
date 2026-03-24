@@ -8,7 +8,6 @@ import type { ScheduledTask } from '@/types/scheduled-tasks'
 import type { TableColumn } from '@/types/dashboard'
 import { fetchScheduledTasks, updateTaskStatus, updateTaskCrontab } from '@/services/scheduledTasksService'
 import { getNextCronRun, formatNextRun } from '@/utils/cronParser'
-import StatusBadge from '@/components/ui/StatusBadge.vue'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useToast } from '@/composables/useToast'
 import { useCronAlerts } from '@/composables/useCronAlerts'
@@ -35,7 +34,6 @@ const columns: TableColumn[] = [
   { key: 'name', label: 'Name', sortable: false },
   { key: 'crontab', label: 'Crontab', sortable: false },
   { key: 'nextRun', label: 'Next Run', sortable: false },
-  { key: 'status', label: 'Topology Status', sortable: false },
   { key: 'actions', label: '', className: 'text-right w-16' },
 ]
 
@@ -116,7 +114,7 @@ const handleCronSave = async (taskId: string, crontab: string, params: string) =
 const refreshNextRuns = () => {
   const now = new Date()
   for (const task of tasks.value) {
-    if (!task.nodeStatus || !task.crontab || task.status === 'disabled') {
+    if (!task.nodeStatus || !task.crontab) {
       task.nextRun = null
       continue
     }
@@ -224,13 +222,6 @@ onBeforeUnmount(() => {
             {{ formatNextRun(row.nextRun) }}
           </span>
           <span v-else class="text-sm text-gray-400 dark:text-gray-500">-</span>
-        </template>
-
-        <!-- Status Cell -->
-        <template #cell-status="{ row }">
-          <StatusBadge :variant="row.status === 'enabled' ? 'green' : 'gray'">
-            {{ row.status === 'enabled' ? 'Enabled' : row.status === 'disabled' ? 'Disabled' : row.status }}
-          </StatusBadge>
         </template>
 
         <!-- Actions Cell -->

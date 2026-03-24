@@ -4,6 +4,7 @@ import SignInView from '@/views/auth/SignInView.vue'
 import SetupView from '@/views/auth/SetupView.vue'
 import ForgotPasswordView from '@/views/auth/ForgotPasswordView.vue'
 import ResetPasswordView from '@/views/auth/ResetPasswordView.vue'
+import AcceptInviteView from '@/views/auth/AcceptInviteView.vue'
 import DashboardView from '@/views/dashboard/DashboardView.vue'
 import { useAuthStore } from '@/stores/auth'
 import { checkUsersExist } from '@/services/authService'
@@ -41,6 +42,12 @@ const router = createRouter({
       path: '/reset-password/:token',
       name: 'reset-password',
       component: ResetPasswordView,
+      props: true,
+    },
+    {
+      path: '/accept-invite/:token',
+      name: 'accept-invite',
+      component: AcceptInviteView,
       props: true,
     },
     {
@@ -118,7 +125,7 @@ router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
   const publicRoutes = ['/sign-in', '/setup', '/forgot-password']
-  const isPublicRoute = publicRoutes.includes(to.path) || to.path.startsWith('/reset-password')
+  const isPublicRoute = publicRoutes.includes(to.path) || to.path.startsWith('/reset-password') || to.path.startsWith('/accept-invite')
   const requiresAuth = !isPublicRoute
 
   // Resolve setup state on first navigation

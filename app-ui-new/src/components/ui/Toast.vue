@@ -71,7 +71,7 @@ const getIcon = () => {
 
 <template>
   <div
-    class="flex items-center w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800 dark:border dark:border-gray-700 animate-slide-up"
+    class="flex items-center w-[22rem] p-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800 dark:border dark:border-gray-700 animate-slide-up"
     role="alert"
   >
     <div
