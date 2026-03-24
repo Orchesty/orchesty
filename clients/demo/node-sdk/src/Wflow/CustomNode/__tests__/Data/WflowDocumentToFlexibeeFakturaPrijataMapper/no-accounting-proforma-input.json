@@ -2,6 +2,7 @@
   "headers": {
     "user": "TestUser",
     "documentId": "test-document",
+    "firmaKod": "AAAA",
     "worker-followers": "[{\"name\":\"flexibee-create-faktura-prijata-connector\",\"id\":\"faktura-queue\"},{\"name\":\"flexibee-create-zavazek-connector\",\"id\":\"zavazek-queue\"}]"
   },
   "data": {

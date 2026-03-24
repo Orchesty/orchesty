@@ -1,0 +1,10 @@
+{
+  "http": "PUT https://demo.flexibee.eu/c/demo/adresar",
+  "code": 400,
+  "body": {
+    "winstrom": {
+      "success": "false",
+      "message": "Zkratku '17864810' jiz pouziva jiny zaznam."
+    }
+  }
+}

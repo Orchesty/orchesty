@@ -3,6 +3,7 @@
     "user": "TestUser",
     "documentId": "test-document",
     "documentType": "IncomingInvoice",
+    "firmaKod": "AAAA",
     "force-target-queue": "faktura-queue",
     "result-code": "1002",
     "result-message": "Message will be force re-routed to [faktura-queue] follower(s).",
@@ -11,17 +12,6 @@
   "data": {
     "winstrom": {
       "@version": "1.0",
-      "adresar": [
-        {
-          "dic": "CZ17864810",
-          "ic": "17864810",
-          "kod": "17864810",
-          "mesto": "Hradec Králové CZ",
-          "nazev": "1. Account s.r.o.",
-          "psc": "50012",
-          "ulice": "třída Edvarda Beneše 1415/29"
-        }
-      ],
       "faktura-prijata": [
         {
           "cisDosle": "20250212",
@@ -29,7 +19,7 @@
           "clenKonVykDph": "code:B.2-3.AUTO",
           "datSplat": "2025-12-26T00:00:00",
           "datVyst": "2025-12-19T00:00:00",
-          "firma": "code:17864810",
+          "firma": "code:AAAA",
           "id": "ext:40830940-fc60-4ffd-a143-37ed2022bd21",
           "mena": "code:CZK",
           "polozkyFaktury": [

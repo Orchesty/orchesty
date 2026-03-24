@@ -2,8 +2,8 @@
   "headers": {
     "user": "TestUser",
     "documentId": "test-document",
-    "firmaKod": "AAAA",
-    "worker-followers": "[{\"name\":\"flexibee-create-faktura-prijata-connector\",\"id\":\"faktura-queue\"},{\"name\":\"flexibee-create-zavazek-connector\",\"id\":\"zavazek-queue\"}]"
+    "customCompanyId": "demo",
+    "firmaKod": "17864810"
   },
   "data": {
     "type": {
@@ -17,36 +17,6 @@
       "default": false
     },
     "accounting": {
-      "accountingRule": {
-        "kind": "IncomingInvoice",
-        "description": "Nákup ostatních služeb",
-        "isValid": true,
-        "code": "NÁKUP SLUŽBY",
-        "id": "9c658826-c34f-431c-9b6a-1f3c526be287",
-        "externalId": "NÁKUP SLUŽBY"
-      },
-      "costCenter": {
-        "description": "Sales & Marketing",
-        "isValid": true,
-        "code": "SALES&MARKETING",
-        "id": "10accb91-99d6-4aab-8040-7ecd24f40c46",
-        "externalId": "SALES&MARKETING"
-      },
-      "vatControlStatementLine": {
-        "description": "Přijatá zdanitelná plnění skupiny B.2. nebo B.3. dle částky (automaticky)",
-        "isValid": true,
-        "code": "B.2-3.AUTO",
-        "id": "fa4233cc-d166-406d-9cdb-87686c9dc2c8",
-        "externalId": "B.2-3.AUTO"
-      },
-      "vatReturnLine": {
-        "reverseCharge": false,
-        "description": "Z přijatých zdanitelných plnění od plátců",
-        "isValid": true,
-        "code": "40-41",
-        "id": "22764c34-8973-40e0-9f18-a8a9ae905993",
-        "externalId": "40-41"
-      },
       "vatSupplyModeCode": "Normal",
       "vatApplyReductionCoefficient": false,
       "vatFixedAssets": false,
@@ -140,6 +110,8 @@
     "roundingAmount": 0,
     "advanceAmount": 0,
     "currency": "CZK",
+    "partnerIC": "17864810",
+    "partnerVAT": "CZ17864810",
     "partnerName": "1. Account s.r.o.",
     "partnerAddress": "třída Edvarda Beneše 1415/29, 50012 Hradec Králové, CZ",
     "partnerEmail": "m.kos@1account.cz",

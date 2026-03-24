@@ -22,4 +22,12 @@ describe('Tests for FlexiBeeFindFirmaKodConnector', () => {
     it('process - no dic', async () => {
         await tester.testConnector(FLEXI_BEE_FIND_FIRMA_KOD_CONNECTOR, 'no-dic');
     });
+
+    it('process - create company', async () => {
+        await tester.testConnector(FLEXI_BEE_FIND_FIRMA_KOD_CONNECTOR, 'create-company');
+    });
+
+    it('process - no create company', async () => {
+        await tester.testConnector(FLEXI_BEE_FIND_FIRMA_KOD_CONNECTOR, 'no-create-company');
+    });
 });
