@@ -1,0 +1,22 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.platform_services.repository:
+        class: Hanaboso\PipesFrameworkEnterprise\PlatformServices\Repository\ServiceBindingRepository
+        factory: ['@doctrine_mongodb.odm.default_document_manager', 'getRepository']
+        arguments:
+            - Hanaboso\PipesFrameworkEnterprise\PlatformServices\Document\ServiceBinding
+
+    hbpf.platform_services.provider:
+        class: Hanaboso\PipesFrameworkEnterprise\PlatformServices\Provider\PlatformServiceProvider
+        arguments:
+            - '@hbpf.platform_services.repository'
+            - '@hbpp.service.locator'
+
+    hbpf.platform_services.handler:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFPlatformServicesBundle\Handler\PlatformServicesHandler
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.platform_services.repository'
+            - '@hbpf.platform_services.provider'

@@ -13,10 +13,6 @@ export async function updateProfile(userId: string, settings: UserSettings): Pro
  * Update user password
  */
 export async function updatePassword(data: PasswordUpdateData): Promise<void> {
-  if (data.newPassword !== data.confirmPassword) {
-    throw new Error('Passwords do not match')
-  }
-
   await api.post('/api/user/change_password', {
     password: data.newPassword,
     old_password: data.currentPassword,

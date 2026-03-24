@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import Tabs from '@/components/ui/Tabs.vue'
 import TextInput from '@/components/ui/TextInput.vue'
+import PasswordInput from '@/components/ui/PasswordInput.vue'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import type { Tab } from '@/components/ui/Tabs.vue'
@@ -39,7 +40,10 @@ const email = ref('')
 
 const currentPassword = ref('')
 const newPassword = ref('')
-const confirmPassword = ref('')
+
+const isPasswordFormValid = computed(() =>
+  currentPassword.value.length > 0 && newPassword.value.length >= 8,
+)
 
 const notifications = ref([
   {
@@ -82,26 +86,17 @@ const handleSaveProfile = async () => {
 }
 
 const handleSavePassword = async () => {
-  if (savingPassword.value) return
-  
-  // Validate passwords match
-  if (newPassword.value !== confirmPassword.value) {
-    showToast('Passwords do not match', 'error')
-    return
-  }
-  
+  if (savingPassword.value || !isPasswordFormValid.value) return
+
   savingPassword.value = true
   try {
     await updatePassword({
       currentPassword: currentPassword.value,
       newPassword: newPassword.value,
-      confirmPassword: confirmPassword.value,
     })
     showToast('Password changed successfully', 'success')
-    // Reset password fields after successful save
     currentPassword.value = ''
     newPassword.value = ''
-    confirmPassword.value = ''
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to change password'
     showToast(message, 'error')
@@ -216,34 +211,23 @@ const handleSelectAll = () => {
             Password
           </h2>
           <form @submit.prevent="handleSavePassword">
-            <div class="mb-4 grid gap-4 sm:mb-6 sm:grid-cols-2">
-              <div class="col-span-1 space-y-4 max-w-lg">
-                <TextInput
-                  v-model="currentPassword"
-                  type="password"
-                  label="Current password"
-                  placeholder="Enter your current password"
-                  required
-                />
+            <div class="mb-4 space-y-4 sm:mb-6 max-w-lg">
+              <PasswordInput
+                v-model="currentPassword"
+                label="Current password"
+                placeholder="Enter your current password"
+                required
+              />
 
-                <TextInput
-                  v-model="newPassword"
-                  type="password"
-                  label="Your new password"
-                  placeholder="Enter your new password"
-                  required
-                />
-
-                <TextInput
-                  v-model="confirmPassword"
-                  type="password"
-                  label="Confirm new password"
-                  placeholder="Confirm new password"
-                  required
-                />
-              </div>
+              <PasswordInput
+                v-model="newPassword"
+                label="New password"
+                placeholder="Enter your new password"
+                show-strength
+                required
+              />
             </div>
-            <Button type="submit" :disabled="savingPassword">
+            <Button type="submit" :disabled="savingPassword || !isPasswordFormValid">
               {{ savingPassword ? 'Saving...' : 'Save changes' }}
             </Button>
           </form>
