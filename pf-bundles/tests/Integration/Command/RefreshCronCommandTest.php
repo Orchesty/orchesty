@@ -42,7 +42,7 @@ final class RefreshCronCommandTest extends DatabaseTestCaseAbstract
     public function testExecuteError(): void
     {
         $manager = self::createPartialMock(CronManager::class, ['batchUpsert']);
-        $manager->expects(self::any())->method('batchUpsert')->willThrowException(new CronException());
+        $manager->expects(self::atLeastOnce())->method('batchUpsert')->willThrowException(new CronException());
 
         self::assertSame(1, (new CommandTester(new RefreshCronCommand($this->dm, $manager)))->execute([]));
     }

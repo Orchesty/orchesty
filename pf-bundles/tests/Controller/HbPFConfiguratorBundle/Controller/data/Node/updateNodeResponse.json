@@ -9,6 +9,7 @@
         "handler": "action",
         "enabled": true,
         "schema_id": "",
+        "sdk": "",
         "cron_time": null,
         "cron_params": null
     }

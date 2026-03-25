@@ -185,9 +185,9 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
         $manager = self::createPartialMock(MongoMetricsManager::class, [$fn]);
 
         if ($return instanceof Throwable) {
-            $manager->expects(self::any())->method($fn)->willThrowException($return);
+            $manager->expects(self::atLeastOnce())->method($fn)->willThrowException($return);
         } else {
-            $manager->expects(self::any())->method($fn)->willReturn($return);
+            $manager->expects(self::atLeastOnce())->method($fn)->willReturn($return);
         }
 
         self::getContainer()->set('hbpf.metrics.manager.mongo_metrics', $manager);

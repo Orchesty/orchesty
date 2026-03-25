@@ -200,10 +200,10 @@ export async function fetchApplicationLimiterSettings(
           }
         }
 
-        return { key: app.key, setting: { name: app.name, useLimit, value, time } }
+        return { key: app.key, worker: app.worker, setting: { name: app.name, useLimit, value, time } }
       } catch (error) {
         console.warn(`Failed to fetch limiter settings for ${app.key}:`, error)
-        return { key: app.key, setting: { name: app.name, useLimit: false, value: null, time: null } }
+        return { key: app.key, worker: app.worker, setting: { name: app.name, useLimit: false, value: null, time: null } }
       }
     })
   )
@@ -211,6 +211,7 @@ export async function fetchApplicationLimiterSettings(
   for (const result of results) {
     if (result.status === 'fulfilled' && result.value) {
       settingsMap.set(result.value.key, result.value.setting)
+      settingsMap.set(`${result.value.worker}:${result.value.key}`, result.value.setting)
     }
   }
 

@@ -10,21 +10,26 @@ import (
 	"strings"
 )
 
+type hostInfo struct {
+	keys []string
+	sdk  string
+}
+
 func GetApplicationLimits(user string, topology storage.Topology) (string, error) {
-	apps := make(map[string][]string)
+	hosts := make(map[string]*hostInfo)
 	for _, app := range topology.Applications {
-		if _, ok := apps[app.Host]; !ok {
-			apps[app.Host] = make([]string, 0)
+		if _, ok := hosts[app.Host]; !ok {
+			hosts[app.Host] = &hostInfo{sdk: app.Sdk}
 		}
 
-		apps[app.Host] = append(apps[app.Host], app.Key)
+		hosts[app.Host].keys = append(hosts[app.Host].keys, app.Key)
 	}
 
 	limits := ""
-	for host, keys := range apps {
+	for host, info := range hosts {
 		body := map[string]interface{}{
 			"user":         user,
-			"applications": keys,
+			"applications": info.keys,
 		}
 		jsonValue, _ := json.Marshal(body)
 
@@ -33,7 +38,7 @@ func GetApplicationLimits(user string, topology storage.Topology) (string, error
 		}
 
 		resp, err := http.Post(
-			fmt.Sprintf("%s/applications/limits", strings.TrimRight(host, "/")),
+			fmt.Sprintf("%s/applications/sdk/%s/limits", strings.TrimRight(host, "/"), info.sdk),
 			"application/json",
 			bytes.NewBuffer(jsonValue),
 		)

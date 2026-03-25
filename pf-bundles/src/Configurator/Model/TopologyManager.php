@@ -801,7 +801,8 @@ class TopologyManager
             ->setHandler(
                 Strings::endsWith($dto->getHandler(), 'vent') ? HandlerEnum::EVENT->value : HandlerEnum::ACTION->value,
             )
-            ->setApplication($dto->getApplication());
+            ->setApplication($dto->getApplication())
+            ->setSdk($dto->getWorker());
 
         if ($dto->getCronTime() !== '') {
             $node

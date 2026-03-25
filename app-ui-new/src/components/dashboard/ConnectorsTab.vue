@@ -27,7 +27,7 @@ const emit = defineEmits<{
 
 // Use topology/node/application mappings composable
 const {
-  getApplicationName,
+  getApplicationNameByNodeId,
   getNodeName,
   getNodeIdsByName,
   applicationOptions: applicationOptionsFromMappings,
@@ -128,11 +128,24 @@ const loadData = async () => {
   loading.value = true
 
   try {
-    const nodeIds = nodeFilter.value ? getNodeIdsByName(nodeFilter.value) : undefined
+    const appNodeIds = selectedApp.value && mappings.value?.applicationTree?.[selectedApp.value]
+      ? mappings.value.applicationTree[selectedApp.value]
+      : undefined
+    const nameNodeIds = nodeFilter.value ? getNodeIdsByName(nodeFilter.value) : undefined
+
+    let combinedNodeIds: string[] | undefined
+    if (appNodeIds && nameNodeIds) {
+      combinedNodeIds = nameNodeIds.filter(id => appNodeIds.includes(id))
+    } else {
+      combinedNodeIds = appNodeIds || nameNodeIds
+    }
+
     const response = await fetchConnectors({
       status: quickFilter.value,
-      node: nodeIds && nodeIds.length > 0 ? nodeIds : undefined,
-      application: selectedApp.value || undefined,
+      node: combinedNodeIds && combinedNodeIds.length > 0 ? combinedNodeIds : undefined,
+      application: selectedApp.value?.includes(':')
+        ? selectedApp.value.substring(selectedApp.value.indexOf(':') + 1)
+        : selectedApp.value || undefined,
       dateFrom: formatDateTimeForApi(dateTimeRange.value.from) || undefined,
       dateTo: formatDateTimeForApi(dateTimeRange.value.to) || undefined,
       page: currentPage.value,
@@ -243,7 +256,7 @@ onDeactivated(() => {
 
     <!-- Custom Cells -->
     <template #cell-application="{ row }">
-      <span class="font-medium text-gray-900 dark:text-white">{{ getApplicationName(row.application) }}</span>
+      <span class="font-medium text-gray-900 dark:text-white">{{ getApplicationNameByNodeId(row.id) }}</span>
     </template>
 
     <template #cell-name="{ row }">

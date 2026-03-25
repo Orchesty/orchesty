@@ -1,8 +1,9 @@
 import { container } from '@orchesty/nodejs-sdk';
+import { SDK } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import TopologyTester from '@orchesty/nodejs-sdk/dist/test/Testers/TopologyTester';
 import path from 'path';
-import { DEFAULT_USER } from '../../../test/DataProvider';
+import { DEFAULT_SDK, DEFAULT_USER } from '../../../test/DataProvider';
 import { prepare } from '../../../test/TestAbstract';
 import MySqlRepository from '../../Sql/Repository/MySqlRepository';
 
@@ -25,6 +26,7 @@ describe('Tests for MySqlToBeeceptorCategories topology', () => {
     it('run MySqlToBeeceptorCategories manually', async () => {
         const dto = new ProcessDto();
         dto.setUser(DEFAULT_USER);
+        dto.addHeader(SDK, DEFAULT_SDK);
         dto.setJsonData({});
 
         await tester.runTopology(TOPOLOGY_PATH, dto, undefined, 'start');

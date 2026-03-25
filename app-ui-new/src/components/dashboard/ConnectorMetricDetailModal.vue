@@ -7,7 +7,7 @@ import { useDateFormat } from '@/composables/useDateFormat'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
 const { formatDateTime } = useDateFormat()
-const { getTopologyName, getNodeName, getApplicationName } = useTopologyNodeMappings()
+const { getTopologyName, getNodeName, getApplicationNameByNodeId } = useTopologyNodeMappings()
 
 interface Props {
   modelValue: boolean
@@ -86,7 +86,7 @@ const formattedDuration = computed(() => {
           <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
             Application
           </label>
-          <p class="text-sm text-gray-900 dark:text-white">{{ getApplicationName(record.applicationId) }}</p>
+          <p class="text-sm text-gray-900 dark:text-white">{{ getApplicationNameByNodeId(record.nodeId) }}</p>
         </div>
         <div v-if="formattedDuration">
           <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">

@@ -30,6 +30,7 @@ export default class BeeceptorCreateWebhooks extends ABatchNode {
         const webhooks = await repository.findMany({
             users: [appInstall.getUser()],
             apps: [appInstall.getName()],
+            sdks: [appInstall.getSdk()],
         });
 
         const unsubscribed = subscriptions.find(
@@ -70,7 +71,8 @@ export default class BeeceptorCreateWebhooks extends ABatchNode {
                 .setToken(token)
                 .setApplication(appInstall.getName())
                 .setTopology(unsubscribed.getTopology())
-                .setName(unsubscribed.getName()),
+                .setName(unsubscribed.getName())
+                .setSdk(appInstall.getSdk()),
         );
 
         return dto.setBatchCursor('1', true);

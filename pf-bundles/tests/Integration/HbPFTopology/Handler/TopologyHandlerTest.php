@@ -53,8 +53,8 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
         $manager     = $this->mockManager($topology);
         $nodeManager = $this->mockNodeManager();
         $generator   = self::createPartialMock(TopologyGeneratorBridge::class, ['generateTopology', 'runTopology']);
-        $generator->expects(self::any())->method('generateTopology')->willReturn(new ResponseDto(200, '', '{}', []));
-        $generator->expects(self::any())->method('runTopology')->willReturn(new ResponseDto(200, '', '{}', []));
+        $generator->method('generateTopology')->willReturn(new ResponseDto(200, '', '{}', []));
+        $generator->method('runTopology')->willReturn(new ResponseDto(200, '', '{}', []));
         $userTaskHandler = $this->mockUserTaskHandler();
         $topologyTester  = $this->mockTopologyTester();
 
@@ -218,18 +218,17 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
         );
 
         if ($return instanceof Throwable) {
-            $generator->expects(self::any())->method('generateTopology')->willThrowException($return);
-            $generator->expects(self::any())->method('runTopology')->willThrowException($return);
-            $generator->expects(self::any())->method('deleteTopology')->willThrowException($return);
-            $generator->expects(self::any())->method('stopTopology')->willThrowException($return);
-
+            $generator->method('generateTopology')->willThrowException($return);
+            $generator->method('runTopology')->willThrowException($return);
+            $generator->method('deleteTopology')->willThrowException($return);
+            $generator->method('stopTopology')->willThrowException($return);
         } else {
-            $generator->expects(self::any())->method('generateTopology')->willReturn($return);
-            $generator->expects(self::any())->method('runTopology')->willReturn($return);
-            $generator->expects(self::any())->method('deleteTopology')->willReturn($return);
-            $generator->expects(self::any())->method('stopTopology')->willReturn($return);
+            $generator->method('generateTopology')->willReturn($return);
+            $generator->method('runTopology')->willReturn($return);
+            $generator->method('deleteTopology')->willReturn($return);
+            $generator->method('stopTopology')->willReturn($return);
         }
-        $generator->expects(self::any())->method('invalidateTopologyCache')->willReturn([]);
+        $generator->method('invalidateTopologyCache')->willReturn([]);
 
         return $generator;
     }
@@ -245,9 +244,9 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
             TopologyManager::class,
             ['publishTopology', 'unPublishTopology', 'deleteTopology'],
         );
-        $manager->expects(self::any())->method('publishTopology')->willReturn($topology);
-        $manager->expects(self::any())->method('unPublishTopology')->willReturn($topology);
-        $manager->expects(self::any())->method('deleteTopology');
+        $manager->method('publishTopology')->willReturn($topology);
+        $manager->method('unPublishTopology')->willReturn($topology);
+        $manager->method('deleteTopology');
 
         return $manager;
     }

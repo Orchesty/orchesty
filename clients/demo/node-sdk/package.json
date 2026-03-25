@@ -14,7 +14,7 @@
   "license": "Apache-2.0",
   "packageManager": "pnpm@9.1.4",
   "dependencies": {
-    "@aws-sdk/client-ses": "^3.1011.0",
+    "@aws-sdk/client-ses": "^3.1015.0",
     "@orchesty/connector-airtable": "^1.0.1",
     "@orchesty/connector-amazon-apps-common": "^1.0.2",
     "@orchesty/connector-amazon-apps-lambda": "^1.0.2",
@@ -67,11 +67,11 @@
     "@orchesty/connector-zendesk": "^1.0.1",
     "@orchesty/connector-zoho": "^1.0.1",
     "@orchesty/connector-zoom": "^1.0.1",
-    "@orchesty/nodejs-sdk": "^5.0.2",
+    "@orchesty/nodejs-sdk": "^5.0.3",
     "copyfiles": "^2.4.1",
     "lodash": "^4.17.23",
     "luxon": "^3.7.2",
-    "mongodb": "^7.1.0",
+    "mongodb": "^7.1.1",
     "mysql2": "^3.20.0"
   },
   "devDependencies": {
@@ -83,7 +83,7 @@
     "@types/node": "^25.5.0",
     "@types/supertest": "^7.2.0",
     "axios-mock-adapter": "^2.1.0",
-    "eslint": "^10.0.3",
+    "eslint": "^10.1.0",
     "jest": "^30.3.0",
     "nodemon": "^3.1.14",
     "ts-jest": "^29.4.6",

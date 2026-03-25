@@ -3,7 +3,7 @@ services:
         public: '%public.services%'
 
     # Application
-    hbpf.application.http-status-php:
+    hbpf.application.http-status:
         class: Demo\HttpStatus\HttpStatusApplication
 
     # Batch
@@ -14,11 +14,11 @@ services:
         arguments:
           - '@hbpf.application_install.repository'
 
-    hbpf.batch.http-status-php-batch:
+    hbpf.batch.http-status-batch:
         class: Demo\HttpStatus\Batch\HttpStatusBatch
         calls:
             -   setSender: [ '@hbpf.transport.curl_manager' ]
-            -   setApplication: [ '@hbpf.application.http-status-php' ]
+            -   setApplication: [ '@hbpf.application.http-status' ]
         arguments:
             - '@hbpf.application_install.repository'
 
@@ -60,51 +60,51 @@ services:
         arguments:
             - '@hbpf.application_install.repository'
 
-    hbpf.connector.http-status-php-200-connector:
+    hbpf.connector.http-status-200-connector:
         class: Demo\HttpStatus\Connector\HttpStatus200Connector
         calls:
             -   setSender: [ '@hbpf.transport.curl_manager' ]
-            -   setApplication: [ '@hbpf.application.http-status-php' ]
+            -   setApplication: [ '@hbpf.application.http-status' ]
         arguments:
             - '@hbpf.application_install.repository'
 
-    hbpf.connector.http-status-php-201-connector:
+    hbpf.connector.http-status-201-connector:
         class: Demo\HttpStatus\Connector\HttpStatus201Connector
         calls:
             -   setSender: [ '@hbpf.transport.curl_manager' ]
-            -   setApplication: [ '@hbpf.application.http-status-php' ]
+            -   setApplication: [ '@hbpf.application.http-status' ]
         arguments:
             - '@hbpf.application_install.repository'
 
-    hbpf.connector.http-status-php-400-connector:
+    hbpf.connector.http-status-400-connector:
         class: Demo\HttpStatus\Connector\HttpStatus400Connector
         calls:
             -   setSender: [ '@hbpf.transport.curl_manager' ]
-            -   setApplication: [ '@hbpf.application.http-status-php' ]
+            -   setApplication: [ '@hbpf.application.http-status' ]
         arguments:
             - '@hbpf.application_install.repository'
 
-    hbpf.connector.http-status-php-401-connector:
+    hbpf.connector.http-status-401-connector:
         class: Demo\HttpStatus\Connector\HttpStatus401Connector
         calls:
             -   setSender: [ '@hbpf.transport.curl_manager' ]
-            -   setApplication: [ '@hbpf.application.http-status-php' ]
+            -   setApplication: [ '@hbpf.application.http-status' ]
         arguments:
             - '@hbpf.application_install.repository'
 
-    hbpf.connector.http-status-php-404-connector:
+    hbpf.connector.http-status-404-connector:
         class: Demo\HttpStatus\Connector\HttpStatus404Connector
         calls:
             -   setSender: [ '@hbpf.transport.curl_manager' ]
-            -   setApplication: [ '@hbpf.application.http-status-php' ]
+            -   setApplication: [ '@hbpf.application.http-status' ]
         arguments:
             - '@hbpf.application_install.repository'
 
-    hbpf.connector.http-status-php-500-connector:
+    hbpf.connector.http-status-500-connector:
         class: Demo\HttpStatus\Connector\HttpStatus500Connector
         calls:
             -   setSender: [ '@hbpf.transport.curl_manager' ]
-            -   setApplication: [ '@hbpf.application.http-status-php' ]
+            -   setApplication: [ '@hbpf.application.http-status' ]
         arguments:
             - '@hbpf.application_install.repository'
 

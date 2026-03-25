@@ -76,6 +76,16 @@ func (n *node) Application() string {
 	return n.Node.Application
 }
 
+func (n *node) Sdk() string {
+	if sdk, ok := n.Node.Settings.Headers[enum.Header_Sdk]; ok {
+		if s, ok := sdk.(string); ok {
+			return s
+		}
+	}
+
+	return ""
+}
+
 func (n *node) Settings() model.NodeSettings {
 	return n.Node.Settings
 }

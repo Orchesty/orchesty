@@ -31,7 +31,7 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const { getTopologyName, getNodeName, getApplicationName } = useTopologyNodeMappings()
+const { getTopologyName, getNodeName, getApplicationNameByNodeId } = useTopologyNodeMappings()
 const { formatDateTime } = useDateFormat()
 
 // Data state
@@ -302,7 +302,7 @@ const handleClose = () => {
         >
           <template #cell-connector="{ row }">
             <span class="font-medium text-gray-900 dark:text-white">{{ getNodeName(row.connector) }}</span>
-            <span class="text-gray-500 dark:text-gray-400"> ({{ row.application && row.application !== 'N/A' ? getApplicationName(row.application) : 'N/A' }})</span>
+            <span class="text-gray-500 dark:text-gray-400"> ({{ row.connector && row.application !== 'N/A' ? getApplicationNameByNodeId(row.connector) : 'N/A' }})</span>
           </template>
 
           <template #cell-errors400="{ value }">

@@ -262,6 +262,28 @@ export function useTopologyNodeMappings() {
   const nodeNameMap = computed<Record<string, string>>(() => allMappings.value?.nodes ?? {})
   const applicationNameMap = computed<Record<string, string>>(() => allMappings.value?.applications ?? {})
 
+  // Reverse map: nodeId -> composite application key (from applicationTree)
+  const nodeToAppKey = computed<Record<string, string>>(() => {
+    const map: Record<string, string> = {}
+    for (const source of [allMappings.value, filteredMappingsData.value]) {
+      const tree = source?.applicationTree
+      if (tree) {
+        for (const [appKey, nodeIds] of Object.entries(tree)) {
+          for (const nodeId of nodeIds) {
+            if (!map[nodeId]) map[nodeId] = appKey
+          }
+        }
+      }
+    }
+    return map
+  })
+
+  const getApplicationNameByNodeId = (nodeId: string): string => {
+    const compositeKey = nodeToAppKey.value[nodeId]
+    if (compositeKey) return getApplicationName(compositeKey)
+    return nodeId
+  }
+
   const isReady = computed(() => isLoaded.value)
 
   const ensureLoaded = async () => {
@@ -289,6 +311,7 @@ export function useTopologyNodeMappings() {
     getTopologyNameWithVersion,
     getNodeName,
     getApplicationName,
+    getApplicationNameByNodeId,
     topologyNameMap,
     topologyNameWithVersionMap,
     nodeNameMap,

@@ -18,6 +18,7 @@ import { Topology } from '../src/Wflow/Enum/Topology';
 import { FLEXI_BEE_FORM } from '../src/Wflow/WflowApplication';
 
 export const DEFAULT_USER = 'TestUser';
+export const DEFAULT_SDK = 'TestSdk';
 export const DEFAULT_PASSWORD = 'Password';
 export const DEFAULT_ACCESS_TOKEN = 'test-access-token';
 export const DEFAULT_CLIENT_ID = 'test-client-id';
@@ -39,6 +40,7 @@ export function applicationInstall(
         .setEnabled(true)
         .setName(name)
         .setUser(user)
+        .setSdk(DEFAULT_SDK)
         .setSettings(settings)
         .setNonEncryptedSettings(nonEncryptedSettings);
 
