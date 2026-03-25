@@ -152,11 +152,12 @@ final class Schema
         $appList = [];
 
         foreach ($this->getNodes() as $node) {
-            $app  = $node->getApplication();
-            $host = $node->getSystemConfigs()->getSdkHost();
+            $app    = $node->getApplication();
+            $host   = $node->getSystemConfigs()->getSdkHost();
+            $worker = $node->getWorker();
 
-            if($app && $host){
-                $appList[sprintf('%s_%s',$app, $host)] = new TopologyApplication($app, $host);
+            if ($app && $host) {
+                $appList[sprintf('%s_%s', $app, $host)] = new TopologyApplication($app, $host, $worker);
             }
         }
 

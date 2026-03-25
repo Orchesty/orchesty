@@ -95,7 +95,10 @@ final class ServiceLocator implements LoggerAwareInterface
             ];
 
             $availableApplications = $this->doRequest('applications', $sdkName);
-            $installedApplications = $this->doRequest(sprintf('applications/users/%s', $user), $sdkName);
+            $installedApplications = $this->doRequest(
+                sprintf('applications/users/%s/sdk/%s', $user, $sdkName),
+                $sdkName,
+            );
 
             foreach ($availableApplications[self::ITEMS] ?? [] as $application) {
                 $applications[$sdkName][self::APPLICATIONS][$application[self::KEY]] = [
@@ -174,7 +177,7 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function getUserApps(string $user, string $sdk, string $exclude = ''): array
     {
-        $res = $this->doRequest(sprintf('applications/users/%s', $user), $sdk);
+        $res = $this->doRequest(sprintf('applications/users/%s/sdk/%s', $user, $sdk), $sdk);
         if ($res === [] || !isset($res['items'])) {
             $res['items'] = [];
         }
@@ -209,7 +212,7 @@ final class ServiceLocator implements LoggerAwareInterface
         string $sdk,
         string $customActionPath = self::CUSTOM_ACTION_PATH,
     ): array {
-        $res = $this->doRequest(sprintf('applications/%s/users/%s', $key, $user), $sdk);
+        $res = $this->doRequest(sprintf('applications/%s/users/%s/sdk/%s', $key, $user, $sdk), $sdk);
 
         if (isset($res['customActions'])) {
             $res['customActions'] = $this->prepareCustomActionsUrls($res['customActions'], $customActionPath);
@@ -231,7 +234,7 @@ final class ServiceLocator implements LoggerAwareInterface
     {
         try {
             $resp = $this->doRequest(
-                sprintf('applications/%s/users/%s/install', $key, $user),
+                sprintf('applications/%s/users/%s/sdk/%s/install', $key, $user, $sdk),
                 $sdk,
                 CurlManager::METHOD_POST,
                 [],
@@ -244,7 +247,7 @@ final class ServiceLocator implements LoggerAwareInterface
                 sprintf('applications/%s/sync/afterInstallCallback', $key),
                 $sdk,
                 CurlManager::METHOD_POST,
-                ['user' => $user, 'name' => $key],
+                ['user' => $user, 'name' => $key, 'sdk' => $sdk],
                 FALSE,
                 [],
                 TRUE,
@@ -269,7 +272,7 @@ final class ServiceLocator implements LoggerAwareInterface
             $this->changeState($key, $user, $sdk, ['enabled' => FALSE]);
 
             $resp = $this->doRequest(
-                sprintf('applications/%s/users/%s/uninstall', $key, $user),
+                sprintf('applications/%s/users/%s/sdk/%s/uninstall', $key, $user, $sdk),
                 $sdk,
                 CurlManager::METHOD_DELETE,
                 [],
@@ -282,7 +285,7 @@ final class ServiceLocator implements LoggerAwareInterface
                 sprintf('applications/%s/sync/afterUninstallCallback', $key),
                 $sdk,
                 CurlManager::METHOD_POST,
-                ['user' => $user, 'name' => $key],
+                ['user' => $user, 'name' => $key, 'sdk' => $sdk],
                 FALSE,
                 [],
                 TRUE,
@@ -305,7 +308,7 @@ final class ServiceLocator implements LoggerAwareInterface
     public function changeState(string $key, string $user, string $sdk, array $data): array
     {
         $resp = $this->doRequest(
-            sprintf('applications/%s/users/%s/changeState', $key, $user),
+            sprintf('applications/%s/users/%s/sdk/%s/changeState', $key, $user, $sdk),
             $sdk,
             CurlManager::METHOD_PUT,
             $data,
@@ -317,7 +320,7 @@ final class ServiceLocator implements LoggerAwareInterface
             sprintf('applications/%s/sync/%s', $key, $action),
             $sdk,
             CurlManager::METHOD_POST,
-            ['user' => $user, 'name' => $key],
+            ['user' => $user, 'name' => $key, 'sdk' => $sdk],
             FALSE,
             [],
             TRUE,
@@ -337,7 +340,7 @@ final class ServiceLocator implements LoggerAwareInterface
     public function updateApp(string $key, string $user, string $sdk, array $data): array
     {
         return $this->doRequest(
-            sprintf('applications/%s/users/%s/settings', $key, $user),
+            sprintf('applications/%s/users/%s/sdk/%s/settings', $key, $user, $sdk),
             $sdk,
             CurlManager::METHOD_PUT,
             $data,
@@ -355,7 +358,7 @@ final class ServiceLocator implements LoggerAwareInterface
     public function updateAppPassword(string $key, string $user, string $sdk, array $data): array
     {
         return $this->doRequest(
-            sprintf('applications/%s/users/%s/password', $key, $user),
+            sprintf('applications/%s/users/%s/sdk/%s/password', $key, $user, $sdk),
             $sdk,
             CurlManager::METHOD_PUT,
             $data,
@@ -371,9 +374,17 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function authorizationToken(string $key, string $user, array $query): array
     {
+        $sdk = explode(':', Base64::base64UrlDecode($query['state']))[2];
+
         return $this->doRequest(
-            sprintf('applications/%s/users/%s/authorize/token%s', $key, $user, $this->queryToString($query)),
-            $this->getSdkNameByInstalledApplication($key),
+            sprintf(
+                'applications/%s/users/%s/sdk/%s/authorize/token%s',
+                $key,
+                $user,
+                $sdk,
+                $this->queryToString($query),
+            ),
+            $sdk,
         );
     }
 
@@ -384,11 +395,11 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function authorizationQueryToken(array $query): array
     {
-        $key = explode(':', Base64::base64UrlDecode($query['state']))[1];
+        $sdk = explode(':', Base64::base64UrlDecode($query['state']))[2];
 
         return $this->doRequest(
             sprintf('applications/authorize/token%s', $this->queryToString($query)),
-            $this->getSdkNameByInstalledApplication($key),
+            $sdk,
         );
     }
 
@@ -401,7 +412,7 @@ final class ServiceLocator implements LoggerAwareInterface
     public function authorize(string $key, string $user, string $sdk, string $redirect): void
     {
         $url = $this->doRequest(
-            sprintf('applications/%s/users/%s/authorize?redirect_url=%s', $key, $user, $redirect),
+            sprintf('applications/%s/users/%s/sdk/%s/authorize?redirect_url=%s', $key, $user, $sdk, $redirect),
             $sdk,
         );
         if (!isset($url['authorizeUrl'])) {
@@ -518,7 +529,7 @@ final class ServiceLocator implements LoggerAwareInterface
     public function subscribeWebhook(string $key, string $user, string $sdk, array $body): array
     {
         return $this->doRequest(
-            sprintf('webhook/applications/%s/users/%s/subscribe', $key, $user),
+            sprintf('webhook/applications/%s/users/%s/sdk/%s/subscribe', $key, $user, $sdk),
             $sdk,
             CurlManager::METHOD_POST,
             $body,
@@ -536,7 +547,7 @@ final class ServiceLocator implements LoggerAwareInterface
     public function unSubscribeWebhook(string $key, string $user, string $sdk, array $body): array
     {
         return $this->doRequest(
-            sprintf('webhook/applications/%s/users/%s/unsubscribe', $key, $user),
+            sprintf('webhook/applications/%s/users/%s/sdk/%s/unsubscribe', $key, $user, $sdk),
             $sdk,
             CurlManager::METHOD_POST,
             $body,

@@ -206,6 +206,8 @@ final class TopologySchemaUtils
             $action = $node['action'] ?? NULL;
             $label  = $node['label'] ?? '';
 
+            $workerName = '';
+
             if ($shape === 'circle') {
                 $handler   = self::getJsonCircleHandler($label);
                 $pipesType = self::getJsonEventPipesType($label);
@@ -242,6 +244,7 @@ final class TopologySchemaUtils
                 '',
                 '',
                 $app,
+                $workerName,
             );
 
             $schema->addNode($nodeId, $nodeSchemaDto);

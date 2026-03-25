@@ -17,6 +17,7 @@ use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
 use Hanaboso\Utils\String\DsnParser;
 use Hanaboso\Utils\String\Json;
+use Hanaboso\Utils\System\PipesHeaders;
 
 /**
  * Class TopologyConfigFactory
@@ -133,12 +134,13 @@ final class TopologyConfigFactory
             default:
                 $host   = $this->getHost($node->getType(), $node->getSystemConfigs());
                 $path   = $this->getPaths($node);
+                $sdk    = $this->sdkRepository->findByHost($host);
                 $parsed = explode(':', $host);
 
                 return [
                     self::SETTINGS => [
                         self::APPLICATION  => $node->getApplication(),
-                        self::HEADERS      => $this->sdkRepository->findByHost($host),
+                        self::HEADERS      => array_merge($sdk->getHeaders(), [PipesHeaders::SDK => $sdk->getName()]),
                         self::HOST         => $parsed[0],
                         self::METHOD       => CurlManager::METHOD_POST,
                         self::PORT         => (int) ($parsed[1] ?? $this->getPort($node->getType())),

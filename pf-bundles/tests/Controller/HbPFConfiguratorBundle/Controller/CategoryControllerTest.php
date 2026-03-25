@@ -100,7 +100,7 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
         $categories = $this->createCategories(2);
 
         $manager = self::createPartialMock(CategoryManager::class, ['updateCategory']);
-        $manager->expects(self::any())->method('updateCategory')->willThrowException(new MongoDBException());
+        $manager->expects(self::atLeastOnce())->method('updateCategory')->willThrowException(new MongoDBException());
         self::getContainer()->set('hbpf.configurator.manager.category', $manager);
 
         $this->assertResponseLogged(

@@ -78,7 +78,7 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
         $appInstallRepository = $this->dm->getRepository(ApplicationInstall::class);
 
         self::expectException(Exception::class);
-        $appInstallRepository->findUserApp('user', 'key');
+        $appInstallRepository->findUserApp('user', 'key', 'sdk');
     }
 
     /**
@@ -168,20 +168,24 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
     {
         $applicationInstall = new ApplicationInstall();
         $applicationInstall->setKey('hubspot');
+        $applicationInstall->setSdk('sdk');
         $applicationInstall->setUser('user2');
         $applicationInstall->setExpires(DateTimeUtils::getUtcDateTime('- 10 Days'));
 
         $applicationInstall2 = new ApplicationInstall();
         $applicationInstall2->setKey('mailchimp');
+        $applicationInstall2->setSdk('sdk');
         $applicationInstall2->setUser('user2');
 
         $applicationInstall3 = new ApplicationInstall();
         $applicationInstall3->setKey('hubspot');
+        $applicationInstall3->setSdk('sdk');
         $applicationInstall3->setUser('user3');
         $applicationInstall3->setExpires(DateTimeUtils::getUtcDateTime('+ 1 Day'));
 
         $applicationInstall4 = new ApplicationInstall();
         $applicationInstall4->setKey('shipstation');
+        $applicationInstall4->setSdk('sdk');
         $applicationInstall4->setUser('user2');
         $applicationInstall4->setExpires(DateTimeUtils::getUtcDateTime('+ 1 Day'));
 

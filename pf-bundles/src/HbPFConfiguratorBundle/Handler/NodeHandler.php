@@ -82,10 +82,13 @@ final class NodeHandler
         $applicationTree      = [];
 
         foreach ($applications as $sdk) {
+            $sdkName = $sdk['name'] ?? '';
+
             foreach ($sdk['applications'] ?? [] as $application) {
                 if (isset($application['key'], $application['name'])) {
-                    $applicationsData[$application['key']] = $application['name'];
-                    $applicationTree[$application['key']]  = [];
+                    $compositeKey                    = sprintf('%s:%s', $sdkName, $application['key']);
+                    $applicationsData[$compositeKey] = $application['name'];
+                    $applicationTree[$compositeKey]  = [];
                 }
             }
         }
@@ -107,8 +110,13 @@ final class NodeHandler
                 $topologyTree[$topologyId][] = $nodeId;
             }
 
-            if ($applicationId && isset($applicationTree[$applicationId])) {
-                $applicationTree[$applicationId][] = $nodeId;
+            if ($applicationId) {
+                $sdkName      = $node->getSdk();
+                $compositeKey = $sdkName ? sprintf('%s:%s', $sdkName, $applicationId) : $applicationId;
+
+                if (isset($applicationTree[$compositeKey])) {
+                    $applicationTree[$compositeKey][] = $nodeId;
+                }
             }
         }
 
