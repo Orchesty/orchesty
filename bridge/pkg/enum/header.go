@@ -42,6 +42,7 @@ const (
 	Header_LimitMessageFromLimiter = "limit-message-from-limiter"
 	Header_Application             = "application"
 	Header_Applications            = "applications"
+	Header_Sdk                     = "sdk"
 
 	// enum.UserTask (pending, failed) marker for counter & if message came from db
 	Header_UserTaskState = "user-task-state"
