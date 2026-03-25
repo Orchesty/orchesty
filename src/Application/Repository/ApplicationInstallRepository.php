@@ -23,15 +23,17 @@ final class ApplicationInstallRepository extends DocumentRepository
     /**
      * @param string $key
      * @param string $user
+     * @param string $sdk
      *
      * @return ApplicationInstall
      * @throws Exception
      */
-    public function findUserApp(string $key, string $user): ApplicationInstall
+    public function findUserApp(string $key, string $user, string $sdk): ApplicationInstall
     {
         /** @var ApplicationInstall | null $app */
         $app = $this->createQueryBuilder()
             ->field(ApplicationInstall::KEY)->equals($key)
+            ->field(ApplicationInstall::SDK)->equals($sdk)
             ->field(ApplicationInstall::USER)->equals($user)
             ->getQuery()->getSingleResult();
 
@@ -45,14 +47,16 @@ final class ApplicationInstallRepository extends DocumentRepository
     /**
      * @param string   $user
      * @param string[] $applications
+     * @param string   $sdk
      *
      * @return ApplicationInstall[]
      */
-    public function findUserApps(string $user, array $applications): array
+    public function findUserApps(string $user, array $applications, string $sdk): array
     {
         $appInstalls = $this->createQueryBuilder()
-            ->field(ApplicationInstall::USER)->equals($user)
             ->field(ApplicationInstall::KEY)->in($applications)
+            ->field(ApplicationInstall::SDK)->equals($sdk)
+            ->field(ApplicationInstall::USER)->equals($user)
             ->getQuery()->toArray();
 
         if (!$appInstalls) {
@@ -64,15 +68,17 @@ final class ApplicationInstallRepository extends DocumentRepository
 
     /**
      * @param string $key
+     * @param string $sdk
      *
      * @return ApplicationInstall
      * @throws Exception
      */
-    public function findOneByName(string $key): ApplicationInstall
+    public function findOneByName(string $key, string $sdk): ApplicationInstall
     {
         /** @var ApplicationInstall | null $app */
         $app = $this->createQueryBuilder()
             ->field(ApplicationInstall::KEY)->equals($key)
+            ->field(ApplicationInstall::SDK)->equals($sdk)
             ->getQuery()->getSingleResult();
 
         if (!$app) {

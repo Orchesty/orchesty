@@ -32,6 +32,7 @@ final class NodeSchemaDto
      * @param string          $cronTime
      * @param string          $cronParams
      * @param string          $application
+     * @param string          $worker
      */
     public function __construct(
         private string $handler,
@@ -42,6 +43,7 @@ final class NodeSchemaDto
         private string $cronTime = '',
         private string $cronParams = '',
         private string $application = '',
+        private string $worker = '',
     )
     {
     }
@@ -123,6 +125,14 @@ final class NodeSchemaDto
     public function getApplication(): string
     {
         return $this->application;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWorker(): string
+    {
+        return $this->worker;
     }
 
     /**

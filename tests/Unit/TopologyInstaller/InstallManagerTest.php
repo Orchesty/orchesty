@@ -90,10 +90,6 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $this->setProperty($topo, 'id', '123');
         $manager = $this->createManager($topo);
 
-        $dm = $this->createMock(DocumentManager::class);
-        $dm->expects(self::any())->method('persist')->willThrowException(new Exception());
-        $this->setProperty($manager, 'dm', $dm);
-
         $dto = new CompareResultDto();
         $dto->addCreate(new TopologyFile('file.tplg.json', __DIR__ . '/data/file.tplg.json'));
 
@@ -113,7 +109,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $manager = $this->createManager($topo);
 
         $dm = $this->createMock(DocumentManager::class);
-        $dm->expects(self::any())->method('persist')->willThrowException(new Exception());
+        $dm->expects(self::atLeastOnce())->method('persist')->willThrowException(new Exception());
         $this->setProperty($manager, 'dm', $dm);
 
         $dto = new CompareResultDto();
@@ -154,7 +150,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $manager = $this->createManager($topo);
 
         $dm = $this->createMock(DocumentManager::class);
-        $dm->expects(self::any())->method('persist')->willThrowException(new Exception());
+        $dm->expects(self::atLeastOnce())->method('persist')->willThrowException(new Exception());
         $this->setProperty($manager, 'dm', $dm);
 
         $dto = new CompareResultDto();

@@ -26,15 +26,23 @@ class TopologyApplication
     private readonly string $host;
 
     /**
+     * @var string
+     */
+    #[ODM\Field(type: 'string')]
+    private readonly string $sdk;
+
+    /**
      * TopologyApplication constructor.
      *
      * @param string $key
      * @param string $host
+     * @param string $sdk
      */
-    public function __construct(string $key, string $host)
+    public function __construct(string $key, string $host, string $sdk)
     {
         $this->key  = $key;
         $this->host = $host;
+        $this->sdk  = $sdk;
     }
 
     /**
@@ -51,6 +59,14 @@ class TopologyApplication
     public function getHost(): string
     {
         return $this->host;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSdk(): string
+    {
+        return $this->sdk;
     }
 
 }

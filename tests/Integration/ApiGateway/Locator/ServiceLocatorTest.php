@@ -228,7 +228,11 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     {
         $dto = new ResponseDto(200, '', Json::encode(['key' => 'null']), []);
 
-        $res = $this->createLocator($dto)->authorizationToken('null', 'user', ['param1' => 'aaa', 'state' => ['abc']]);
+        $res = $this->createLocator($dto)->authorizationToken(
+            'null',
+            'user',
+            ['param1' => 'aaa', 'state' => Base64::base64UrlEncode('user:null:name')],
+        );
         self::assertEquals(['key' => 'null', 'host' => 'host'], $res);
     }
 
@@ -241,7 +245,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
 
         $res = $this->createLocator($dto)->authorizationQueryToken([
             'param1' => 'aaa',
-            'state' => Base64::base64UrlEncode('name:name'),
+            'state' => Base64::base64UrlEncode('name:name:name'),
         ]);
         self::assertEquals(['key' => 'null', 'host' => 'host'], $res);
     }

@@ -172,7 +172,7 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
     public function testPatchRequestForCron(): void
     {
         $sender = self::createPartialMock(CurlManager::class, ['send']);
-        $sender->expects(self::any())->method('send')->willThrowException(new CurlException());
+        $sender->expects(self::atLeastOnce())->method('send')->willThrowException(new CurlException());
         self::getContainer()->set('hbpf.transport.curl_manager', $sender);
 
         $manager = self::getContainer()->get('hbpf.configurator.manager.topology');

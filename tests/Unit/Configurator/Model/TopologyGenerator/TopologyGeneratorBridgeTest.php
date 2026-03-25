@@ -185,7 +185,7 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
         $managerLocator->method('getDm')->willReturn($documentManager);
 
         $sdkRepository = self::createPartialMock(SdkRepository::class, ['findByHost']);
-        $sdkRepository->method('findByHost')->willReturn([]);
+        $sdkRepository->method('findByHost')->willReturn((new Sdk())->setName('sdk')->setHeaders([]));
 
         $dm = self::createPartialMock(DocumentManager::class, ['getRepository']);
         $dm->method('getRepository')->willReturnCallback(

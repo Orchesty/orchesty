@@ -45,3 +45,11 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
         tags:
             - { name: console.command }
+
+    hbpf.command.sdk_migrate:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\MigrateSdkCommand
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpp.service.locator'
+        tags:
+            - { name: console.command }
