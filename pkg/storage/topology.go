@@ -16,4 +16,5 @@ type Topology struct {
 type Application struct {
 	Key  string `bson:"key"`
 	Host string `bson:"host"`
+	Sdk  string `bson:"sdk"`
 }
