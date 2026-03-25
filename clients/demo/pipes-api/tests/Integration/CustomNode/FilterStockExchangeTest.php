@@ -30,7 +30,7 @@ final class FilterStockExchangeTest extends KernelTestCaseAbstract
         self::assertSame('{"foo":"bar"}', $dto->getData());
 
         $this->getFunctionMock('Demo\CustomNode', 'mt_rand')
-            ->expects(self::any())
+            ->expects(self::atLeastOnce())
             ->willReturn(5);
 
         $dto = $customNode->processAction((new ProcessDto())->setData('{}'));

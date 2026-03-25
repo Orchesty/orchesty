@@ -17,7 +17,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 final class HttpStatusApplication extends BasicApplicationAbstract
 {
 
-    public const string NAME = 'http-status-php';
+    public const string NAME = 'http-status';
 
     /**
      * @return string
@@ -32,7 +32,7 @@ final class HttpStatusApplication extends BasicApplicationAbstract
      */
     public function getPublicName(): string
     {
-        return 'HTTP Status (PHP)';
+        return 'HTTP Status';
     }
 
     /**
