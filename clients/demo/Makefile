@@ -75,32 +75,32 @@ init-more: init
 			-H "Accept: application/json" \
 			-d "{\"email\":\"$(shell grep ORCHESTY_USER .env | cut -d= -f2)\",\"password\":\"$(shell grep ORCHESTY_PASSWORD .env | cut -d= -f2)\"}" \
 			| grep -o "\"token\":\"[^\"]*\"" | sed "s/\"token\":\"//;s/\"//") && \
-		curl -s -X POST "http://localhost/api/applications/http-status-node-js?sdk=node-sdk" \
+		curl -s -X POST "http://localhost/api/applications/http-status?sdk=node-sdk" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
 			-d "{}" > /dev/null && \
-		curl -s -X PUT "http://localhost/api/applications/http-status-node-js?sdk=node-sdk" \
+		curl -s -X PUT "http://localhost/api/applications/http-status?sdk=node-sdk" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
-			-d "{\"limiter_form\":{\"useLimit\":true,\"value\":\"300\",\"time\":\"60\"}}" > /dev/null && \
-		curl -s -X PUT "http://localhost/api/applications/http-status-node-js/changeState?sdk=node-sdk" \
+			-d "{\"limiter_form\":{\"useLimit\":true,\"value\":\"200\",\"time\":\"60\"}}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/applications/http-status/changeState?sdk=node-sdk" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
 			-d "{\"enabled\":true}" > /dev/null && \
-		printf "\033[32mApplication http-status-node-js was successfully installed.\033[0m\n"'
+		printf "\033[32mApplication http-status (node-sdk) was successfully installed.\033[0m\n"'
 	$(DCB) sh -c '\
 		TOKEN=$$(curl -s -X POST http://localhost/api/user/login \
 			-H "Content-Type: application/json" \
 			-H "Accept: application/json" \
 			-d "{\"email\":\"$(shell grep ORCHESTY_USER .env | cut -d= -f2)\",\"password\":\"$(shell grep ORCHESTY_PASSWORD .env | cut -d= -f2)\"}" \
 			| grep -o "\"token\":\"[^\"]*\"" | sed "s/\"token\":\"//;s/\"//") && \
-		curl -s -X POST "http://localhost/api/applications/http-status-php?sdk=php-sdk" \
+		curl -s -X POST "http://localhost/api/applications/http-status?sdk=php-sdk" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
 			-d "{}" > /dev/null && \
-		curl -s -X PUT "http://localhost/api/applications/http-status-php?sdk=php-sdk" \
+		curl -s -X PUT "http://localhost/api/applications/http-status?sdk=php-sdk" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
-			-d "{\"limiter_form\":{\"useLimit\":true,\"value\":\"300\",\"time\":\"60\"}}" > /dev/null && \
-		curl -s -X PUT "http://localhost/api/applications/http-status-php/changeState?sdk=php-sdk" \
+			-d "{\"limiter_form\":{\"useLimit\":true,\"value\":\"100\",\"time\":\"60\"}}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/applications/http-status/changeState?sdk=php-sdk" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
 			-d "{\"enabled\":true}" > /dev/null && \
-		printf "\033[32mApplication http-status-php was successfully installed.\033[0m\n"'
+		printf "\033[32mApplication http-status (php-sdk) was successfully installed.\033[0m\n"'
 
 mongo-import:
 	$(DC) cp AuditEntity.json mongo:/tmp
