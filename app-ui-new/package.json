@@ -36,6 +36,7 @@
     "vue3-apexcharts": "^1.11.1"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.2.2",
     "@tsconfig/node24": "^24.0.4",
     "@types/jsdom": "^27.0.0",
