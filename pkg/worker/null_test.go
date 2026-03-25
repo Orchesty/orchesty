@@ -78,6 +78,10 @@ func (n nullNode) Application() string {
 	return ""
 }
 
+func (n nullNode) Sdk() string {
+	return ""
+}
+
 func (n nullNode) NodeName() string {
 	return "node"
 }
