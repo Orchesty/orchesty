@@ -137,11 +137,11 @@ final class AuthorizationHandler
         $key      = $jwePayload[self::SUB];
         $user     = $jwePayload[self::EU_SUB];
         $settings = $jwePayload[self::SETTINGS] ?? [];
+        $sdk      = $this->locator->getSdkNameByInstalledApplication($key);
 
         try {
-            $this->appInstallRepository->findUserApp($key, $user);
+            $this->appInstallRepository->findUserApp($key, $user, $sdk);
         } catch (Exception) {
-            $sdk = $this->locator->getSdkNameByInstalledApplication($key);
             $this->locator->installApp($key, $user, $sdk);
             $pin = hash('sha256', sprintf('%s-%s-%s', time(), $key, $user));
 
@@ -154,7 +154,7 @@ final class AuthorizationHandler
             $resp = $this->locator->updateApp($key, $user, $sdk, [self::AUTHORIZATION_FORM => $formSettings]);
 
             try {
-                $app = $this->appInstallRepository->findUserApp($key, $user);
+                $app = $this->appInstallRepository->findUserApp($key, $user, $sdk);
                 $app->setEnabled(TRUE);
                 $app->setNonEncryptedSettings([self::PIN => $pin, self::EU_ALIAS => $jwePayload[self::EU_ALIAS]]);
                 $this->dm->flush();
