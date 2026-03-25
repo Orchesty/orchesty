@@ -31,7 +31,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const { getNodeName, getTopologyName, getApplicationName } = useTopologyNodeMappings()
+const { getNodeName, getTopologyName, getApplicationNameByNodeId } = useTopologyNodeMappings()
 const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 const limiterData = ref<LimiterData | null>(null)
@@ -357,7 +357,7 @@ const getChartOptions = () => {
         @sort="handleSort"
       >
         <template #cell-application="{ row }">
-          <span class="font-medium text-gray-900 dark:text-white">{{ row.applicationId && row.applicationId !== '-' ? getApplicationName(row.applicationId) : '-' }}</span>
+          <span class="font-medium text-gray-900 dark:text-white">{{ row.nodeId && row.applicationId !== '-' ? getApplicationNameByNodeId(row.nodeId) : '-' }}</span>
         </template>
         <template #cell-connector="{ row }">
           <span class="text-gray-900 dark:text-white">{{ getNodeName(row.nodeId) }}</span>

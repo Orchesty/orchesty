@@ -72,7 +72,7 @@ export const topologyEditorService = {
 
     const unique = new Map<string, ActionOption>()
     for (const action of actions) {
-      const key = `${action.name}::${action.type}`
+      const key = `${action.worker}::${action.name}::${action.type}`
       if (!unique.has(key)) {
         unique.set(key, action)
       }

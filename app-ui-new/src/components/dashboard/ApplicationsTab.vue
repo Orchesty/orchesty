@@ -31,7 +31,7 @@ const emit = defineEmits<{
   openConnectorDetail: [connector: Connector]
 }>()
 
-const { ensureLoaded, getNodeName, getApplicationName } = useTopologyNodeMappings()
+const { ensureLoaded, getNodeName, getApplicationNameByNodeId } = useTopologyNodeMappings()
 const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 const loading = ref(true)
@@ -69,9 +69,8 @@ const loadData = async () => {
     const namedSeries = data.series.map(s => {
       const originalNodeId = s.name
       const connectorName = getNodeName(s.name)
-      const appId = data.nodeAppMap.get(s.name) || ''
-      if (appId && !connectorAppName[connectorName]) {
-        connectorAppName[connectorName] = getApplicationName(appId)
+      if (originalNodeId && !connectorAppName[connectorName]) {
+        connectorAppName[connectorName] = getApplicationNameByNodeId(originalNodeId)
       }
       const appName = connectorAppName[connectorName] || 'Unknown'
       const normalize = (str: string) => str.toLowerCase().replace(/-/g, ' ')
