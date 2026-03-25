@@ -36,7 +36,7 @@ export default class FlexiBeeFirmaKodFindIdConnector extends AConnector {
         const applicationInstall = await this
             .getDbClient()
             .getApplicationRepository()
-            .findByNameAndUser(WFLOW_NAME, dto.getUser() as string);
+            .findByNameAndUser(WFLOW_NAME, dto.getUser() as string, [dto.getSdk() ?? '']);
         const companyId = applicationInstall?.getSettings()?.[FLEXI_BEE_FORM]?.[typeId] as string | undefined;
 
         if (!companyId) {

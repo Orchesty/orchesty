@@ -1,8 +1,9 @@
 import { container } from '@orchesty/nodejs-sdk';
+import { SDK } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import TopologyTester from '@orchesty/nodejs-sdk/dist/test/Testers/TopologyTester';
 import path from 'path';
-import { DEFAULT_USER } from '../../../test/DataProvider';
+import { DEFAULT_SDK, DEFAULT_USER } from '../../../test/DataProvider';
 import { prepare } from '../../../test/TestAbstract';
 
 let tester: TopologyTester;
@@ -33,6 +34,7 @@ describe('Tests for FlexiBeeToWflowRegisters topology', () => {
             TOPOLOGY_PATH,
             new ProcessDto()
                 .setUser(DEFAULT_USER)
+                .addHeader(SDK, DEFAULT_SDK)
                 .setJsonData({}),
             undefined,
             'cron',

@@ -1,6 +1,7 @@
 {
   "headers": {
     "user": "TestUser",
+    "sdk": "TestSdk",
     "documentId": "test-document",
     "customCompanyId": "demo",
     "firmaKod": "AAAA"

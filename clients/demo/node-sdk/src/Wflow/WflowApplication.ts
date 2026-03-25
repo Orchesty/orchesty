@@ -2,7 +2,7 @@ import FlexiBeeGetCompaniesConnector, { IOutput as IFlexiBeeGetCompaniesConnecto
 import { FLEXI_BEE_APPLICATION as FLEXI_BEE_NAME } from '@orchesty/connector-flexi-bee/dist/FexiBeeApplication';
 import WflowGetDocumentTypesConnector, { IOutput as IWflowGetDocumentTypesConnectorOutput } from '@orchesty/connector-wflow/dist/Connector/WflowGetDocumentTypesConnector';
 import WflowGetOrganizationsConnector from '@orchesty/connector-wflow/dist/Connector/WflowGetOrganizationsConnector';
-import WflowApplicationBase, { NAME as WFLOW_NAME, WebhookType } from '@orchesty/connector-wflow/dist/WflowApplication';
+import WflowApplicationBase, { NAME as WFLOW_NAME, ORGANIZATION, ORGANIZATION_FORM, WebhookType } from '@orchesty/connector-wflow/dist/WflowApplication';
 import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
 import Field from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Field';
 import FieldType from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FieldType';
@@ -20,12 +20,12 @@ export default class WflowApplication extends WflowApplicationBase {
 
     public constructor(
         provider: OAuth2Provider,
-        wflowGetOrganizationsConnector: WflowGetOrganizationsConnector,
+        private readonly customWflowGetOrganizationsConnector: WflowGetOrganizationsConnector,
         private readonly wflowGetDocumentTypesConnector: WflowGetDocumentTypesConnector,
         private readonly flexiBeeGetCompaniesConnector: FlexiBeeGetCompaniesConnector,
         private readonly runner: TopologyRunner,
     ) {
-        super(provider, wflowGetOrganizationsConnector);
+        super(provider, customWflowGetOrganizationsConnector);
     }
 
     public getFormStack(): FormStack {
@@ -41,26 +41,26 @@ export default class WflowApplication extends WflowApplicationBase {
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/strict-void-return
     public async syncAfterEnableCallback(req: Request): Promise<void> {
-        const { user } = JSON.parse(String(req.body));
+        const { user, sdk } = JSON.parse(String(req.body));
 
         await this.runner.runByName(
             {},
             Topology.WFLOW_TO_FLEXIBEE_WEBHOOKS,
             'subscribe',
-            ProcessDto.createForFormRequest(this.getName(), user, crypto.randomUUID()),
+            ProcessDto.createForFormRequest(this.getName(), user, sdk, crypto.randomUUID()),
             user,
         );
     }
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/strict-void-return
     public async syncAfterDisableCallback(req: Request): Promise<void> {
-        const { user } = JSON.parse(String(req.body));
+        const { user, sdk } = JSON.parse(String(req.body));
 
         await this.runner.runByName(
             {},
             Topology.WFLOW_TO_FLEXIBEE_WEBHOOKS,
             'unsubscribe',
-            ProcessDto.createForFormRequest(this.getName(), user, crypto.randomUUID()),
+            ProcessDto.createForFormRequest(this.getName(), user, sdk, crypto.randomUUID()),
             user,
         );
     }
@@ -72,17 +72,46 @@ export default class WflowApplication extends WflowApplicationBase {
     }
 
     protected async customFormReplace(formStack: FormStack, applicationInstall: ApplicationInstall): Promise<void> {
-        await super.customFormReplace(formStack, applicationInstall);
+        const sdk = applicationInstall.getSdk();
+        const organizations = (await this.customWflowGetOrganizationsConnector.processAction(
+            ProcessDto.createForFormRequest(
+                WFLOW_NAME,
+                applicationInstall.getUser(),
+                sdk,
+                crypto.randomUUID(),
+                'form',
+            ),
+        )).getJsonData();
+
+        const form = formStack.getForms().find((item) => item.getKey() === ORGANIZATION_FORM);
+        const settings = applicationInstall.getSettings()[ORGANIZATION_FORM];
+
+        if (!form) {
+            return;
+        }
+
+        const choices: Record<string, string>[]
+            = organizations.map((organization) => ({ [organization.subdomain]: organization.name }));
+
+        form.addField(
+            new Field(
+                FieldType.SELECT_BOX,
+                ORGANIZATION,
+                'Organization name',
+                settings?.[ORGANIZATION],
+                true,
+            ).setChoices(choices),
+        );
 
         const [
             wflowGetDocumentTypesConnectorProcessDto,
             flexiBeeGetCompaniesConnectorProcessDto,
         ] = await Promise.all([
             this.wflowGetDocumentTypesConnector.processAction(
-                this.createProcessDtoForFormRequest(WFLOW_NAME, applicationInstall.getUser()),
+                this.createProcessDtoForFormRequest(WFLOW_NAME, applicationInstall.getUser(), sdk),
             ),
             this.flexiBeeGetCompaniesConnector.processAction(
-                this.createProcessDtoForFormRequest(FLEXI_BEE_NAME, applicationInstall.getUser()),
+                this.createProcessDtoForFormRequest(FLEXI_BEE_NAME, applicationInstall.getUser(), sdk),
             ),
         ]);
 
@@ -126,8 +155,8 @@ export default class WflowApplication extends WflowApplicationBase {
         }
     }
 
-    private createProcessDtoForFormRequest(applicationName: string, user: string): ProcessDto {
-        return ProcessDto.createForFormRequest(applicationName, user, crypto.randomUUID(), 'form');
+    private createProcessDtoForFormRequest(applicationName: string, user: string, sdk: string): ProcessDto {
+        return ProcessDto.createForFormRequest(applicationName, user, sdk, crypto.randomUUID(), 'form');
     }
 
 }

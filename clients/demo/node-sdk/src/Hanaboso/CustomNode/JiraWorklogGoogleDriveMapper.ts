@@ -41,7 +41,7 @@ export default class JiraWorklogGoogleDriveMapper extends AJiraWorklogGoogleDriv
             ]);
         });
 
-        return dto.setNewJsonData<IOutput>({
+        return dto.setNewJsonData({
             name,
             data: result,
         });

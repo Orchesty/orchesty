@@ -57,7 +57,7 @@ import Magento2Application from '@orchesty/connector-magento2/dist/Magento2Appli
 import MailchimpApplication from '@orchesty/connector-mailchimp/dist/MailchimpApplication';
 import MoneyS5Application from '@orchesty/connector-moneys4-5/dist/MoneyS5Application';
 import NutshellApplication from '@orchesty/connector-nutshell/dist/NutshellApplication';
-//import PipedriveApplication from '@orchesty/connector-pipedrive/dist/PipedriveApplication';
+// import PipedriveApplication from '@orchesty/connector-pipedrive/dist/PipedriveApplication';
 import QuickBooksApplication from '@orchesty/connector-quick-books/dist/QuickBooksApplication';
 import SalesForceApplication from '@orchesty/connector-sales-force/dist/SalesForceApplication';
 import SendGridApplication from '@orchesty/connector-send-grid/dist/SendGridApplication';
@@ -356,8 +356,8 @@ export async function start(): Promise<void> {
     const nutshellApp = new NutshellApplication();
     container.setApplication(nutshellApp);
 
-    //const pipedriveApp = new PipedriveApplication();
-    //container.setApplication(pipedriveApp);
+    // const pipedriveApp = new PipedriveApplication();
+    // container.setApplication(pipedriveApp);
 
     const quickbooksApp = new QuickBooksApplication(provider, mongoDb, sender);
     container.setApplication(quickbooksApp);

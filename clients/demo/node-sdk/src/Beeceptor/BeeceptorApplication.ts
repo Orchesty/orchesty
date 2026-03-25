@@ -55,26 +55,26 @@ export default class BeeceptorApplication extends BeeceptorApplicationBase {
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/strict-void-return
     public async syncAfterEnableCallback(req: Request): Promise<void> {
-        const { user } = JSON.parse(String(req.body));
+        const { user, sdk } = JSON.parse(String(req.body));
 
         await this.runner.runByName(
             {},
             Topology.MYSQL_TO_BEECEPTOR_WEBHOOKS,
             'subscribe',
-            ProcessDto.createForFormRequest(this.getName(), user, crypto.randomUUID()),
+            ProcessDto.createForFormRequest(this.getName(), user, sdk, crypto.randomUUID()),
             user,
         );
     }
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/strict-void-return
     public async syncAfterDisableCallback(req: Request): Promise<void> {
-        const { user } = JSON.parse(String(req.body));
+        const { user, sdk } = JSON.parse(String(req.body));
 
         await this.runner.runByName(
             {},
             Topology.MYSQL_TO_BEECEPTOR_WEBHOOKS,
             'unsubscribe',
-            ProcessDto.createForFormRequest(this.getName(), user, crypto.randomUUID()),
+            ProcessDto.createForFormRequest(this.getName(), user, sdk, crypto.randomUUID()),
             user,
         );
     }

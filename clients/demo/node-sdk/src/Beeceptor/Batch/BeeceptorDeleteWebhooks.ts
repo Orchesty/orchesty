@@ -24,6 +24,7 @@ export default class BeeceptorDeleteWebhooks extends ABatchNode {
         const webhook = await repository.findOne({
             users: [appInstall.getUser()],
             apps: [appInstall.getName()],
+            sdks: [appInstall.getSdk()],
         });
 
         if (!webhook) {

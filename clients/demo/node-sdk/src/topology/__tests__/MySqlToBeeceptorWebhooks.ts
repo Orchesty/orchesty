@@ -1,11 +1,12 @@
 import { container } from '@orchesty/nodejs-sdk';
 import { orchestyOptions } from '@orchesty/nodejs-sdk/dist/lib/Config/Config';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
+import { SDK } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import { mockOnce } from '@orchesty/nodejs-sdk/dist/test/MockServer';
 import TopologyTester from '@orchesty/nodejs-sdk/dist/test/Testers/TopologyTester';
 import path from 'path';
-import { DEFAULT_USER } from '../../../test/DataProvider';
+import { DEFAULT_SDK, DEFAULT_USER } from '../../../test/DataProvider';
 import { prepare } from '../../../test/TestAbstract';
 import webhooks from '../../Beeceptor/Batch/__tests__/Data/webhook.json';
 
@@ -61,6 +62,7 @@ describe('Tests for MySqlToBeeceptorWebhooks topology', () => {
             TOPOLOGY_PATH,
             new ProcessDto()
                 .setUser(DEFAULT_USER)
+                .addHeader(SDK, DEFAULT_SDK)
                 .setJsonData({}),
             undefined,
             'subscribe',
@@ -70,6 +72,7 @@ describe('Tests for MySqlToBeeceptorWebhooks topology', () => {
             TOPOLOGY_PATH,
             new ProcessDto()
                 .setUser(DEFAULT_USER)
+                .addHeader(SDK, DEFAULT_SDK)
                 .setJsonData({}),
             undefined,
             'unsubscribe',
