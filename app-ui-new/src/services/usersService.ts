@@ -1,10 +1,21 @@
-import type { User, UserQueryParams, UserRole } from '@/types/users'
-import usersDataJson from '@/assets/mock-data/users-data.json'
+import type { User, InvitedUser, UserApiResponse, InvitedUserApiResponse, UserApiFilter, UserApiItem } from '@/types/users'
+import api from './api'
 
-// Simulated API delay
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+function mapApiItemToUser(item: UserApiItem): User {
+  return {
+    id: item.id,
+    email: item.email,
+    created: item.created,
+  }
+}
 
-export async function fetchUsers(params: UserQueryParams): Promise<{
+export async function fetchUsers(params: {
+  page?: number
+  limit?: number
+  sort?: string
+  order?: string
+  search?: string
+}): Promise<{
   data: User[]
   meta: {
     total: number
@@ -13,96 +24,106 @@ export async function fetchUsers(params: UserQueryParams): Promise<{
     perPage: number
   }
 }> {
-  await delay(300)
-
-  let filteredData = [...(usersDataJson.data as User[])]
-
-  // Filter by status
-  if (params.status) {
-    filteredData = filteredData.filter((user) => user.status === params.status)
+  const filterObj: UserApiFilter = {
+    search: params.search || null,
+    filter: [],
+    sorter: params.sort
+      ? [{ column: params.sort, direction: (params.order || 'asc').toUpperCase() }]
+      : [],
+    paging: {
+      itemsPerPage: params.limit || 10,
+      page: params.page || 1,
+    },
   }
 
-  // Filter by search (name or email)
-  if (params.search) {
-    const searchLower = params.search.toLowerCase()
-    filteredData = filteredData.filter(
-      (user) =>
-        user.name.toLowerCase().includes(searchLower) ||
-        user.email.toLowerCase().includes(searchLower)
-    )
-  }
-
-  // Sort
-  if (params.sortBy) {
-    filteredData.sort((a, b) => {
-      const aValue = a[params.sortBy as keyof User]
-      const bValue = b[params.sortBy as keyof User]
-      
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        return params.sortOrder === 'asc'
-          ? aValue.localeCompare(bValue)
-          : bValue.localeCompare(aValue)
-      }
-      return 0
-    })
-  }
-
-  // Pagination
-  const page = params.page || 1
-  const perPage = params.perPage || 10
-  const startIndex = (page - 1) * perPage
-  const endIndex = startIndex + perPage
-  const paginatedData = filteredData.slice(startIndex, endIndex)
+  const response = await api.post<UserApiResponse>(
+    `/api/user/list?filter=${encodeURIComponent(JSON.stringify(filterObj))}`,
+  )
 
   return {
-    data: paginatedData,
+    data: response.data.items.map(mapApiItemToUser),
     meta: {
-      total: filteredData.length,
-      totalPages: Math.ceil(filteredData.length / perPage),
-      currentPage: page,
-      perPage
+      total: response.data.paging.total,
+      totalPages: response.data.paging.lastPage,
+      currentPage: response.data.paging.page,
+      perPage: response.data.paging.itemsPerPage,
+    },
+  }
+}
+
+export interface InviteResult {
+  email: string
+  hash?: string
+  error?: string
+}
+
+export async function inviteUsers(emails: string[]): Promise<InviteResult[]> {
+  const results: InviteResult[] = []
+
+  for (const email of emails) {
+    try {
+      const response = await api.post<{ hash: string; email: string }>('/api/user/invite', { email })
+      results.push({ email: response.data.email, hash: response.data.hash })
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to invite user'
+      results.push({ email, error: message })
     }
   }
+
+  return results
 }
 
-export async function fetchUserDetail(id: string): Promise<User | null> {
-  await delay(200)
-
-  const user = (usersDataJson.data as User[]).find((u) => u.id === id)
-  return user || null
+export async function removeUser(id: string): Promise<void> {
+  await api.delete(`/api/user/${id}/delete`)
 }
 
-export async function inviteUsers(emails: string[]): Promise<{ success: boolean; message: string }> {
-  await delay(500)
+export async function fetchInvitedUsers(params: {
+  page?: number
+  limit?: number
+  sort?: string
+  order?: string
+  search?: string
+}): Promise<{
+  data: InvitedUser[]
+  meta: {
+    total: number
+    totalPages: number
+    currentPage: number
+    perPage: number
+  }
+}> {
+  const filterObj: UserApiFilter = {
+    search: params.search || null,
+    filter: [],
+    sorter: params.sort
+      ? [{ column: params.sort, direction: (params.order || 'asc').toUpperCase() }]
+      : [],
+    paging: {
+      itemsPerPage: params.limit || 10,
+      page: params.page || 1,
+    },
+  }
 
-  console.log('Inviting users:', emails)
+  const response = await api.post<InvitedUserApiResponse>(
+    `/api/user/invited/list?filter=${encodeURIComponent(JSON.stringify(filterObj))}`,
+  )
+
   return {
-    success: true,
-    message: `Successfully sent invitations to ${emails.length} user(s)`
+    data: response.data.items.map(mapApiItemToUser),
+    meta: {
+      total: response.data.paging.total,
+      totalPages: response.data.paging.lastPage,
+      currentPage: response.data.paging.page,
+      perPage: response.data.paging.itemsPerPage,
+    },
   }
 }
 
-export async function updateUserRole(
-  id: string,
-  role: UserRole,
-  groups: string[]
-): Promise<{ success: boolean; message: string }> {
-  await delay(400)
-
-  console.log(`Updating user ${id}:`, { role, groups })
-  return {
-    success: true,
-    message: 'User updated successfully'
-  }
+export async function regenerateInvite(id: string): Promise<{ hash: string; email: string }> {
+  const response = await api.post<{ hash: string; email: string }>(`/api/user/invited/${id}/regenerate`)
+  return response.data
 }
 
-export async function removeUser(id: string): Promise<{ success: boolean; message: string }> {
-  await delay(400)
-
-  console.log('Removing user:', id)
-  return {
-    success: true,
-    message: 'User removed successfully'
-  }
+export async function deleteInvitedUser(id: string): Promise<void> {
+  await api.delete(`/api/user/invited/${id}/delete`)
 }
-

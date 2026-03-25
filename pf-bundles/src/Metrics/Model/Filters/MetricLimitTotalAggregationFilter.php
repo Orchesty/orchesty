@@ -98,12 +98,24 @@ final class MetricLimitTotalAggregationFilter extends GridAggregationFilterAbstr
         }
 
         $builder
+            ->addFields()
+            ->field('currentCountAtMinute')
+            ->expression(
+                $builder->expr()->cond(
+                    $builder->expr()->gt(
+                        $builder->expr()->subtract('$$NOW', '$created'),
+                        90_000,
+                    ),
+                    0,
+                    '$countAtMinute',
+                ),
+            )
             ->sort(['created' => 'asc'])
             ->group()
             ->field('_id')
             ->expression(NULL)
             ->field('count')
-            ->last('$countAtMinute')
+            ->last('$currentCountAtMinute')
             ->field('maximumCount')
             ->max('$countAtMinute');
 

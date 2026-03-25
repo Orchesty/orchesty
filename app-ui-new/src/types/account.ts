@@ -12,6 +12,5 @@ export interface ProfileUpdateData {
 export interface PasswordUpdateData {
   currentPassword: string
   newPassword: string
-  confirmPassword: string
 }
 

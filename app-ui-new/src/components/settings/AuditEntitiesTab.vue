@@ -169,7 +169,7 @@ onMounted(() => {
       <div
         v-for="entity in entities"
         :key="entity.id"
-        class="rounded-lg bg-white p-6 shadow dark:bg-gray-800"
+        class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800"
       >
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div class="flex-1">
@@ -200,7 +200,7 @@ onMounted(() => {
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400">
                   Code snippet
                 </label>
-                <div class="inline-flex rounded-md shadow-sm" role="group">
+                <div class="inline-flex rounded-md shadow-xs" role="group">
                   <button
                     type="button"
                     :class="[
@@ -246,7 +246,7 @@ onMounted(() => {
             <button
               type="button"
               @click="handleEditEntity(entity)"
-              class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-primary-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-primary-900"
+              class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-hidden focus:ring-4 focus:ring-primary-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-primary-900"
             >
               <svg
                 class="h-4 w-4"
@@ -268,7 +268,7 @@ onMounted(() => {
             <button
               type="button"
               @click="handleDeleteEntity(entity)"
-              class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-primary-900"
+              class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-hidden focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-primary-900"
             >
               <svg
                 class="h-4 w-4"
@@ -292,7 +292,7 @@ onMounted(() => {
     </div>
 
     <!-- Empty State -->
-    <div v-else class="rounded-lg bg-white p-12 text-center shadow dark:bg-gray-800">
+    <div v-else class="rounded-lg bg-white p-12 text-center shadow-sm dark:bg-gray-800">
       <p class="text-gray-500 dark:text-gray-400">No entities found. Create your first entity to get started.</p>
     </div>
 

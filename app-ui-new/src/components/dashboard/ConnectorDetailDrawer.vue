@@ -11,11 +11,14 @@ import type { ActionConfig } from '@/types/datagrid'
 import { fetchConnectorDetail, fetchConnectorErrorRecords, fetchConnectorChartData } from '@/services/connectorsService'
 import { useApexChart } from '@/composables/useApexChart'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { useDateFormat } from '@/composables/useDateFormat'
+import GridLink from '@/components/ui/datagrid/GridLink.vue'
+import StatusBadge from '@/components/ui/StatusBadge.vue'
 
 interface Props {
   modelValue: boolean
   connector: Connector | null
-  globalTimeFilter: TimeFilterType
+  timeFilter: TimeFilterType
 }
 
 const props = defineProps<Props>()
@@ -26,9 +29,10 @@ const emit = defineEmits<{
 
 // Use topology/node mappings composable
 const { getTopologyName, getApplicationNameByNodeId, getNodeName, getNodeIdsByName } = useTopologyNodeMappings()
+const { formatDurationMs } = useDateFormat()
 
 // Local time filter (independent from global)
-const localTimeFilter = ref<TimeFilterType>(props.globalTimeFilter)
+const localTimeFilter = ref<TimeFilterType>(props.timeFilter)
 
 // Data state
 const connectorDetail = ref<ConnectorDetail | null>(null)
@@ -144,18 +148,6 @@ const lastRequestStatusColor = computed(() => {
   return 'red'
 })
 
-const formatDuration = (ms: number): string => {
-  if (ms < 1000) return `${Math.round(ms)} ms`
-  const totalSeconds = ms / 1000
-  if (totalSeconds < 60) return `${totalSeconds.toFixed(1)} s`
-  const minutes = Math.floor(totalSeconds / 60)
-  const secs = Math.round(totalSeconds % 60)
-  if (minutes < 60) return `${minutes}m ${secs}s`
-  const hours = Math.floor(minutes / 60)
-  const mins = minutes % 60
-  return `${hours}h ${mins}m ${secs}s`
-}
-
 // Load data
 const loadData = async () => {
   if (!props.connector) return
@@ -197,7 +189,7 @@ watch(
   (newValue) => {
     if (newValue && props.connector) {
       // Reset to global time filter when opening
-      localTimeFilter.value = props.globalTimeFilter
+      localTimeFilter.value = props.timeFilter
       currentPage.value = 1
       loadData()
     }
@@ -297,13 +289,13 @@ const errorRecordActions: ActionConfig[] = [
         </div>
         <div class="rounded-lg bg-gray-50 p-3 text-center dark:bg-gray-700">
           <div class="text-2xl font-bold text-gray-900 dark:text-white">
-            {{ formatDuration(connectorDetail.avgRequestTime) }}
+            {{ formatDurationMs(connectorDetail.avgRequestTime) }}
           </div>
           <div class="mt-1 text-sm font-medium text-gray-700 dark:text-gray-300">Avg request time</div>
         </div>
         <div class="rounded-lg bg-gray-50 p-3 text-center dark:bg-gray-700">
           <div class="text-2xl font-bold text-gray-900 dark:text-white">
-            {{ formatDuration(connectorDetail.lastRequestTime) }}
+            {{ formatDurationMs(connectorDetail.lastRequestTime) }}
           </div>
           <div class="mt-1 text-sm font-medium text-gray-700 dark:text-gray-300">Last request time</div>
         </div>
@@ -389,23 +381,16 @@ const errorRecordActions: ActionConfig[] = [
 
           <!-- Custom cell for topology -->
           <template #cell-topology="{ row }">
-            <span class="max-w-xs truncate whitespace-nowrap" :title="getTopologyName(row.topologyId)">
+            <GridLink :to="{ name: 'topology-detail', params: { id: row.topologyId } }">
               {{ getTopologyName(row.topologyId) }}
-            </span>
+            </GridLink>
           </template>
 
           <!-- Custom cell for code -->
           <template #cell-code="{ value }">
-            <span
-              :class="[
-                'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
-                value >= 400 && value < 500
-                  ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-800 dark:text-yellow-300'
-                  : 'bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-300',
-              ]"
-            >
+            <StatusBadge :variant="value >= 400 && value < 500 ? 'yellow' : 'red'">
               {{ value }}
-            </span>
+            </StatusBadge>
           </template>
 
           <!-- Custom cell for message -->

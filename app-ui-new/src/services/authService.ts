@@ -46,6 +46,17 @@ export async function verifyResetToken(token: string): Promise<{ email: string }
 }
 
 /**
+ * Activate a user account using an invite token
+ * Converts TmpUser to a full User
+ * @param token - The invite token hash
+ * @returns Object with the user's email
+ */
+export async function activateUser(token: string): Promise<{ email: string }> {
+  const response = await api.post<{ email: string }>(`/api/user/${token}/activate`)
+  return response.data
+}
+
+/**
  * Set a new password using a reset token
  * @param token - The reset token from the URL
  * @param password - The new password

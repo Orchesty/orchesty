@@ -1,21 +1,22 @@
 <script setup lang="ts">
-import { ref, computed, watch, onActivated, onDeactivated } from 'vue'
+import { ref, computed, watch } from 'vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
 import SearchableDropdownFilter from '@/components/ui/datagrid/SearchableDropdownFilter.vue'
 import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
+import StatusBadge from '@/components/ui/StatusBadge.vue'
 import type { Connector, ConnectorStatus } from '@/types/connectors'
 import type { TableColumn, TimeFilter } from '@/types/dashboard'
 import type { ActionConfig, QuickFilterOption } from '@/types/datagrid'
 import { fetchConnectors } from '@/services/connectorsService'
-import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
+import { formatDateTimeForApi } from '@/utils/timeRangeConverter'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
-import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
+import { useDashboardTimeSync } from '@/composables/useDashboardTimeSync'
 
 interface Props {
-  globalTimeFilter: TimeFilter
+  timeFilter: TimeFilter
   refreshKey?: number
 }
 
@@ -34,18 +35,15 @@ const {
   deduplicatedNodeOptions: deduplicatedNodeOptionsFromMappings,
   mappings,
 } = useTopologyNodeMappings()
-const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
+const { dateTimeRange, markFresh, connectLoadData } = useDashboardTimeSync({
+  timeFilter: () => props.timeFilter,
+  refreshKey: () => props.refreshKey,
+})
 
 const connectors = ref<Connector[]>([])
 const quickFilter = ref<ConnectorStatus>('all')
 const nodeFilter = ref<string | null>(null)
 const selectedApp = ref<string | null>(null)
-
-// Local datetime range filters
-const dateTimeRange = ref<{ from: string | null; to: string | null }>({
-  from: null,
-  to: null,
-})
 
 // Table columns (actions column added automatically by DataGrid)
 const columns: TableColumn[] = [
@@ -184,33 +182,7 @@ const {
   filters: [quickFilter, nodeFilter, selectedApp, dateTimeRange],
 })
 
-watch(() => props.refreshKey, () => {
-  invalidate()
-  loadData()
-})
-
-watch(
-  () => props.globalTimeFilter,
-  (newFilter) => {
-    const range = convertTimeFilterToDateTimeRange(newFilter)
-    dateTimeRange.value = {
-      from: range.from,
-      to: null,
-    }
-    invalidate()
-    if (isActive.value) loadData()
-  },
-  { immediate: true }
-)
-
-onActivated(() => {
-  isActive.value = true
-  if (isStale()) loadData()
-})
-
-onDeactivated(() => {
-  isActive.value = false
-})
+connectLoadData(loadData)
 
 </script>
 
@@ -280,38 +252,23 @@ onDeactivated(() => {
     </template>
 
     <template #cell-errors400="{ value }">
-      <button
-        v-if="value > 0"
-        class="inline-flex cursor-pointer items-center rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-800 dark:text-yellow-300 dark:hover:bg-yellow-700"
-      >
+      <StatusBadge v-if="value > 0" variant="yellow" class="cursor-pointer hover:bg-yellow-200 dark:hover:bg-yellow-700">
         {{ value }}
-      </button>
+      </StatusBadge>
       <span v-else class="text-gray-400">-</span>
     </template>
 
     <template #cell-errors500="{ value }">
-      <button
-        v-if="value > 0"
-        class="inline-flex cursor-pointer items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-200 dark:bg-red-800 dark:text-red-300 dark:hover:bg-red-700"
-      >
+      <StatusBadge v-if="value > 0" variant="red" class="cursor-pointer hover:bg-red-200 dark:hover:bg-red-700">
         {{ value }}
-      </button>
+      </StatusBadge>
       <span v-else class="text-gray-400">-</span>
     </template>
 
     <template #cell-lastRequestStatus="{ value }">
-      <span
-        :class="[
-          'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
-          value >= 200 && value < 300
-            ? 'bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-300'
-            : value >= 400 && value < 500
-            ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-800 dark:text-yellow-300'
-            : 'bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-300',
-        ]"
-      >
+      <StatusBadge :variant="value >= 200 && value < 300 ? 'green' : value >= 400 && value < 500 ? 'yellow' : 'red'">
         {{ value }}
-      </span>
+      </StatusBadge>
       </template>
     </DataGrid>
     </div>

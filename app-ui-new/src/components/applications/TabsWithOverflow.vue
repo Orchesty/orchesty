@@ -5,6 +5,7 @@ import DropdownMenu from '@/components/ui/DropdownMenu.vue';
 export interface TabDefinition {
   id: string;
   label: string;
+  disabled?: boolean;
 }
 
 interface Props {
@@ -34,11 +35,13 @@ let resizeObserver: ResizeObserver | null = null;
 const currentActiveTab = ref(props.activeTab || (props.tabs.length > 0 ? props.tabs[0].id : ''));
 
 const moreDropdownItems = computed(() => {
-  return hiddenTabs.value.map(tab => ({
-    type: 'button' as const,
-    label: tab.label,
-    onClick: () => handleTabClick(tab.id),
-  }));
+  return hiddenTabs.value
+    .filter(tab => !tab.disabled)
+    .map(tab => ({
+      type: 'button' as const,
+      label: tab.label,
+      onClick: () => handleTabClick(tab.id),
+    }));
 });
 
 const calculateTabsLayout = () => {
@@ -78,7 +81,12 @@ const calculateTabsLayout = () => {
   }
 };
 
+const isTabDisabled = (tabId: string): boolean => {
+  return props.tabs.find(t => t.id === tabId)?.disabled ?? false;
+};
+
 const handleTabClick = (tabId: string) => {
+  if (isTabDisabled(tabId)) return;
   currentActiveTab.value = tabId;
   emit('tab-change', tabId);
 };
@@ -87,7 +95,9 @@ const getTabButtonClasses = (tabId: string) => {
   const baseClasses = 'inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg whitespace-nowrap';
   const activeClasses = 'text-primary-600 border-primary-600 dark:text-primary-500 dark:border-primary-500';
   const inactiveClasses = 'text-gray-500 border-transparent hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300';
-  
+  const disabledClasses = 'text-gray-300 border-transparent cursor-not-allowed dark:text-gray-600';
+
+  if (isTabDisabled(tabId)) return `${baseClasses} ${disabledClasses}`;
   return `${baseClasses} ${currentActiveTab.value === tabId ? activeClasses : inactiveClasses}`;
 };
 
@@ -147,6 +157,8 @@ onUnmounted(() => {
           role="tab"
           :aria-controls="`${tab.id}-tab-content`"
           :aria-selected="currentActiveTab === tab.id"
+          :disabled="isTabDisabled(tab.id)"
+          :aria-disabled="isTabDisabled(tab.id)"
           @click="handleTabClick(tab.id)"
         >
           {{ tab.label }}

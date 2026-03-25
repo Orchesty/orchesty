@@ -117,7 +117,6 @@ export function useApexChart(options: UseApexChartOptions = {}) {
 
   // Handle rerender-charts event (like original Flowbite template)
   const handleRerenderCharts = () => {
-    console.log('📊 Received rerender-charts event')
     updateDarkMode()
   }
 

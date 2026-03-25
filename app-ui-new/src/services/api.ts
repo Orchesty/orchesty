@@ -30,7 +30,6 @@ const processQueue = (error: unknown, token: string | null = null) => {
 }
 
 const SKIP_REFRESH_URLS = ['/api/user/check_logged', '/api/user/login']
-const PROACTIVE_REFRESH_MS = 4 * 60_000
 
 function forceLogout() {
   localStorage.removeItem('auth_token')
@@ -75,27 +74,11 @@ async function doRefresh(): Promise<string> {
   }
 }
 
-// Request interceptor — proactive refresh + attach token
+// Request interceptor — attach token
 api.interceptors.request.use(
-  async (config) => {
-    const isAuthUrl = SKIP_REFRESH_URLS.some((url) => config.url?.includes(url))
-
-    if (!isAuthUrl) {
-      const lastRefresh = Number(localStorage.getItem('lastTokenRefreshTime') || '0')
-      const tokenAge = Date.now() - lastRefresh
-
-      if (tokenAge > PROACTIVE_REFRESH_MS && localStorage.getItem('auth_token')) {
-        try {
-          await doRefresh()
-        } catch {
-          // Will be handled by response interceptor if the actual request 401s
-        }
-      }
-    }
-
+  (config) => {
     const token = localStorage.getItem('auth_token')
     if (token) {
-      // Note: Backend expects token directly without "Bearer " prefix
       config.headers.Authorization = token
     }
     return config

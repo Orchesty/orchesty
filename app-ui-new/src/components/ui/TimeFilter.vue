@@ -22,7 +22,7 @@ const filters: { value: TimeFilter; label: string; title: string }[] = [
 const getTimeFilterClasses = (filter: TimeFilter) => {
   const isActive = props.modelValue === filter
   
-  const baseClasses = 'fc-button fc-button-primary px-3 py-2 text-sm font-medium focus:outline-none'
+  const baseClasses = 'fc-button fc-button-primary px-3 py-2 text-sm font-medium focus:outline-hidden'
   
   const activeClasses = isActive
     ? 'bg-primary-700 text-white border border-primary-700 hover:bg-primary-800 dark:bg-primary-600 dark:border-primary-600 dark:hover:bg-primary-700'

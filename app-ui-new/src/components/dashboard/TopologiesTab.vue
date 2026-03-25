@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onActivated, onDeactivated } from 'vue'
+import { ref } from 'vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
@@ -8,13 +8,15 @@ import type { Topology, TopologyStatus } from '@/types/topologies'
 import type { TableColumn, TimeFilter } from '@/types/dashboard'
 import type { QuickFilterOption } from '@/types/datagrid'
 import { fetchTopologies } from '@/services/topologiesService'
-import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
+import { formatDateTimeForApi } from '@/utils/timeRangeConverter'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
-import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
+import { useDashboardTimeSync } from '@/composables/useDashboardTimeSync'
+import GridLink from '@/components/ui/datagrid/GridLink.vue'
+import StatusBadge from '@/components/ui/StatusBadge.vue'
 
 interface Props {
-  globalTimeFilter: TimeFilter
+  timeFilter: TimeFilter
   refreshKey?: number
 }
 
@@ -26,16 +28,13 @@ const emit = defineEmits<{
 
 // Use topology/node mappings composable
 const { getTopologyNameWithVersion } = useTopologyNodeMappings()
-const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
+const { dateTimeRange, markFresh, connectLoadData } = useDashboardTimeSync({
+  timeFilter: () => props.timeFilter,
+  refreshKey: () => props.refreshKey,
+})
 
 const topologies = ref<Topology[]>([])
 const quickFilter = ref<TopologyStatus>('all')
-
-// Local datetime range filters
-const dateTimeRange = ref<{ from: string | null; to: string | null }>({
-  from: null,
-  to: null,
-})
 
 // Table columns
 const columns: TableColumn[] = [
@@ -100,37 +99,10 @@ const {
 })
 
 const handleViewProcesses = (topology: Topology) => {
-  console.log('View processes for topology:', topology.name, topology.id)
   emit('viewProcesses', topology.id)
 }
 
-watch(() => props.refreshKey, () => {
-  invalidate()
-  loadData()
-})
-
-watch(
-  () => props.globalTimeFilter,
-  (newFilter) => {
-    const range = convertTimeFilterToDateTimeRange(newFilter)
-    dateTimeRange.value = {
-      from: range.from,
-      to: null,
-    }
-    invalidate()
-    if (isActive.value) loadData()
-  },
-  { immediate: true }
-)
-
-onActivated(() => {
-  isActive.value = true
-  if (isStale()) loadData()
-})
-
-onDeactivated(() => {
-  isActive.value = false
-})
+connectLoadData(loadData)
 
 </script>
 
@@ -170,12 +142,9 @@ onDeactivated(() => {
 
         <!-- Custom Cells -->
         <template #cell-name="{ row }">
-          <RouterLink
-            :to="`/topologies/${(row as Topology).id}`"
-            class="whitespace-nowrap font-medium text-gray-900 hover:underline dark:text-white"
-          >
+          <GridLink :to="{ name: 'topology-detail', params: { id: (row as Topology).id } }">
             {{ getTopologyNameWithVersion((row as Topology).id) }}
-          </RouterLink>
+          </GridLink>
         </template>
 
         <template #cell-processesRun="{ value }">
@@ -183,12 +152,9 @@ onDeactivated(() => {
         </template>
 
         <template #cell-failedProcesses="{ value }">
-          <span
-            v-if="value > 0"
-            class="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700 dark:bg-red-800 dark:text-red-300"
-          >
+          <StatusBadge v-if="value > 0" variant="red">
             {{ value }}
-          </span>
+          </StatusBadge>
           <span v-else class="text-gray-400">-</span>
         </template>
 
@@ -197,18 +163,9 @@ onDeactivated(() => {
         </template>
 
         <template #cell-lastRunStatus="{ value }">
-          <span
-            :class="[
-              'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
-              value === 'success'
-                ? 'bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-300'
-                : value === 'running'
-                ? 'bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-300'
-                : 'bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-300',
-            ]"
-          >
+          <StatusBadge :variant="value === 'success' ? 'green' : value === 'running' ? 'blue' : 'red'">
             {{ value.charAt(0).toUpperCase() + value.slice(1) }}
-          </span>
+          </StatusBadge>
         </template>
 
         <template #cell-actions="{ row }">
@@ -216,7 +173,7 @@ onDeactivated(() => {
             <RouterLink
               :to="`/topologies/${(row as Topology).id}`"
               title="View detail"
-              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
             >
               <svg
                 class="h-5 w-5"
@@ -238,7 +195,7 @@ onDeactivated(() => {
             <button
               type="button"
               title="View processes"
-              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               @click="handleViewProcesses(row as Topology)"
             >
               <svg

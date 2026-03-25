@@ -7,6 +7,7 @@ import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import type { TrashData, TableColumn } from '@/types/dashboard'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
+import GridLink from '@/components/ui/datagrid/GridLink.vue'
 
 const { getTopologyName, getNodeName } = useTopologyNodeMappings()
 
@@ -206,7 +207,9 @@ const getBarChartOptions = () => {
         @sort="handleSort"
       >
         <template #cell-topology="{ row }">
-          <span class="font-medium text-gray-900 dark:text-white">{{ getTopologyName(row.topologyId) }}</span>
+          <GridLink :to="{ name: 'topology-detail', params: { id: row.topologyId } }">
+            {{ getTopologyName(row.topologyId) }}
+          </GridLink>
         </template>
         <template #cell-node="{ row }">
           <span class="text-gray-900 dark:text-white">{{ getNodeName(row.nodeId) }}</span>

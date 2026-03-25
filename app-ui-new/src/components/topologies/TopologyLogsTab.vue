@@ -7,6 +7,7 @@ import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
 import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
 import CopyValue from '@/components/ui/CopyValue.vue'
 import LogDetailModal from '@/components/logs/LogDetailModal.vue'
+import StatusBadge from '@/components/ui/StatusBadge.vue'
 import type { LogEntry, LogQueryParams, LogSeverity } from '@/types/logs'
 import type { TableColumn } from '@/types/dashboard'
 import { fetchLogs } from '@/services/logsService'
@@ -77,15 +78,11 @@ const columns: TableColumn[] = [
   { key: 'actions', label: '', className: 'text-right w-16' },
 ]
 
-// Get severity badge classes
-const getSeverityClass = (severity: LogSeverity): string => {
-  const classes = {
-    error: 'bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-300',
-    warning: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-800 dark:text-yellow-300',
-    info: 'bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-300',
-    debug: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
-  }
-  return classes[severity] || classes.info
+const severityVariant: Record<LogSeverity, 'red' | 'yellow' | 'blue' | 'gray'> = {
+  error: 'red',
+  warning: 'yellow',
+  info: 'blue',
+  debug: 'gray',
 }
 
 // Open drawer with selected log
@@ -234,14 +231,9 @@ watch(() => props.refreshKey, () => {
       </template>
 
       <template #cell-severity="{ value }">
-        <span
-          :class="[
-            'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
-            getSeverityClass(value),
-          ]"
-        >
+        <StatusBadge :variant="severityVariant[value as LogSeverity] || 'blue'">
           {{ value.charAt(0).toUpperCase() + value.slice(1) }}
-        </span>
+        </StatusBadge>
       </template>
 
       <template #cell-message="{ value }">
@@ -253,7 +245,7 @@ watch(() => props.refreshKey, () => {
           <button
             type="button"
             title="View details"
-            class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+            class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
             @click="openDrawer(row as LogEntry)"
           >
             <svg

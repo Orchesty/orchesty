@@ -50,7 +50,7 @@ onMounted(async () => {
     <button
       :id="buttonId"
       type="button"
-      class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+      class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
     >
       <svg
         class="w-4 h-4"
@@ -72,7 +72,7 @@ onMounted(async () => {
     <div
       :id="id"
       :class="[
-        'z-50 hidden divide-y divide-gray-100 rounded-lg bg-white shadow dark:divide-gray-600 dark:bg-gray-700',
+        'z-50 hidden divide-y divide-gray-100 rounded-lg bg-white shadow-sm dark:divide-gray-600 dark:bg-gray-700',
         width
       ]"
     >

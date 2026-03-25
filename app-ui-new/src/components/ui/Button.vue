@@ -23,7 +23,7 @@ const isDisabled = computed(() => props.loading || props.disabled)
 
 const buttonClasses = computed(() => {
   const base =
-    'inline-flex items-center justify-center rounded-full px-4 py-2 text-center text-sm font-medium focus:outline-none transition-colors disabled:cursor-not-allowed disabled:opacity-50'
+    'inline-flex items-center justify-center rounded-full px-4 py-2 text-center text-sm font-medium focus:outline-hidden transition-colors disabled:cursor-not-allowed disabled:opacity-50'
 
   const disabledStyle =
     'border border-gray-200 bg-white text-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-500'

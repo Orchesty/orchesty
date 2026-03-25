@@ -9,6 +9,7 @@ use Hanaboso\UserBundle\Model\Security\SecurityManagerException;
 use Hanaboso\UserBundle\Model\User\UserManagerException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
+use Hanaboso\Utils\System\ControllerUtils;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -91,6 +92,23 @@ final class UserController extends AbstractController
     public function loggedUserAction(): Response
     {
         return $this->forward('Hanaboso\UserBundle\Controller\UserController::loggedUserAction');
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     * @throws PipesFrameworkException
+     */
+    #[Route('/user/invite', methods: ['POST'])]
+    public function inviteAction(Request $request): Response
+    {
+        $data = $request->request->all();
+        ControllerUtils::checkParameters(['email'], $data);
+
+        return $this->getResponse(
+            $this->userHandler->inviteUser($request->request->getString('email')),
+        );
     }
 
     /**
@@ -184,6 +202,49 @@ final class UserController extends AbstractController
                 new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
             ),
         );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     * @throws MongoDBException
+     */
+    #[Route('/user/invited/list', methods: ['POST'])]
+    public function getAllInvitedUsersAction(Request $request): Response
+    {
+        return $this->getResponse(
+            $this->userHandler->getAllInvitedUsers(
+                new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+            ),
+        );
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     * @throws UserManagerException
+     */
+    #[Route('/user/invited/{id}/regenerate', methods: ['POST'])]
+    public function regenerateInviteAction(string $id): Response
+    {
+        return $this->getResponse($this->userHandler->regenerateInvite($id));
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     * @throws MongoDBException
+     * @throws UserManagerException
+     */
+    #[Route('/user/invited/{id}/delete', methods: ['DELETE'])]
+    public function deleteInvitedUserAction(string $id): Response
+    {
+        $this->userHandler->deleteInvitedUser($id);
+
+        return $this->getResponse([]);
     }
 
     /**

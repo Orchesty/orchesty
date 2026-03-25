@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue'
 import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
 import { fetchTopologyVersions, deleteTopology } from '@/services/topologiesService'
+import StatusBadge from '@/components/ui/StatusBadge.vue'
 import type { TopologyVersion } from '@/types/topologies-page'
 
 interface Props {
@@ -102,19 +103,10 @@ const handleDelete = async () => {
   }
 }
 
-const getStatusBadgeClass = (visibility: string, enabled: boolean) => {
-  if (visibility === 'draft') {
-    return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-  }
-  return enabled
-    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-}
-
-const getStatusLabel = (visibility: string, enabled: boolean) => {
-  if (visibility === 'draft') return 'Draft'
-  return enabled ? 'Enabled' : 'Disabled'
-}
+const getVersionBadge = (visibility: string, enabled: boolean) => ({
+  variant: visibility === 'draft' ? 'gray' as const : enabled ? 'green' as const : 'red' as const,
+  label: visibility === 'draft' ? 'Draft' : enabled ? 'Enabled' : 'Disabled',
+})
 </script>
 
 <template>
@@ -175,7 +167,7 @@ const getStatusLabel = (visibility: string, enabled: boolean) => {
         <input
           type="checkbox"
           :checked="selectedVersionIds.has(version.id)"
-          class="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500 dark:border-gray-600 dark:bg-gray-700"
+          class="h-4 w-4 rounded-sm border-gray-300 text-red-600 focus:ring-red-500 dark:border-gray-600 dark:bg-gray-700"
           @click.stop
           @change="toggleVersion(version.id)"
         />
@@ -189,14 +181,9 @@ const getStatusLabel = (visibility: string, enabled: boolean) => {
               class="text-xs text-gray-500 dark:text-gray-400"
             >(current)</span>
           </div>
-          <span
-            :class="[
-              'text-xs font-medium px-2.5 py-0.5 rounded',
-              getStatusBadgeClass(version.visibility, version.enabled)
-            ]"
-          >
-            {{ getStatusLabel(version.visibility, version.enabled) }}
-          </span>
+          <StatusBadge :variant="getVersionBadge(version.visibility, version.enabled).variant">
+            {{ getVersionBadge(version.visibility, version.enabled).label }}
+          </StatusBadge>
         </div>
       </div>
 

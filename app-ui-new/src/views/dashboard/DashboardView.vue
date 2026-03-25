@@ -11,6 +11,7 @@ import ApplicationsTab from '@/components/dashboard/ApplicationsTab.vue'
 import ConnectorDetailDrawer from '@/components/dashboard/ConnectorDetailDrawer.vue'
 import ProcessesDrawer from '@/components/dashboard/ProcessesDrawer.vue'
 import ProcessAuditDrawer from '@/components/dashboard/ProcessAuditDrawer.vue'
+import AppRunningProcessesDrawer from '@/components/dashboard/AppRunningProcessesDrawer.vue'
 import type { Connector } from '@/types/connectors'
 import type { Process } from '@/types/processes'
 import type { TimeFilter as TimeFilterType, ProcessFilter, HeatmapClickData, ProcessesExternalFilters } from '@/types/dashboard'
@@ -140,6 +141,17 @@ const handleTopologyProcessesClick = (topologyId: string) => {
 
   switchToTab('processes')
 }
+
+// App running processes drawer (opened from limiter summary grid)
+const appProcessesDrawerOpen = ref(false)
+const appProcessesAppId = ref<string | null>(null)
+const appProcessesTopologyIds = ref<string[]>([])
+
+const handleOpenAppProcesses = (data: { applicationId: string; topologyIds: string[] }) => {
+  appProcessesAppId.value = data.applicationId
+  appProcessesTopologyIds.value = data.topologyIds
+  appProcessesDrawerOpen.value = true
+}
 </script>
 
 <template>
@@ -179,7 +191,7 @@ const handleTopologyProcessesClick = (topologyId: string) => {
         <button
           type="button"
           title="Refresh"
-          class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:text-gray-900 focus:outline-none dark:text-gray-500 dark:hover:text-white"
+          class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:text-gray-900 focus:outline-hidden dark:text-gray-500 dark:hover:text-white"
           @click="handleRefresh"
         >
           <svg
@@ -221,29 +233,30 @@ const handleTopologyProcessesClick = (topologyId: string) => {
 
       <ConnectorsTab
         v-else-if="activeTab === 'connectors'"
-        :global-time-filter="activeTimeFilter"
+        :time-filter="activeTimeFilter"
         :refresh-key="refreshKey"
         @open-connector-detail="handleOpenConnectorDetail"
       />
 
       <TopologiesTab
         v-else-if="activeTab === 'topologies'"
-        :global-time-filter="activeTimeFilter"
+        :time-filter="activeTimeFilter"
         :refresh-key="refreshKey"
         @view-processes="handleTopologyProcessesClick"
       />
 
       <ProcessesTab
         v-else-if="activeTab === 'processes'"
-        :global-time-filter="activeTimeFilter"
+        :time-filter="activeTimeFilter"
         :external-filters="processesFilters"
         :refresh-key="refreshKey"
       />
 
       <LimiterTab
         v-else-if="activeTab === 'limiter'"
-        :global-time-filter="activeTimeFilter"
+        :time-filter="activeTimeFilter"
         :refresh-key="refreshKey"
+        @open-app-processes="handleOpenAppProcesses"
       />
     </KeepAlive>
 
@@ -251,7 +264,7 @@ const handleTopologyProcessesClick = (topologyId: string) => {
     <ConnectorDetailDrawer
       v-model="connectorDrawerOpen"
       :connector="selectedConnector"
-      :global-time-filter="activeTimeFilter"
+      :time-filter="activeTimeFilter"
     />
 
     <!-- Processes Drawer (opened from heatmap click) -->
@@ -271,6 +284,13 @@ const handleTopologyProcessesClick = (topologyId: string) => {
       drawer-id="dashboard-audit-drawer"
       @back="handleAuditBack"
       @hidden="onAuditDrawerHidden"
+    />
+
+    <!-- App Running Processes Drawer (opened from limiter summary grid) -->
+    <AppRunningProcessesDrawer
+      v-model="appProcessesDrawerOpen"
+      :application-id="appProcessesAppId"
+      :topology-ids="appProcessesTopologyIds"
     />
   </DashboardLayout>
 </template>

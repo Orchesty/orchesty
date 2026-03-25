@@ -41,7 +41,7 @@ const isSelected = computed(() => props.selectedId === props.node.id)
         v-if="hasChildren"
         type="button"
         @click.stop="emit('toggle', node.id)"
-        class="shrink-0 p-0.5 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+        class="shrink-0 p-0.5 rounded-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
       >
         <svg
           :class="[

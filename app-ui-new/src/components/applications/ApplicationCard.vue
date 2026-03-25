@@ -61,7 +61,7 @@ const handleInstall = () => {
 </script>
 
 <template>
-  <div class="space-y-4 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800" :data-status="application.status">
+  <div class="space-y-4 rounded-lg bg-white p-4 shadow-xs dark:bg-gray-800" :data-status="application.status">
     <div class="flex items-center justify-between h-7">
       <!-- Logo & Name -->
       <div class="flex items-center">
@@ -91,7 +91,7 @@ const handleInstall = () => {
       <!-- Status Label - only show if not available -->
       <span
         v-if="showStatusBadge"
-        class="text-xs font-medium px-2.5 py-0.5 rounded"
+        class="text-xs font-medium px-2.5 py-0.5 rounded-sm"
         :class="statusBadgeClass"
       >
         {{ statusLabel }}

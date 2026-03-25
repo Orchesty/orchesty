@@ -138,7 +138,7 @@ onMounted(async () => {
       :id="`${dropdownId}-button`"
       :data-dropdown-toggle="dropdownId"
       data-dropdown-ignore-click-outside-class="datepicker"
-      class="flex items-center justify-center whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:z-10 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+      class="flex items-center justify-center whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:z-10 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
       type="button"
     >
       <svg
@@ -175,7 +175,7 @@ onMounted(async () => {
     <!-- Dropdown Menu -->
     <div
       :id="dropdownId"
-      class="z-50 my-4 hidden w-80 list-none divide-y divide-gray-100 rounded-lg bg-white text-sm font-medium shadow-sm dark:divide-gray-600 dark:bg-gray-700"
+      class="z-50 my-4 hidden w-80 list-none divide-y divide-gray-100 rounded-lg bg-white text-sm font-medium shadow-xs dark:divide-gray-600 dark:bg-gray-700"
     >
       <ul class="p-2 text-gray-500 dark:text-gray-400" role="none">
         <li v-for="option in options" :key="option.value">

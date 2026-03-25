@@ -12,7 +12,7 @@ import MoveTopologyModal from '@/components/topologies/MoveTopologyModal.vue'
 import EditTopologyModal from '@/components/topologies/EditTopologyModal.vue'
 import Confirm from '@/components/ui/Confirm.vue'
 import type { FolderItem, TopologiesTreeNode } from '@/types/topologies-page'
-import { fetchCategories, deleteCategory, deleteTopology, cloneTopology, fetchTopologySchema } from '@/services/topologiesService'
+import { fetchCategories, deleteCategory, deleteTopology, cloneTopology, fetchTopologySchema, fetchTopologyVersions } from '@/services/topologiesService'
 import { useLastTopology } from '@/composables/useLastTopology'
 import { useToast } from '@/composables/useToast'
 import { Dropdown } from 'flowbite'
@@ -73,13 +73,28 @@ const nonEmptyFolderIds = computed<Set<string>>(() => {
 })
 
 // Handle topology selection from sidebar
-const handleSelectTopology = (topologyId: string, topologyName: string, versionCount: number) => {
+const handleSelectTopology = async (topologyId: string, topologyName: string, versionCount: number) => {
   if (versionCount <= 1) {
     router.push({ name: 'topology-detail', params: { id: topologyId } })
-  } else {
-    selectedTopologyId.value = topologyId
-    selectedTopologyName.value = topologyName
-    selectVersionModalOpen.value = true
+    return
+  }
+
+  try {
+    const versions = await fetchTopologyVersions(topologyName)
+    const enabledVersion = versions.find(v => v.enabled && v.visibility === 'public')
+    const targetVersion = enabledVersion ?? versions[0]
+
+    if (targetVersion) {
+      router.push({
+        name: 'topology-detail',
+        params: { id: topologyId },
+        query: { version: targetVersion.id },
+      })
+    } else {
+      router.push({ name: 'topology-detail', params: { id: topologyId } })
+    }
+  } catch {
+    router.push({ name: 'topology-detail', params: { id: topologyId } })
   }
 }
 
@@ -449,7 +464,7 @@ onMounted(async () => {
     v-for="folder in allFolders"
     :key="'dropdown-' + folder.id"
     :id="`folderActionsDropdown-${folder.id}`"
-    class="z-10 hidden w-44 divide-y divide-gray-100 rounded-lg bg-white shadow-sm dark:divide-gray-600 dark:bg-gray-700"
+    class="z-10 hidden w-44 divide-y divide-gray-100 rounded-lg bg-white shadow-xs dark:divide-gray-600 dark:bg-gray-700"
   >
     <ul class="p-2 text-sm font-medium text-gray-500 dark:text-gray-400">
       <li>

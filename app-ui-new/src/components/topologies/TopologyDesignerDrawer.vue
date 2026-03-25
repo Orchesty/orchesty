@@ -149,7 +149,7 @@ watch(
     aria-modal="true"
   >
     <!-- Topbar -->
-    <nav class="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-2.5 dark:border-gray-700 dark:bg-gray-800 relative flex-shrink-0">
+    <nav class="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-2.5 dark:border-gray-700 dark:bg-gray-800 relative shrink-0">
       <!-- Logo left -->
       <div>
         <img src="/logo.svg" alt="Orchesty" class="h-8 w-8" />

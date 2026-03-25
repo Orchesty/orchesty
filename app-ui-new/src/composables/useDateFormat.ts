@@ -143,6 +143,32 @@ function formatChartLabel(input: string | Date | null | undefined, granularityMi
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
+/**
+ * Format a duration given in milliseconds (e.g. 123456 → "2m 3s")
+ */
+function formatDurationMs(ms: number): string {
+  if (ms < 1000) return `${Math.round(ms)}ms`
+  const totalSeconds = ms / 1000
+  if (totalSeconds < 60) return `${totalSeconds.toFixed(1)}s`
+  const minutes = Math.floor(totalSeconds / 60)
+  const secs = Math.round(totalSeconds % 60)
+  if (minutes < 60) return `${minutes}m ${secs}s`
+  const hours = Math.floor(minutes / 60)
+  const mins = minutes % 60
+  return `${hours}h ${mins}m ${secs}s`
+}
+
+/**
+ * Format a duration given in seconds (e.g. 3661 → "1h 1m")
+ */
+function formatDurationSeconds(seconds: number): string {
+  if (seconds < 60) return `${Math.ceil(seconds)}s`
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ${Math.ceil(seconds % 60)}s`
+  const h = Math.floor(seconds / 3600)
+  const m = Math.ceil((seconds % 3600) / 60)
+  return `${h}h ${m}m`
+}
+
 export function useDateFormat() {
   return {
     dateFormat,
@@ -154,5 +180,7 @@ export function useDateFormat() {
     formatTime,
     formatChartDate,
     formatChartLabel,
+    formatDurationMs,
+    formatDurationSeconds,
   }
 }

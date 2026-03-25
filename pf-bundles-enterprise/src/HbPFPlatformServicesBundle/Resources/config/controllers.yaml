@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        public: '%public.services%'
+        autowire: true
+        autoconfigure: true
+
+    Hanaboso\PipesFrameworkEnterprise\HbPFPlatformServicesBundle\Controller\PlatformServicesController:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFPlatformServicesBundle\Controller\PlatformServicesController
+        arguments:
+            - '@hbpf.platform_services.handler'

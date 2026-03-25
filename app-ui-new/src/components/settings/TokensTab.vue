@@ -181,7 +181,7 @@ onMounted(() => {
             <span
               v-for="scope in (row as Token).scopes"
               :key="scope"
-              class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded dark:bg-blue-800 dark:text-blue-300"
+              class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-sm dark:bg-blue-800 dark:text-blue-300"
             >
               {{ scope }}
             </span>
@@ -200,7 +200,7 @@ onMounted(() => {
             <button
               type="button"
               @click="handleDeleteToken(row as Token)"
-              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               title="Delete"
             >
               <svg

@@ -8,6 +8,8 @@ import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import type { LimiterData, TableColumn, TimeFilter } from '@/types/dashboard'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
+import GridLink from '@/components/ui/datagrid/GridLink.vue'
+import LimiterMessagesCell from './LimiterMessagesCell.vue'
 
 const { formatChartLabel } = useDateFormat()
 const { getNodeName, getTopologyName } = useTopologyNodeMappings()
@@ -46,13 +48,10 @@ const maxDiffPercent = computed(() => {
   return Math.round(((maxMessages - totalMessages) / totalMessages) * 100)
 })
 
-const { initChart, setupResizeObserver, isDarkMode } = useApexChart({
+const { initChart, isDarkMode } = useApexChart({
   onDarkModeChange: () => {
-    // Re-render chart like original Flowbite template
-    // Only if chart was already mounted
     if (chartMounted.value && chartEl.value) {
       initChart(chartEl.value, getColumnChartOptions())
-      setupResizeObserver(chartEl.value)
     }
   },
 })
@@ -81,11 +80,9 @@ const loadData = async () => {
     totalPages.value = response.meta.totalPages
     totalItems.value = response.meta.totalItems
 
-    // Re-render chart with new data if already mounted
     await nextTick()
     if (chartMounted.value && chartEl.value) {
       initChart(chartEl.value, getColumnChartOptions())
-      setupResizeObserver(chartEl.value)
     }
   } catch (error) {
     console.error('Error loading limiter data:', error)
@@ -126,7 +123,6 @@ onMounted(async () => {
     }
 
     initChart(chartEl.value, getColumnChartOptions())
-    setupResizeObserver(chartEl.value)
     chartMounted.value = true
   } catch (error) {
     console.error('LimiterCard mount error:', error)
@@ -144,6 +140,7 @@ onActivated(() => {
 const getColumnChartOptions = () => {
   const colors = getChartColors(isDarkMode.value)
   const categories = limiterData.value?.chartData.categories || []
+  const seriesData = limiterData.value?.chartData.series || []
   const granularity = getGranularityMinutes(props.timeFilter)
 
   return {
@@ -151,7 +148,7 @@ const getColumnChartOptions = () => {
     series: [
       {
         name: 'Messages',
-        data: limiterData.value?.chartData.series || [],
+        data: seriesData,
       },
     ],
     chart: {
@@ -328,21 +325,12 @@ const getColumnChartOptions = () => {
           <span class="font-medium text-gray-900 dark:text-white">{{ getNodeName(row.nodeId) }}</span>
         </template>
         <template #cell-topology="{ row }">
-          <span class="text-gray-900 dark:text-white">{{ getTopologyName(row.topologyId) }}</span>
+          <GridLink :to="{ name: 'topology-detail', params: { id: row.topologyId } }">
+            {{ getTopologyName(row.topologyId) }}
+          </GridLink>
         </template>
         <template #cell-messages="{ row }">
-          {{ row.maxMessages }}
-          <span
-            :class="row.messages < row.maxMessages
-              ? 'text-green-600 dark:text-green-400'
-              : row.messages > row.maxMessages
-                ? 'text-red-600 dark:text-red-400'
-                : 'text-gray-500 dark:text-gray-400'"
-          >
-            <svg v-if="row.messages < row.maxMessages" class="inline h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 14-4-4m4 4 4-4"/></svg>
-            <svg v-else-if="row.messages > row.maxMessages" class="inline h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0-14 4 4m-4-4-4 4"/></svg>
-            ({{ row.messages }})
-          </span>
+          <LimiterMessagesCell :messages="row.messages" :max-messages="row.maxMessages" />
         </template>
       </DataGrid>
 

@@ -198,7 +198,7 @@ watch(() => props.modelValue, (newValue) => {
         type="button"
         title="New Folder"
         @click="emit('open-new-folder-modal')"
-        class="inline-flex items-center justify-center rounded-lg p-1 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+        class="inline-flex items-center justify-center rounded-lg p-1 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
       >
         <svg
           class="w-5 h-5"
@@ -221,7 +221,7 @@ watch(() => props.modelValue, (newValue) => {
         type="button"
         title="New Topology"
         @click="emit('open-new-topology-modal')"
-        class="inline-flex items-center justify-center rounded-lg p-1 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+        class="inline-flex items-center justify-center rounded-lg p-1 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
       >
         <svg
           class="w-5 h-5"

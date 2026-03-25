@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import Drawer from '@/components/ui/Drawer.vue'
 import Button from '@/components/ui/Button.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
 import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
+import StatusBadge from '@/components/ui/StatusBadge.vue'
 import type { Process, ProcessStatus } from '@/types/processes'
 import type { TableColumn } from '@/types/dashboard'
 import type { QuickFilterOption } from '@/types/datagrid'
@@ -28,8 +30,9 @@ const emit = defineEmits<{
   'hidden': []
 }>()
 
+const router = useRouter()
 const { getTopologyName, getTopologyNameWithVersion } = useTopologyNodeMappings()
-const { formatDateTime } = useDateFormat()
+const { formatDateTime, formatDurationMs } = useDateFormat()
 
 const topologyLabel = computed(() => {
   if (!props.topologyId) return ''
@@ -57,18 +60,6 @@ const quickFilterOptions: QuickFilterOption[] = [
   { value: 'running', label: 'Running' },
   { value: 'failed', label: 'Failed' },
 ]
-
-const formatDuration = (ms: number): string => {
-  if (ms < 1000) return `${Math.round(ms)}ms`
-  const totalSeconds = ms / 1000
-  if (totalSeconds < 60) return `${totalSeconds.toFixed(1)}s`
-  const minutes = Math.floor(totalSeconds / 60)
-  const secs = Math.round(totalSeconds % 60)
-  if (minutes < 60) return `${minutes}m ${secs}s`
-  const hours = Math.floor(minutes / 60)
-  const mins = minutes % 60
-  return `${hours}h ${mins}m ${secs}s`
-}
 
 const loadData = async () => {
   loading.value = true
@@ -139,16 +130,29 @@ const handleClose = () => {
   <Drawer
     :model-value="modelValue"
     id="processes-drawer"
-    label="Processes"
+    label="Topology Processes"
     width="w-1/2 min-w-[600px]"
     @update:model-value="handleClose"
     @hidden="emit('hidden')"
   >
     <!-- Topology Header -->
     <div class="mb-6 border-b border-gray-200 pb-6 dark:border-gray-700">
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-        {{ topologyLabel }}
-      </h2>
+      <div class="flex items-start justify-between">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+          {{ topologyLabel }}
+        </h2>
+        <button
+          v-if="topologyId"
+          type="button"
+          class="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+          @click="router.push({ name: 'topology-detail', params: { id: topologyId } })"
+        >
+          Go to Topology
+          <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+          </svg>
+        </button>
+      </div>
     </div>
 
     <!-- Time Range Filter -->
@@ -184,22 +188,13 @@ const handleClose = () => {
       </template>
 
       <template #cell-duration="{ value }">
-        <span class="whitespace-nowrap">{{ formatDuration(value) }}</span>
+        <span class="whitespace-nowrap">{{ formatDurationMs(value) }}</span>
       </template>
 
       <template #cell-status="{ value }">
-        <span
-          :class="[
-            'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
-            value === 'completed'
-              ? 'bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-300'
-              : value === 'running'
-                ? 'bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-300'
-                : 'bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-300',
-          ]"
-        >
+        <StatusBadge :variant="value === 'completed' ? 'green' : value === 'running' ? 'blue' : 'red'">
           {{ value.charAt(0).toUpperCase() + value.slice(1) }}
-        </span>
+        </StatusBadge>
       </template>
 
       <template #cell-actions="{ row }">
@@ -208,7 +203,7 @@ const handleClose = () => {
             type="button"
             title="Audit"
             @click="handleAuditClick(row)"
-            class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+            class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           >
             <svg
               class="h-5 w-5"

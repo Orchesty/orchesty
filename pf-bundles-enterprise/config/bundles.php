@@ -10,6 +10,7 @@ use Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\HbPFEnter
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\HbPFConfiguratorBundle;
 use Hanaboso\PipesFramework\HbPFLogsBundle\HbPFLogsBundle;
 use Hanaboso\PipesFrameworkEnterprise\HbPFMcpBundle\HbPFMcpBundle;
+use Hanaboso\PipesFrameworkEnterprise\HbPFPlatformServicesBundle\HbPFPlatformServicesBundle;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\HbPFMetricsBundle;
 use Hanaboso\PipesFramework\HbPFUsageStatsBundle\HbPFUsageStatsBundle;
 use Hanaboso\PipesFramework\HbPFUserBundle\HbPFUsersBundle;
@@ -44,4 +45,5 @@ return [
     HbPFEnterpriseApiGatewayBundle::class    => ['all' => TRUE],
     HbPFEnterpriseConfiguratorBundle::class => ['all' => TRUE],
     HbPFMcpBundle::class                    => ['all' => TRUE],
+    HbPFPlatformServicesBundle::class       => ['all' => TRUE],
 ];

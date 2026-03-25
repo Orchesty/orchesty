@@ -34,7 +34,6 @@ const columns: TableColumn[] = [
   { key: 'name', label: 'Name', sortable: false },
   { key: 'crontab', label: 'Crontab', sortable: false },
   { key: 'nextRun', label: 'Next Run', sortable: false },
-  { key: 'status', label: 'Topology Status', sortable: false },
   { key: 'actions', label: '', className: 'text-right w-16' },
 ]
 
@@ -111,33 +110,11 @@ const handleCronSave = async (taskId: string, crontab: string, params: string) =
   }
 }
 
-const getStatusBadgeClass = (status: string) => {
-  switch (status) {
-    case 'enabled':
-      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-    case 'disabled':
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-    default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-  }
-}
-
-const getStatusLabel = (status: string) => {
-  switch (status) {
-    case 'enabled':
-      return 'Enabled'
-    case 'disabled':
-      return 'Disabled'
-    default:
-      return status
-  }
-}
-
 // Recalculate nextRun for tasks whose scheduled time has passed
 const refreshNextRuns = () => {
   const now = new Date()
   for (const task of tasks.value) {
-    if (!task.nodeStatus || !task.crontab || task.status === 'disabled') {
+    if (!task.nodeStatus || !task.crontab) {
       task.nextRun = null
       continue
     }
@@ -203,7 +180,7 @@ onBeforeUnmount(() => {
             />
             <div
               :class="[
-                'relative h-5 w-9 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[\'\'] peer-checked:bg-primary-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:border-gray-600 dark:bg-gray-700 dark:peer-checked:bg-primary-600 dark:peer-focus:ring-primary-800 rtl:peer-checked:after:-translate-x-full',
+                'relative h-5 w-9 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[\'\'] peer-checked:bg-primary-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-hidden peer-focus:ring-4 peer-focus:ring-primary-300 dark:border-gray-600 dark:bg-gray-700 dark:peer-checked:bg-primary-600 dark:peer-focus:ring-primary-800 rtl:peer-checked:after:-translate-x-full',
                 {
                   'cursor-not-allowed opacity-50': updatingTasks.has(row.id),
                 },
@@ -247,25 +224,13 @@ onBeforeUnmount(() => {
           <span v-else class="text-sm text-gray-400 dark:text-gray-500">-</span>
         </template>
 
-        <!-- Status Cell -->
-        <template #cell-status="{ row }">
-          <span
-            :class="[
-              'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-              getStatusBadgeClass(row.status),
-            ]"
-          >
-            {{ getStatusLabel(row.status) }}
-          </span>
-        </template>
-
         <!-- Actions Cell -->
         <template #cell-actions="{ row }">
           <div class="flex items-center justify-end gap-2">
             <button
               type="button"
               title="Settings"
-              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               @click="handleSettingsClick(row as ScheduledTask)"
             >
               <svg
