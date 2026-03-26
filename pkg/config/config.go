@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/hanaboso/go-log/pkg"
-	"github.com/hanaboso/go-log/pkg/zerolog"
+	"github.com/hanaboso/go-log/pkg/zap"
 	"github.com/jinzhu/configor"
 )
 
@@ -14,7 +14,6 @@ type (
 		App           *app
 		MongoDb       *mongoDb
 		Metrics       *metrics
-		Logs          *logs
 		StartingPoint *startingPoint
 	}
 
@@ -35,10 +34,6 @@ type (
 		TopologyJSON string `env:"TOPOLOGY_JSON" default:"/srv/app/topology/topology.json"`
 	}
 
-	logs struct {
-		Url string `env:"UDP_LOGGER_URL" default:"fluentd:5120"`
-	}
-
 	startingPoint struct {
 		Dsn    string `env:"STARTING_POINT_DSN" required:"true"`
 		ApiKey string `env:"ORCHESTY_API_KEY" required:"false" default:""`
@@ -49,7 +44,6 @@ var (
 	App           app
 	MongoDb       mongoDb
 	Metrics       metrics
-	Logs          logs
 	StartingPoint startingPoint
 	Logger        pkg.Logger
 
@@ -57,7 +51,6 @@ var (
 		App:           &App,
 		MongoDb:       &MongoDb,
 		Metrics:       &Metrics,
-		Logs:          &Logs,
 		StartingPoint: &StartingPoint,
 	}
 )
@@ -66,7 +59,7 @@ func init() {
 	if err := configor.Load(&c); err != nil {
 		panic(err)
 	}
-	Logger = zerolog.NewLogger(zerolog.NewUdpSender(Logs.Url))
+	Logger = zap.NewLogger()
 
 	if App.Debug {
 		Logger.SetLevel(pkg.DEBUG)
