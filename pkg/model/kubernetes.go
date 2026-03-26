@@ -35,20 +35,20 @@ type EnvItem struct {
 
 // ResourceLimits ResourceLimits
 type ResourceLimits struct {
-	Memory string `yaml:"memory"`
-	CPU    string `yaml:"cpu"`
+	Memory string `yaml:"memory,omitempty"`
+	CPU    string `yaml:"cpu,omitempty"`
 }
 
 // ResourceRequests ResourceRequests
 type ResourceRequests struct {
-	Memory string `yaml:"memory"`
-	CPU    string `yaml:"cpu"`
+	Memory string `yaml:"memory,omitempty"`
+	CPU    string `yaml:"cpu,omitempty"`
 }
 
 // Resources Resources
 type Resources struct {
-	Limits   ResourceLimits   `yaml:"limits"`
-	Requests ResourceRequests `yaml:"requests"`
+	Limits   ResourceLimits   `yaml:"limits,omitempty"`
+	Requests ResourceRequests `yaml:"requests,omitempty"`
 }
 
 // Container Container

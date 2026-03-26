@@ -6,8 +6,6 @@ package test
 import (
 	"bytes"
 	"context"
-	"github.com/hanaboso/go-mongodb"
-	"go.mongodb.org/mongo-driver/v2/bson"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -15,6 +13,10 @@ import (
 	"testing"
 	"topology-generator/pkg/config"
 	"topology-generator/pkg/model"
+
+	"github.com/hanaboso/go-mongodb"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 var client *mongo.Client
@@ -147,7 +149,7 @@ func getTestNodeConfig() *model.NodeConfig {
 			RabbitMqDsn:         "rabbitmq:1000",
 			MetricsDsn:          "influxdb://kapacitor:9100",
 			MetricsService:      "influx",
-			WorkerDefaultPort:   8008,
+			BridgePort:          8008,
 			GeneratorMode:       "compose",
 		},
 	}
