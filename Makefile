@@ -4,16 +4,6 @@ DC=docker-compose
 DE=docker-compose exec -T app
 DR=docker-compose exec -T rabbitmq
 
-ALIAS?=alias
-Darwin:
-	sudo ifconfig lo0 $(ALIAS) $(shell awk '$$1 ~ /^DEV_IP/' .env | sed -e "s/^DEV_IP=//")
-Linux:
-	@echo 'skipping ...'
-.lo0-up:
-	-@make `uname`
-.lo0-down:
-	-@make `uname` ALIAS='-alias'
-
 .env:
 	sed -e "s/{DEV_UID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -u); else echo '1001'; fi)/g" \
 		-e "s/{DEV_GID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -g); else echo '1001'; fi)/g" \
@@ -22,11 +12,11 @@ Linux:
 build:
 	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) .
 
-docker-up-force: .env .lo0-up
+docker-up-force: .env
 	$(DC) pull
 	$(DC) up -d --force-recreate --remove-orphans
 
-docker-down-clean: .env .lo0-down
+docker-down-clean: .env
 	$(DC) down -v
 
 docker-compose.ci.yml:

@@ -2,10 +2,11 @@ package config
 
 import (
 	"fmt"
+	"strings"
+
 	log "github.com/hanaboso/go-log/pkg"
 	"github.com/hanaboso/go-log/pkg/zap"
 	"github.com/jinzhu/configor"
-	"strings"
 )
 
 type (
@@ -14,7 +15,6 @@ type (
 		MongoDb       *mongoDb
 		RabbitMq      *rabbitMq
 		Metrics       *metrics
-		Logs          *logs
 		StartingPoint *startingPoint
 	}
 
@@ -42,10 +42,6 @@ type (
 		Measurement string `env:"METRICS_MEASUREMENT" default:"pipes_counter"`
 	}
 
-	logs struct {
-		Url string `env:"UDP_LOGGER_URL" required:"true"`
-	}
-
 	startingPoint struct {
 		Dsn string `env:"STARTING_POINT_DSN" required:"true"`
 	}
@@ -56,7 +52,6 @@ var (
 	MongoDb       mongoDb
 	RabbitMq      rabbitMq
 	Metrics       metrics
-	Logs          logs
 	Log           log.Logger
 	StartingPoint startingPoint
 	c             = config{
@@ -64,7 +59,6 @@ var (
 		MongoDb:       &MongoDb,
 		RabbitMq:      &RabbitMq,
 		Metrics:       &Metrics,
-		Logs:          &Logs,
 		StartingPoint: &StartingPoint,
 	}
 )
