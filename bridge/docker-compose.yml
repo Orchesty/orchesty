@@ -29,16 +29,11 @@ services:
             - rabbitmq:/var/lib/rabbitmq
 
     mongodb:
-        image: mongo
+        image:  mongo:latest
         ports:
             - ${DEV_IP}:27017:27017
         volumes:
             - mongodb:/data/db
-
-    fluentd:
-        image: mendhak/udp-listener
-        environment:
-            - UDPPORT=5120
 
 volumes:
     rabbitmq:

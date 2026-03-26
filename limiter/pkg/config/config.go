@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/hanaboso/go-log/pkg"
-	"github.com/hanaboso/go-log/pkg/zerolog"
+	"github.com/hanaboso/go-log/pkg/zap"
 	"github.com/jinzhu/configor"
 )
 
@@ -11,7 +11,6 @@ type (
 		App      *app
 		RabbitMq *rabbitMq
 		MongoDb  *mongoDb
-		Logs     *logs
 	}
 
 	rabbitMq struct {
@@ -30,10 +29,6 @@ type (
 		TcpServerAddress string `env:"LIMITER_ADDR" default:"0.0.0.0:3333"`
 		SystemUser       string
 	}
-
-	logs struct {
-		Url string `env:"UDP_LOGGER_URL" default:"fluentd:5120"`
-	}
 )
 
 var (
@@ -41,13 +36,11 @@ var (
 	MongoDb  mongoDb
 	RabbitMq rabbitMq
 	Logger   pkg.Logger
-	Logs     logs
 
 	c = config{
 		App:      &App,
 		MongoDb:  &MongoDb,
 		RabbitMq: &RabbitMq,
-		Logs:     &Logs,
 	}
 )
 
@@ -57,8 +50,7 @@ func init() {
 	}
 	c.App.SystemUser = "orchesty"
 
-	zerolog.NewLogger(zerolog.NewUdpSender(Logs.Url))
-	Logger = zerolog.NewLogger(zerolog.Printer{})
+	Logger = zap.NewLogger()
 
 	if App.Debug {
 		Logger.SetLevel(pkg.DEBUG)

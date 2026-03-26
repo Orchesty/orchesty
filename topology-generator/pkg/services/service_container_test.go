@@ -1,10 +1,11 @@
 package services
 
 import (
-	"github.com/stretchr/testify/require"
-	"k8s.io/client-go/kubernetes"
 	"testing"
 	"topology-generator/pkg/config"
+
+	"github.com/stretchr/testify/require"
+	"k8s.io/client-go/kubernetes"
 )
 
 func TestNewServiceContainer(t *testing.T) {
@@ -26,7 +27,7 @@ func TestNewServiceContainer(t *testing.T) {
 		Prefix:            "",
 		Network:           "",
 		MultiNode:         false,
-		WorkerDefaultPort: 0,
+		BridgePort:        0,
 	}
 	clientset := kubernetes.Clientset{
 		DiscoveryClient: nil,

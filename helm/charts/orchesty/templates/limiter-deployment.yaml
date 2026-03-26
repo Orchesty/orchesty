@@ -30,8 +30,6 @@ spec:
           env:
             - name: TZ
               value: "{{ .Values.global.timezone }}"
-            - name: UDP_LOGGER_URL
-              value: {{ include "pipes.fullname" (dict "suffix" "fluentd" "root" .) }}:5120
             - name: LIMITER_ADDR
               value: "0.0.0.0:3333"
             - name: RABBITMQ_DSN

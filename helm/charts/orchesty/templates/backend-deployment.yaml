@@ -39,16 +39,12 @@ spec:
               value: "5000"
             - name: PHP_FPM_MAX_CHILDREN
               value: "20"
-            - name: WORKER_DEFAULT_PORT
-              value: "8000"
                 ##### jen pokud je to applinth
             - name: JWE_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
                   key: applinth_jwe_private_key
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: UDP_LOGGER_URL
-              value: "{{ include "pipes.fullname" (dict "suffix" "fluentd" "root" .) }}:5120"
             - name: CHECK_INFINITY_LOOP
               value: "{{ .Values.global.backend.checkInfinityLoop }}"
             - name: RABBITMQ_DSN

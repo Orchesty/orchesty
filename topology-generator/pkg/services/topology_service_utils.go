@@ -84,34 +84,14 @@ func GetDstDir(path string, saveDir string) string {
 	return fmt.Sprintf("%s/%s", path, saveDir)
 }
 
-func getResourceLimits(limits model.Limits, defaultMemory, defaultCPU string) model.ResourceLimits {
-	cpu := defaultCPU
-	if limits.CPU != "" {
-		cpu = limits.CPU
-	}
-
-	memory := defaultMemory
-	if limits.Memory != "" {
-		memory = limits.Memory
-	}
-
+func getResourceLimits(memory, cpu string) model.ResourceLimits {
 	return model.ResourceLimits{
 		Memory: memory,
 		CPU:    cpu,
 	}
 }
 
-func getResourceRequests(limits model.Requests, defaultMemory, defaultCPU string) model.ResourceRequests {
-	cpu := defaultCPU
-	if limits.CPU != "" {
-		cpu = limits.CPU
-	}
-
-	memory := defaultMemory
-	if limits.Memory != "" {
-		memory = limits.Memory
-	}
-
+func getResourceRequests(memory, cpu string) model.ResourceRequests {
 	return model.ResourceRequests{
 		Memory: memory,
 		CPU:    cpu,

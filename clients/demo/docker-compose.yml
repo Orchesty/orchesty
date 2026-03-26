@@ -240,7 +240,7 @@ services:
             - mongodb:/data/db
 
     rabbitmq:
-        image: rabbitmq:3-management-alpine
+        image: rabbitmq:management-alpine
         ports:
             - ${DEV_IP}:15672:15672
         volumes:

@@ -28,7 +28,7 @@ services:
       - "27017:27017"
 
   rabbitmq:
-    image: rabbitmq:3.12-management-alpine
+    image: rabbitmq:management-alpine
     ports:
       - "15672:15672"
 

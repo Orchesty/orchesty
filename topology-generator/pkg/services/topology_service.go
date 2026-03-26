@@ -3,9 +3,10 @@ package services
 import (
 	"encoding/json"
 	"fmt"
-	v1 "k8s.io/api/core/v1"
 	"strconv"
 	"strings"
+
+	v1 "k8s.io/api/core/v1"
 
 	log "github.com/hanaboso/go-log/pkg"
 	"gopkg.in/yaml.v2"
@@ -193,8 +194,8 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 		i++
 	}
 
-	limits := getResourceLimits(ts.nodeConfig.Environment.Limits, ts.generatorConfig.WorkerDefaultLimitMemory, ts.generatorConfig.WorkerDefaultLimitCPU)
-	requests := getResourceRequests(ts.nodeConfig.Environment.Requests, ts.generatorConfig.WorkerDefaultRequestMemory, ts.generatorConfig.WorkerDefaultRequestCPU)
+	limits := getResourceLimits(ts.generatorConfig.BridgeLimitMemory, ts.generatorConfig.BridgeLimitCPU)
+	requests := getResourceRequests(ts.generatorConfig.BridgeRequestMemory, ts.generatorConfig.BridgeRequestCPU)
 
 	if multiNode {
 		command := strings.Split(getMultiBridgeStartCommand(), " ")
@@ -213,7 +214,7 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 				Ports: []model.Port{
 					{
 						Name:          "http",
-						ContainerPort: ts.nodeConfig.Environment.WorkerDefaultPort,
+						ContainerPort: config.Generator.BridgePort,
 					},
 				},
 				VolumeMounts: []model.VolumeMount{
@@ -242,7 +243,7 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 			Ports: []model.Port{
 				{
 					Name:          "http",
-					ContainerPort: ts.nodeConfig.Environment.WorkerDefaultPort,
+					ContainerPort: config.Generator.BridgePort,
 				},
 			},
 			VolumeMounts: []model.VolumeMount{
@@ -273,18 +274,14 @@ func (ts *TopologyService) getDockerServices(mode model.Adapter) (map[string]*mo
 		return nil, err
 	}
 
-	memory := ts.generatorConfig.WorkerDefaultLimitMemory
-	if ts.nodeConfig.Environment.Limits.Memory != "" {
-		memory = ts.nodeConfig.Environment.Limits.Memory
-	}
+	memory := ts.generatorConfig.BridgeLimitMemory
 
-	cpu := ts.generatorConfig.WorkerDefaultLimitCPU
-	if ts.nodeConfig.Environment.Limits.CPU != "" {
-		cpu = ts.nodeConfig.Environment.Limits.CPU
-	}
-	cpus, err := strconv.ParseFloat(cpu, 32)
-	if err != nil {
-		return nil, fmt.Errorf("failed parse cpu limit. reason: %v", err)
+	cpus := 0.0
+	if ts.generatorConfig.BridgeLimitCPU != "" {
+		cpus, err = strconv.ParseFloat(ts.generatorConfig.BridgeLimitCPU, 32)
+		if err != nil {
+			return nil, fmt.Errorf("failed parse cpu limit. reason: %v", err)
+		}
 	}
 
 	// Add bridges
