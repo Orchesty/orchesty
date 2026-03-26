@@ -1,0 +1,55 @@
+{
+  "data": [
+    {
+      "id": "entity-1",
+      "name": "Marketing platform",
+      "attributes": [
+        {
+          "name": "account_id",
+          "description": "Unique identifier of the external account"
+        },
+        {
+          "name": "api_token",
+          "description": "Token used to authenticate API calls"
+        }
+      ]
+    },
+    {
+      "id": "entity-2",
+      "name": "Customer account",
+      "attributes": [
+        {
+          "name": "customer_id",
+          "description": "Internal identifier of the customer account"
+        },
+        {
+          "name": "primary_contact",
+          "description": "Designated contact person for escalations"
+        },
+        {
+          "name": "status",
+          "description": "Overall health of the managed account"
+        }
+      ]
+    },
+    {
+      "id": "entity-3",
+      "name": "Payment gateway",
+      "attributes": [
+        {
+          "name": "merchant_id",
+          "description": "Merchant identifier for payment processing"
+        },
+        {
+          "name": "api_key",
+          "description": "API key for secure communication"
+        },
+        {
+          "name": "webhook_url",
+          "description": "URL for receiving payment notifications"
+        }
+      ]
+    }
+  ]
+}
+

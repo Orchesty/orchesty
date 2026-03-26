@@ -21,8 +21,6 @@ build-new-ui:
 	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(NEW_UI_IMAGE) .
 
 docker-up-force: .env
-
-docker-up-force: .env .lo0-up
 	$(DC) pull
 	$(DC) up -d --force-recreate --remove-orphans
 

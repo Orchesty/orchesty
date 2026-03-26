@@ -1,0 +1,646 @@
+{
+  "workers": [
+    {
+      "name": "Default Worker",
+      "applications": [
+        {
+          "key": "mailchimp",
+          "name": "Mailchimp",
+          "description": "Online platform for sending professionals e-mails to mass recipients.",
+          "application_type": "webhook",
+          "authorization_type": "oauth2",
+          "status": "uninstalled",
+          "worker": "Default Worker"
+        },
+        {
+          "key": "salesforce",
+          "name": "Salesforce",
+          "description": "Cloud-based customer relationship management platform.",
+          "application_type": "webhook",
+          "authorization_type": "oauth2",
+          "status": "authorized",
+          "authorized": true,
+          "worker": "Default Worker"
+        },
+        {
+          "key": "slack",
+          "name": "Slack",
+          "description": "Business communication platform for team collaboration.",
+          "application_type": "webhook",
+          "authorization_type": "oauth2",
+          "status": "authorized",
+          "authorized": true,
+          "worker": "Default Worker"
+        },
+        {
+          "key": "zendesk",
+          "name": "Zendesk",
+          "description": "Customer service and support ticket platform.",
+          "application_type": "webhook",
+          "authorization_type": "oauth2",
+          "status": "uninstalled",
+          "worker": "Default Worker"
+        }
+      ]
+    },
+    {
+      "name": "Integration Worker",
+      "applications": [
+        {
+          "key": "hubspot",
+          "name": "HubSpot",
+          "description": "Complete CRM platform with marketing, sales, and service.",
+          "application_type": "webhook",
+          "authorization_type": "oauth2",
+          "status": "unauthorized",
+          "authorized": false,
+          "worker": "Integration Worker"
+        },
+        {
+          "key": "custom-app",
+          "name": "Custom App",
+          "description": "Custom application with no specific logo.",
+          "application_type": "cron",
+          "authorization_type": "basic",
+          "status": "unauthorized",
+          "authorized": false,
+          "worker": "Integration Worker"
+        },
+        {
+          "key": "shopify",
+          "name": "Shopify",
+          "description": "E-commerce platform for online stores and retail point-of-sale systems.",
+          "application_type": "webhook",
+          "authorization_type": "oauth2",
+          "status": "authorized",
+          "authorized": true,
+          "worker": "Integration Worker"
+        }
+      ]
+    }
+  ],
+  "applicationInstalls": {
+    "salesforce": {
+      "key": "salesforce",
+      "name": "Salesforce",
+      "description": "Cloud-based customer relationship management platform.",
+      "application_type": "webhook",
+      "authorization_type": "oauth2",
+      "authorized": true,
+      "worker": "Default Worker",
+      "applicationSettings": [
+        {
+          "key": "client_id",
+          "type": "text",
+          "label": "Client ID",
+          "value": "abc123xyz",
+          "description": "OAuth 2.0 Client ID from Salesforce",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "authorization"
+        },
+        {
+          "key": "client_secret",
+          "type": "password",
+          "label": "Client Secret",
+          "value": "secret_value",
+          "description": "OAuth 2.0 Client Secret from Salesforce",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "authorization"
+        },
+        {
+          "key": "auth_url",
+          "type": "url",
+          "label": "Authorization URL",
+          "value": "https://login.salesforce.com/services/oauth2/authorize",
+          "description": "Salesforce OAuth authorization endpoint",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "authorization"
+        },
+        {
+          "key": "limit_per_time",
+          "type": "number",
+          "label": "Limit per time",
+          "value": "100",
+          "description": "Maximum number of requests allowed",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "limiter"
+        },
+        {
+          "key": "time_in_seconds",
+          "type": "number",
+          "label": "Time in seconds",
+          "value": "60",
+          "description": "Time window for rate limiting",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "limiter"
+        },
+        {
+          "key": "use_limiting",
+          "type": "checkbox",
+          "label": "Use limiting",
+          "value": "true",
+          "description": "Enable rate limiting for API requests",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "limiter"
+        },
+        {
+          "key": "api_version",
+          "type": "selectbox",
+          "label": "API Version",
+          "value": "v52.0",
+          "description": "Salesforce API version to use",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": ["v50.0", "v51.0", "v52.0", "v53.0", "v54.0"],
+          "tab": "advanced"
+        },
+        {
+          "key": "sandbox_mode",
+          "type": "checkbox",
+          "label": "Sandbox Mode",
+          "value": "false",
+          "description": "Use Salesforce sandbox environment",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "advanced"
+        }
+      ],
+      "webhookSettings": [
+        {
+          "name": "Account Created",
+          "topology": "salesforce-sync",
+          "default": true,
+          "enabled": true
+        },
+        {
+          "name": "Contact Updated",
+          "topology": "salesforce-sync",
+          "default": false,
+          "enabled": true
+        }
+      ]
+    },
+    "mailchimp": {
+      "key": "mailchimp",
+      "name": "Mailchimp",
+      "description": "Online platform for sending professionals e-mails to mass recipients.",
+      "application_type": "webhook",
+      "authorization_type": "oauth2",
+      "authorized": false,
+      "worker": "Default Worker",
+      "applicationSettings": [
+        {
+          "key": "client_id",
+          "type": "text",
+          "label": "Client ID",
+          "value": "",
+          "description": "OAuth 2.0 Client ID from Mailchimp",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "authorization"
+        },
+        {
+          "key": "client_secret",
+          "type": "password",
+          "label": "Client Secret",
+          "value": "",
+          "description": "OAuth 2.0 Client Secret from Mailchimp",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "authorization"
+        },
+        {
+          "key": "auth_url",
+          "type": "url",
+          "label": "URL",
+          "value": "",
+          "description": "Mailchimp API base URL",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "authorization"
+        },
+        {
+          "key": "limit_per_time",
+          "type": "number",
+          "label": "Limit per time",
+          "value": "10",
+          "description": "Maximum number of requests allowed",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "limiter"
+        },
+        {
+          "key": "time_in_seconds",
+          "type": "number",
+          "label": "Time in seconds",
+          "value": "1",
+          "description": "Time window for rate limiting",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "limiter"
+        },
+        {
+          "key": "use_limiting",
+          "type": "checkbox",
+          "label": "Use limiting",
+          "value": "false",
+          "description": "Enable rate limiting for API requests",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "limiter"
+        }
+      ],
+      "webhookSettings": []
+    },
+    "hubspot": {
+      "key": "hubspot",
+      "name": "HubSpot",
+      "description": "Complete CRM platform with marketing, sales, and service.",
+      "application_type": "webhook",
+      "authorization_type": "oauth2",
+      "authorized": false,
+      "worker": "Integration Worker",
+      "applicationSettings": [
+        {
+          "key": "client_id",
+          "type": "text",
+          "label": "Client ID",
+          "value": "",
+          "description": "OAuth 2.0 Client ID from HubSpot",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "authorization"
+        },
+        {
+          "key": "client_secret",
+          "type": "password",
+          "label": "Client Secret",
+          "value": "",
+          "description": "OAuth 2.0 Client Secret from HubSpot",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "authorization"
+        },
+        {
+          "key": "auth_url",
+          "type": "url",
+          "label": "Authorization URL",
+          "value": "https://app.hubspot.com/oauth/authorize",
+          "description": "HubSpot OAuth authorization endpoint",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "authorization"
+        },
+        {
+          "key": "limit_per_time",
+          "type": "number",
+          "label": "Limit per time",
+          "value": "100",
+          "description": "Maximum number of requests allowed",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "limiter"
+        },
+        {
+          "key": "time_in_seconds",
+          "type": "number",
+          "label": "Time in seconds",
+          "value": "10",
+          "description": "Time window for rate limiting",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "limiter"
+        },
+        {
+          "key": "use_limiting",
+          "type": "checkbox",
+          "label": "Use limiting",
+          "value": "true",
+          "description": "Enable rate limiting for API requests",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "limiter"
+        },
+        {
+          "key": "portal_id",
+          "type": "text",
+          "label": "Portal ID",
+          "value": "",
+          "description": "Your HubSpot Portal ID",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "general"
+        },
+        {
+          "key": "sync_contacts",
+          "type": "checkbox",
+          "label": "Sync Contacts",
+          "value": "true",
+          "description": "Automatically sync contacts",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "general"
+        },
+        {
+          "key": "sync_companies",
+          "type": "checkbox",
+          "label": "Sync Companies",
+          "value": "true",
+          "description": "Automatically sync companies",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "general"
+        },
+        {
+          "key": "sync_deals",
+          "type": "checkbox",
+          "label": "Sync Deals",
+          "value": "false",
+          "description": "Automatically sync deals",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "general"
+        }
+      ],
+      "webhookSettings": []
+    },
+    "slack": {
+      "key": "slack",
+      "name": "Slack",
+      "description": "Business communication platform for team collaboration.",
+      "application_type": "webhook",
+      "authorization_type": "oauth2",
+      "authorized": true,
+      "worker": "Default Worker",
+      "applicationSettings": [
+        {
+          "key": "client_id",
+          "type": "text",
+          "label": "Client ID",
+          "value": "slack_client_123",
+          "description": "OAuth 2.0 Client ID from Slack",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "authorization"
+        },
+        {
+          "key": "client_secret",
+          "type": "password",
+          "label": "Client Secret",
+          "value": "slack_secret",
+          "description": "OAuth 2.0 Client Secret from Slack",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "authorization"
+        },
+        {
+          "key": "default_channel",
+          "type": "text",
+          "label": "Default Channel",
+          "value": "#general",
+          "description": "Default channel for notifications",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "general"
+        },
+        {
+          "key": "use_threading",
+          "type": "checkbox",
+          "label": "Use Threading",
+          "value": "true",
+          "description": "Send replies as threaded messages",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "general"
+        }
+      ],
+      "webhookSettings": []
+    },
+    "custom-app": {
+      "key": "custom-app",
+      "name": "Custom App",
+      "description": "Custom application with no specific logo.",
+      "application_type": "cron",
+      "authorization_type": "basic",
+      "authorized": false,
+      "worker": "Integration Worker",
+      "applicationSettings": [
+        {
+          "key": "username",
+          "type": "text",
+          "label": "Username",
+          "value": "",
+          "description": "Basic auth username",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "authentication"
+        },
+        {
+          "key": "password",
+          "type": "password",
+          "label": "Password",
+          "value": "",
+          "description": "Basic auth password",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "authentication"
+        },
+        {
+          "key": "api_endpoint",
+          "type": "url",
+          "label": "API Endpoint",
+          "value": "",
+          "description": "Base URL for API requests",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "configuration"
+        },
+        {
+          "key": "timeout",
+          "type": "number",
+          "label": "Timeout (seconds)",
+          "value": "30",
+          "description": "Request timeout in seconds",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "configuration"
+        },
+        {
+          "key": "retry_attempts",
+          "type": "number",
+          "label": "Retry Attempts",
+          "value": "3",
+          "description": "Number of retry attempts on failure",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "configuration"
+        },
+        {
+          "key": "environment",
+          "type": "selectbox",
+          "label": "Environment",
+          "value": "production",
+          "description": "Target environment",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "choices": ["development", "staging", "production"],
+          "tab": "configuration"
+        },
+        {
+          "key": "enable_logging",
+          "type": "checkbox",
+          "label": "Enable Logging",
+          "value": "true",
+          "description": "Log all API requests and responses",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "advanced"
+        },
+        {
+          "key": "enable_caching",
+          "type": "checkbox",
+          "label": "Enable Caching",
+          "value": "false",
+          "description": "Cache API responses",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "advanced"
+        },
+        {
+          "key": "cache_ttl",
+          "type": "number",
+          "label": "Cache TTL (seconds)",
+          "value": "300",
+          "description": "Cache time-to-live in seconds",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "advanced"
+        }
+      ],
+      "webhookSettings": []
+    },
+    "shopify": {
+      "key": "shopify",
+      "name": "Shopify",
+      "description": "E-commerce platform for online stores and retail point-of-sale systems.",
+      "application_type": "webhook",
+      "authorization_type": "oauth2",
+      "authorized": true,
+      "worker": "Integration Worker",
+      "applicationSettings": [
+        {
+          "key": "api_key",
+          "type": "text",
+          "label": "API Key",
+          "value": "shopify_key_789",
+          "description": "Shopify API Key",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "authorization"
+        },
+        {
+          "key": "api_secret",
+          "type": "password",
+          "label": "API Secret",
+          "value": "shopify_secret",
+          "description": "Shopify API Secret",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "authorization"
+        },
+        {
+          "key": "shop_domain",
+          "type": "text",
+          "label": "Shop Domain",
+          "value": "mystore.myshopify.com",
+          "description": "Your Shopify store domain",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "general"
+        },
+        {
+          "key": "sync_products",
+          "type": "checkbox",
+          "label": "Sync Products",
+          "value": "true",
+          "description": "Automatically sync product catalog",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "general"
+        },
+        {
+          "key": "sync_orders",
+          "type": "checkbox",
+          "label": "Sync Orders",
+          "value": "true",
+          "description": "Automatically sync orders",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "tab": "general"
+        }
+      ],
+      "webhookSettings": [
+        {
+          "name": "Order Created",
+          "topology": "shopify-orders",
+          "default": true,
+          "enabled": true
+        },
+        {
+          "name": "Product Updated",
+          "topology": "shopify-products",
+          "default": false,
+          "enabled": false
+        }
+      ]
+    }
+  }
+}
