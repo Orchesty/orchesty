@@ -41,7 +41,7 @@ const handleClose = () => {
 const getIconColor = () => {
   switch (props.type) {
     case 'success':
-      return 'text-green-500 bg-green-100 dark:bg-green-800 dark:text-green-200'
+      return 'text-primary-500 bg-primary-100 dark:bg-primary-800 dark:text-primary-200'
     case 'error':
       return 'text-red-500 bg-red-100 dark:bg-red-800 dark:text-red-200'
     case 'warning':

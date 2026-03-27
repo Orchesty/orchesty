@@ -255,28 +255,30 @@ services:
     frontend-new:
         build: ./../../app-ui-new/docker
         user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www/app-ui-new
+        working_dir: /var/www/pipes/app-ui-new
         environment:
+            CI: 'true'
             VITE_BACKEND_URL: ${BACKEND_URL}
             VITE_STARTINGPONT_URL: ${DEV_IP}:82
         ports:
             - ${DEV_IP}:84:3000
         volumes:
-            - ../../app-ui-new:/var/www/app-ui-new:cached
-        command: sh -c 'pnpm install && pnpm run dev'
+            - ../../:/var/www/pipes:cached
+        command: sh -c 'cd /var/www/pipes && pnpm install --filter @orchesty/ui-core && cd app-ui-new && pnpm run dev'
 
     frontend-new-enterprise:
         build: ./../../app-ui-new-enterprise/docker
         user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www/app-ui-new-enterprise
+        working_dir: /var/www/pipes/app-ui-new-enterprise
         environment:
+            CI: 'true'
             VITE_BACKEND_URL: ${BACKEND_ENTERPRISE_URL}
             VITE_STARTINGPONT_URL: ${DEV_IP}:82
         ports:
             - ${DEV_IP}:85:3000
         volumes:
-            - ../../app-ui-new-enterprise:/var/www/app-ui-new-enterprise:cached
-        command: sh -c 'pnpm install && pnpm run dev'
+            - ../../:/var/www/pipes:cached
+        command: sh -c 'cd /var/www/pipes && pnpm install --filter app-ui-new-enterprise... && cd app-ui-new-enterprise && pnpm run dev'
 
     applinth-marketplace-ui:
         build: ./../../applinth-marketplace-ui/docker

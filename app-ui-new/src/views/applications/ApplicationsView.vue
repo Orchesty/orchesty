@@ -2,7 +2,6 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import type { WorkerGroup, ApplicationStatus } from '@/types/applications';
 import { fetchApplications, installApplication } from '@/services/applicationsService';
-import DashboardLayout from '@/layouts/DashboardLayout.vue';
 import ApplicationCard from '@/components/applications/ApplicationCard.vue';
 import ApplicationDetailDrawer from '@/components/applications/ApplicationDetailDrawer.vue';
 import SearchInput from '@/components/ui/SearchInput.vue';
@@ -160,7 +159,8 @@ onMounted(async () => {
 </script>
 
 <template>
-  <DashboardLayout>
+  <main class="h-full overflow-y-auto">
+    <div class="px-4 pb-4 pt-6">
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Applications</h1>
       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Browse and manage available applications</p>
@@ -346,6 +346,7 @@ onMounted(async () => {
       :status="selectedAppStatus"
       @refresh="handleDrawerRefresh"
     />
-  </DashboardLayout>
+    </div>
+  </main>
 </template>
 

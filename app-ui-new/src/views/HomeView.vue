@@ -46,7 +46,7 @@ const { x, y } = useMouse()
 
         <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow">
           <div class="flex items-center gap-3 mb-3">
-            <Mouse :size="24" class="text-green-500" />
+            <Mouse :size="24" class="text-primary-500" />
             <h3 class="text-lg font-semibold text-gray-800">TypeScript</h3>
           </div>
           <p class="text-gray-600">
@@ -83,43 +83,43 @@ const { x, y } = useMouse()
         <h2 class="text-2xl font-bold text-gray-800 mb-4">Tech Stack Included</h2>
         <ul class="space-y-2">
           <li class="flex items-center gap-2 text-gray-700">
-            <span class="text-green-500">✓</span>
+            <span class="text-primary-500">✓</span>
             <span><strong>Vue 3</strong> with Composition API</span>
           </li>
           <li class="flex items-center gap-2 text-gray-700">
-            <span class="text-green-500">✓</span>
+            <span class="text-primary-500">✓</span>
             <span><strong>TypeScript</strong> for type safety</span>
           </li>
           <li class="flex items-center gap-2 text-gray-700">
-            <span class="text-green-500">✓</span>
+            <span class="text-primary-500">✓</span>
             <span><strong>Vite</strong> for lightning-fast builds</span>
           </li>
           <li class="flex items-center gap-2 text-gray-700">
-            <span class="text-green-500">✓</span>
+            <span class="text-primary-500">✓</span>
             <span><strong>Vue Router</strong> for navigation</span>
           </li>
           <li class="flex items-center gap-2 text-gray-700">
-            <span class="text-green-500">✓</span>
+            <span class="text-primary-500">✓</span>
             <span><strong>Pinia</strong> for state management</span>
           </li>
           <li class="flex items-center gap-2 text-gray-700">
-            <span class="text-green-500">✓</span>
+            <span class="text-primary-500">✓</span>
             <span><strong>Tailwind CSS</strong> for styling</span>
           </li>
           <li class="flex items-center gap-2 text-gray-700">
-            <span class="text-green-500">✓</span>
+            <span class="text-primary-500">✓</span>
             <span><strong>VueUse</strong> for composable utilities</span>
           </li>
           <li class="flex items-center gap-2 text-gray-700">
-            <span class="text-green-500">✓</span>
+            <span class="text-primary-500">✓</span>
             <span><strong>Axios</strong> for HTTP requests</span>
           </li>
           <li class="flex items-center gap-2 text-gray-700">
-            <span class="text-green-500">✓</span>
+            <span class="text-primary-500">✓</span>
             <span><strong>Lucide Vue Next</strong> for beautiful icons</span>
           </li>
           <li class="flex items-center gap-2 text-gray-700">
-            <span class="text-green-500">✓</span>
+            <span class="text-primary-500">✓</span>
             <span><strong>ESLint + Prettier</strong> for code quality</span>
           </li>
         </ul>

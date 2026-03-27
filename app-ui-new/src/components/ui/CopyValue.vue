@@ -46,7 +46,7 @@ const copyToClipboard = async () => {
       class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium transition-colors focus:outline-hidden"
       :class="
         copied
-          ? 'text-green-600 dark:text-green-400'
+          ? 'text-primary-600 dark:text-primary-400'
           : 'text-gray-500 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
       "
       @click="copyToClipboard"
@@ -87,7 +87,7 @@ const copyToClipboard = async () => {
     class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium transition-colors focus:outline-hidden"
     :class="
       copied
-        ? 'text-green-600 dark:text-green-400'
+        ? 'text-primary-600 dark:text-primary-400'
         : 'text-gray-500 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
     "
     @click="copyToClipboard"

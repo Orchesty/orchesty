@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import Tabs from '@/components/ui/Tabs.vue'
 import TextInput from '@/components/ui/TextInput.vue'
 import PasswordInput from '@/components/ui/PasswordInput.vue'
@@ -129,7 +128,7 @@ const handleSelectAll = () => {
 </script>
 
 <template>
-  <DashboardLayout>
+  <main class="h-full overflow-y-auto"><div class="px-4 pb-4 pt-6">
     <!-- Page Header -->
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Account settings</h1>
@@ -281,6 +280,6 @@ const handleSelectAll = () => {
         </Card>
       </div>
     </div>
-  </DashboardLayout>
+  </div></main>
 </template>
 

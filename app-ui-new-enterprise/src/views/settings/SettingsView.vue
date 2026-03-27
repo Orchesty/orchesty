@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import Tabs, { type Tab } from '@/components/ui/Tabs.vue'
 import WorkersTab from '@/components/settings/WorkersTab.vue'
 import TokensTab from '@/components/settings/TokensTab.vue'
@@ -31,7 +30,7 @@ const settingsTabs: Tab[] = [
 </script>
 
 <template>
-  <DashboardLayout>
+  <main class="h-full overflow-y-auto"><div class="px-4 pb-4 pt-6">
     <!-- Page Header -->
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
@@ -67,6 +66,6 @@ const settingsTabs: Tab[] = [
         <AuditEntitiesTab />
       </div>
     </Tabs>
-  </DashboardLayout>
+  </div></main>
 </template>
 

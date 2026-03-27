@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
-import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import TextInput from '@/components/ui/datagrid/TextInput.vue'
@@ -152,7 +151,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <DashboardLayout>
+  <main class="h-full overflow-y-auto"><div class="px-4 pb-4 pt-6">
     <!-- Page Header -->
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Logs</h1>
@@ -281,6 +280,6 @@ onMounted(() => {
       v-model="drawerOpen"
       :log="selectedLog"
     />
-  </DashboardLayout>
+  </div></main>
 </template>
 

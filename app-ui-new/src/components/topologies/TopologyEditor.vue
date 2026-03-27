@@ -7,6 +7,8 @@ import RunProcessModal from '@/components/topologies/RunProcessModal.vue'
 import BreakpointModal from '@/components/topologies/BreakpointModal.vue'
 import FailedMessageModal from '@/components/topologies/FailedMessageModal.vue'
 import CopyValue from '@/components/ui/CopyValue.vue'
+import StatusBadge from '@/components/ui/StatusBadge.vue'
+import type { BadgeVariant } from '@/components/ui/StatusBadge.vue'
 import { useCronNodeActions } from '@/composables/useCronNodeActions'
 import { getNextCronRun } from '@/utils/cronParser'
 import { useToast } from '@/composables/useToast'
@@ -509,10 +511,7 @@ const loadInitialOverlays = async () => {
         ['event', 'webhook', 'cron'].includes(n.label.toLowerCase())
       )
       processStartNodeName.value = startNode?.name || 'topology'
-
-      if (isRunning) {
-        polling.startPollingWithId(process.id)
-      }
+      polling.startPollingWithId(process.id)
     }
   } catch {
     // silently ignore init overlay errors
@@ -590,13 +589,12 @@ const processStatus = computed(() => {
   return 'running'
 })
 
-const statusBadgeClass = computed(() => {
-  const base = 'text-xs font-medium px-2.5 py-0.5 rounded-full'
+const statusBadgeVariant = computed<BadgeVariant>(() => {
   switch (processStatus.value) {
-    case 'running': return `${base} bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300`
-    case 'success': return `${base} bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300`
-    case 'failed': return `${base} bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300`
-    default: return base
+    case 'running': return 'blue'
+    case 'success': return 'green'
+    case 'failed': return 'red'
+    default: return 'gray'
   }
 })
 
@@ -758,7 +756,7 @@ watch(() => props.refreshKey, () => {
               <span class="font-semibold text-gray-900 dark:text-white">
                 Process from event {{ processStartNodeName }}
               </span>
-              <span :class="statusBadgeClass">{{ statusLabel }}</span>
+              <StatusBadge :variant="statusBadgeVariant">{{ statusLabel }}</StatusBadge>
             </div>
             <div v-if="polling.processDetail.value?.id" class="text-gray-500 dark:text-gray-400">
               Correl. ID:

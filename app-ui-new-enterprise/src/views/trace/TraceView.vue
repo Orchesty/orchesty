@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue'
 import { Bot } from 'lucide-vue-next'
-import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import Button from '@/components/ui/Button.vue'
 import ChatMessage from '@/components/trace/ChatMessage.vue'
 import ChatInput from '@/components/trace/ChatInput.vue'
@@ -158,7 +157,7 @@ const handleExportPdf = () => {
 </script>
 
 <template>
-  <DashboardLayout>
+  <main class="h-full overflow-y-auto"><div class="px-4 pb-4 pt-6">
     <div class="relative h-[calc(100vh-8rem)] w-full bg-gray-50 dark:bg-gray-900">
       <!-- Reports Button (absolute, top-right) -->
       <div class="absolute top-4 right-4 z-10">
@@ -222,6 +221,6 @@ const handleExportPdf = () => {
       @copy="handleCopy"
       @export-pdf="handleExportPdf"
     />
-  </DashboardLayout>
+  </div></main>
 </template>
 

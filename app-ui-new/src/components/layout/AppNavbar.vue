@@ -1,29 +1,30 @@
 <script setup lang="ts">
 import { RouterLink, useRouter } from 'vue-router'
 import { onMounted, computed } from 'vue'
-import { BotMessageSquare } from 'lucide-vue-next'
 import { useDarkMode } from '@/composables/useDarkMode'
-import { useTraceDrawer } from '@/composables/useTraceDrawer'
 import { useAuthStore } from '@/stores/auth'
 import DropdownMenu, { type DropdownMenuSection } from '@/components/ui/DropdownMenu.vue'
 
-// Initialize dark mode toggle
+interface Props {
+  extraMenuItems?: { type: 'link'; label: string; to: string }[]
+  extraNavSlots?: string[]
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  extraMenuItems: () => [],
+  extraNavSlots: () => [],
+})
+
 useDarkMode()
 
-// Trace drawer toggle
-const { toggleDrawer } = useTraceDrawer()
-
-// Auth store and router
 const authStore = useAuthStore()
 const router = useRouter()
 
-// Logout handler
 const handleLogout = async () => {
   await authStore.logout()
   router.push('/sign-in')
 }
 
-// Account dropdown menu sections
 const accountMenuSections = computed<DropdownMenuSection[]>(() => [
   {
     header: {
@@ -33,7 +34,7 @@ const accountMenuSections = computed<DropdownMenuSection[]>(() => [
     items: [
       { type: 'link', label: 'Account settings', to: '/orchesty/account' },
       { type: 'link', label: 'Users', to: '/users' },
-      { type: 'link', label: 'Audit logs', to: '/audit-logs' },
+      ...props.extraMenuItems.map(item => ({ type: 'link' as const, label: item.label, to: item.to })),
     ],
   },
   {
@@ -49,9 +50,6 @@ const accountMenuSections = computed<DropdownMenuSection[]>(() => [
 ])
 
 onMounted(async () => {
-  // Only init components that use data-* attributes (dropdowns, tabs, collapses).
-  // Drawers and modals manage their own Flowbite instances in Vue — calling
-  // initDrawers/initModals here would warn about instances that don't exist yet.
   const { initDropdowns, initTabs, initCollapses } = await import('flowbite')
   initDropdowns()
   initTabs()
@@ -65,26 +63,15 @@ onMounted(async () => {
       class="relative z-50 border-b border-gray-200 bg-white py-2.5 pr-4 dark:border-gray-700 dark:bg-gray-800 lg:pr-6"
     >
       <div class="flex w-full items-center justify-between">
-        <!-- Logo -->
         <div class="flex w-16 shrink-0 items-center justify-center">
           <RouterLink to="/dashboard" class="flex items-center">
             <img src="/logo.svg" alt="Orchesty" class="h-8 w-8" />
           </RouterLink>
         </div>
 
-        <!-- Right side buttons -->
         <div class="flex shrink-0 items-center justify-end">
-          <!-- Trace Drawer Toggle Button -->
-          <button
-            type="button"
-            @click="toggleDrawer"
-            class="mx-2 inline-flex items-center rounded-lg p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-          >
-            <span class="sr-only">Toggle Trace</span>
-            <BotMessageSquare class="h-6 w-6" aria-hidden="true" />
-          </button>
+          <slot name="extra-nav-buttons" />
 
-          <!-- User Menu -->
           <DropdownMenu
             id="account-dropdown"
             :sections="accountMenuSections"
@@ -112,12 +99,7 @@ onMounted(async () => {
               >
                 <span>Dark mode</span>
                 <div class="ml-auto inline-flex items-center">
-                  <input
-                    id="theme-toggle"
-                    type="checkbox"
-                    value=""
-                    class="peer sr-only"
-                  />
+                  <input id="theme-toggle" type="checkbox" value="" class="peer sr-only" />
                   <div
                     class="peer relative h-5 w-9 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-primary-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-hidden peer-focus:ring-4 peer-focus:ring-primary-300 dark:border-gray-500 dark:bg-gray-600 dark:peer-focus:ring-primary-800 rtl:peer-checked:after:-translate-x-full"
                   ></div>
@@ -139,27 +121,14 @@ onMounted(async () => {
             </template>
           </DropdownMenu>
 
-          <!-- Mobile menu toggle button -->
           <button
             type="button"
             id="toggleMobileMenuButton"
             class="items-center rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:ml-2 md:hidden"
           >
             <span class="sr-only">Open menu</span>
-            <svg
-              class="h-[18px] w-[18px]"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 17 14"
-            >
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M1 1h15M1 7h15M1 13h15"
-              ></path>
+            <svg class="h-[18px] w-[18px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"></path>
             </svg>
           </button>
         </div>

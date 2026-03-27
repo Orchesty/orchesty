@@ -151,7 +151,7 @@ const handleSubmit = (e: Event) => {
 
         <!-- Description & Upcoming Runs -->
         <div v-else-if="crontabDescription || upcomingRuns.length > 0" class="mt-2">
-          <p v-if="crontabDescription" class="text-xs text-green-600 dark:text-green-400">
+          <p v-if="crontabDescription" class="text-xs text-primary-600 dark:text-primary-400">
             {{ crontabDescription }}
           </p>
           <div v-if="upcomingRuns.length > 0" class="mt-1 text-xs text-gray-500 dark:text-gray-400">

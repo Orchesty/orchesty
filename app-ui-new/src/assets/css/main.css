@@ -270,12 +270,12 @@
 }
 
 .fc .fc-event.fc-event-green .fc-event-main {
-  @apply !rounded-lg !border-0 !bg-green-50 !p-2 !text-sm !font-medium !text-green-700 hover:!bg-green-100 dark:!bg-green-900 dark:!text-green-300 dark:hover:!bg-green-800;
+  @apply !rounded-lg !border-0 !bg-primary-50 !p-2 !text-sm !font-medium !text-primary-700 hover:!bg-primary-100 dark:!bg-primary-900 dark:!text-primary-300 dark:hover:!bg-primary-800;
 }
 
 .fc .fc-event.fc-event-green .fc-event-main-frame:before {
   content: "";
-  @apply !mr-1.5 !h-2 !w-2 !rounded-full !bg-green-700 dark:!bg-green-300;
+  @apply !mr-1.5 !h-2 !w-2 !rounded-full !bg-primary-700 dark:!bg-primary-300;
 }
 
 .fc .fc-event.fc-event-yellow .fc-event-main {

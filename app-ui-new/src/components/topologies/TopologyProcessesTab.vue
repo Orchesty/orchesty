@@ -2,6 +2,7 @@
 import { ref, onMounted, onActivated, onDeactivated, watch } from 'vue'
 import ProcessAuditDrawer from '@/components/dashboard/ProcessAuditDrawer.vue'
 import Card from '@/components/ui/Card.vue'
+import StatusBadge from '@/components/ui/StatusBadge.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
 import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
@@ -172,18 +173,9 @@ watch(() => props.refreshKey, () => {
         </template>
 
         <template #cell-status="{ value }">
-          <span
-            :class="[
-              'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
-              value === 'completed'
-                ? 'bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-300'
-                : value === 'running'
-                ? 'bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-300'
-                : 'bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-300',
-            ]"
-          >
+          <StatusBadge :variant="value === 'completed' ? 'green' : value === 'running' ? 'blue' : 'red'">
             {{ value.charAt(0).toUpperCase() + value.slice(1) }}
-          </span>
+          </StatusBadge>
         </template>
 
         <template #cell-errorMessage="{ value }">

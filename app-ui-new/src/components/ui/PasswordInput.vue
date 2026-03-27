@@ -62,7 +62,7 @@ const strengthColor = computed(() => {
     'too-short': 'bg-red-500',
     'weak': 'bg-orange-500',
     'fair': 'bg-yellow-500',
-    'strong': 'bg-green-500',
+    'strong': 'bg-primary-500',
   }
   return map[strength.value]
 })
@@ -82,7 +82,7 @@ const strengthTextColor = computed(() => {
     'too-short': 'text-red-500',
     'weak': 'text-orange-500',
     'fair': 'text-yellow-500',
-    'strong': 'text-green-500',
+    'strong': 'text-primary-500',
   }
   return map[strength.value]
 })

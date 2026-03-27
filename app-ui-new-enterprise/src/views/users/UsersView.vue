@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import Tabs, { type Tab } from '@/components/ui/Tabs.vue'
 import UsersTab from '@/components/users/UsersTab.vue'
 import InvitedTab from '@/components/users/InvitedTab.vue'
@@ -31,7 +30,7 @@ const usersTabs: Tab[] = [
 </script>
 
 <template>
-  <DashboardLayout>
+  <main class="h-full overflow-y-auto"><div class="px-4 pb-4 pt-6">
     <!-- Page Header -->
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Users management</h1>
@@ -55,6 +54,6 @@ const usersTabs: Tab[] = [
         <GroupsTab />
       </div>
     </Tabs>
-  </DashboardLayout>
+  </div></main>
 </template>
 

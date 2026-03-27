@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import CronSettingsModal from '@/components/scheduled-tasks/CronSettingsModal.vue'
@@ -139,7 +138,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <DashboardLayout>
+  <main class="h-full overflow-y-auto"><div class="px-4 pb-4 pt-6">
     <!-- Page Header -->
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Scheduled Tasks</h1>
@@ -257,6 +256,6 @@ onBeforeUnmount(() => {
       :task="selectedTask"
       @save="handleCronSave"
     />
-  </DashboardLayout>
+  </div></main>
 </template>
 
