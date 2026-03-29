@@ -6,3 +6,32 @@ services:
 
     Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\AuditEntityController:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\AuditEntityController
+
+    Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\CloudWebhookController:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\CloudWebhookController
+        arguments:
+            - '@hbpf.cloud.handler.user_sync'
+
+    hbpf.cloud.handler.user_sync:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\CloudUserSyncHandler
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@security.password_hasher_factory'
+            - '@hbpf.manager.group'
+            - '%orchesty_cloud_url%'
+
+    hbpf.auth0.jwks_cache:
+        class: Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0\JwksCacheService
+        arguments:
+            - '%auth0_domain%'
+            - '@cache.app'
+
+    Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0\Auth0Authenticator:
+        class: Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0\Auth0Authenticator
+        arguments:
+            - '%auth0_domain%'
+            - '%auth0_audience%'
+            - '@hbpf.auth0.jwks_cache'
+            - '@hbpf.database_manager_locator'
+            - '@hbpf.user.provider.resource'

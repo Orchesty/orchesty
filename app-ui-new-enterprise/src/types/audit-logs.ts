@@ -1,4 +1,4 @@
-import type { QueryParams } from './api'
+import type { QueryParams } from '@/types/api'
 
 export type AuditAction = 'Created' | 'Updated' | 'Deleted' | 'Viewed' | 'Executed' | 'Published' | 'Exported'
 

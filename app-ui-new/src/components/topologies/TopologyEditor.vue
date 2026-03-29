@@ -403,7 +403,7 @@ const labelCustomization: LabelCustomizationMap = {
 
 const editorConfig = createConfig({
   mode: 'readonly',
-  canvasHeight: 'calc(100vh - 280px)',
+  canvasHeight: '100%',
   labelCustomization
 })
 
@@ -734,7 +734,7 @@ watch(() => props.refreshKey, () => {
 </script>
 
 <template>
-  <div class="relative">
+  <div class="relative h-full">
     <Editor :config="editorConfig" @ready="onEditorReady" @node-position-changed="handlePositionChanged" />
 
     <Transition
@@ -820,7 +820,10 @@ watch(() => props.refreshKey, () => {
 </template>
 
 <style scoped>
-/* Hide property control in readonly mode */
+:deep(.rete-editor-wrapper) {
+  height: 100%;
+}
+
 :deep(.property-control) {
   display: none;
 }

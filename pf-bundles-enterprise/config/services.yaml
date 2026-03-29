@@ -11,3 +11,20 @@ parameters:
   startingPointHost: "%env(string:STARTING_POINT_URL)%"
   activateLink: '%backendHost%/user/%s/activate'
   passwordLink: 'reset-password/%s'
+
+  env(ORCHESTY_CLOUD_URL): ''
+  env(AUTH0_DOMAIN): ''
+  env(AUTH0_AUDIENCE): ''
+  orchesty_cloud_url: '%env(string:ORCHESTY_CLOUD_URL)%'
+  auth0_domain: '%env(string:AUTH0_DOMAIN)%'
+  auth0_audience: '%env(string:AUTH0_AUDIENCE)%'
+
+services:
+    Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0\Auth0Authenticator:
+        arguments:
+            $auth0Domain: '%auth0_domain%'
+            $auth0Audience: '%auth0_audience%'
+            $jwksCacheService: '@hbpf.auth0.jwks_cache'
+            $jwtAuthenticator: '@Hanaboso\UserBundle\Model\Security\JWTAuthenticator'
+            $dml: '@hbpf.database_manager_locator'
+            $resourceProvider: '@hbpf.user.provider.resource'

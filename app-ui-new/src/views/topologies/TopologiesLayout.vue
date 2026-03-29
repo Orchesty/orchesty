@@ -365,9 +365,7 @@ onMounted(async () => {
 
       <div id="main-content" class="flex-1 bg-gray-50 dark:bg-gray-900 overflow-hidden">
         <main class="relative h-full overflow-hidden">
-          <div class="h-full overflow-y-auto">
-            <RouterView />
-          </div>
+          <RouterView />
         </main>
       </div>
   </div>

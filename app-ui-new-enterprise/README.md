@@ -1,27 +1,85 @@
-# .
+# Orchesty Enterprise UI
 
-This template should help get you started developing with Vue 3 in Vite.
+Enterprise frontend for Orchesty. Consumes `app-ui-new` (core) as a library and adds enterprise-specific features (ACL, SSO, cloud integration).
 
-## Recommended IDE Setup
+## Authentication Modes
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+The application supports three authentication modes, controlled by environment variables. The frontend variables are `VITE_*` prefixed (Vite convention), the backend variables are plain.
 
-## Recommended Browser Setup
+### 1. Cloud mode
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) 
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+Automatic redirect to Auth0 — no login form is shown, just a spinner. Used for cloud-hosted deployments where user management is handled externally.
 
-## Type Support for `.vue` Imports in TS
+**Frontend (`VITE_*`):**
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+| Variable | Example |
+|---|---|
+| `VITE_AUTH0_DOMAIN` | `dev-xxx.eu.auth0.com` |
+| `VITE_AUTH0_CLIENT_ID` | `1XIsyOq2kpTDt4qOlop2rEAQzPcE2Q5p` |
+| `VITE_AUTH0_AUDIENCE` | `https://api.orchesty.cloud` |
+| `VITE_AUTH0_REDIRECT` | `true` |
 
-## Customize configuration
+**Backend:**
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+| Variable | Example |
+|---|---|
+| `AUTH0_DOMAIN` | `dev-xxx.eu.auth0.com` |
+| `AUTH0_AUDIENCE` | `https://api.orchesty.cloud` |
+
+### 2. On-prem SSO mode
+
+Login page shows Auth0 social buttons (Google, GitHub) alongside a classic email/password form. Used for on-prem deployments with internet access where SSO is desired but manual login is still an option.
+
+**Frontend (`VITE_*`):**
+
+| Variable | Example |
+|---|---|
+| `VITE_AUTH0_DOMAIN` | `dev-xxx.eu.auth0.com` |
+| `VITE_AUTH0_CLIENT_ID` | `1XIsyOq2kpTDt4qOlop2rEAQzPcE2Q5p` |
+| `VITE_AUTH0_AUDIENCE` | `https://api.orchesty.cloud` |
+| `VITE_AUTH0_REDIRECT` | _(not set or not `true`)_ |
+
+**Backend:**
+
+| Variable | Example |
+|---|---|
+| `AUTH0_DOMAIN` | `dev-xxx.eu.auth0.com` |
+| `AUTH0_AUDIENCE` | `https://api.orchesty.cloud` |
+
+### 3. Legacy mode (email/password only)
+
+Classic email/password form only. No Auth0, no SSO. Used for fully offline / air-gapped on-prem deployments.
+
+**Frontend:** None of the `VITE_AUTH0_*` variables are set.
+
+**Backend:** `AUTH0_DOMAIN` and `AUTH0_AUDIENCE` are not set (default to empty string).
+
+### How it works
+
+The mode is determined at build/runtime by `src/auth/auth0-plugin.ts`:
+
+```typescript
+isAuth0Enabled  = !!(VITE_AUTH0_DOMAIN && VITE_AUTH0_CLIENT_ID)
+isAuth0Redirect = isAuth0Enabled && VITE_AUTH0_REDIRECT === 'true'
+```
+
+- **Cloud:** `isAuth0Enabled = true`, `isAuth0Redirect = true` — auto-redirect, no form
+- **On-prem SSO:** `isAuth0Enabled = true`, `isAuth0Redirect = false` — social buttons + form
+- **Legacy:** `isAuth0Enabled = false` — email/password form only
+
+### Where to set the variables
+
+- **Docker Compose (dev):** `clients/demo/docker-compose.yml` — `environment` section of `frontend-enterprise` (frontend) and `backend-enterprise` (backend) services.
+- **Production:** Inject as environment variables into the respective containers. Frontend vars must be available at Vite build time (or use runtime env injection in the Docker entrypoint).
+
+### Backend dual-mode authenticator
+
+The backend uses a single `Auth0Authenticator` that handles both modes internally:
+
+- When `AUTH0_DOMAIN` is set and the incoming JWT has RS256 algorithm (Auth0 token) — verifies via Auth0 JWKS.
+- Otherwise — delegates to the legacy `JWTAuthenticator` (HS512).
+
+This is configured in `pf-bundles-enterprise/config/packages/security.yaml` and `pf-bundles-enterprise/config/services.yaml`.
 
 ## Project Setup
 
@@ -39,28 +97,6 @@ npm run dev
 
 ```sh
 npm run build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
-
-### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
-
-```sh
-npm run test:e2e:dev
-```
-
-This runs the end-to-end tests against the Vite development server.
-It is much faster than the production build.
-
-But it's still recommended to test the production build with `test:e2e` before deploying (e.g. in CI environments):
-
-```sh
-npm run build
-npm run test:e2e
 ```
 
 ### Lint with [ESLint](https://eslint.org/)

@@ -605,9 +605,9 @@ onMounted(async () => {
   </div>
 
   <!-- Topology Detail -->
-  <div v-else-if="topology" class="px-4 pt-2 pb-4">
+  <div v-else-if="topology" class="flex flex-col h-full px-4 pt-2 overflow-hidden">
     <!-- Page Header -->
-    <div class="mb-6">
+    <div class="mb-4 shrink-0">
       <div class="flex items-center justify-between mb-2">
         <!-- Toggle Sidebar Button + Breadcrumb -->
         <div>
@@ -721,7 +721,7 @@ onMounted(async () => {
     </div>
 
     <!-- Tabs Navigation -->
-    <div class="mb-6 border-b border-gray-200 dark:border-gray-700">
+    <div class="shrink-0 border-b border-gray-200 dark:border-gray-700">
       <ul class="-mb-px flex flex-wrap text-center text-sm font-medium" role="tablist">
         <li v-for="tab in topologyTabs" :key="tab.id" class="mr-2" role="presentation">
           <button
@@ -740,14 +740,17 @@ onMounted(async () => {
 
     <!-- Tabs Content -->
 
-    <!-- Topology (editor) -->
-    <div v-show="activeTopologyTab === 'topology'">
-      <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
-        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden">
+    <!-- Topology (editor) — fills remaining vertical space -->
+    <div v-show="activeTopologyTab === 'topology'" class="flex-1 min-h-0 mt-4">
+      <div class="h-full dark:bg-gray-800 dark:shadow-sm dark:rounded-lg">
+        <div class="h-full bg-gray-50 dark:bg-gray-900 dark:rounded-lg overflow-hidden">
           <TopologyEditor ref="topologyEditorRef" :topology-id="topology._id" :topology-enabled="topology.enabled" :refresh-key="refreshKey" @process-run="handleProcessRun" />
         </div>
       </div>
     </div>
+
+    <!-- Non-editor tabs — scrollable -->
+    <div v-show="activeTopologyTab !== 'topology'" class="flex-1 min-h-0 overflow-y-auto pt-4 pb-4">
 
     <!-- Context -->
     <div v-show="activeTopologyTab === 'context'">
@@ -920,6 +923,8 @@ onMounted(async () => {
         <p class="text-sm text-gray-500 dark:text-gray-400">No metrics data available</p>
       </div>
     </div>
+
+    </div><!-- /non-editor scrollable wrapper -->
   </div>
 
   <!-- Version History Drawer -->

@@ -111,6 +111,8 @@ services:
             #DOCKER_PF_BRIDGE_IMAGE: orchesty/bridge:${VERSION}
             DOCKER_PF_BRIDGE_IMAGE: dkr.hanaboso.net/pipes/pipes/pf-bridge:new-ui
             JWT_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
+            AUTH0_DOMAIN: dev-qsa0lopaqbhr0vmj.eu.auth0.com
+            AUTH0_AUDIENCE: https://api.orchesty.cloud
             EMAIL_DSN: smtp://mailhog:1025
             ALPHA_INSTANCE_ID: 'demo'
             INSTALLER_DIRS: '["/var/www/pipes/clients/demo/node-sdk/src/topology"]'
@@ -155,6 +157,9 @@ services:
             #DOCKER_PF_BRIDGE_IMAGE: orchesty/bridge:${VERSION}
             DOCKER_PF_BRIDGE_IMAGE: dkr.hanaboso.net/pipes/pipes/pf-bridge:new-ui
             JWT_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
+            AUTH0_DOMAIN: dev-qsa0lopaqbhr0vmj.eu.auth0.com
+            AUTH0_AUDIENCE: https://api.orchesty.cloud
+            ORCHESTY_CLOUD_URL: http://host.docker.internal:3000
             EMAIL_DSN: smtp://mailhog:1025
             ALPHA_INSTANCE_ID: 'demo'
             INSTALLER_DIRS: '["/var/www/pipes/clients/demo/node-sdk/src/topology"]'
@@ -274,6 +279,10 @@ services:
             CI: 'true'
             VITE_BACKEND_URL: ${BACKEND_ENTERPRISE_URL}
             VITE_STARTINGPONT_URL: ${DEV_IP}:82
+            VITE_AUTH0_DOMAIN: dev-qsa0lopaqbhr0vmj.eu.auth0.com
+            VITE_AUTH0_CLIENT_ID: 1XIsyOq2kpTDt4qOlop2rEAQzPcE2Q5p
+            VITE_AUTH0_AUDIENCE: https://api.orchesty.cloud
+            VITE_AUTH0_REDIRECT: 'true'
         ports:
             - ${DEV_IP}:85:3000
         volumes:

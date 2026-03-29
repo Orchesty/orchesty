@@ -17,6 +17,7 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "@auth0/auth0-vue": "^2.5.0",
     "@orchesty/ui-core": "workspace:*",
     "@vuepic/vue-datepicker": "^12.1.0",
     "@vueuse/core": "^11.3.0",

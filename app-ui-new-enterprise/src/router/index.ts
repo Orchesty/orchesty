@@ -1,5 +1,8 @@
-import type { RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { coreRoutes, createAppRouter } from '@orchesty/ui-core'
+import { useAuth0 } from '@auth0/auth0-vue'
+import { isAuth0Enabled, isAuth0Redirect } from '@/auth/auth0-plugin'
+import { useAuthStore } from '@/stores/auth'
 
 import EnterpriseDashboardLayout from '@/layouts/DashboardLayout.vue'
 import DashboardView from '@/views/dashboard/DashboardView.vue'
@@ -111,5 +114,70 @@ function mergeRoutes(routes: RouteRecordRaw[]): RouteRecordRaw[] {
 export { invalidateUsersExistCache } from '@orchesty/ui-core'
 
 export function createEnterpriseRouter() {
-  return createAppRouter(mergeRoutes(coreRoutes))
+  if (!isAuth0Enabled) {
+    return createAppRouter(mergeRoutes(coreRoutes))
+  }
+
+  const router = createRouter({
+    history: createWebHistory(import.meta.env.BASE_URL),
+    routes: mergeRoutes(coreRoutes),
+  })
+
+  let auth0CallbackHandled = false
+  let backendVerified = false
+
+  function waitForAuth0Loading(auth0: ReturnType<typeof useAuth0>): Promise<void> {
+    if (!auth0.isLoading.value) return Promise.resolve()
+    return new Promise<void>((resolve) => {
+      const check = () => {
+        if (!auth0.isLoading.value) resolve()
+        else setTimeout(check, 50)
+      }
+      check()
+    })
+  }
+
+  router.beforeEach(async (to, _from, next) => {
+    const authStore = useAuthStore()
+    const auth0 = useAuth0()
+
+    await waitForAuth0Loading(auth0)
+
+    if (auth0.isAuthenticated.value && !auth0CallbackHandled) {
+      auth0CallbackHandled = true
+      try {
+        await authStore.handleAuth0Callback(auth0)
+        backendVerified = true
+      } catch (err: any) {
+        backendVerified = false
+        console.error('[Auth0 Router] handleAuth0Callback FAILED:', err)
+      }
+    }
+
+    const publicRoutes = ['/sign-in', '/setup', '/forgot-password']
+    const isPublicRoute =
+      publicRoutes.includes(to.path) ||
+      to.path.startsWith('/reset-password') ||
+      to.path.startsWith('/accept-invite')
+    const requiresAuth = !isPublicRoute
+
+    if (requiresAuth && !auth0.isAuthenticated.value) {
+      if (isAuth0Redirect) {
+        await auth0.loginWithRedirect({
+          appState: { target: to.fullPath },
+        })
+        return
+      }
+      next('/sign-in')
+      return
+    }
+
+    if (to.path === '/sign-in' && auth0.isAuthenticated.value && backendVerified) {
+      next('/dashboard')
+    } else {
+      next()
+    }
+  })
+
+  return router
 }

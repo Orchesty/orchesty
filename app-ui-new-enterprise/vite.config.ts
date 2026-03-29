@@ -1,4 +1,4 @@
-import { fileURLToPath, URL } from 'node:url'
+import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
 import { defineConfig, type Plugin } from 'vite'
@@ -20,33 +20,35 @@ function dualAliasPlugin(): Plugin {
       const isFromCore =
         importer.includes('/app-ui-new/src/') &&
         !importer.includes('/app-ui-new-enterprise/')
-      const root = isFromCore ? coreSrcDir : enterpriseSrcDir
-      const resolved = path.join(root, relPath)
 
-      return this.resolve(resolved, importer, { ...options, skipSelf: true })
+      if (isFromCore) {
+        return this.resolve(path.join(coreSrcDir, relPath), importer, { ...options, skipSelf: true })
+      }
+
+      const enterpriseResult = await this.resolve(
+        path.join(enterpriseSrcDir, relPath), importer, { ...options, skipSelf: true },
+      )
+      if (enterpriseResult) return enterpriseResult
+
+      return this.resolve(path.join(coreSrcDir, relPath), importer, { ...options, skipSelf: true })
     },
   }
 }
 
 // https://vite.dev/config/
-export default defineConfig(({ command }) => {
-  const isDev = command === 'serve'
-
+export default defineConfig(() => {
   return {
     plugins: [
-      ...(isDev ? [dualAliasPlugin()] : []),
+      dualAliasPlugin(),
       vue(),
       vueDevTools(),
       tailwindcss(),
     ],
     resolve: {
       alias: {
-        ...(!isDev && { '@': enterpriseSrcDir }),
-        ...(isDev && {
-          '@orchesty/ui-core': fileURLToPath(
-            new URL('../app-ui-new/src/index.ts', import.meta.url),
-          ),
-        }),
+        '@orchesty/ui-core': fileURLToPath(
+          new URL('../app-ui-new/src/index.ts', import.meta.url),
+        ),
       },
     },
     server: {

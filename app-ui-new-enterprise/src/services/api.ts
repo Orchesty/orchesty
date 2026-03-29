@@ -1,5 +1,6 @@
 import axios, { type InternalAxiosRequestConfig } from 'axios'
 import type { LoginResponse } from '@/types/auth'
+import { isAuth0Enabled } from '@/auth/auth0-plugin'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.66:8085',
@@ -34,6 +35,13 @@ const SKIP_REFRESH_URLS = ['/api/user/check_logged', '/api/user/login']
 function forceLogout() {
   localStorage.removeItem('auth_token')
   localStorage.removeItem('auth_user')
+
+  if (isAuth0Enabled) {
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith('@@auth0spajs@@'))
+      .forEach((k) => localStorage.removeItem(k))
+  }
+
   if (window.location.pathname !== '/sign-in') {
     window.location.href = '/sign-in'
   }
@@ -79,7 +87,9 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('auth_token')
     if (token) {
-      config.headers.Authorization = token
+      config.headers.Authorization = isAuth0Enabled && !token.startsWith('Bearer ')
+        ? `Bearer ${token}`
+        : token
     }
     return config
   },
@@ -94,6 +104,29 @@ api.interceptors.response.use(
 
     if (error.response?.status !== 401 || !originalRequest) {
       return Promise.reject(error)
+    }
+
+    // In Auth0 mode, try silent token refresh via auth0 plugin
+    if (isAuth0Enabled) {
+      if (originalRequest._retry) {
+        forceLogout()
+        return Promise.reject(error)
+      }
+      originalRequest._retry = true
+      try {
+        const { auth0Plugin } = await import('@/auth/auth0-plugin')
+        if (auth0Plugin) {
+          const newToken = await auth0Plugin.getAccessTokenSilently()
+          localStorage.setItem('auth_token', `Bearer ${newToken}`)
+          originalRequest.headers.Authorization = `Bearer ${newToken}`
+          return api(originalRequest)
+        }
+        forceLogout()
+        return Promise.reject(error)
+      } catch (refreshError) {
+        forceLogout()
+        return Promise.reject(refreshError)
+      }
     }
 
     if (SKIP_REFRESH_URLS.some((url) => originalRequest.url?.includes(url))) {
