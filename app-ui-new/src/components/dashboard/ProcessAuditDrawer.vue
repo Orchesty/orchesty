@@ -141,7 +141,7 @@ watch(
       topology: newProcess.topology,
       corelId: newProcess.id,
       startTime: newProcess.startTime,
-      endTime: calculateEndTime(newProcess.startTime, newProcess.duration),
+      endTime: calculateEndTime(newProcess.startTime, newProcess.duration).toISOString(),
       status: newProcess.status,
       connectors: connectorsData,
       trashCount: trashTotal,

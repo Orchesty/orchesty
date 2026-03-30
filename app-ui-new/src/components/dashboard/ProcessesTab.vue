@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed, nextTick, onActivated, onDeactivated } from 'vue'
+import { ref, watch, computed, nextTick, onMounted, onActivated, onDeactivated } from 'vue'
 import ProcessAuditDrawer from './ProcessAuditDrawer.vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
@@ -19,12 +19,17 @@ import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 
 interface Props {
-  timeFilter: TimeFilter
+  timeFilter?: TimeFilter
   externalFilters?: ProcessesExternalFilters
   refreshKey?: number
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  timeFilter: '24h',
+  refreshKey: 0,
+})
+
+const refreshing = ref(false)
 
 // Use topology/node mappings composable
 const { getTopologyName, getTopologyNameWithVersion, deduplicatedTopologyOptions, getTopologyIdsByName } = useTopologyNodeMappings()
@@ -135,6 +140,13 @@ if (hasExternalFilters) {
   })
 }
 
+const handleRefresh = () => {
+  refreshing.value = true
+  invalidate()
+  loadData()
+  setTimeout(() => { refreshing.value = false }, 800)
+}
+
 const handleAuditClick = (process: Process) => {
   selectedProcess.value = process
   drawerOpen.value = true
@@ -183,6 +195,10 @@ watch(
   },
   { deep: true }
 )
+
+onMounted(() => {
+  loadData()
+})
 
 onActivated(() => {
   isActive.value = true
@@ -240,6 +256,28 @@ onDeactivated(() => {
 
           <!-- DateTime Range Filter -->
           <DateTimeRangeFilter v-model="dateTimeRange" />
+
+          <!-- Refresh -->
+          <button
+            type="button"
+            title="Refresh"
+            class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:text-gray-900 focus:outline-hidden dark:text-gray-500 dark:hover:text-white"
+            @click="handleRefresh"
+          >
+            <svg
+              class="h-5 w-5 transition-transform duration-500"
+              :class="{ 'animate-spin': refreshing }"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M1 4v6h6M23 20v-6h-6" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15" />
+            </svg>
+            <span class="sr-only">Refresh</span>
+          </button>
         </template>
 
         <!-- Custom Cells -->

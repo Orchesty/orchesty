@@ -32,8 +32,8 @@ export function convertTimeFilterToDateTimeRange(timeFilter: string): {
   // Handle short format: "1h", "24h", "7d", "30d", etc.
   const shortFormatMatch = timeFilter.match(/^(\d+)(h|d)$/)
   if (shortFormatMatch) {
-    const value = parseInt(shortFormatMatch[1])
-    const unit = shortFormatMatch[2]
+    const value = parseInt(shortFormatMatch[1] ?? '0', 10)
+    const unit = shortFormatMatch[2] ?? 'h'
 
     fromDate = new Date(now)
 

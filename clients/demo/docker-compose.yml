@@ -111,6 +111,8 @@ services:
             #DOCKER_PF_BRIDGE_IMAGE: orchesty/bridge:${VERSION}
             DOCKER_PF_BRIDGE_IMAGE: dkr.hanaboso.net/pipes/pipes/pf-bridge:new-ui
             JWT_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
+            AUTH0_DOMAIN: dev-qsa0lopaqbhr0vmj.eu.auth0.com
+            AUTH0_AUDIENCE: https://api.orchesty.cloud
             EMAIL_DSN: smtp://mailhog:1025
             ALPHA_INSTANCE_ID: 'demo'
             INSTALLER_DIRS: '["/var/www/pipes/clients/demo/node-sdk/src/topology"]'
@@ -155,6 +157,12 @@ services:
             #DOCKER_PF_BRIDGE_IMAGE: orchesty/bridge:${VERSION}
             DOCKER_PF_BRIDGE_IMAGE: dkr.hanaboso.net/pipes/pipes/pf-bridge:new-ui
             JWT_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
+            AUTH0_DOMAIN: dev-qsa0lopaqbhr0vmj.eu.auth0.com
+            AUTH0_AUDIENCE: https://api.orchesty.cloud
+            #ORCHESTY_CLOUD_URL: http://host.docker.internal:3000
+            #ORCHESTY_CLOUD_FRONTEND_URL: http://localhost:5173
+            ORCHESTY_CLOUD_INSTANCE_ID: ${ORCHESTY_CLOUD_INSTANCE_ID:-5d3e1061-5863-4292-8d95-9a238db8b48a}
+            ORCHESTY_CLOUD_INSTANCE_SECRET: ${ORCHESTY_CLOUD_INSTANCE_SECRET:-0027c895-2aa1-11f1-872c-0e85bfc47da4}
             EMAIL_DSN: smtp://mailhog:1025
             ALPHA_INSTANCE_ID: 'demo'
             INSTALLER_DIRS: '["/var/www/pipes/clients/demo/node-sdk/src/topology"]'
@@ -255,28 +263,34 @@ services:
     frontend-new:
         build: ./../../app-ui-new/docker
         user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www/app-ui-new
+        working_dir: /var/www/pipes/app-ui-new
         environment:
+            CI: 'true'
             VITE_BACKEND_URL: ${BACKEND_URL}
             VITE_STARTINGPONT_URL: ${DEV_IP}:82
         ports:
             - ${DEV_IP}:84:3000
         volumes:
-            - ../../app-ui-new:/var/www/app-ui-new:cached
-        command: sh -c 'pnpm install && pnpm run dev'
+            - ../../:/var/www/pipes:cached
+        command: sh -c 'cd /var/www/pipes && pnpm install --filter @orchesty/ui-core && cd app-ui-new && pnpm run dev'
 
     frontend-new-enterprise:
         build: ./../../app-ui-new-enterprise/docker
         user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www/app-ui-new-enterprise
+        working_dir: /var/www/pipes/app-ui-new-enterprise
         environment:
+            CI: 'true'
             VITE_BACKEND_URL: ${BACKEND_ENTERPRISE_URL}
             VITE_STARTINGPONT_URL: ${DEV_IP}:82
+            VITE_AUTH0_DOMAIN: dev-qsa0lopaqbhr0vmj.eu.auth0.com
+            VITE_AUTH0_CLIENT_ID: 1XIsyOq2kpTDt4qOlop2rEAQzPcE2Q5p
+            VITE_AUTH0_AUDIENCE: https://api.orchesty.cloud
+            VITE_AUTH0_REDIRECT: 'true'
         ports:
             - ${DEV_IP}:85:3000
         volumes:
-            - ../../app-ui-new-enterprise:/var/www/app-ui-new-enterprise:cached
-        command: sh -c 'pnpm install && pnpm run dev'
+            - ../../:/var/www/pipes:cached
+        command: sh -c 'cd /var/www/pipes && pnpm install --filter app-ui-new-enterprise... && cd app-ui-new-enterprise && pnpm run dev'
 
     applinth-marketplace-ui:
         build: ./../../applinth-marketplace-ui/docker

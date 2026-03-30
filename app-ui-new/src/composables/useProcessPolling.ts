@@ -61,7 +61,8 @@ export function useProcessPolling(topologyId: string) {
         processDetail.value = detail
 
         const status = mapApiStatus(detail.status)
-        if (status === 'completed' || status === 'failed') {
+        const hasBp = Object.values(detail.nodes).some(n => n.breakpointCount > 0)
+        if ((status === 'completed' || status === 'failed') && !hasBp) {
           processCompleted.value = true
           stopPolling()
           return

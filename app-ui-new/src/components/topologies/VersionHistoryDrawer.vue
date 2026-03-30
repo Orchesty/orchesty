@@ -54,7 +54,7 @@ const getVersionBadge = (visibility: string, enabled: boolean) => ({
 
 const getVersionBorderClass = (versionId: string) => {
   return versionId === props.currentVersionId
-    ? 'border-green-600 dark:border-green-500 bg-green-50 dark:bg-green-900/20'
+    ? 'border-primary-600 dark:border-primary-500 bg-primary-50 dark:bg-primary-900/20'
     : 'border-gray-200 dark:border-gray-700'
 }
 

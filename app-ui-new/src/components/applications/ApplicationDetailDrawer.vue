@@ -13,6 +13,8 @@ import { useToast } from '@/composables/useToast';
 import Drawer from '@/components/ui/Drawer.vue';
 import Button from '@/components/ui/Button.vue';
 import Confirm from '@/components/ui/Confirm.vue';
+import StatusBadge from '@/components/ui/StatusBadge.vue';
+import type { BadgeVariant } from '@/components/ui/StatusBadge.vue';
 import TabsWithOverflow, { type TabDefinition } from '@/components/applications/TabsWithOverflow.vue';
 import DynamicFormGenerator from '@/components/applications/DynamicFormGenerator.vue';
 
@@ -103,7 +105,7 @@ const statusLabel = computed(() => {
       return 'Unauthorized';
     case 'available':
     default:
-      return '';
+      return 'gray';
   }
 });
 
@@ -111,18 +113,14 @@ const showStatusBadge = computed(() => {
   return currentStatus.value !== 'available' && applicationInstall.value;
 });
 
-const statusBadgeClass = computed(() => {
-  if (!applicationInstall.value) return '';
+const statusBadgeVariant = computed<BadgeVariant>(() => {
   switch (currentStatus.value) {
-    case 'activated':
-      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-    case 'authorized':
-      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-    case 'installed':
-      return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+    case 'activated': return 'green';
+    case 'authorized': return 'yellow';
+    case 'installed': return 'red';
     case 'available':
     default:
-      return '';
+      return 'gray';
   }
 });
 
@@ -170,7 +168,7 @@ const loadApplicationData = async () => {
     // Set active tab to auth tab (if exists), otherwise first tab
     const tabsList = Object.keys(groupedSettings.value);
     if (tabsList.length > 0) {
-      activeTab.value = authTabId.value ?? tabsList[0];
+      activeTab.value = authTabId.value ?? tabsList[0] ?? '';
     }
 
     loading.value = false;
@@ -252,7 +250,10 @@ const handleTabSave = async (tabId: string) => {
       tabSettings,
     );
 
-    applicationInstall.value = { ...previousData, ...stripEmpty(updatedInstall) };
+    applicationInstall.value = {
+      ...previousData,
+      ...stripEmpty(updatedInstall as unknown as Record<string, unknown>),
+    } as ApplicationInstall;
 
     const initialValues: Record<string, unknown> = {};
     updatedInstall.applicationSettings.forEach((setting) => {
@@ -375,13 +376,9 @@ watch(() => props.modelValue, async (newValue) => {
               {{ applicationInstall.name }}
             </h2>
             <div class="flex items-center gap-2">
-              <span
-                v-if="showStatusBadge"
-                class="text-xs font-medium px-2.5 py-0.5 rounded-sm"
-                :class="statusBadgeClass"
-              >
+              <StatusBadge v-if="showStatusBadge" :variant="statusBadgeVariant">
                 {{ statusLabel }}
-              </span>
+              </StatusBadge>
               <span v-if="applicationInstall.worker" class="text-sm font-medium text-gray-900 dark:text-white">
                 Worker: {{ applicationInstall.worker }}
               </span>

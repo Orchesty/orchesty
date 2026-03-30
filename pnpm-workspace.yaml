@@ -1,0 +1,8 @@
+packages:
+  - app-ui-new
+  - app-ui-new-enterprise
+
+ignoredBuiltDependencies:
+  - esbuild
+  - rete
+  - vue-demi

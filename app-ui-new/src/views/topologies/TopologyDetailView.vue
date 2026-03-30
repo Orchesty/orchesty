@@ -8,6 +8,8 @@ import HorizontalBarChart from '@/components/ui/HorizontalBarChart.vue'
 import VersionHistoryDrawer from '@/components/topologies/VersionHistoryDrawer.vue'
 import TopologyDesignerDrawer from '@/components/topologies/TopologyDesignerDrawer.vue'
 import TopologyEditor from '@/components/topologies/TopologyEditor.vue'
+import StatusBadge from '@/components/ui/StatusBadge.vue'
+import type { BadgeVariant } from '@/components/ui/StatusBadge.vue'
 import DeleteTopologyModal from '@/components/topologies/DeleteTopologyModal.vue'
 import Modal from '@/components/ui/Modal.vue'
 import Confirm from '@/components/ui/Confirm.vue'
@@ -24,22 +26,27 @@ import { useToast } from '@/composables/useToast'
 import type { TopologyDetail, TopologyVersion, TopologyLayoutContext } from '@/types/topologies-page'
 import type { TopologyMetrics, MetricsMode } from '@/types/topology-metrics'
 import { useLastTopology } from '@/composables/useLastTopology'
-import TraceDrawer from '@/components/trace/TraceDrawer.vue'
 import FailedMessageModal from '@/components/topologies/FailedMessageModal.vue'
-import { useTraceDrawer } from '@/composables/useTraceDrawer'
 import type { TrashItem } from '@/types/trash'
+
+export interface TopologyTab {
+  id: string
+  label: string
+}
 
 interface Props {
   id: string
+  extraTabs?: TopologyTab[]
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  extraTabs: () => [],
+})
 const route = useRoute()
 const router = useRouter()
 
 const { showToast } = useToast()
 const { setLastTopology, getLastTopology } = useLastTopology()
-const { isTraceDrawerOpen } = useTraceDrawer()
 
 // Inject shared layout context
 const layout = inject<TopologyLayoutContext>('topologyLayout')!
@@ -92,14 +99,10 @@ const checkDescriptionTruncation = () => {
 
 const versionId = computed(() => route.query.version as string | undefined)
 
-const statusBadgeClass = computed(() => {
-  if (!topology.value) return ''
-  if (topology.value.visibility === 'draft') {
-    return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-  }
-  return topology.value.enabled
-    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+const statusBadgeVariant = computed<BadgeVariant>(() => {
+  if (!topology.value) return 'gray'
+  if (topology.value.visibility === 'draft') return 'gray'
+  return topology.value.enabled ? 'green' : 'red'
 })
 
 const statusLabel = computed(() => {
@@ -166,36 +169,17 @@ const isManifestValid = computed(() => {
   return contextManifest.value.trim() !== '' && manifestError.value === ''
 })
 
-// Access tab state
-interface AccessGroup {
-  id: string
-  name: string
-  permission: 'manager' | 'developer' | 'user'
-}
-
-const accessGroups = ref<AccessGroup[]>([
-  { id: 'group-1', name: 'Administrators', permission: 'manager' },
-  { id: 'group-2', name: 'Developers', permission: 'developer' }
-])
-
-const availableGroups = computed(() => [
-  'Administrators',
-  'Developers',
-  'Operators',
-  'Support Team',
-  'QA Team'
-])
-
 // Tabs configuration
-const topologyTabs = [
+const coreTopologyTabs: TopologyTab[] = [
   { id: 'topology', label: 'Topology' },
   { id: 'context', label: 'Context' },
-  { id: 'access', label: 'Access' },
   { id: 'processes', label: 'Processes' },
   { id: 'logs', label: 'Logs' },
   { id: 'trash', label: 'Failed Messages' },
   { id: 'metrics', label: 'Metrics' },
 ]
+
+const topologyTabs = computed(() => [...coreTopologyTabs, ...props.extraTabs])
 
 const activeTabClass = 'text-primary-600 border-primary-600 dark:text-primary-500 dark:border-primary-500'
 const inactiveTabClass = 'text-gray-500 border-transparent hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
@@ -522,27 +506,6 @@ const handleSaveContext = async () => {
   }
 }
 
-// Access tab handlers
-const handleAddGroup = (groupName: string) => {
-  const newGroup: AccessGroup = {
-    id: `group-${Date.now()}`,
-    name: groupName,
-    permission: 'user'
-  }
-  accessGroups.value.push(newGroup)
-}
-
-const handleRemoveGroup = (groupId: string) => {
-  accessGroups.value = accessGroups.value.filter(g => g.id !== groupId)
-}
-
-const handlePermissionChange = (groupId: string, permission: 'manager' | 'developer' | 'user') => {
-  const group = accessGroups.value.find(g => g.id === groupId)
-  if (group) {
-    group.permission = permission
-  }
-}
-
 // Load metrics data
 const loadMetrics = async () => {
   const topologyId = topology.value?._id || props.id
@@ -605,9 +568,9 @@ onMounted(async () => {
   </div>
 
   <!-- Topology Detail -->
-  <div v-else-if="topology" class="px-4 pt-2 pb-4">
+  <div v-else-if="topology" class="flex flex-col h-full px-4 pt-2 overflow-hidden">
     <!-- Page Header -->
-    <div class="mb-6">
+    <div class="mb-4 shrink-0">
       <div class="flex items-center justify-between mb-2">
         <!-- Toggle Sidebar Button + Breadcrumb -->
         <div>
@@ -660,9 +623,7 @@ onMounted(async () => {
           <div class="flex items-center gap-3">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ topology.name }}</h1>
             <span class="text-sm text-gray-400 dark:text-gray-500 font-normal">v.{{ topology.version }}</span>
-            <span :class="['text-xs font-medium px-2.5 py-0.5 rounded-sm', statusBadgeClass]">
-              {{ statusLabel }}
-            </span>
+            <StatusBadge :variant="statusBadgeVariant">{{ statusLabel }}</StatusBadge>
           </div>
 
           <div v-if="topology.description" class="flex items-center gap-1 mt-1 max-w-xl">
@@ -721,7 +682,7 @@ onMounted(async () => {
     </div>
 
     <!-- Tabs Navigation -->
-    <div class="mb-6 border-b border-gray-200 dark:border-gray-700">
+    <div class="shrink-0 border-b border-gray-200 dark:border-gray-700">
       <ul class="-mb-px flex flex-wrap text-center text-sm font-medium" role="tablist">
         <li v-for="tab in topologyTabs" :key="tab.id" class="mr-2" role="presentation">
           <button
@@ -740,14 +701,17 @@ onMounted(async () => {
 
     <!-- Tabs Content -->
 
-    <!-- Topology (editor) -->
-    <div v-show="activeTopologyTab === 'topology'">
-      <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
-        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden">
+    <!-- Topology (editor) — fills remaining vertical space -->
+    <div v-show="activeTopologyTab === 'topology'" class="flex-1 min-h-0 mt-4">
+      <div class="h-full dark:bg-gray-800 dark:shadow-sm dark:rounded-lg">
+        <div class="h-full bg-gray-50 dark:bg-gray-900 dark:rounded-lg overflow-hidden">
           <TopologyEditor ref="topologyEditorRef" :topology-id="topology._id" :topology-enabled="topology.enabled" :refresh-key="refreshKey" @process-run="handleProcessRun" />
         </div>
       </div>
     </div>
+
+    <!-- Non-editor tabs — scrollable -->
+    <div v-show="activeTopologyTab !== 'topology'" class="flex-1 min-h-0 overflow-y-auto pt-4 pb-4">
 
     <!-- Context -->
     <div v-show="activeTopologyTab === 'context'">
@@ -771,74 +735,8 @@ onMounted(async () => {
       </TabCard>
     </div>
 
-    <!-- Access -->
-    <div v-show="activeTopologyTab === 'access'">
-      <TabCard>
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Access Control</h3>
-          <Button data-dropdown-toggle="add-group-dropdown">
-            <svg class="h-4 w-4 me-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-            Group
-          </Button>
-          <div id="add-group-dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-60 dark:bg-gray-700">
-            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
-              <li v-for="groupName in availableGroups" :key="groupName">
-                <button
-                  type="button"
-                  @click="handleAddGroup(groupName)"
-                  class="block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                >
-                  {{ groupName }}
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="space-y-4">
-          <div
-            v-for="group in accessGroups"
-            :key="group.id"
-            class="rounded-lg border border-gray-200 bg-white p-6 shadow-xs dark:border-gray-700 dark:bg-gray-800"
-          >
-            <div class="mb-4 flex items-center justify-between">
-              <h4 class="text-base font-semibold text-gray-900 dark:text-white">{{ group.name }}</h4>
-              <Button variant="outline" size="sm" @click="handleRemoveGroup(group.id)">
-                <svg class="h-4 w-4 me-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7H5m14 0-1 12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 7m14 0H5m3 0V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m-5 5v6m4-6v6" />
-                </svg>
-                Remove
-              </Button>
-            </div>
-            <div class="space-y-3">
-              <div v-for="perm in (['manager', 'developer', 'user'] as const)" :key="perm" class="flex items-start">
-                <div class="flex h-5 items-center">
-                  <input
-                    :id="`${group.id}-${perm}`"
-                    :name="`${group.id}-permission`"
-                    type="radio"
-                    :value="perm"
-                    :checked="group.permission === perm"
-                    @change="handlePermissionChange(group.id, perm)"
-                    class="h-4 w-4 border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
-                  >
-                </div>
-                <div class="ms-3 text-sm">
-                  <label :for="`${group.id}-${perm}`" class="font-medium text-gray-900 dark:text-white">{{ perm.charAt(0).toUpperCase() + perm.slice(1) }}</label>
-                  <p class="text-xs text-gray-500 dark:text-gray-400">
-                    {{ perm === 'manager' ? 'Full access including managing permissions, deleting topology, and all development features'
-                     : perm === 'developer' ? 'Can edit topology configuration, manage nodes, and run processes'
-                     : 'View-only access with ability to run topology but cannot edit configuration' }}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </TabCard>
-    </div>
+    <!-- Extension point for extra tab content -->
+    <slot name="extra-tab-content" :active-tab="activeTopologyTab" :topology="topology" />
 
     <!-- Data tabs with KeepAlive for lazy loading + caching -->
     <KeepAlive>
@@ -920,6 +818,8 @@ onMounted(async () => {
         <p class="text-sm text-gray-500 dark:text-gray-400">No metrics data available</p>
       </div>
     </div>
+
+    </div><!-- /non-editor scrollable wrapper -->
   </div>
 
   <!-- Version History Drawer -->
@@ -984,9 +884,6 @@ onMounted(async () => {
       </p>
     </template>
   </Confirm>
-
-  <!-- Trace Drawer -->
-  <TraceDrawer v-model="isTraceDrawerOpen" />
 
   <!-- Failed Message Modal (for Failed Messages tab) -->
   <FailedMessageModal

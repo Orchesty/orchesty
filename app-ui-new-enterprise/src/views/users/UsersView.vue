@@ -1,9 +1,29 @@
 <script setup lang="ts">
-import DashboardLayout from '@/layouts/DashboardLayout.vue'
+import { ref } from 'vue'
 import Tabs, { type Tab } from '@/components/ui/Tabs.vue'
+import Button from '@/components/ui/Button.vue'
 import UsersTab from '@/components/users/UsersTab.vue'
 import InvitedTab from '@/components/users/InvitedTab.vue'
 import GroupsTab from '@/components/users/GroupsTab.vue'
+import AddUserModal from '@/components/users/AddUserModal.vue'
+import InviteUserModal from '@/components/users/InviteUserModal.vue'
+import { useCloudMode } from '@/composables/useCloudMode'
+
+const { cloudMode } = useCloudMode()
+const addUserModalOpen = ref(false)
+const inviteModalOpen = ref(false)
+const usersTabRef = ref<InstanceType<typeof UsersTab> | null>(null)
+const invitedTabRef = ref<InstanceType<typeof InvitedTab> | null>(null)
+
+function handleUserAdded() {
+  usersTabRef.value?.loadData()
+  invitedTabRef.value?.loadData()
+}
+
+function handleUserInvited() {
+  usersTabRef.value?.loadData()
+  invitedTabRef.value?.loadData()
+}
 
 const usersTabs: Tab[] = [
   { 
@@ -31,23 +51,31 @@ const usersTabs: Tab[] = [
 </script>
 
 <template>
-  <DashboardLayout>
+  <main class="h-full overflow-y-auto"><div class="px-4 pb-4 pt-6">
     <!-- Page Header -->
-    <div class="mb-6">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Users management</h1>
-      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage users and groups</p>
+    <div class="mb-6 flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Users management</h1>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage users and groups</p>
+      </div>
+      <Button v-if="cloudMode" @click="addUserModalOpen = true">
+        + Add user
+      </Button>
+      <Button v-else @click="inviteModalOpen = true">
+        + Invite user
+      </Button>
     </div>
 
     <!-- Tabs -->
     <Tabs :tabs="usersTabs" content-id="users-management-content">
       <!-- Users Tab Content -->
       <div id="users-content" role="tabpanel" aria-labelledby="users-tab">
-        <UsersTab />
+        <UsersTab ref="usersTabRef" :hide-invite-button="true" />
       </div>
 
       <!-- Invited Tab Content -->
       <div id="invited-content" role="tabpanel" aria-labelledby="invited-tab" class="hidden">
-        <InvitedTab />
+        <InvitedTab ref="invitedTabRef" :hide-invite-button="true" />
       </div>
 
       <!-- Groups Tab Content -->
@@ -55,6 +83,19 @@ const usersTabs: Tab[] = [
         <GroupsTab />
       </div>
     </Tabs>
-  </DashboardLayout>
+
+    <AddUserModal
+      v-if="cloudMode"
+      v-model="addUserModalOpen"
+      :cloud-mode="cloudMode"
+      @user-added="handleUserAdded"
+    />
+
+    <InviteUserModal
+      v-if="!cloudMode"
+      v-model="inviteModalOpen"
+      @user-invited="handleUserInvited"
+    />
+  </div></main>
 </template>
 

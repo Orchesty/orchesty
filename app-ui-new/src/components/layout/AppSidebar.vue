@@ -1,9 +1,18 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { Bot, ChartPie, Clock, OctagonAlert, List, Workflow, Grip, Settings } from 'lucide-vue-next'
+import { ChartPie, Clock, OctagonAlert, List, Workflow, Grip, Settings } from 'lucide-vue-next'
 import { useSidebar } from '@/composables/useSidebar'
 import { useCronAlerts } from '@/composables/useCronAlerts'
+import type { SidebarItem } from '@/config/navigation'
+
+interface Props {
+  extraItems?: SidebarItem[]
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  extraItems: () => [],
+})
 
 const route = useRoute()
 
@@ -11,13 +20,12 @@ const isActive = (path: string) => {
   return route.path.startsWith(path)
 }
 
-const iconClass = (path: string) => {
+const iconColorClass = (path: string) => {
   return isActive(path)
-    ? 'h-6 w-6 shrink-0 text-primary-600 dark:text-primary-500'
-    : 'h-6 w-6 shrink-0 text-gray-400 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white'
+    ? 'shrink-0 text-primary-600 dark:text-primary-500'
+    : 'shrink-0 text-gray-400 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white'
 }
 
-// Initialize sidebar hover functionality
 useSidebar()
 
 const { hasMisconfiguredCrons, refresh: refreshCronAlerts } = useCronAlerts()
@@ -25,6 +33,34 @@ const { hasMisconfiguredCrons, refresh: refreshCronAlerts } = useCronAlerts()
 onMounted(() => {
   refreshCronAlerts()
 })
+
+const coreItems: SidebarItem[] = [
+  { id: 'dashboard', label: 'Control Center', path: '/dashboard', icon: ChartPie },
+  { id: 'scheduled-tasks', label: 'Scheduled Tasks', path: '/scheduled-tasks', icon: Clock, badge: 'cron-alerts' },
+  { id: 'trash', label: 'Failed Messages', path: '/trash', icon: OctagonAlert },
+  { id: 'logs', label: 'Logs', path: '/logs', icon: List },
+  { id: 'topologies', label: 'Topologies', path: '/topologies', icon: Workflow },
+  { id: 'applications', label: 'Applications', path: '/applications', icon: Grip },
+  { id: 'settings', label: 'Settings', path: '/settings', icon: Settings },
+]
+
+const allItems = (() => {
+  const result = [...coreItems]
+  const appendItems: SidebarItem[] = []
+
+  for (const item of props.extraItems) {
+    if (item.insertAfter) {
+      const idx = result.findIndex((i) => i.id === item.insertAfter)
+      if (idx !== -1) {
+        result.splice(idx + 1, 0, item)
+        continue
+      }
+    }
+    appendItems.push(item)
+  }
+
+  return [...result, ...appendItems]
+})()
 </script>
 
 <template>
@@ -35,166 +71,30 @@ onMounted(() => {
   >
     <div class="h-full overflow-y-auto border-r border-gray-200 px-3 py-4 dark:border-gray-700">
       <ul class="space-y-3">
-        <!-- Control Center -->
-        <li>
+        <li v-for="item in allItems" :key="item.id">
           <RouterLink
-            to="/dashboard"
-            :class="[
-              'group flex h-10 w-full items-center rounded-lg p-2 text-base font-medium text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
-              isActive('/dashboard') ? 'bg-gray-100 dark:bg-gray-700' : ''
-            ]"
-          >
-            <ChartPie
-              :class="iconClass('/dashboard')"
-              aria-hidden="true"
-            />
-            <span class="ml-3 flex-1 whitespace-nowrap text-left" data-sidebar-collapse-hide
-            >Control Center</span
-          >
-          </RouterLink>
-        </li>
-
-        <!-- Trace -->
-        <li>
-          <RouterLink
-            to="/trace"
-            :class="[
-              'group flex h-10 w-full items-center rounded-lg p-1.5 text-base font-medium text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
-              isActive('/trace') ? 'bg-gray-100 dark:bg-gray-700' : ''
-            ]"
-          >
-            <Bot
-              :class="[
-                isActive('/trace')
-                  ? 'text-primary-600 dark:text-primary-500'
-                  : 'text-gray-400 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white',
-                'h-7 w-7 shrink-0'
-              ]"
-              :stroke-width="1.8"
-              aria-hidden="true"
-            />
-            <span class="ml-3 flex-1 whitespace-nowrap text-left" data-sidebar-collapse-hide>Trace</span>
-          </RouterLink>
-        </li>
-
-        <!-- Scheduled Tasks -->
-        <li>
-          <RouterLink
-            to="/scheduled-tasks"
+            :to="item.path"
             :class="[
               'group relative flex h-10 w-full items-center rounded-lg p-2 text-base font-medium text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
-              isActive('/scheduled-tasks') ? 'bg-gray-100 dark:bg-gray-700' : ''
+              isActive(item.path) ? 'bg-gray-100 dark:bg-gray-700' : ''
             ]"
           >
-            <Clock
-              :class="iconClass('/scheduled-tasks')"
-              aria-hidden="true"
-            />
-            <span class="ml-3 flex-1 whitespace-nowrap text-left" data-sidebar-collapse-hide
-              >Scheduled Tasks</span
-            >
+            <span class="flex h-6 w-6 shrink-0 items-center justify-center">
+              <component
+                :is="item.icon"
+                :class="[item.iconSizeClass ?? 'h-6 w-6', iconColorClass(item.path)]"
+                :stroke-width="item.iconStrokeWidth ?? 1.8"
+                aria-hidden="true"
+              />
+            </span>
+            <span class="ml-3 flex-1 whitespace-nowrap text-left" data-sidebar-collapse-hide>{{ item.label }}</span>
             <span
-              v-if="hasMisconfiguredCrons"
+              v-if="item.badge === 'cron-alerts' && hasMisconfiguredCrons"
               class="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold leading-none text-white bg-red-600 rounded-full dark:bg-red-500"
-              >!</span
-            >
-          </RouterLink>
-        </li>
-
-        <!-- Failed Messages -->
-        <li>
-          <RouterLink
-            to="/trash"
-            :class="[
-              'group flex h-10 w-full items-center rounded-lg p-2 text-base font-medium text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
-              isActive('/trash') ? 'bg-gray-100 dark:bg-gray-700' : ''
-            ]"
-          >
-            <OctagonAlert
-              :class="iconClass('/trash')"
-              aria-hidden="true"
-            />
-            <span class="ml-3 flex-1 whitespace-nowrap text-left" data-sidebar-collapse-hide
-            >Failed Messages</span
-          >
-          </RouterLink>
-        </li>
-
-        <!-- Logs -->
-        <li>
-          <RouterLink
-            to="/logs"
-            :class="[
-              'group flex h-10 w-full items-center rounded-lg p-2 text-base font-medium text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
-              isActive('/logs') ? 'bg-gray-100 dark:bg-gray-700' : ''
-            ]"
-          >
-            <List
-              :class="iconClass('/logs')"
-              aria-hidden="true"
-            />
-            <span class="ml-3 flex-1 whitespace-nowrap text-left" data-sidebar-collapse-hide>Logs</span>
-          </RouterLink>
-        </li>
-
-        <!-- Topologies -->
-        <li>
-          <RouterLink
-            to="/topologies"
-            :class="[
-              'group flex h-10 w-full items-center rounded-lg p-2 text-base font-medium text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
-              isActive('/topologies') ? 'bg-gray-100 dark:bg-gray-700' : ''
-            ]"
-          >
-            <Workflow
-              :class="iconClass('/topologies')"
-              aria-hidden="true"
-            />
-            <span class="ml-3 flex-1 whitespace-nowrap text-left" data-sidebar-collapse-hide
-            >Topologies</span
-          >
-          </RouterLink>
-        </li>
-
-        <!-- Applications -->
-        <li>
-          <RouterLink
-            to="/applications"
-            :class="[
-              'group flex h-10 w-full items-center rounded-lg p-2 text-base font-medium text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
-              isActive('/applications') ? 'bg-gray-100 dark:bg-gray-700' : ''
-            ]"
-          >
-            <Grip
-              :class="iconClass('/applications')"
-              aria-hidden="true"
-            />
-            <span class="ml-3 flex-1 whitespace-nowrap text-left" data-sidebar-collapse-hide
-            >Applications</span
-          >
-          </RouterLink>
-        </li>
-
-        <!-- Settings -->
-        <li>
-          <RouterLink
-            to="/settings"
-            :class="[
-              'group flex h-10 w-full items-center rounded-lg p-2 text-base font-medium text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
-              isActive('/settings') ? 'bg-gray-100 dark:bg-gray-700' : ''
-            ]"
-          >
-            <Settings
-              :class="iconClass('/settings')"
-              aria-hidden="true"
-            />
-            <span class="ml-3 flex-1 whitespace-nowrap text-left" data-sidebar-collapse-hide
-            >Settings</span
-          >
+            >!</span>
           </RouterLink>
         </li>
       </ul>
     </div>
   </aside>
 </template>
-

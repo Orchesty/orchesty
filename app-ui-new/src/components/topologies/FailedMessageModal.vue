@@ -66,7 +66,7 @@ const loadFirstItem = async () => {
     })
     totalCount.value = result.pagination.total
     if (result.data.length > 0) {
-      currentItem.value = result.data[0]
+      currentItem.value = result.data[0] ?? null
     } else {
       currentItem.value = null
       handleClose()
@@ -140,7 +140,7 @@ const loadNextOrClose = async () => {
   })
   if (result.data.length > 0) {
     totalCount.value = result.pagination.total
-    currentItem.value = result.data[0]
+    currentItem.value = result.data[0] ?? null
   } else {
     handleClose()
   }

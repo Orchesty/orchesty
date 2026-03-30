@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, nextTick, onMounted, provide } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import AppNavbar from '@/components/layout/AppNavbar.vue'
-import AppSidebar from '@/components/layout/AppSidebar.vue'
 import TopologiesSidebar from '@/components/topologies/TopologiesSidebar.vue'
 import NewTopologyModal from '@/components/topologies/NewTopologyModal.vue'
 import NewFolderModal from '@/components/topologies/NewFolderModal.vue'
@@ -355,10 +353,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="h-screen flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900">
-    <AppNavbar />
-    <div class="flex flex-1 overflow-hidden">
-      <AppSidebar />
+  <div class="flex h-full overflow-hidden">
       <TopologiesSidebar
         ref="sidebarRef"
         v-model="topologySidebarCollapsed"
@@ -370,12 +365,9 @@ onMounted(async () => {
 
       <div id="main-content" class="flex-1 bg-gray-50 dark:bg-gray-900 overflow-hidden">
         <main class="relative h-full overflow-hidden">
-          <div class="h-full overflow-y-auto">
-            <RouterView />
-          </div>
+          <RouterView />
         </main>
       </div>
-    </div>
   </div>
 
   <!-- Modals -->

@@ -34,6 +34,7 @@ const SKIP_REFRESH_URLS = ['/api/user/check_logged', '/api/user/login']
 function forceLogout() {
   localStorage.removeItem('auth_token')
   localStorage.removeItem('auth_user')
+
   if (window.location.pathname !== '/sign-in') {
     window.location.href = '/sign-in'
   }

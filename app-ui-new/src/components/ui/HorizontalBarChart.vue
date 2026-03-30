@@ -64,7 +64,6 @@ const getChartOptions = (): ApexOptions => ({
     hover: {
       filter: {
         type: 'darken',
-        value: 1,
       },
     },
   },

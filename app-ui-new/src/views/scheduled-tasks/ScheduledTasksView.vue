@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import CronSettingsModal from '@/components/scheduled-tasks/CronSettingsModal.vue'
@@ -139,7 +138,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <DashboardLayout>
+  <main class="h-full overflow-y-auto">
+    <div class="px-4 pb-4 pt-6">
     <!-- Page Header -->
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Scheduled Tasks</h1>
@@ -209,7 +209,7 @@ onBeforeUnmount(() => {
         <!-- Crontab Cell -->
         <template #cell-crontab="{ row }">
           <span v-if="row.crontab" class="font-mono text-xs">{{ row.crontab }}</span>
-          <span v-else-if="isMisconfigured(row)" class="inline-flex items-center gap-1 text-xs font-medium text-red-600 dark:text-red-400">
+          <span v-else-if="isMisconfigured(row as unknown as ScheduledTask)" class="inline-flex items-center gap-1 text-xs font-medium text-red-600 dark:text-red-400">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
             Cron is not set
           </span>
@@ -257,6 +257,7 @@ onBeforeUnmount(() => {
       :task="selectedTask"
       @save="handleCronSave"
     />
-  </DashboardLayout>
+    </div>
+  </main>
 </template>
 

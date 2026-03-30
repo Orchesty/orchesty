@@ -4,5 +4,61 @@ services:
         autowire: true
         autoconfigure: true
 
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StatusController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StatusController
+        arguments:
+            $orchesryCloudUrl: '%orchesty_cloud_url%'
+            $orchesryCloudFrontendUrl: '%orchesty_cloud_frontend_url%'
+
     Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\AuditEntityController:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\AuditEntityController
+
+    Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\EnterpriseUserController:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\EnterpriseUserController
+        arguments:
+            - '@hbpf.user.handler.users'
+
+    Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\CloudWebhookController:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\CloudWebhookController
+        arguments:
+            - '@hbpf.cloud.handler.user_sync'
+            - '@hbpf.cloud.member_sync'
+            - '@hbpf.user.manager.security'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '%orchesty_cloud_instance_secret%'
+
+    hbpf.cloud.handler.user_sync:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\CloudUserSyncHandler
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@security.password_hasher_factory'
+            - '@hbpf.manager.group'
+            - '%orchesty_cloud_url%'
+
+    hbpf.cloud.member_sync:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\CloudMemberSyncService
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '%orchesty_cloud_url%'
+            - '%orchesty_cloud_instance_id%'
+            - '%orchesty_cloud_instance_secret%'
+
+    hbpf.user.handler.users:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\EnterpriseUserHandler
+        arguments:
+            - '@hbpf.user.manager.user'
+            - '@hbpf.user.manager.users'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.user.manager.token'
+            - '@hbpf.user.provider.resource'
+            - '@hbpf.cloud.member_sync'
+            - '@security.password_hasher_factory'
+            - '@hbpf.manager.group'
+
+    hbpf.auth0.jwks_cache:
+        class: Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0\JwksCacheService
+        arguments:
+            - '%auth0_domain%'
+            - '@cache.app'
+

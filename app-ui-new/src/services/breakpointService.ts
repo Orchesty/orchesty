@@ -87,7 +87,8 @@ function buildBreakpointCounts(
 
   const nodeIds = Object.keys(perNode)
   if (nodeIds.length === 1) {
-    return { [nodeIds[0]]: total }
+    const onlyId = nodeIds[0]!
+    return { [onlyId]: total }
   }
   const result: Record<string, number | string> = {}
   for (const [nodeId, count] of Object.entries(perNode)) {

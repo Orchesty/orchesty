@@ -57,13 +57,17 @@ const removePair = (index: number) => {
 
 // Update a pair's key
 const updateKey = (index: number, key: string) => {
-  pairs.value[index].key = key
+  const pair = pairs.value[index]
+  if (!pair) return
+  pair.key = key
   emitUpdate()
 }
 
 // Update a pair's value
 const updateValue = (index: number, value: string) => {
-  pairs.value[index].value = value
+  const pair = pairs.value[index]
+  if (!pair) return
+  pair.value = value
   emitUpdate()
 }
 

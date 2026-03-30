@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
@@ -310,7 +309,8 @@ const handleReject = async () => {
 </script>
 
 <template>
-  <DashboardLayout>
+  <main class="h-full overflow-y-auto">
+    <div class="px-4 pb-4 pt-6">
     <!-- Page Header with Actions Button -->
     <div class="mb-6 flex items-center justify-between">
       <div>
@@ -574,6 +574,7 @@ const handleReject = async () => {
         {{ totalItems === 1 ? 'message' : 'messages' }}?
       </h3>
     </Confirm>
-  </DashboardLayout>
+    </div>
+  </main>
 </template>
 

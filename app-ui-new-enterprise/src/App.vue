@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, provide } from 'vue'
 import { RouterView, useRoute } from 'vue-router'
 import Toast from '@/components/ui/Toast.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
@@ -7,6 +7,7 @@ import { useToast } from '@/composables/useToast'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import { useActivityTracker } from '@/composables/useActivityTracker'
 import { useAuthStore } from '@/stores/auth'
+import { AUTHORIZATION_KEY, type AuthorizationProvider } from '@orchesty/ui-core'
 
 const { toasts, removeToast } = useToast()
 const route = useRoute()
@@ -24,6 +25,19 @@ const isPublicRoute = computed(() =>
 )
 
 const appReady = computed(() => isPublicRoute.value || !authStore.isAuthenticated || isReady.value)
+
+const rbacProvider: AuthorizationProvider = {
+  can: (permission: string) => {
+    // TODO: implement real RBAC check from authStore.user.roles
+    return true
+  },
+  hasRole: (role: string) => {
+    // TODO: implement real role check
+    return true
+  },
+}
+
+provide(AUTHORIZATION_KEY, rbacProvider)
 </script>
 
 <template>
@@ -32,7 +46,6 @@ const appReady = computed(() => isPublicRoute.value || !authStore.isAuthenticate
     <LoadingSpinner size="lg" text="Loading application data..." />
   </div>
 
-  <!-- Global Toast Notifications -->
   <div class="fixed bottom-4 left-4 z-[80] flex flex-col gap-2">
     <Toast
       v-for="toast in toasts"

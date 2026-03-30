@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, computed, nextTick, onActivated, onDeactivated } from 'vue'
-import ProcessAuditDrawer from './ProcessAuditDrawer.vue'
+import ProcessAuditDrawer from '@/components/dashboard/ProcessAuditDrawer.vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
@@ -135,8 +135,8 @@ if (hasExternalFilters) {
   })
 }
 
-const handleAuditClick = (process: Process) => {
-  selectedProcess.value = process
+const handleAuditClick = (row: Record<string, unknown>) => {
+  selectedProcess.value = row as unknown as Process
   drawerOpen.value = true
 }
 

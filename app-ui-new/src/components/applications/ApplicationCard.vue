@@ -2,6 +2,8 @@
 import { computed } from 'vue';
 import type { ApplicationWithStatus, ApplicationStatus } from '@/types/applications';
 import Button from '@/components/ui/Button.vue';
+import StatusBadge from '@/components/ui/StatusBadge.vue';
+import type { BadgeVariant } from '@/components/ui/StatusBadge.vue';
 
 interface Props {
   application: ApplicationWithStatus;
@@ -33,17 +35,14 @@ const showStatusBadge = computed(() => {
   return props.application.status !== 'available';
 });
 
-const statusBadgeClass = computed(() => {
+const statusBadgeVariant = computed<BadgeVariant>(() => {
   switch (props.application.status) {
-    case 'activated':
-      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-    case 'authorized':
-      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-    case 'installed':
-      return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+    case 'activated': return 'green';
+    case 'authorized': return 'yellow';
+    case 'installed': return 'red';
     case 'available':
     default:
-      return '';
+      return 'gray';
   }
 });
 
@@ -89,13 +88,9 @@ const handleInstall = () => {
       </div>
 
       <!-- Status Label - only show if not available -->
-      <span
-        v-if="showStatusBadge"
-        class="text-xs font-medium px-2.5 py-0.5 rounded-sm"
-        :class="statusBadgeClass"
-      >
+      <StatusBadge v-if="showStatusBadge" :variant="statusBadgeVariant">
         {{ statusLabel }}
-      </span>
+      </StatusBadge>
     </div>
 
     <div class="min-h-[3rem]">

@@ -18,25 +18,31 @@ security:
         unsecured_status_api:
             pattern: ^/api/status
             security: false
+        unsecured_cloud_webhook:
+            pattern: ^/api/orchesty/webhook/users
+            security: false
+        unsecured_cloud_handoff:
+            pattern: ^/api/cloud/session-handoff
+            security: false
 
         secured_usage_stats_events:
             pattern: ^/api/usage-stats/.*
             stateless: true
             provider: user_provider
             custom_authenticator:
-                - Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator
+                - Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\ApiKey\EnterpriseApiKeyAuthenticator
         secured_applications:
             pattern: ^/api/applications
             stateless: true
             provider: user_provider
             custom_authenticator:
-                - Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator
+                - Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\ApiKey\EnterpriseApiKeyAuthenticator
         secured_area:
             pattern: ^/
             security: true
             provider: user_provider
             custom_authenticators:
-                - Hanaboso\UserBundle\Model\Security\JWTAuthenticator
+                - Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0\Auth0Authenticator
             form_login:
                 check_path: /api/user/login
                 login_path: /api/user/login

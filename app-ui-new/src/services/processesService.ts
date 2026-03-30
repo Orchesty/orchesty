@@ -156,7 +156,7 @@ export async function fetchLatestProcess(topologyId: string): Promise<Process | 
     page: 1,
     source: 'ui',
   })
-  return result.data.length > 0 ? result.data[0] : null
+  return result.data[0] ?? null
 }
 
 /**

@@ -124,10 +124,9 @@ function normalizeChoices(choices: Array<Record<string, string>> | string[]): st
   if (typeof choices[0] === 'string') return choices as string[]
 
   // Convert object array to string array (use keys)
-  return (choices as Array<Record<string, string>>).map((choice) => {
-    const key = Object.keys(choice)[0]
-    return key
-  })
+  return (choices as Array<Record<string, string>>)
+    .map((choice) => Object.keys(choice)[0])
+    .filter((key): key is string => Boolean(key))
 }
 
 /**

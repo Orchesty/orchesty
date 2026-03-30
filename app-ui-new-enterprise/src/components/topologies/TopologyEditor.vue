@@ -13,6 +13,7 @@ import { useToast } from '@/composables/useToast'
 import { useDateFormat } from '@/composables/useDateFormat'
 import { useProcessPolling } from '@/composables/useProcessPolling'
 import { fetchTopologySchema, saveTopologySchema } from '@/services/topologiesService'
+import { BACKEND_URL } from '@/config'
 import {
   approveAllBreakpoints,
   rejectAllBreakpoints,
@@ -93,8 +94,7 @@ const resolveBackendId = (editorNodeId: string): string => {
 
 const getStartingPointUrl = (editorNodeId: string): string => {
   const backendId = resolveBackendId(editorNodeId)
-  const baseUrl = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.66:8085'
-  return `${baseUrl}/topologies/${props.topologyId}/nodes/${backendId}/run`
+  return `${BACKEND_URL}/topologies/${props.topologyId}/nodes/${backendId}/run`
 }
 
 
@@ -401,7 +401,7 @@ const labelCustomization: LabelCustomizationMap = {
 
 const editorConfig = createConfig({
   mode: 'readonly',
-  canvasHeight: 'calc(100vh - 280px)',
+  canvasHeight: '100%',
   labelCustomization
 })
 
@@ -736,7 +736,7 @@ watch(() => props.refreshKey, () => {
 </script>
 
 <template>
-  <div class="relative">
+  <div class="relative h-full">
     <Editor :config="editorConfig" @ready="onEditorReady" @node-position-changed="handlePositionChanged" />
 
     <Transition
@@ -822,7 +822,10 @@ watch(() => props.refreshKey, () => {
 </template>
 
 <style scoped>
-/* Hide property control in readonly mode */
+:deep(.rete-editor-wrapper) {
+  height: 100%;
+}
+
 :deep(.property-control) {
   display: none;
 }

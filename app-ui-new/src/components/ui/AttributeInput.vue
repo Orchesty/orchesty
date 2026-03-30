@@ -51,13 +51,17 @@ const removeAttribute = (index: number) => {
 
 // Update an attribute's name
 const updateName = (index: number, name: string) => {
-  attributes.value[index].name = name
+  const attr = attributes.value[index]
+  if (!attr) return
+  attr.name = name
   emitUpdate()
 }
 
 // Update an attribute's description
 const updateDescription = (index: number, description: string) => {
-  attributes.value[index].description = description
+  const attr = attributes.value[index]
+  if (!attr) return
+  attr.description = description
   emitUpdate()
 }
 

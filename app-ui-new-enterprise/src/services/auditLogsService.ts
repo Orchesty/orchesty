@@ -54,9 +54,9 @@ export async function fetchAuditLogs(
   return {
     data: paginatedData,
     meta: {
-      total: filtered.length,
-      page,
-      limit,
+      totalItems: filtered.length,
+      currentPage: page,
+      itemsPerPage: limit,
       totalPages: Math.ceil(filtered.length / limit),
     },
   }

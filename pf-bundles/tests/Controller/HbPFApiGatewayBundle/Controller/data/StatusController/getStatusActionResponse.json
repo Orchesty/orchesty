@@ -1,6 +1,7 @@
 {
     "http": 200,
     "body": {
+        "cloudMode": false,
         "status": "ok"
     }
 }

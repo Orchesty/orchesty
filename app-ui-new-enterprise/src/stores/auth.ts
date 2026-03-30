@@ -1,8 +1,12 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
+import type { Auth0VueClient } from '@auth0/auth0-vue'
 import type { User } from '@/types/auth'
 import * as authService from '@/services/authService'
 import { useActivityTracker } from '@/composables/useActivityTracker'
+import { isAuth0Enabled } from '@/auth/auth0-plugin'
+import { useCloudMode } from '@/composables/useCloudMode'
+import { STORAGE_KEYS } from '@/config'
 
 const CHECK_INTERVAL_MS = 30_000
 const REFRESH_IF_OLDER_THAN_MS = 2 * 60_000
@@ -14,11 +18,20 @@ export const useAuthStore = defineStore('auth', () => {
   const lastTokenRefreshTime = ref(Date.now())
   const sessionTimerId = ref<number | null>(null)
 
-  const isAuthenticated = computed(() => !!token.value && !!user.value)
+  let _auth0: Auth0VueClient | null = null
+
+  const isAuthenticated = computed(() => {
+    if (isAuth0Enabled) {
+      return !!token.value
+    }
+    return !!token.value && !!user.value
+  })
 
   const { lastActivityTime, touch: touchActivity } = useActivityTracker()
 
   function startSessionTimer(): void {
+    if (isAuth0Enabled) return
+
     stopSessionTimer()
 
     sessionTimerId.value = window.setInterval(async () => {
@@ -29,7 +42,6 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (inactiveFor > INACTIVITY_LIMIT_MS) {
         await logout()
-        window.location.href = '/sign-in'
         return
       }
 
@@ -47,16 +59,31 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  function hasCloudHandoffSession(): boolean {
+    return localStorage.getItem(STORAGE_KEYS.CLOUD_HANDOFF_SESSION) === 'true'
+  }
+
   async function refreshAuthToken(): Promise<void> {
+    if (isAuth0Enabled && _auth0 && !hasCloudHandoffSession()) {
+      try {
+        const accessToken = await _auth0.getAccessTokenSilently()
+        token.value = accessToken
+        localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, accessToken)
+      } catch (error) {
+        console.error('Auth0 token refresh failed:', error)
+      }
+      return
+    }
+
     try {
       const response = await authService.refreshToken()
 
       token.value = response.token
-      localStorage.setItem('auth_token', response.token)
+      localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, response.token)
 
       const now = Date.now()
       lastTokenRefreshTime.value = now
-      localStorage.setItem('lastTokenRefreshTime', String(now))
+      localStorage.setItem(STORAGE_KEYS.LAST_TOKEN_REFRESH, String(now))
 
       if (response.email && response.id) {
         user.value = {
@@ -64,10 +91,26 @@ export const useAuthStore = defineStore('auth', () => {
           email: response.email,
           settings: response.settings,
         }
-        localStorage.setItem('auth_user', JSON.stringify(user.value))
+        localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(user.value))
       }
     } catch (error) {
       console.error('Token refresh failed:', error)
+    }
+  }
+
+  async function handleAuth0Callback(auth0: Auth0VueClient): Promise<void> {
+    _auth0 = auth0
+    const accessToken = await auth0.getAccessTokenSilently()
+    token.value = accessToken
+    localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, accessToken)
+
+    if (auth0.user.value) {
+      user.value = {
+        id: auth0.user.value.sub || '',
+        email: auth0.user.value.email || '',
+        settings: {},
+      }
+      localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(user.value))
     }
   }
 
@@ -81,12 +124,12 @@ export const useAuthStore = defineStore('auth', () => {
       settings: response.settings,
     }
 
-    localStorage.setItem('auth_token', response.token)
-    localStorage.setItem('auth_user', JSON.stringify(user.value))
+    localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, response.token)
+    localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(user.value))
 
     const now = Date.now()
     lastTokenRefreshTime.value = now
-    localStorage.setItem('lastTokenRefreshTime', String(now))
+    localStorage.setItem(STORAGE_KEYS.LAST_TOKEN_REFRESH, String(now))
     touchActivity()
     startSessionTimer()
   }
@@ -94,15 +137,42 @@ export const useAuthStore = defineStore('auth', () => {
   async function logout(): Promise<void> {
     stopSessionTimer()
 
+    const { cloudMode, cloudUrl } = useCloudMode()
+
+    localStorage.removeItem(STORAGE_KEYS.CLOUD_HANDOFF_SESSION)
+
+    if (isAuth0Enabled && _auth0) {
+      localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
+      localStorage.removeItem(STORAGE_KEYS.AUTH_USER)
+      token.value = null
+      user.value = null
+
+      if (cloudMode.value && cloudUrl.value) {
+        window.location.href = `${cloudUrl.value}/sign-out`
+        return
+      }
+
+      _auth0.logout({ logoutParams: { returnTo: window.location.origin } })
+      return
+    }
+
     await authService.logout()
 
     token.value = null
     user.value = null
+
+    if (cloudMode.value && cloudUrl.value) {
+      window.location.href = `${cloudUrl.value}/sign-out`
+    }
   }
 
   function initializeAuth(): void {
-    const storedToken = localStorage.getItem('auth_token')
-    const storedUser = localStorage.getItem('auth_user')
+    const storedToken = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN)
+    const storedUser = localStorage.getItem(STORAGE_KEYS.AUTH_USER)
+
+    if (isAuth0Enabled && !hasCloudHandoffSession()) {
+      return
+    }
 
     if (storedToken && storedUser) {
       try {
@@ -111,13 +181,16 @@ export const useAuthStore = defineStore('auth', () => {
 
         const now = Date.now()
         lastTokenRefreshTime.value = now
-        localStorage.setItem('lastTokenRefreshTime', String(now))
+        localStorage.setItem(STORAGE_KEYS.LAST_TOKEN_REFRESH, String(now))
         touchActivity()
-        startSessionTimer()
+        if (!isAuth0Enabled) {
+          startSessionTimer()
+        }
       } catch (error) {
         console.error('Failed to parse stored user data:', error)
-        localStorage.removeItem('auth_token')
-        localStorage.removeItem('auth_user')
+        localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
+        localStorage.removeItem(STORAGE_KEYS.AUTH_USER)
+        localStorage.removeItem(STORAGE_KEYS.CLOUD_HANDOFF_SESSION)
       }
     }
   }
@@ -128,6 +201,7 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     lastTokenRefreshTime,
     login,
+    handleAuth0Callback,
     logout,
     initializeAuth,
     refreshAuthToken,

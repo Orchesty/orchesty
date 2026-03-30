@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import TimeFilter from '@/components/ui/TimeFilter.vue'
 import OverviewTab from '@/components/dashboard/OverviewTab.vue'
 import ConnectorsTab from '@/components/dashboard/ConnectorsTab.vue'
@@ -155,7 +154,7 @@ const handleOpenAppProcesses = (data: { applicationId: string; topologyIds: stri
 </script>
 
 <template>
-  <DashboardLayout>
+  <main class="h-full overflow-y-auto"><div class="px-4 pb-4 pt-6">
     <!-- Page Header -->
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Control Center</h1>
@@ -292,5 +291,5 @@ const handleOpenAppProcesses = (data: { applicationId: string; topologyIds: stri
       :application-id="appProcessesAppId"
       :topology-ids="appProcessesTopologyIds"
     />
-  </DashboardLayout>
+  </div></main>
 </template>

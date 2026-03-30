@@ -1,6 +1,6 @@
 {
-  "name": "app-ui-new",
-  "version": "0.0.0",
+  "name": "app-ui-new-enterprise",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -17,6 +17,8 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "@auth0/auth0-vue": "^2.5.0",
+    "@orchesty/ui-core": "workspace:*",
     "@vuepic/vue-datepicker": "^12.1.0",
     "@vueuse/core": "^11.3.0",
     "ajv": "^8.18.0",

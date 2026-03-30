@@ -19,19 +19,21 @@ function formatAjvErrors(errors: typeof validateOuter.errors): string {
   if (!errors || errors.length === 0) return 'Validation failed'
 
   const err = errors[0]
+  if (!err) return 'Validation failed'
+
   const path = err.instancePath ? err.instancePath.replace(/^\//, '') : ''
 
   if (err.keyword === 'required') {
-    return `Missing required field: ${err.params.missingProperty}`
+    return `Missing required field: ${err.params?.missingProperty ?? ''}`
   }
   if (err.keyword === 'enum') {
-    return `${path || 'Field'} must be one of: ${err.params.allowedValues.join(', ')}`
+    return `${path || 'Field'} must be one of: ${err.params?.allowedValues?.join(', ') ?? ''}`
   }
   if (err.keyword === 'type') {
-    return `${path || 'Field'} must be of type ${err.params.type}`
+    return `${path || 'Field'} must be of type ${err.params?.type ?? ''}`
   }
   if (err.keyword === 'additionalProperties') {
-    return `Unknown field: ${err.params.additionalProperty}`
+    return `Unknown field: ${err.params?.additionalProperty ?? ''}`
   }
 
   return err.message || 'Validation failed'
@@ -47,6 +49,10 @@ function validateInnerSchema(field: string, schema: object): string | null {
     const errors = strictAjv.errors
     if (errors && errors.length > 0) {
       const err = errors[0]
+      if (!err) {
+        const msg = e instanceof Error ? e.message : 'is not a valid JSON Schema'
+        return `${field}: ${msg}`
+      }
       const path = (err.instancePath || '').replace(/^\//, '')
       if (err.keyword === 'enum' && err.params?.allowedValues) {
         return `${field}: ${path} must be one of: ${err.params.allowedValues.join(', ')}`
