@@ -34,3 +34,9 @@ services:
             $jwtAuthenticator: '@Hanaboso\UserBundle\Model\Security\JWTAuthenticator'
             $dml: '@hbpf.database_manager_locator'
             $resourceProvider: '@hbpf.user.provider.resource'
+            $curlManager: '@hbpf.transport.curl_manager'
+
+    Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\ApiKey\EnterpriseApiKeyAuthenticator:
+        arguments:
+            $auth0Authenticator: '@Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0\Auth0Authenticator'
+            $dml: '@hbpf.database_manager_locator'

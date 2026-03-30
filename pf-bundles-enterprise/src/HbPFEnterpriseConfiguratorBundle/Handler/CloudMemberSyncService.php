@@ -7,14 +7,24 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\Utils\String\Json;
+use Throwable;
 
 /**
- * Reverse-syncs member changes from the enterprise instance back to the cloud.
- * Also proxies the account-users search endpoint.
+ * Class CloudMemberSyncService
+ *
+ * @package Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler
  */
 final class CloudMemberSyncService
 {
 
+    /**
+     * CloudMemberSyncService constructor.
+     *
+     * @param CurlManager $curlManager
+     * @param string      $cloudUrl
+     * @param string      $instanceId
+     * @param string      $instanceSecret
+     */
     public function __construct(
         private readonly CurlManager $curlManager,
         private readonly string $cloudUrl,
@@ -24,6 +34,9 @@ final class CloudMemberSyncService
     {
     }
 
+    /**
+     * @return bool
+     */
     public function isEnabled(): bool
     {
         return $this->cloudUrl !== '' && $this->instanceId !== '' && $this->instanceSecret !== '';
@@ -42,6 +55,9 @@ final class CloudMemberSyncService
         $this->syncMembers([['email' => $email, 'name' => $name ?? $email, 'action' => 'add']]);
     }
 
+    /**
+     * @param string $email
+     */
     public function syncMemberRemove(string $email): void
     {
         if (!$this->isEnabled()) {
@@ -66,7 +82,7 @@ final class CloudMemberSyncService
             'instanceId'     => $this->instanceId,
             'instanceSecret' => $this->instanceSecret,
             'q'              => $query,
-        ]));
+        ], static fn(string $v): bool => $v !== ''));
 
         $url = sprintf('%s/api/public/account-users?%s', rtrim($this->cloudUrl, '/'), $params);
 
@@ -84,13 +100,16 @@ final class CloudMemberSyncService
             }
 
             return $response->getJsonBody()['users'] ?? [];
-        } catch (\Throwable) {
+        } catch (Throwable) {
             return [];
         }
     }
 
     /**
-     * @return mixed[]|null Returns ['inviteLink' => '...'] on success, NULL if cloud sync is disabled or on failure.
+     * @param string      $email
+     * @param string|null $message
+     *
+     * @return mixed[]|null
      */
     public function createCloudInvite(string $email, ?string $message = NULL): ?array
     {
@@ -101,11 +120,11 @@ final class CloudMemberSyncService
         $url = sprintf('%s/api/public/instance-invite', rtrim($this->cloudUrl, '/'));
 
         $body = Json::encode(array_filter([
+            'email'          => $email,
             'instanceId'     => $this->instanceId,
             'instanceSecret' => $this->instanceSecret,
-            'email'          => $email,
             'message'        => $message,
-        ]));
+        ], static fn(mixed $v): bool => $v !== NULL && $v !== ''));
 
         $dto = new RequestDto(
             new Uri($url),
@@ -123,7 +142,7 @@ final class CloudMemberSyncService
             }
 
             return NULL;
-        } catch (\Throwable) {
+        } catch (Throwable) {
             return NULL;
         }
     }
@@ -151,7 +170,7 @@ final class CloudMemberSyncService
 
         try {
             $this->curlManager->send($dto);
-        } catch (\Throwable) {
+        } catch (Throwable) {
             // Fire-and-forget
         }
     }

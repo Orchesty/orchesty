@@ -11,8 +11,8 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\UserBundle\Document\TmpUser;
 use Hanaboso\UserBundle\Document\User;
-use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\ControllerUtils;
+use RuntimeException;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Throwable;
 
@@ -25,10 +25,10 @@ final class CloudUserSyncHandler
 {
 
     private const array ROLE_MAP = [
-        'OWNER'     => 'admin',
         'ADMIN'     => 'admin',
-        'DEVELOPER' => 'user',
         'BILLING'   => 'user',
+        'DEVELOPER' => 'user',
+        'OWNER'     => 'admin',
     ];
 
     private const string DEFAULT_GROUP = 'user';
@@ -36,11 +36,11 @@ final class CloudUserSyncHandler
     /**
      * CloudUserSyncHandler constructor.
      *
-     * @param CurlManager                  $curlManager
-     * @param DocumentManager              $dm
+     * @param CurlManager                    $curlManager
+     * @param DocumentManager                $dm
      * @param PasswordHasherFactoryInterface $passwordHasherFactory
-     * @param GroupManager                 $groupManager
-     * @param string                       $cloudUrl
+     * @param GroupManager                   $groupManager
+     * @param string                         $cloudUrl
      */
     public function __construct(
         private readonly CurlManager $curlManager,
@@ -110,6 +110,9 @@ final class CloudUserSyncHandler
         ];
     }
 
+    /**
+     * @param string $email
+     */
     private function removeTmpUser(string $email): void
     {
         $tmpUser = $this->dm->getRepository(TmpUser::class)->findOneBy(['email' => $email]);
@@ -137,7 +140,7 @@ final class CloudUserSyncHandler
         $response = $this->curlManager->send($dto);
 
         if ($response->getStatusCode() !== 200) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 sprintf('Cloud API returned status %d', $response->getStatusCode()),
             );
         }

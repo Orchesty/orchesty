@@ -67,14 +67,14 @@ phpcoverage:
 	$(DE) php vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --cache-directory var/cache/coverage --coverage-filter src tests
 
 phpcoverage-ci:
-	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -p $$(nproc) -c 30
+	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -p $$(nproc) -c 10
 
 database-create:
 	$(DE) php bin/console doctrine:mongodb:schema:update --dm default || true
 	$(DE) php bin/console doctrine:mongodb:schema:update --dm metrics || true
 	$(DE) php bin/console mongodb:index:update || true
 
-test: docker-up-force composer-install fasttest
+test: docker-up-force composer-install fasttest docker-down-clean
 
 ci-test: test
 

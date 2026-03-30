@@ -30,13 +30,13 @@ security:
             stateless: true
             provider: user_provider
             custom_authenticator:
-                - Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator
+                - Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\ApiKey\EnterpriseApiKeyAuthenticator
         secured_applications:
             pattern: ^/api/applications
             stateless: true
             provider: user_provider
             custom_authenticator:
-                - Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator
+                - Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\ApiKey\EnterpriseApiKeyAuthenticator
         secured_area:
             pattern: ^/
             security: true

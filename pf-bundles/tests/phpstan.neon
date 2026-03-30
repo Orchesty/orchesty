@@ -51,6 +51,7 @@ parameters:
 			- Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler
 
 		classesNotRequiredToBeAbstractOrFinal:
+			- Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler
 			- Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\AppInstallUsageStatsSender
 			- Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\OperationUsageStatsSender
 			- Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\SenderManager

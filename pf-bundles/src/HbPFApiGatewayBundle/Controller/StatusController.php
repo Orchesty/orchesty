@@ -12,9 +12,15 @@ use Symfony\Component\Routing\Attribute\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */
-class StatusController extends AbstractController
+final class StatusController extends AbstractController
 {
 
+    /**
+     * StatusController constructor.
+     *
+     * @param string $orchesryCloudUrl
+     * @param string $orchesryCloudFrontendUrl
+     */
     public function __construct(
         private readonly string $orchesryCloudUrl = '',
         private readonly string $orchesryCloudFrontendUrl = '',
@@ -29,12 +35,12 @@ class StatusController extends AbstractController
     public function getStatusAction(): Response
     {
         $data = [
-            'status'    => 'ok',
             'cloudMode' => $this->orchesryCloudUrl !== '',
+            'status'    => 'ok',
         ];
 
         if ($this->orchesryCloudUrl !== '') {
-            $frontendUrl = $this->orchesryCloudFrontendUrl !== ''
+            $frontendUrl      = $this->orchesryCloudFrontendUrl !== ''
                 ? $this->orchesryCloudFrontendUrl
                 : $this->orchesryCloudUrl;
             $data['cloudUrl'] = rtrim($frontendUrl, '/');

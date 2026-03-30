@@ -19,6 +19,8 @@ parameters:
 			- Hanaboso\PipesFramework\Configurator\Model\TopologyManager
 			- Hanaboso\PipesFramework\Database\Document\Topology
 			- Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler
+			- Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler
+			- Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator
 			- PipesFrameworkEnterpriseTests\ControllerTestCaseAbstract
 			- PipesFrameworkEnterpriseTests\DatabaseTestCaseAbstract
 			- PipesFrameworkEnterpriseTests\KernelTestCaseAbstract

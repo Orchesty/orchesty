@@ -6,23 +6,37 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\AclBundle\Manager\GroupManager;
 use Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler;
+use Hanaboso\PipesFramework\User\Manager\UserManager as UsersManager;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\UserBundle\Model\Token\TokenManager;
 use Hanaboso\UserBundle\Model\User\UserManager;
 use Hanaboso\UserBundle\Model\User\UserManagerException;
 use Hanaboso\UserBundle\Provider\ResourceProvider;
-use Hanaboso\PipesFramework\User\Manager\UserManager as UsersManager;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Throwable;
 
 /**
- * Extends UserHandler with cloud member sync and direct user creation.
+ * Class EnterpriseUserHandler
+ *
+ * @package Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler
  */
 final class EnterpriseUserHandler extends UserHandler
 {
 
     private const int USER_ALREADY_EXISTS = 1_202;
 
+    /**
+     * EnterpriseUserHandler constructor.
+     *
+     * @param UserManager                    $userManager
+     * @param UsersManager                   $usersManager
+     * @param DocumentManager                $dm
+     * @param TokenManager                   $tokenManager
+     * @param ResourceProvider               $resourceProvider
+     * @param CloudMemberSyncService         $cloudMemberSyncService
+     * @param PasswordHasherFactoryInterface $passwordHasherFactory
+     * @param GroupManager                   $groupManager
+     */
     public function __construct(
         UserManager $userManager,
         UsersManager $usersManager,
@@ -135,9 +149,7 @@ final class EnterpriseUserHandler extends UserHandler
             return $localResult;
         }
 
-        $result = parent::inviteUser($email);
-
-        return $result;
+        return parent::inviteUser($email);
     }
 
     /**

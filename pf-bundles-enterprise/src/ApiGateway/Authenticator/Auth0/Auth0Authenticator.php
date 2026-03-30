@@ -3,7 +3,11 @@
 namespace Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0;
 
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\UserBundle\Enum\ResourceEnum;
 use Hanaboso\UserBundle\Model\Security\JWTAuthenticator;
@@ -26,11 +30,9 @@ use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPasspor
 use Throwable;
 
 /**
- * Dual-mode authenticator: Auth0 RS256 tokens when AUTH0_DOMAIN is set,
- * falls back to legacy HS512 JWTAuthenticator otherwise.
- * Must be the ONLY custom authenticator in the firewall to prevent
- * Symfony's authenticator loop from overriding a successful Auth0 auth
- * with a failed JWT auth.
+ * Class Auth0Authenticator
+ *
+ * @package Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0
  */
 final class Auth0Authenticator extends AbstractAuthenticator
 {
@@ -42,6 +44,17 @@ final class Auth0Authenticator extends AbstractAuthenticator
      */
     private DocumentRepository $userRepository;
 
+    /**
+     * Auth0Authenticator constructor.
+     *
+     * @param string                 $auth0Domain
+     * @param string                 $auth0Audience
+     * @param JwksCacheService       $jwksCacheService
+     * @param JWTAuthenticator       $jwtAuthenticator
+     * @param DatabaseManagerLocator $dml
+     * @param ResourceProvider       $resourceProvider
+     * @param CurlManager            $curlManager
+     */
     public function __construct(
         private readonly string $auth0Domain,
         private readonly string $auth0Audience,
@@ -49,6 +62,7 @@ final class Auth0Authenticator extends AbstractAuthenticator
         private readonly JWTAuthenticator $jwtAuthenticator,
         DatabaseManagerLocator $dml,
         ResourceProvider $resourceProvider,
+        private readonly CurlManager $curlManager,
     )
     {
         /** @phpstan-var class-string<User> $userClass */
@@ -56,11 +70,23 @@ final class Auth0Authenticator extends AbstractAuthenticator
         $this->userRepository = $dml->get()->getRepository($userClass);
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return bool|null
+     */
     public function supports(Request $request): ?bool
     {
+        $request;
+
         return TRUE;
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return Passport
+     */
     public function authenticate(Request $request): Passport
     {
         if ($this->auth0Domain !== '') {
@@ -76,13 +102,32 @@ final class Auth0Authenticator extends AbstractAuthenticator
         return $this->jwtAuthenticator->authenticate($request);
     }
 
+    /**
+     * @param Request        $request
+     * @param TokenInterface $token
+     * @param string         $firewallName
+     *
+     * @return Response|null
+     */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+        $request;
+        $token;
+        $firewallName;
+
         return NULL;
     }
 
+    /**
+     * @param Request                 $request
+     * @param AuthenticationException $exception
+     *
+     * @return Response
+     */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
+        $request;
+
         return new JsonResponse(
             [
                 'code'    => $exception->getCode(),
@@ -92,6 +137,12 @@ final class Auth0Authenticator extends AbstractAuthenticator
         );
     }
 
+    /**
+     * @param string  $jwt
+     * @param mixed[] $header
+     *
+     * @return Passport
+     */
     private function authenticateAuth0(string $jwt, array $header): Passport
     {
         try {
@@ -149,6 +200,11 @@ final class Auth0Authenticator extends AbstractAuthenticator
         }
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return string|null
+     */
     private function extractToken(Request $request): ?string
     {
         $header = $request->headers->get(self::AUTHORIZATION)
@@ -162,6 +218,8 @@ final class Auth0Authenticator extends AbstractAuthenticator
     }
 
     /**
+     * @param string $jwt
+     *
      * @return mixed[]
      */
     private function parseJwtHeader(string $jwt): array
@@ -183,23 +241,21 @@ final class Auth0Authenticator extends AbstractAuthenticator
         }
     }
 
+    /**
+     * @param string $accessToken
+     *
+     * @return string|null
+     */
     private function fetchEmailFromUserInfo(string $accessToken): ?string
     {
-        $url  = sprintf('https://%s/userinfo', $this->auth0Domain);
-        $ctx  = stream_context_create([
-            'http' => [
-                'header'  => sprintf("Authorization: Bearer %s\r\n", $accessToken),
-                'timeout' => 5,
-            ],
-        ]);
-        $json = @file_get_contents($url, FALSE, $ctx);
+        $url = sprintf('https://%s/userinfo', $this->auth0Domain);
 
-        if ($json === FALSE) {
-            return NULL;
-        }
+        $dto = new RequestDto(new Uri($url), CurlManager::METHOD_GET, new ProcessDto());
+        $dto->setHeaders(['Authorization' => sprintf('Bearer %s', $accessToken)]);
 
         try {
-            $data = Json::decode($json);
+            $response = $this->curlManager->send($dto);
+            $data     = Json::decode($response->getBody());
 
             return $data['email'] ?? NULL;
         } catch (Throwable) {
@@ -207,6 +263,9 @@ final class Auth0Authenticator extends AbstractAuthenticator
         }
     }
 
+    /**
+     * @param mixed[] $claims
+     */
     private function validateClaims(array $claims): void
     {
         $now = DateTimeUtils::getUtcDateTime()->getTimestamp();

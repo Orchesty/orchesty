@@ -74,7 +74,7 @@ database-create:
 	$(DE) php bin/console doctrine:mongodb:schema:update --dm metrics || true
 	$(DE) php bin/console mongodb:index:update || true
 
-test: docker-up-force composer-install fasttest
+test: docker-up-force composer-install fasttest docker-down-clean
 
 ci-test: test
 

@@ -25,6 +25,15 @@ final class CloudWebhookController extends AbstractController
 
     private const int HANDOFF_MAX_AGE_SECONDS = 300;
 
+    /**
+     * CloudWebhookController constructor.
+     *
+     * @param CloudUserSyncHandler   $cloudUserSyncHandler
+     * @param CloudMemberSyncService $cloudMemberSyncService
+     * @param SecurityManager        $securityManager
+     * @param DocumentManager        $dm
+     * @param string                 $instanceSecret
+     */
     public function __construct(
         private readonly CloudUserSyncHandler $cloudUserSyncHandler,
         private readonly CloudMemberSyncService $cloudMemberSyncService,
@@ -159,8 +168,8 @@ final class CloudWebhookController extends AbstractController
 
             /** @var User|null $user */
             $user = $this->dm->getRepository(User::class)->findOneBy([
-                'email'   => $email,
                 'deleted' => FALSE,
+                'email'   => $email,
             ]);
 
             if (!$user) {
@@ -177,10 +186,10 @@ final class CloudWebhookController extends AbstractController
             );
 
             return new JsonResponse([
-                'token'    => $jwt,
-                'id'       => $user->getId(),
                 'email'    => $user->getEmail(),
+                'id'       => $user->getId(),
                 'settings' => [],
+                'token'    => $jwt,
             ]);
         } catch (Throwable $t) {
             return new JsonResponse(

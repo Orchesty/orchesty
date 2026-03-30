@@ -34,7 +34,12 @@ const processQueue = (error: unknown, token: string | null = null) => {
 
 const SKIP_REFRESH_URLS = ['/api/user/check_logged', '/api/user/login']
 
+let forceLogoutInProgress = false
+
 function forceLogout() {
+  if (forceLogoutInProgress) return
+  forceLogoutInProgress = true
+
   localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
   localStorage.removeItem(STORAGE_KEYS.AUTH_USER)
   localStorage.removeItem(STORAGE_KEYS.CLOUD_HANDOFF_SESSION)
@@ -47,7 +52,8 @@ function forceLogout() {
 
   const { cloudMode, cloudUrl } = useCloudMode()
   if (cloudMode.value && cloudUrl.value) {
-    window.location.href = `${cloudUrl.value}/sign-out`
+    sessionStorage.setItem(STORAGE_KEYS.CLOUD_HANDOFF_FAILED, 'true')
+    window.location.href = '/sign-in'
     return
   }
 
@@ -140,15 +146,16 @@ api.interceptors.response.use(
     }
 
     if (isAuth0Enabled) {
+      if (SKIP_REFRESH_URLS.some((url) => originalRequest.url?.includes(url))) {
+        return Promise.reject(error)
+      }
+
       const hasCloudHandoff = localStorage.getItem(STORAGE_KEYS.CLOUD_HANDOFF_SESSION) === 'true'
 
       if (hasCloudHandoff) {
-        // Cloud handoff session — refresh via legacy backend endpoint,
-        // NOT via Auth0 SDK (which may hold a stale session for a different user).
         return retryWithRefresh(originalRequest, doRefresh)
       }
 
-      // Standard Auth0 mode — refresh via Auth0 SDK
       return retryWithRefresh(originalRequest, async () => {
         const { auth0Plugin } = await import('@/auth/auth0-plugin')
         if (!auth0Plugin) throw new Error('Auth0 plugin not available')

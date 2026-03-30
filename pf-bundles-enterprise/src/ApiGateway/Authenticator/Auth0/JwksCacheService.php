@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0;
 
+use Hanaboso\Utils\File\File;
 use Jose\Component\Core\JWK;
 use Jose\Component\Core\JWKSet;
 use RuntimeException;
@@ -24,10 +25,7 @@ final class JwksCacheService
      * @param string         $auth0Domain
      * @param CacheInterface $cache
      */
-    public function __construct(
-        private readonly string $auth0Domain,
-        private readonly CacheInterface $cache,
-    )
+    public function __construct(private readonly string $auth0Domain, private readonly CacheInterface $cache)
     {
     }
 
@@ -66,14 +64,9 @@ final class JwksCacheService
         $jwksJson = $this->cache->get('auth0_jwks', function (ItemInterface $item): string {
             $item->expiresAfter(self::CACHE_TTL);
 
-            $url  = sprintf('https://%s/.well-known/jwks.json', $this->auth0Domain);
-            $json = file_get_contents($url);
+            $url = sprintf('https://%s/.well-known/jwks.json', $this->auth0Domain);
 
-            if ($json === FALSE) {
-                throw new RuntimeException(sprintf('Failed to fetch JWKS from %s', $url));
-            }
-
-            return $json;
+            return File::getContent($url);
         });
 
         return JWKSet::createFromJson($jwksJson);
