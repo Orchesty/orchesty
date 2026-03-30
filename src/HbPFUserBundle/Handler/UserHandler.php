@@ -25,7 +25,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\HbPFUserBundle\Handler
  */
-final class UserHandler
+class UserHandler
 {
 
     private const string SETTINGS            = 'settings';
@@ -42,8 +42,8 @@ final class UserHandler
      */
     public function __construct(
         private UserManager $userManager,
-        private UsersManager $usersManager,
-        private DocumentManager $dm,
+        protected UsersManager $usersManager,
+        protected DocumentManager $dm,
         private TokenManager $tokenManager,
         private ResourceProvider $resourceProvider,
     )
