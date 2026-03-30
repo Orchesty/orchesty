@@ -32,7 +32,9 @@ const hasOverflow = ref(false);
 
 let resizeObserver: ResizeObserver | null = null;
 
-const currentActiveTab = ref(props.activeTab || (props.tabs.length > 0 ? props.tabs[0].id : ''));
+const currentActiveTab = ref(
+  props.activeTab || (props.tabs.length > 0 ? props.tabs[0]?.id ?? '' : ''),
+);
 
 const moreDropdownItems = computed(() => {
   return hiddenTabs.value
@@ -106,7 +108,7 @@ onMounted(async () => {
   
   // Ensure we have an active tab set
   if (!currentActiveTab.value && props.tabs.length > 0) {
-    currentActiveTab.value = props.tabs[0].id;
+    currentActiveTab.value = props.tabs[0]?.id ?? '';
   }
   
   // Initial layout calculation
@@ -188,10 +190,18 @@ onUnmounted(() => {
       <!-- More dropdown button -->
       <li v-if="hasOverflow" ref="moreButtonRef" class="mr-2" role="presentation">
         <DropdownMenu
-          :items="moreDropdownItems"
-          button-text="More (...)"
-          button-class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg text-gray-500 border-transparent hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
-        />
+          id="tabs-overflow-more-menu"
+          :sections="[{ items: moreDropdownItems }]"
+          placement="bottom"
+        >
+          <template #trigger>
+            <span
+              class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg text-gray-500 border-transparent hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
+            >
+              More (...)
+            </span>
+          </template>
+        </DropdownMenu>
       </li>
     </ul>
   </div>

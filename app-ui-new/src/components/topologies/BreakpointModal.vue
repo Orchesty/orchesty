@@ -46,7 +46,7 @@ const loadFirstItem = async () => {
     })
     totalCount.value = result.total
     if (result.data.length > 0) {
-      currentItem.value = result.data[0]
+      currentItem.value = result.data[0] ?? null
     } else {
       currentItem.value = null
       handleClose()
@@ -87,7 +87,7 @@ const handleApprove = async () => {
     })
     if (result.data.length > 0) {
       totalCount.value = result.total
-      currentItem.value = result.data[0]
+      currentItem.value = result.data[0] ?? null
     } else {
       handleClose()
     }

@@ -36,9 +36,9 @@ function mapApiWorkerToWorker(apiWorker: WorkerApiResponse): Worker {
 export async function fetchWorkers(params: WorkerQueryParams = {}) {
   const {
     page = 1,
-    perPage = 10,
-    sortBy = 'name',
-    sortOrder = 'asc',
+    limit = 10,
+    sort = 'name',
+    order = 'asc',
     search = '',
   } = params
 
@@ -47,11 +47,11 @@ export async function fetchWorkers(params: WorkerQueryParams = {}) {
   const response = await api.get<WorkersListResponse>('/api/sdks', {
     params: {
       page,
-      itemsPerPage: perPage,
+      itemsPerPage: limit,
       // Add other params if backend supports them
       ...(search && { search }),
-      ...(sortBy && { sortBy }),
-      ...(sortOrder && { sortOrder }),
+      ...(sort && { sortBy: sort }),
+      ...(order && { sortOrder: order }),
     },
   })
 

@@ -62,7 +62,7 @@ const {
       })
       logs.value = response.data
       totalPages.value = response.meta.totalPages
-      totalItems.value = response.meta.total
+      totalItems.value = response.meta.totalItems
     } finally {
       loading.value = false
     }
@@ -83,7 +83,7 @@ async function loadData() {
     })
     logs.value = response.data
     totalPages.value = response.meta.totalPages
-    totalItems.value = response.meta.total
+    totalItems.value = response.meta.totalItems
   } finally {
     loading.value = false
   }

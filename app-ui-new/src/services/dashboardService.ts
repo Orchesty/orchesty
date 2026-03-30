@@ -403,7 +403,7 @@ export async function fetchTrashData(params: {
     ],
     sorter: [{
       column: sortColumn,
-      direction: (params.sortOrder || 'desc').toUpperCase()
+      direction: (params.sortOrder || 'desc').toUpperCase() as 'ASC' | 'DESC'
     }],
     paging: { itemsPerPage, page }
   }

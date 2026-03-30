@@ -57,7 +57,12 @@ export * from './services/accountService'
 // Types
 export type * from './types/api'
 export type * from './types/applications'
-export type * from './types/auth'
+export type {
+  UserSettings,
+  LoginRequest,
+  LoginResponse,
+  User as AuthUser,
+} from './types/auth'
 export type * from './types/connectors'
 export type * from './types/dashboard'
 export type * from './types/datagrid'

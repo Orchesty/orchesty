@@ -8,6 +8,7 @@ import Card from '@/components/ui/Card.vue'
 import type { Tab } from '@/components/ui/Tabs.vue'
 import { useToast } from '@/composables/useToast'
 import { useAuthStore } from '@/stores/auth'
+import { STORAGE_KEYS } from '@/config'
 import { updateProfile, updatePassword, updateNotifications } from '@/services/accountService'
 
 const tabs: Tab[] = [
@@ -74,7 +75,7 @@ const handleSaveProfile = async () => {
     const mergedSettings = { ...authStore.user.settings, username: username.value }
     await updateProfile(authStore.user.id, mergedSettings)
     authStore.user.settings = mergedSettings
-    localStorage.setItem('auth_user', JSON.stringify(authStore.user))
+    localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(authStore.user))
     showToast('Profile updated successfully', 'success')
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to update profile'

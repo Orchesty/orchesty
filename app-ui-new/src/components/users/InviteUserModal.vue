@@ -66,6 +66,10 @@ const handleSubmit = async () => {
   try {
     const results = await inviteUsers([email])
     const r = results[0]
+    if (!r) {
+      errorMessage.value = 'Failed to create invitation'
+      return
+    }
     if (r.hash) {
       result.value = r
       emit('user-invited')

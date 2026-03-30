@@ -6,6 +6,8 @@ export interface TopologyItem {
   name: string
   folderId?: string | null
   versionCount?: number // Number of versions, used to determine if modal should show
+  enabled?: boolean
+  visibility?: 'draft' | 'public'
 }
 
 export interface FolderItem {

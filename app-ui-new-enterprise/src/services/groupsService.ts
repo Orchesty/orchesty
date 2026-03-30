@@ -26,23 +26,23 @@ export async function fetchGroups(params: GroupQueryParams): Promise<{
   }
 
   // Sort
-  if (params.sortBy) {
+  if (params.sort) {
     filteredData.sort((a, b) => {
-      const aValue = a[params.sortBy as keyof Group]
-      const bValue = b[params.sortBy as keyof Group]
+      const aValue = a[params.sort as keyof Group]
+      const bValue = b[params.sort as keyof Group]
       
       if (typeof aValue === 'string' && typeof bValue === 'string') {
-        return params.sortOrder === 'asc'
+        return params.order === 'asc'
           ? aValue.localeCompare(bValue)
           : bValue.localeCompare(aValue)
       }
       
       if (typeof aValue === 'number' && typeof bValue === 'number') {
-        return params.sortOrder === 'asc' ? aValue - bValue : bValue - aValue
+        return params.order === 'asc' ? aValue - bValue : bValue - aValue
       }
 
       if (Array.isArray(aValue) && Array.isArray(bValue)) {
-        return params.sortOrder === 'asc'
+        return params.order === 'asc'
           ? aValue.length - bValue.length
           : bValue.length - aValue.length
       }
@@ -53,7 +53,7 @@ export async function fetchGroups(params: GroupQueryParams): Promise<{
 
   // Pagination
   const page = params.page || 1
-  const perPage = params.perPage || 10
+  const perPage = params.limit || 10
   const startIndex = (page - 1) * perPage
   const endIndex = startIndex + perPage
   const paginatedData = filteredData.slice(startIndex, endIndex)

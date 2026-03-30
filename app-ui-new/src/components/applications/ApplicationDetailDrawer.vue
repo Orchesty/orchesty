@@ -120,7 +120,7 @@ const statusBadgeVariant = computed<BadgeVariant>(() => {
     case 'installed': return 'red';
     case 'available':
     default:
-      return '';
+      return 'gray';
   }
 });
 
@@ -168,7 +168,7 @@ const loadApplicationData = async () => {
     // Set active tab to auth tab (if exists), otherwise first tab
     const tabsList = Object.keys(groupedSettings.value);
     if (tabsList.length > 0) {
-      activeTab.value = authTabId.value ?? tabsList[0];
+      activeTab.value = authTabId.value ?? tabsList[0] ?? '';
     }
 
     loading.value = false;
@@ -250,7 +250,10 @@ const handleTabSave = async (tabId: string) => {
       tabSettings,
     );
 
-    applicationInstall.value = { ...previousData, ...stripEmpty(updatedInstall) };
+    applicationInstall.value = {
+      ...previousData,
+      ...stripEmpty(updatedInstall as unknown as Record<string, unknown>),
+    } as ApplicationInstall;
 
     const initialValues: Record<string, unknown> = {};
     updatedInstall.applicationSettings.forEach((setting) => {

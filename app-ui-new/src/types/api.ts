@@ -18,6 +18,6 @@ export interface QueryParams {
   limit?: number
   sort?: string
   order?: 'asc' | 'desc'
-  [key: string]: string | number | undefined
+  [key: string]: string | number | string[] | undefined
 }
 

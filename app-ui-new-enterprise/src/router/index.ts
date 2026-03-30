@@ -4,6 +4,7 @@ import { useAuth0 } from '@auth0/auth0-vue'
 import { isAuth0Enabled } from '@/auth/auth0-plugin'
 import { useAuthStore } from '@/stores/auth'
 import { useCloudMode } from '@/composables/useCloudMode'
+import { STORAGE_KEYS } from '@/config'
 
 import EnterpriseDashboardLayout from '@/layouts/DashboardLayout.vue'
 import DashboardView from '@/views/dashboard/DashboardView.vue'
@@ -145,33 +146,26 @@ export function createEnterpriseRouter() {
 
     await waitForAuth0Loading(auth0)
 
-    const isCloudHandoff = authStore.isAuthenticated
-    const effectivelyAuthenticated = auth0.isAuthenticated.value || isCloudHandoff
+    const hasPreExistingSession = authStore.isAuthenticated
+    const effectivelyAuthenticated = auth0.isAuthenticated.value || hasPreExistingSession
+    const handoffFailed = sessionStorage.getItem(STORAGE_KEYS.CLOUD_HANDOFF_FAILED) === 'true'
+    const isCloudReady = cloudLoaded.value && cloudMode.value
 
-    if (auth0.isAuthenticated.value && !auth0CallbackHandled && !isCloudHandoff) {
+    // Process Auth0 callback only if no pre-existing session (e.g. cloud handoff)
+    // to avoid overwriting it with a stale Auth0 session from a different user.
+    if (auth0.isAuthenticated.value && !auth0CallbackHandled && !hasPreExistingSession) {
       auth0CallbackHandled = true
       try {
         await authStore.handleAuth0Callback(auth0)
         backendVerified = true
-      } catch (err: any) {
+      } catch (err: unknown) {
         backendVerified = false
         console.error('[Auth0 Router] handleAuth0Callback FAILED:', err)
       }
     }
 
-    if (isCloudHandoff && !backendVerified) {
+    if (hasPreExistingSession && !backendVerified) {
       backendVerified = true
-    }
-
-    const cloudAuthRoutes = ['/sign-in', '/forgot-password']
-    const isCloudAuthRoute =
-      cloudAuthRoutes.includes(to.path) || to.path.startsWith('/reset-password')
-
-    const handoffJustFailed = sessionStorage.getItem('cloud_handoff_failed') === 'true'
-    if (cloudLoaded.value && cloudMode.value && isCloudAuthRoute && !effectivelyAuthenticated && !handoffJustFailed) {
-      const returnUrl = encodeURIComponent(window.location.origin)
-      window.location.href = `${cloudUrl.value}/sign-in?redirect_to=${returnUrl}`
-      return
     }
 
     const publicRoutes = ['/sign-in', '/setup', '/forgot-password']
@@ -181,14 +175,24 @@ export function createEnterpriseRouter() {
       to.path.startsWith('/accept-invite')
     const requiresAuth = !isPublicRoute
 
+    // In cloud mode, redirect auth-related routes to the cloud sign-in
+    const cloudAuthRoutes = ['/sign-in', '/forgot-password']
+    const isCloudAuthRoute =
+      cloudAuthRoutes.includes(to.path) || to.path.startsWith('/reset-password')
+
+    if (isCloudReady && isCloudAuthRoute && !effectivelyAuthenticated && !handoffFailed) {
+      const returnUrl = encodeURIComponent(window.location.origin)
+      window.location.href = `${cloudUrl.value}/sign-in?redirect_to=${returnUrl}`
+      return
+    }
+
     if (requiresAuth && !effectivelyAuthenticated) {
-      const handoffFailed = sessionStorage.getItem('cloud_handoff_failed') === 'true'
-      if (cloudLoaded.value && cloudMode.value && !handoffFailed) {
+      if (isCloudReady && !handoffFailed) {
         const returnUrl = encodeURIComponent(window.location.origin + to.fullPath)
         window.location.href = `${cloudUrl.value}/sign-in?redirect_to=${returnUrl}`
         return
       }
-      sessionStorage.removeItem('cloud_handoff_failed')
+      sessionStorage.removeItem(STORAGE_KEYS.CLOUD_HANDOFF_FAILED)
       next('/sign-in')
       return
     }

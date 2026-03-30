@@ -209,7 +209,7 @@ onBeforeUnmount(() => {
         <!-- Crontab Cell -->
         <template #cell-crontab="{ row }">
           <span v-if="row.crontab" class="font-mono text-xs">{{ row.crontab }}</span>
-          <span v-else-if="isMisconfigured(row)" class="inline-flex items-center gap-1 text-xs font-medium text-red-600 dark:text-red-400">
+          <span v-else-if="isMisconfigured(row as unknown as ScheduledTask)" class="inline-flex items-center gap-1 text-xs font-medium text-red-600 dark:text-red-400">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
             Cron is not set
           </span>

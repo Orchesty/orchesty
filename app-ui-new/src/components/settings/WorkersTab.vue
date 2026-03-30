@@ -35,7 +35,7 @@ const {
   handlePageChange,
   handlePerPageChange,
   handleSort,
-} = useDataGrid(loadData)
+} = useDataGrid({ onDataLoad: loadData })
 
 async function loadData() {
   loading.value = true

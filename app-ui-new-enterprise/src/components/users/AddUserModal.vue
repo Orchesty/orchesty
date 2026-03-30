@@ -138,6 +138,10 @@ async function handleInviteSubmit() {
   try {
     const results = await inviteUsers([email])
     const r = results[0]
+    if (!r) {
+      errorMessage.value = 'No response from server'
+      return
+    }
     if (r.hash || r.inviteLink) {
       inviteResult.value = r
       emit('user-added')

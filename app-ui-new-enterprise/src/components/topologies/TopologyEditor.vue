@@ -13,6 +13,7 @@ import { useToast } from '@/composables/useToast'
 import { useDateFormat } from '@/composables/useDateFormat'
 import { useProcessPolling } from '@/composables/useProcessPolling'
 import { fetchTopologySchema, saveTopologySchema } from '@/services/topologiesService'
+import { BACKEND_URL } from '@/config'
 import {
   approveAllBreakpoints,
   rejectAllBreakpoints,
@@ -93,8 +94,7 @@ const resolveBackendId = (editorNodeId: string): string => {
 
 const getStartingPointUrl = (editorNodeId: string): string => {
   const backendId = resolveBackendId(editorNodeId)
-  const baseUrl = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.66:8085'
-  return `${baseUrl}/topologies/${props.topologyId}/nodes/${backendId}/run`
+  return `${BACKEND_URL}/topologies/${props.topologyId}/nodes/${backendId}/run`
 }
 
 

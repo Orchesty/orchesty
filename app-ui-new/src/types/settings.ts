@@ -1,4 +1,4 @@
-import type { QueryParams } from './datagrid'
+import type { QueryParams } from './api'
 
 // Worker Types
 export interface Worker {

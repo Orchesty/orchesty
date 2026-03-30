@@ -1,5 +1,12 @@
 import { ref, computed } from 'vue'
 import type { TopologyNodeMappings } from '@/types/trash'
+
+const emptyMappings: TopologyNodeMappings = {
+  applications: {},
+  nodes: {},
+  topologies: {},
+  topologyTree: {},
+}
 import { fetchTopologyNodeMappings, fetchFilteredMappings } from '@/services/trashService'
 
 // Shared state across all instances
@@ -44,7 +51,6 @@ export function useTopologyNodeMappings() {
 
     isLoading.value = true
     loadingPromise = (async () => {
-      const empty = { applications: {}, nodes: {}, topologies: {}, tree: {} }
       const [allResult, filteredResult] = await Promise.allSettled([
         fetchTopologyNodeMappings(),
         fetchFilteredMappings(),
@@ -54,14 +60,14 @@ export function useTopologyNodeMappings() {
         allMappings.value = allResult.value
       } else {
         console.error('Failed to load all topology/node mappings:', allResult.reason)
-        allMappings.value = allMappings.value ?? empty
+        allMappings.value = allMappings.value ?? emptyMappings
       }
 
       if (filteredResult.status === 'fulfilled') {
         filteredMappingsData.value = filteredResult.value
       } else {
         console.error('Failed to load filtered topology/node mappings:', filteredResult.reason)
-        filteredMappingsData.value = filteredMappingsData.value ?? empty
+        filteredMappingsData.value = filteredMappingsData.value ?? emptyMappings
       }
 
       isLoaded.value = true

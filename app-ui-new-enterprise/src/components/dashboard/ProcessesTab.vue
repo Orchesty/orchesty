@@ -135,8 +135,8 @@ if (hasExternalFilters) {
   })
 }
 
-const handleAuditClick = (process: Process) => {
-  selectedProcess.value = process
+const handleAuditClick = (row: Record<string, unknown>) => {
+  selectedProcess.value = row as unknown as Process
   drawerOpen.value = true
 }
 

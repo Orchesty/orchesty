@@ -92,7 +92,7 @@ defineExpose({ validate, clearErrors });
         </label>
         <FormInput
           :id="setting.key"
-          :type="getInputType(setting.type)"
+          :type="getInputType(setting.type) as 'text' | 'number' | 'email' | 'password'"
           :model-value="String(formValues[setting.key] ?? setting.value ?? '')"
           :placeholder="setting.label"
           :disabled="setting.disabled || setting.readOnly"

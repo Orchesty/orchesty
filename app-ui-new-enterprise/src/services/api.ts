@@ -2,9 +2,10 @@ import axios, { type InternalAxiosRequestConfig } from 'axios'
 import type { LoginResponse } from '@/types/auth'
 import { isAuth0Enabled } from '@/auth/auth0-plugin'
 import { useCloudMode } from '@/composables/useCloudMode'
+import { BACKEND_URL, STORAGE_KEYS } from '@/config'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.66:8085',
+  baseURL: BACKEND_URL,
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -34,8 +35,9 @@ const processQueue = (error: unknown, token: string | null = null) => {
 const SKIP_REFRESH_URLS = ['/api/user/check_logged', '/api/user/login']
 
 function forceLogout() {
-  localStorage.removeItem('auth_token')
-  localStorage.removeItem('auth_user')
+  localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
+  localStorage.removeItem(STORAGE_KEYS.AUTH_USER)
+  localStorage.removeItem(STORAGE_KEYS.CLOUD_HANDOFF_SESSION)
 
   if (isAuth0Enabled) {
     Object.keys(localStorage)
@@ -65,12 +67,12 @@ async function doRefresh(): Promise<string> {
     const response = await api.get<LoginResponse>('/api/user/check_logged')
     const newToken = response.data.token
 
-    localStorage.setItem('auth_token', newToken)
-    localStorage.setItem('lastTokenRefreshTime', String(Date.now()))
+    localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, newToken)
+    localStorage.setItem(STORAGE_KEYS.LAST_TOKEN_REFRESH, String(Date.now()))
 
     if (response.data.email && response.data.id) {
       localStorage.setItem(
-        'auth_user',
+        STORAGE_KEYS.AUTH_USER,
         JSON.stringify({
           id: response.data.id,
           email: response.data.email,
@@ -89,10 +91,34 @@ async function doRefresh(): Promise<string> {
   }
 }
 
+/**
+ * Attempt a single token refresh and retry the original request.
+ * Returns the retried response or rejects with forceLogout.
+ */
+async function retryWithRefresh(
+  originalRequest: InternalAxiosRequestConfig & { _retry?: boolean },
+  refreshFn: () => Promise<string>,
+): Promise<unknown> {
+  if (originalRequest._retry) {
+    forceLogout()
+    return Promise.reject(new Error('Token refresh already attempted'))
+  }
+  originalRequest._retry = true
+  try {
+    const newToken = await refreshFn()
+    const prefix = isAuth0Enabled ? 'Bearer ' : ''
+    originalRequest.headers.Authorization = `${prefix}${newToken}`
+    return api(originalRequest)
+  } catch (refreshError) {
+    forceLogout()
+    return Promise.reject(refreshError)
+  }
+}
+
 // Request interceptor — attach token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('auth_token')
+    const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN)
     if (token) {
       config.headers.Authorization = isAuth0Enabled
         ? `Bearer ${token}`
@@ -103,7 +129,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 )
 
-// Response interceptor — fallback 401 retry
+// Response interceptor — 401 token refresh & retry
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -113,48 +139,26 @@ api.interceptors.response.use(
       return Promise.reject(error)
     }
 
-    // In Auth0 mode, try silent token refresh via auth0 plugin
-    // But NOT if we have a cloud handoff session — Auth0 SDK may have
-    // a stale session for a different user, so we must not use it.
     if (isAuth0Enabled) {
-      const isCloudHandoff = localStorage.getItem('cloud_handoff_session') === 'true'
-      if (isCloudHandoff) {
-        if (originalRequest._retry) {
-          forceLogout()
-          return Promise.reject(error)
-        }
-        originalRequest._retry = true
-        try {
-          const newToken = await doRefresh()
-          originalRequest.headers.Authorization = `Bearer ${newToken}`
-          return api(originalRequest)
-        } catch (refreshError) {
-          forceLogout()
-          return Promise.reject(refreshError)
-        }
+      const hasCloudHandoff = localStorage.getItem(STORAGE_KEYS.CLOUD_HANDOFF_SESSION) === 'true'
+
+      if (hasCloudHandoff) {
+        // Cloud handoff session — refresh via legacy backend endpoint,
+        // NOT via Auth0 SDK (which may hold a stale session for a different user).
+        return retryWithRefresh(originalRequest, doRefresh)
       }
 
-      if (originalRequest._retry) {
-        forceLogout()
-        return Promise.reject(error)
-      }
-      originalRequest._retry = true
-      try {
+      // Standard Auth0 mode — refresh via Auth0 SDK
+      return retryWithRefresh(originalRequest, async () => {
         const { auth0Plugin } = await import('@/auth/auth0-plugin')
-        if (auth0Plugin) {
-          const newToken = await auth0Plugin.getAccessTokenSilently()
-          localStorage.setItem('auth_token', newToken)
-          originalRequest.headers.Authorization = `Bearer ${newToken}`
-          return api(originalRequest)
-        }
-        forceLogout()
-        return Promise.reject(error)
-      } catch (refreshError) {
-        forceLogout()
-        return Promise.reject(refreshError)
-      }
+        if (!auth0Plugin) throw new Error('Auth0 plugin not available')
+        const newToken = await auth0Plugin.getAccessTokenSilently()
+        localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, newToken)
+        return newToken
+      })
     }
 
+    // Legacy (non-Auth0) mode
     if (SKIP_REFRESH_URLS.some((url) => originalRequest.url?.includes(url))) {
       return Promise.reject(error)
     }

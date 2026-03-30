@@ -293,12 +293,4 @@ export interface ConnectorHeatmapData {
   nodeAppMap: Map<string, string>
 }
 
-export interface TrashApiFilter {
-  search: string | null
-  filter: Array<Array<{ column: string; operator: string; value: unknown[] }>>
-  sorter: Array<{ column: string; direction: string }>
-  paging: {
-    itemsPerPage: number
-    page: number
-  }
-}
+export type { TrashApiFilter } from './trash'

@@ -6,6 +6,7 @@ import PasswordInput from '@/components/ui/PasswordInput.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import { verifyResetToken, activateUser, setNewPassword } from '@/services/authService'
 import { useToast } from '@/composables/useToast'
+import { useCloudMode } from '@/composables/useCloudMode'
 
 interface Props {
   token: string
@@ -15,6 +16,7 @@ const props = defineProps<Props>()
 
 const router = useRouter()
 const { showToast } = useToast()
+const { cloudMode } = useCloudMode()
 
 const password = ref('')
 const email = ref('')
@@ -22,29 +24,10 @@ const error = ref('')
 const verifying = ref(true)
 const verifyFailed = ref(false)
 const submitting = ref(false)
-const cloudMode = ref(false)
-
-async function fetchCloudMode(): Promise<void> {
-  try {
-    const baseURL = import.meta.env.VITE_BACKEND_URL || ''
-    const res = await fetch(`${baseURL}/api/status`, {
-      headers: { 'Accept': 'application/json' },
-    })
-    if (res.ok) {
-      const data = await res.json()
-      cloudMode.value = data.cloudMode === true
-    }
-  } catch {
-    // default false
-  }
-}
 
 onMounted(async () => {
   try {
-    const [result] = await Promise.all([
-      verifyResetToken(props.token),
-      fetchCloudMode(),
-    ])
+    const result = await verifyResetToken(props.token)
     email.value = result.email
     verifying.value = false
   } catch {

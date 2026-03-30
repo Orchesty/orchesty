@@ -117,8 +117,8 @@ watch(
   },
 )
 
-const handleAuditClick = (process: Process) => {
-  emit('open-audit', process)
+const handleAuditClick = (row: Record<string, unknown>) => {
+  emit('open-audit', row as unknown as Process)
 }
 
 const handleClose = () => {

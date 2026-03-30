@@ -7,7 +7,8 @@
     "resolveJsonModule": true,
 
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*", "../app-ui-new/src/*"],
+      "@orchesty/ui-core": ["../app-ui-new/src/index.ts"]
     }
   }
 }

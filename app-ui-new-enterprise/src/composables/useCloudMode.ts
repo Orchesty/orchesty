@@ -1,4 +1,5 @@
 import { ref, readonly } from 'vue'
+import { BACKEND_URL } from '@/config'
 
 const cloudMode = ref(false)
 const cloudUrl = ref('')
@@ -9,8 +10,7 @@ export function useCloudMode() {
     if (loaded.value) return
 
     try {
-      const baseURL = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.66:8085'
-      const res = await fetch(`${baseURL}/api/status`, {
+      const res = await fetch(`${BACKEND_URL}/api/status`, {
         headers: { 'Accept': 'application/json' },
       })
       if (res.ok) {

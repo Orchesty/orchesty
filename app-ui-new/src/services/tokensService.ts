@@ -31,16 +31,14 @@ function mapApiTokenToToken(apiToken: TokenApiResponse): Token {
 export async function fetchTokens(params: TokenQueryParams = {}) {
   const {
     page = 1,
-    perPage = 10,
-    sortBy = 'created',
-    sortOrder = 'desc',
+    limit = 10,
     search = '',
   } = params
 
   const response = await api.get<TokensListResponse>('/api/apiTokens', {
     params: {
       page,
-      itemsPerPage: perPage,
+      itemsPerPage: limit,
       ...(search && { search }),
       // Backend has its own sorting via sorter field
     },

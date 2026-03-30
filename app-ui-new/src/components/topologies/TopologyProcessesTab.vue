@@ -101,7 +101,8 @@ const {
   filters: [statusFilter, dateTimeRange],
 })
 
-const handleAuditClick = (process: Process) => {
+const handleAuditClick = (row: Record<string, unknown>) => {
+  const process = row as unknown as Process
   selectedProcess.value = process
   drawerOpen.value = true
 }

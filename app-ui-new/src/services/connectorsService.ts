@@ -209,7 +209,7 @@ export async function fetchConnectorDetail(
   if (items.length === 0) {
     return {
       connector: {
-        id: nodeIds[0] || '',
+        id: nodeIds[0] ?? '',
         application: '',
         avgRequestTime: 0,
         requests: 0,
@@ -228,15 +228,16 @@ export async function fetchConnectorDetail(
     }
   }
 
-  const connector = mapApiItemToConnector(items[0])
+  const overview = items[0]!
+  const connector = mapApiItemToConnector(overview)
   return {
     connector,
-    errors400: items[0].status400,
-    errors500: items[0].status500,
-    totalRequests: items[0].count,
-    lastRequestStatus: items[0].lastStatus,
+    errors400: overview.status400,
+    errors500: overview.status500,
+    totalRequests: overview.count,
+    lastRequestStatus: overview.lastStatus,
     lastRequestTime: lastRecord?.duration || 0,
-    avgRequestTime: items[0].duration,
+    avgRequestTime: overview.duration,
     errorRecords: [],
   }
 }

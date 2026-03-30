@@ -22,6 +22,7 @@ function isAuth0Error(data: unknown): data is Auth0ErrorResponse {
 
 function decodeJwtPayload(token: string): Record<string, unknown> {
   const base64Url = token.split('.')[1]
+  if (!base64Url) throw new Error('Invalid JWT: missing payload segment')
   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
   const jsonPayload = decodeURIComponent(
     atob(base64)

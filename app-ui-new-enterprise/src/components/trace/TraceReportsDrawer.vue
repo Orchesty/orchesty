@@ -29,12 +29,12 @@ const reportsByDate = computed(() => {
   
   props.reports.forEach(report => {
     const date = new Date(report.timestamp)
-    const dateKey = date.toISOString().split('T')[0]
+    const dateKey = date.toISOString().split('T')[0] ?? ''
     
     if (!grouped[dateKey]) {
       grouped[dateKey] = []
     }
-    grouped[dateKey].push(report)
+    grouped[dateKey]!.push(report)
   })
   
   // Seřadit podle data (nejnovější první)
