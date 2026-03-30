@@ -35,10 +35,6 @@ function forceLogout() {
   localStorage.removeItem('auth_token')
   localStorage.removeItem('auth_user')
 
-  Object.keys(localStorage)
-    .filter((k) => k.startsWith('@@auth0spajs@@'))
-    .forEach((k) => localStorage.removeItem(k))
-
   if (window.location.pathname !== '/sign-in') {
     window.location.href = '/sign-in'
   }

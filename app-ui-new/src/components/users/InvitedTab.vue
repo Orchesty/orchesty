@@ -16,6 +16,12 @@ import { useDataGrid } from '@/composables/useDataGrid'
 import { useDateFormat } from '@/composables/useDateFormat'
 import { useToast } from '@/composables/useToast'
 
+const props = withDefaults(defineProps<{
+  hideInviteButton?: boolean
+}>(), {
+  hideInviteButton: false,
+})
+
 const { formatDateTime } = useDateFormat()
 const { showToast } = useToast()
 
@@ -150,6 +156,8 @@ const handleUserInvited = () => {
 onMounted(() => {
   loadData()
 })
+
+defineExpose({ loadData })
 </script>
 
 <template>
@@ -157,7 +165,7 @@ onMounted(() => {
     <div class="mb-3">
       <div class="flex items-center justify-between mb-2">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Invited users</h3>
-        <Button @click="modalOpen = true">
+        <Button v-if="!hideInviteButton" @click="modalOpen = true">
           + Invite user
         </Button>
       </div>
@@ -207,6 +215,7 @@ onMounted(() => {
   </Card>
 
   <InviteUserModal
+    v-if="!hideInviteButton"
     v-model="modalOpen"
     @user-invited="handleUserInvited"
   />

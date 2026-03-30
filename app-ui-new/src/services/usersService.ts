@@ -54,6 +54,8 @@ export async function fetchUsers(params: {
 export interface InviteResult {
   email: string
   hash?: string
+  inviteLink?: string
+  added?: boolean
   error?: string
 }
 
@@ -62,8 +64,13 @@ export async function inviteUsers(emails: string[]): Promise<InviteResult[]> {
 
   for (const email of emails) {
     try {
-      const response = await api.post<{ hash: string; email: string }>('/api/user/invite', { email })
-      results.push({ email: response.data.email, hash: response.data.hash })
+      const response = await api.post<{ email: string; hash?: string; inviteLink?: string; added?: boolean }>('/api/user/invite', { email })
+      results.push({
+        email: response.data.email ?? email,
+        hash: response.data.hash,
+        inviteLink: response.data.inviteLink,
+        added: response.data.added,
+      })
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to invite user'
       results.push({ email, error: message })

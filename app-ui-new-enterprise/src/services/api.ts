@@ -1,6 +1,7 @@
 import axios, { type InternalAxiosRequestConfig } from 'axios'
 import type { LoginResponse } from '@/types/auth'
 import { isAuth0Enabled } from '@/auth/auth0-plugin'
+import { useCloudMode } from '@/composables/useCloudMode'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.66:8085',
@@ -40,6 +41,12 @@ function forceLogout() {
     Object.keys(localStorage)
       .filter((k) => k.startsWith('@@auth0spajs@@'))
       .forEach((k) => localStorage.removeItem(k))
+  }
+
+  const { cloudMode, cloudUrl } = useCloudMode()
+  if (cloudMode.value && cloudUrl.value) {
+    window.location.href = `${cloudUrl.value}/sign-out`
+    return
   }
 
   if (window.location.pathname !== '/sign-in') {
@@ -87,7 +94,7 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('auth_token')
     if (token) {
-      config.headers.Authorization = isAuth0Enabled && !token.startsWith('Bearer ')
+      config.headers.Authorization = isAuth0Enabled
         ? `Bearer ${token}`
         : token
     }
@@ -107,7 +114,26 @@ api.interceptors.response.use(
     }
 
     // In Auth0 mode, try silent token refresh via auth0 plugin
+    // But NOT if we have a cloud handoff session — Auth0 SDK may have
+    // a stale session for a different user, so we must not use it.
     if (isAuth0Enabled) {
+      const isCloudHandoff = localStorage.getItem('cloud_handoff_session') === 'true'
+      if (isCloudHandoff) {
+        if (originalRequest._retry) {
+          forceLogout()
+          return Promise.reject(error)
+        }
+        originalRequest._retry = true
+        try {
+          const newToken = await doRefresh()
+          originalRequest.headers.Authorization = `Bearer ${newToken}`
+          return api(originalRequest)
+        } catch (refreshError) {
+          forceLogout()
+          return Promise.reject(refreshError)
+        }
+      }
+
       if (originalRequest._retry) {
         forceLogout()
         return Promise.reject(error)
@@ -117,7 +143,7 @@ api.interceptors.response.use(
         const { auth0Plugin } = await import('@/auth/auth0-plugin')
         if (auth0Plugin) {
           const newToken = await auth0Plugin.getAccessTokenSilently()
-          localStorage.setItem('auth_token', `Bearer ${newToken}`)
+          localStorage.setItem('auth_token', newToken)
           originalRequest.headers.Authorization = `Bearer ${newToken}`
           return api(originalRequest)
         }

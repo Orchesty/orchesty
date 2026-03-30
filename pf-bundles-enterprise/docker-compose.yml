@@ -30,6 +30,8 @@ services:
             WORKER_DEFAULT_PORT: 8008
             JWT_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
             ORCHESTY_CLOUD_URL: ''
+            ORCHESTY_CLOUD_INSTANCE_ID: ''
+            ORCHESTY_CLOUD_INSTANCE_SECRET: ''
             AUTH0_DOMAIN: ''
             AUTH0_AUDIENCE: ''
 

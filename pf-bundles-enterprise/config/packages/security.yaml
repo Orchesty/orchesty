@@ -21,6 +21,9 @@ security:
         unsecured_cloud_webhook:
             pattern: ^/api/orchesty/webhook/users
             security: false
+        unsecured_cloud_handoff:
+            pattern: ^/api/cloud/session-handoff
+            security: false
 
         secured_usage_stats_events:
             pattern: ^/api/usage-stats/.*

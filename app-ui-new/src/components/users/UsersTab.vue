@@ -85,6 +85,8 @@ const handleUserInvited = () => {
 onMounted(() => {
   loadData()
 })
+
+defineExpose({ loadData })
 </script>
 
 <template>

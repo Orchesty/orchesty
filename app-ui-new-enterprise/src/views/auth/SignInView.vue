@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth0 } from '@auth0/auth0-vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import { useAuthStore } from '@/stores/auth'
-import { isAuth0Enabled, isAuth0Redirect } from '@/auth/auth0-plugin'
+import { isAuth0Enabled } from '@/auth/auth0-plugin'
 import { loginWithEmail, injectTokensIntoAuth0Cache } from '@/services/auth0Service'
 
 const router = useRouter()
@@ -15,14 +15,6 @@ const email = ref('')
 const password = ref('')
 const error = ref('')
 const submitting = ref(false)
-
-onMounted(async () => {
-  if (isAuth0Redirect) {
-    auth0?.loginWithRedirect({
-      appState: { target: window.location.pathname },
-    })
-  }
-})
 
 function handleGoogleLogin() {
   auth0?.loginWithRedirect({
@@ -58,14 +50,7 @@ async function handleEmailLogin() {
 
 <template>
   <AuthLayout>
-    <!-- Cloud mode: auto-redirect -->
-    <div v-if="isAuth0Redirect" class="py-8 text-center">
-      <div class="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary-600 border-r-transparent"></div>
-      <p class="text-sm text-gray-500 dark:text-gray-400">Redirecting to login...</p>
-    </div>
-
-    <!-- On-prem SSO / Legacy -->
-    <div v-else>
+    <div>
       <h1 class="mb-2 text-2xl font-extrabold leading-tight tracking-tight text-gray-900 dark:text-white">
         Sign in to your instance
       </h1>

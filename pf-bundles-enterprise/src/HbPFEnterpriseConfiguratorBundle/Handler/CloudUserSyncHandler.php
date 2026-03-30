@@ -9,6 +9,7 @@ use Hanaboso\AclBundle\Manager\GroupManager;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\UserBundle\Document\TmpUser;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\ControllerUtils;
@@ -75,6 +76,7 @@ final class CloudUserSyncHandler
 
             $existing = $this->dm->getRepository(User::class)->findOneBy(['email' => $email]);
             if ($existing) {
+                $this->removeTmpUser($email);
                 $skipped++;
 
                 continue;
@@ -94,8 +96,9 @@ final class CloudUserSyncHandler
             try {
                 $this->groupManager->addUserIntoGroup($user, groupName: $groupName);
             } catch (Throwable) {
-                // Group might not exist yet in fresh installation
             }
+
+            $this->removeTmpUser($email);
 
             $created++;
         }
@@ -105,6 +108,15 @@ final class CloudUserSyncHandler
             'skipped' => $skipped,
             'total'   => count($users),
         ];
+    }
+
+    private function removeTmpUser(string $email): void
+    {
+        $tmpUser = $this->dm->getRepository(TmpUser::class)->findOneBy(['email' => $email]);
+        if ($tmpUser) {
+            $this->dm->remove($tmpUser);
+            $this->dm->flush();
+        }
     }
 
     /**

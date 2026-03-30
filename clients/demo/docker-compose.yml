@@ -160,6 +160,9 @@ services:
             AUTH0_DOMAIN: dev-qsa0lopaqbhr0vmj.eu.auth0.com
             AUTH0_AUDIENCE: https://api.orchesty.cloud
             ORCHESTY_CLOUD_URL: http://host.docker.internal:3000
+            ORCHESTY_CLOUD_FRONTEND_URL: http://localhost:5173
+            ORCHESTY_CLOUD_INSTANCE_ID: ${ORCHESTY_CLOUD_INSTANCE_ID:-5d3e1061-5863-4292-8d95-9a238db8b48a}
+            ORCHESTY_CLOUD_INSTANCE_SECRET: ${ORCHESTY_CLOUD_INSTANCE_SECRET:-0027c895-2aa1-11f1-872c-0e85bfc47da4}
             EMAIL_DSN: smtp://mailhog:1025
             ALPHA_INSTANCE_ID: 'demo'
             INSTALLER_DIRS: '["/var/www/pipes/clients/demo/node-sdk/src/topology"]'

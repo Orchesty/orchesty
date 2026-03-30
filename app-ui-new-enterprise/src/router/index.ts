@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { coreRoutes, createAppRouter } from '@orchesty/ui-core'
 import { useAuth0 } from '@auth0/auth0-vue'
-import { isAuth0Enabled, isAuth0Redirect } from '@/auth/auth0-plugin'
+import { isAuth0Enabled } from '@/auth/auth0-plugin'
 import { useAuthStore } from '@/stores/auth'
+import { useCloudMode } from '@/composables/useCloudMode'
 
 import EnterpriseDashboardLayout from '@/layouts/DashboardLayout.vue'
 import DashboardView from '@/views/dashboard/DashboardView.vue'
@@ -140,10 +141,14 @@ export function createEnterpriseRouter() {
   router.beforeEach(async (to, _from, next) => {
     const authStore = useAuthStore()
     const auth0 = useAuth0()
+    const { cloudMode, cloudUrl, loaded: cloudLoaded } = useCloudMode()
 
     await waitForAuth0Loading(auth0)
 
-    if (auth0.isAuthenticated.value && !auth0CallbackHandled) {
+    const isCloudHandoff = authStore.isAuthenticated
+    const effectivelyAuthenticated = auth0.isAuthenticated.value || isCloudHandoff
+
+    if (auth0.isAuthenticated.value && !auth0CallbackHandled && !isCloudHandoff) {
       auth0CallbackHandled = true
       try {
         await authStore.handleAuth0Callback(auth0)
@@ -154,6 +159,21 @@ export function createEnterpriseRouter() {
       }
     }
 
+    if (isCloudHandoff && !backendVerified) {
+      backendVerified = true
+    }
+
+    const cloudAuthRoutes = ['/sign-in', '/forgot-password']
+    const isCloudAuthRoute =
+      cloudAuthRoutes.includes(to.path) || to.path.startsWith('/reset-password')
+
+    const handoffJustFailed = sessionStorage.getItem('cloud_handoff_failed') === 'true'
+    if (cloudLoaded.value && cloudMode.value && isCloudAuthRoute && !effectivelyAuthenticated && !handoffJustFailed) {
+      const returnUrl = encodeURIComponent(window.location.origin)
+      window.location.href = `${cloudUrl.value}/sign-in?redirect_to=${returnUrl}`
+      return
+    }
+
     const publicRoutes = ['/sign-in', '/setup', '/forgot-password']
     const isPublicRoute =
       publicRoutes.includes(to.path) ||
@@ -161,18 +181,19 @@ export function createEnterpriseRouter() {
       to.path.startsWith('/accept-invite')
     const requiresAuth = !isPublicRoute
 
-    if (requiresAuth && !auth0.isAuthenticated.value) {
-      if (isAuth0Redirect) {
-        await auth0.loginWithRedirect({
-          appState: { target: to.fullPath },
-        })
+    if (requiresAuth && !effectivelyAuthenticated) {
+      const handoffFailed = sessionStorage.getItem('cloud_handoff_failed') === 'true'
+      if (cloudLoaded.value && cloudMode.value && !handoffFailed) {
+        const returnUrl = encodeURIComponent(window.location.origin + to.fullPath)
+        window.location.href = `${cloudUrl.value}/sign-in?redirect_to=${returnUrl}`
         return
       }
+      sessionStorage.removeItem('cloud_handoff_failed')
       next('/sign-in')
       return
     }
 
-    if (to.path === '/sign-in' && auth0.isAuthenticated.value && backendVerified) {
+    if (to.path === '/sign-in' && effectivelyAuthenticated && backendVerified) {
       next('/dashboard')
     } else {
       next()

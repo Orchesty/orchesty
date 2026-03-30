@@ -5,7 +5,7 @@ import AuthLayout from '@/layouts/AuthLayout.vue'
 import Button from '@/components/ui/Button.vue'
 import PasswordInput from '@/components/ui/PasswordInput.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
-import { activateUser, setNewPassword } from '@/services/authService'
+import { verifyResetToken, activateUser, setNewPassword } from '@/services/authService'
 import { useToast } from '@/composables/useToast'
 
 interface Props {
@@ -19,19 +19,18 @@ const { showToast } = useToast()
 
 const password = ref('')
 const email = ref('')
-const activating = ref(true)
-const activationFailed = ref(false)
+const verifying = ref(true)
+const verifyFailed = ref(false)
 const isLoading = ref(false)
 
-// Activate the invite token on mount
 onMounted(async () => {
   try {
-    const result = await activateUser(props.token)
+    const result = await verifyResetToken(props.token)
     email.value = result.email
-    activating.value = false
+    verifying.value = false
   } catch {
-    activationFailed.value = true
-    activating.value = false
+    verifyFailed.value = true
+    verifying.value = false
     showToast('Invalid or expired invite link.', 'error')
   }
 })
@@ -41,11 +40,12 @@ const handleSubmit = async () => {
 
   isLoading.value = true
   try {
+    await activateUser(props.token)
     await setNewPassword(props.token, password.value)
     showToast('Account created successfully. You can now sign in.', 'success')
     router.push('/sign-in')
   } catch {
-    showToast('Failed to set password. Please try again.', 'error')
+    showToast('Failed to create account. Please try again.', 'error')
   } finally {
     isLoading.value = false
   }
@@ -54,13 +54,11 @@ const handleSubmit = async () => {
 
 <template>
   <AuthLayout>
-    <!-- Loading state -->
-    <div v-if="activating" class="flex justify-center py-12">
-      <LoadingSpinner message="Activating your account..." />
+    <div v-if="verifying" class="flex justify-center py-12">
+      <LoadingSpinner message="Verifying your invite link..." />
     </div>
 
-    <!-- Activation failed -->
-    <template v-else-if="activationFailed">
+    <template v-else-if="verifyFailed">
       <h1 class="mb-2 text-2xl font-extrabold leading-tight tracking-tight text-gray-900 dark:text-white">
         Invalid invite link
       </h1>

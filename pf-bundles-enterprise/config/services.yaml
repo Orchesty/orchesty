@@ -13,9 +13,15 @@ parameters:
   passwordLink: 'reset-password/%s'
 
   env(ORCHESTY_CLOUD_URL): ''
+  env(ORCHESTY_CLOUD_FRONTEND_URL): ''
+  env(ORCHESTY_CLOUD_INSTANCE_ID): ''
+  env(ORCHESTY_CLOUD_INSTANCE_SECRET): ''
   env(AUTH0_DOMAIN): ''
   env(AUTH0_AUDIENCE): ''
   orchesty_cloud_url: '%env(string:ORCHESTY_CLOUD_URL)%'
+  orchesty_cloud_frontend_url: '%env(string:ORCHESTY_CLOUD_FRONTEND_URL)%'
+  orchesty_cloud_instance_id: '%env(string:ORCHESTY_CLOUD_INSTANCE_ID)%'
+  orchesty_cloud_instance_secret: '%env(string:ORCHESTY_CLOUD_INSTANCE_SECRET)%'
   auth0_domain: '%env(string:AUTH0_DOMAIN)%'
   auth0_audience: '%env(string:AUTH0_AUDIENCE)%'
 
