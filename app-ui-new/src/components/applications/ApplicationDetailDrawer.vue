@@ -1,5 +1,14 @@
 <script setup lang="ts">
 import { ref, watch, computed, nextTick } from 'vue';
+import { marked, type RendererObject } from 'marked';
+
+const markedRenderer: RendererObject = {
+  link({ href, title, text }) {
+    const titleAttr = title ? ` title="${title}"` : '';
+    return `<a href="${href}"${titleAttr} target="_blank" rel="noopener noreferrer">${text}</a>`;
+  },
+};
+marked.use({ renderer: markedRenderer });
 import type { ApplicationInstall, ApplicationSetting, ApplicationStatus } from '@/types/applications';
 import {
   fetchApplicationInstall,
@@ -48,6 +57,14 @@ const formValues = ref<Record<string, unknown>>({});
 const activeTab = ref<string>('');
 const formRefs = ref<Record<string, InstanceType<typeof DynamicFormGenerator>>>({});
 const currentStatus = ref<ApplicationStatus>(props.status);
+const showInfo = ref(false);
+
+const hasInfo = computed(() => !!applicationInstall.value?.info);
+
+const renderedInfo = computed(() => {
+  if (!applicationInstall.value?.info) return '';
+  return marked(applicationInstall.value.info, { async: false });
+});
 
 const setFormRef = (tabId: string, el: any) => {
   if (el) formRefs.value[tabId] = el;
@@ -312,6 +329,7 @@ const handleClose = () => {
 // Watch for drawer open/close
 watch(() => props.modelValue, async (newValue) => {
   if (newValue && props.applicationKey) {
+    showInfo.value = false;
     await loadApplicationData();
   }
 }, { immediate: true });
@@ -429,9 +447,33 @@ watch(() => props.modelValue, async (newValue) => {
       </div>
 
       <!-- Tabs Section -->
-      <TabsWithOverflow v-if="tabs.length > 0" :tabs="tabs" :active-tab="activeTab">
+      <TabsWithOverflow
+        v-if="tabs.length > 0"
+        :tabs="tabs"
+        :active-tab="showInfo ? '' : activeTab"
+        @tab-change="(tabId: string) => { showInfo = false; activeTab = tabId; }"
+      >
+        <template #right-action>
+          <button
+            v-if="hasInfo"
+            type="button"
+            class="inline-flex items-center justify-center p-2 rounded-lg transition-colors"
+            :class="showInfo
+              ? 'text-primary-600 dark:text-primary-500'
+              : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300'"
+            :title="showInfo ? 'Back to settings' : 'Application documentation'"
+            @click="showInfo = !showInfo"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-7 h-7">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+          </button>
+        </template>
+
         <template v-for="tab in tabs" :key="tab.id" #[`tab-content-${tab.id}`]>
-          <div class="space-y-6">
+          <div v-if="!showInfo" class="space-y-6">
             <DynamicFormGenerator
               :ref="(el: any) => setFormRef(tab.id, el)"
               :settings="groupedSettings[tab.id] || []"
@@ -455,6 +497,13 @@ watch(() => props.modelValue, async (newValue) => {
           </div>
         </template>
       </TabsWithOverflow>
+
+      <!-- Info panel (rendered markdown) -->
+      <div
+        v-if="showInfo && hasInfo"
+        class="prose prose-sm dark:prose-invert max-w-none pt-2 pb-6"
+        v-html="renderedInfo"
+      />
     </div>
 
     <template #footer-actions>

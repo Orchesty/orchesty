@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import Card from '@/components/ui/Card.vue'
 import Button from '@/components/ui/Button.vue'
@@ -9,74 +9,36 @@ import CreateGroupModal from '@/components/users/CreateGroupModal.vue'
 import { fetchGroups } from '@/services/groupsService'
 import type { Group } from '@/types/users'
 import type { TableColumn } from '@/types/dashboard'
-import { useDataGrid } from '@/composables/useDataGrid'
 
-const groups = ref<Group[]>([])
+const allGroups = ref<Group[]>([])
 const searchFilter = ref('')
+const loading = ref(false)
 const drawerOpen = ref(false)
 const modalOpen = ref(false)
 const selectedGroup = ref<Group | null>(null)
 
 const columns: TableColumn[] = [
   { key: 'name', label: 'Group name', sortable: true },
-  { key: 'modules', label: 'Modules', sortable: false },
-  { key: 'users', label: 'Users', sortable: false },
-  { key: 'actions', label: '', sortable: false, className: 'text-right' }
+  { key: 'level', label: 'Level', sortable: true },
+  { key: 'rules', label: 'Rules', sortable: false },
+  { key: 'usersCount', label: 'Users', sortable: true },
+  { key: 'actions', label: '', sortable: false, className: 'text-right' },
 ]
 
-const {
-  currentPage,
-  itemsPerPage,
-  totalPages,
-  totalItems,
-  sortField,
-  sortDirection,
-  loading,
-  handlePageChange,
-  handlePerPageChange,
-  handleSort
-} = useDataGrid({
-  onDataLoad: async () => {
-    loading.value = true
-    try {
-      const response = await fetchGroups({
-        page: currentPage.value,
-        limit: itemsPerPage.value,
-        sort: sortField.value,
-        order: sortDirection.value,
-        search: searchFilter.value || undefined
-      })
-
-      groups.value = response.data
-      totalPages.value = response.meta.totalPages
-      totalItems.value = response.meta.total
-    } catch (error) {
-      console.error('Failed to load groups:', error)
-      groups.value = []
-    } finally {
-      loading.value = false
-    }
-  },
-  filters: [searchFilter]
+const filteredGroups = computed(() => {
+  if (!searchFilter.value) return allGroups.value
+  const q = searchFilter.value.toLowerCase()
+  return allGroups.value.filter((g) => g.name.toLowerCase().includes(q))
 })
 
 const loadData = async () => {
   loading.value = true
   try {
-    const response = await fetchGroups({
-      page: currentPage.value,
-      limit: itemsPerPage.value,
-      sort: sortField.value,
-      order: sortDirection.value,
-      search: searchFilter.value || undefined
-    })
-
-    groups.value = response.data
-    totalPages.value = response.meta.totalPages
-    totalItems.value = response.meta.total
+    const response = await fetchGroups()
+    allGroups.value = response.items
   } catch (error) {
     console.error('Failed to load groups:', error)
-    groups.value = []
+    allGroups.value = []
   } finally {
     loading.value = false
   }
@@ -101,6 +63,8 @@ const handleGroupCreated = () => {
   loadData()
 }
 
+defineExpose({ loadData })
+
 onMounted(() => {
   loadData()
 })
@@ -109,7 +73,6 @@ onMounted(() => {
 <template>
   <Card>
     <div class="mb-3">
-      <!-- Title and Add Button -->
       <div class="flex items-center justify-between mb-2">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Groups</h3>
         <Button @click="modalOpen = true">
@@ -120,26 +83,18 @@ onMounted(() => {
 
     <DataGrid
       :columns="columns"
-      :data="groups"
-      :current-page="currentPage"
-      :total-pages="totalPages"
-      :total-items="totalItems"
-      :items-per-page="itemsPerPage"
+      :data="filteredGroups"
       :loading="loading"
-      :sort-field="sortField"
-      :sort-direction="sortDirection"
-      @page-change="handlePageChange"
-      @per-page-change="handlePerPageChange"
-      @sort="handleSort"
+      :hide-pagination="true"
     >
       <template #filters>
         <TextInput
           v-model="searchFilter"
-          placeholder="Search for group name"
+          placeholder="Search by group name"
           width="w-80"
         />
       </template>
-      <!-- Custom cell templates -->
+
       <template #cell-name="{ row }">
         <button
           @click="handleOpenDrawer(row as Group)"
@@ -149,12 +104,22 @@ onMounted(() => {
         </button>
       </template>
 
-      <template #cell-modules="{ row }">
-        <span class="whitespace-nowrap">{{ (row as Group).modules.length }}</span>
+      <template #cell-level="{ row }">
+        <span class="text-sm text-gray-500 dark:text-gray-400">
+          {{ (row as Group).level }}
+        </span>
       </template>
 
-      <template #cell-users="{ row }">
-        <span class="whitespace-nowrap">{{ (row as Group).users.length }}</span>
+      <template #cell-rules="{ row }">
+        <span class="text-sm text-gray-500 dark:text-gray-400">
+          {{ (row as Group).rules.length }}
+        </span>
+      </template>
+
+      <template #cell-usersCount="{ row }">
+        <span class="text-sm text-gray-500 dark:text-gray-400">
+          {{ (row as Group).usersCount }}
+        </span>
       </template>
 
       <template #cell-actions="{ row }">
@@ -172,7 +137,6 @@ onMounted(() => {
     </DataGrid>
   </Card>
 
-  <!-- Group Detail Drawer -->
   <GroupDetailDrawer
     v-model="drawerOpen"
     :group="selectedGroup"
@@ -180,10 +144,8 @@ onMounted(() => {
     @group-removed="handleGroupRemoved"
   />
 
-  <!-- Create Group Modal -->
   <CreateGroupModal
     v-model="modalOpen"
     @group-created="handleGroupCreated"
   />
 </template>
-

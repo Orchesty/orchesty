@@ -123,9 +123,9 @@ onMounted(async () => {
   }
 });
 
-// Watch for activeTab prop changes
+// Watch for activeTab prop changes (including empty string to deselect all)
 watch(() => props.activeTab, (newTab) => {
-  if (newTab && newTab !== currentActiveTab.value) {
+  if (newTab !== undefined && newTab !== currentActiveTab.value) {
     currentActiveTab.value = newTab;
   }
 });
@@ -202,6 +202,11 @@ onUnmounted(() => {
             </span>
           </template>
         </DropdownMenu>
+      </li>
+
+      <!-- Right-aligned action slot -->
+      <li v-if="$slots['right-action']" class="ml-auto flex items-center" role="presentation">
+        <slot name="right-action" />
       </li>
     </ul>
   </div>

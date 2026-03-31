@@ -52,11 +52,29 @@ export interface InvitedUserApiResponse {
   sorter: unknown[]
 }
 
+export interface GroupRule {
+  resource: string
+  actions: string[]
+  propertyMask: number
+}
+
+export interface GroupUser {
+  id: string
+  email: string
+}
+
 export interface Group {
   id: string
   name: string
-  modules: string[]
-  users: string[]
+  level: number
+  usersCount: number
+  rules: GroupRule[]
+  users?: GroupUser[]
+}
+
+export interface GroupListResponse {
+  items: Group[]
+  total: number
 }
 
 export interface GroupQueryParams {

@@ -3,9 +3,15 @@ import { ref, watch, computed } from 'vue'
 import Drawer from '@/components/ui/Drawer.vue'
 import Button from '@/components/ui/Button.vue'
 import Confirm from '@/components/ui/Confirm.vue'
-import { updateGroup, removeGroup, addUserToGroup, removeUserFromGroup } from '@/services/groupsService'
-import type { Group } from '@/types/users'
-import usersDataJson from '@/assets/mock-data/users-data.json'
+import EditGroupModal from '@/components/users/EditGroupModal.vue'
+import {
+  fetchGroupDetail,
+  removeGroup,
+  addUserToGroup,
+  removeUserFromGroup,
+} from '@/services/groupsService'
+import { fetchUsers } from '@/services/usersService'
+import type { Group, GroupUser, GroupRule, User } from '@/types/users'
 
 interface Props {
   modelValue: boolean
@@ -20,77 +26,107 @@ const emit = defineEmits<{
 }>()
 
 const confirmRemoveOpen = ref(false)
+const editModalOpen = ref(false)
 const addUserDropdownOpen = ref(false)
-const groupModules = ref<string[]>(props.group ? [...props.group.modules] : [])
-const groupUsers = ref<string[]>(props.group ? [...props.group.users] : [])
+const loadingDetail = ref(false)
 
-const allModules = [
-  { id: 'dashboard', label: 'Dashboard' },
-  { id: 'ai-assistant', label: 'AI Assistant' },
-  { id: 'integrations', label: 'Integrations' },
-  { id: 'analytics', label: 'Analytics' },
-  { id: 'settings', label: 'Settings' }
-]
+const groupDetail = ref<Group | null>(null)
+const groupUsers = ref<GroupUser[]>([])
+const groupRules = ref<GroupRule[]>([])
 
-const allUsers = computed(() => usersDataJson.data)
+const allUsers = ref<User[]>([])
+const loadingUsers = ref(false)
 
 const availableUsers = computed(() => {
-  return allUsers.value.filter(u => !groupUsers.value.includes(u.id))
+  const assignedIds = new Set(groupUsers.value.map((u) => u.id))
+  return allUsers.value.filter((u) => !assignedIds.has(u.id))
 })
 
-watch(() => props.group, (newGroup) => {
-  if (newGroup) {
-    groupModules.value = [...newGroup.modules]
-    groupUsers.value = [...newGroup.users]
-  }
-}, { immediate: true })
+watch(
+  () => props.modelValue,
+  async (open) => {
+    if (open && props.group) {
+      await loadGroupDetail(props.group.id)
+    } else {
+      groupDetail.value = null
+      groupUsers.value = []
+      groupRules.value = []
+    }
+  },
+)
 
-const handleModuleChange = async (moduleId: string, checked: boolean) => {
-  if (!props.group) return
-  
-  if (checked) {
-    groupModules.value.push(moduleId)
-  } else {
-    groupModules.value = groupModules.value.filter(id => id !== moduleId)
-  }
-
+async function loadGroupDetail(id: string) {
+  loadingDetail.value = true
   try {
-    await updateGroup(props.group.id, { modules: groupModules.value })
-    emit('group-updated')
+    const detail = await fetchGroupDetail(id)
+    groupDetail.value = detail
+    groupUsers.value = detail.users ?? []
+    groupRules.value = detail.rules ?? []
   } catch (error) {
-    console.error('Failed to update group modules:', error)
+    console.error('Failed to load group detail:', error)
+  } finally {
+    loadingDetail.value = false
   }
 }
 
-const handleAddUser = async (userId: string) => {
-  if (!props.group) return
+async function loadAllUsers() {
+  if (allUsers.value.length > 0) return
+  loadingUsers.value = true
   try {
-    await addUserToGroup(props.group.id, userId)
-    groupUsers.value.push(userId)
-    await updateGroup(props.group.id, { users: groupUsers.value })
+    const response = await fetchUsers({ limit: 1000 })
+    allUsers.value = response.data
+  } catch (error) {
+    console.error('Failed to load users:', error)
+  } finally {
+    loadingUsers.value = false
+  }
+}
+
+function handleToggleAddUser() {
+  addUserDropdownOpen.value = !addUserDropdownOpen.value
+  if (addUserDropdownOpen.value) {
+    loadAllUsers()
+  }
+}
+
+async function handleAddUser(userId: string) {
+  if (!groupDetail.value) return
+  try {
+    await addUserToGroup(groupDetail.value.id, userId)
     addUserDropdownOpen.value = false
+    await loadGroupDetail(groupDetail.value.id)
     emit('group-updated')
   } catch (error) {
     console.error('Failed to add user to group:', error)
   }
 }
 
-const handleRemoveUser = async (userId: string) => {
-  if (!props.group) return
+async function handleRemoveUser(userId: string) {
+  if (!groupDetail.value) return
   try {
-    await removeUserFromGroup(props.group.id, userId)
-    groupUsers.value = groupUsers.value.filter(id => id !== userId)
-    await updateGroup(props.group.id, { users: groupUsers.value })
+    await removeUserFromGroup(groupDetail.value.id, userId)
+    await loadGroupDetail(groupDetail.value.id)
     emit('group-updated')
   } catch (error) {
     console.error('Failed to remove user from group:', error)
   }
 }
 
-const handleConfirmRemove = async () => {
-  if (!props.group) return
+function handleEditGroup() {
+  editModalOpen.value = true
+}
+
+async function handleGroupUpdated() {
+  if (groupDetail.value) {
+    await loadGroupDetail(groupDetail.value.id)
+  }
+  emit('group-updated')
+}
+
+async function handleConfirmRemove() {
+  if (!groupDetail.value) return
   try {
-    await removeGroup(props.group.id)
+    await removeGroup(groupDetail.value.id)
     confirmRemoveOpen.value = false
     emit('group-removed')
   } catch (error) {
@@ -98,13 +134,8 @@ const handleConfirmRemove = async () => {
   }
 }
 
-const getUserName = (userId: string) => {
-  const user = allUsers.value.find(u => u.id === userId)
-  return user?.name || userId
-}
-
-const isModuleChecked = (moduleId: string) => {
-  return groupModules.value.includes(moduleId)
+function formatActions(actions: string[]): string {
+  return actions.join(', ')
 }
 </script>
 
@@ -112,12 +143,35 @@ const isModuleChecked = (moduleId: string) => {
   <Drawer
     :model-value="modelValue"
     id="group-detail-drawer"
-    label="GROUP DETAILS"
-    width="w-96"
-    placement="right"
+    label="Group Details"
+    width="w-[500px]"
     @update:model-value="emit('update:modelValue', $event)"
   >
-    <div v-if="group" class="space-y-6">
+    <!-- Header with group name and Edit button -->
+    <template #header-actions>
+      <div v-if="groupDetail" class="flex items-center justify-between">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{{ groupDetail.name }}</h3>
+        <button
+          @click="handleEditGroup"
+          class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+        >
+          <svg class="h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
+          </svg>
+          Edit
+        </button>
+      </div>
+    </template>
+
+    <!-- Loading -->
+    <div v-if="loadingDetail" class="flex items-center justify-center py-8">
+      <svg class="animate-spin h-6 w-6 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+      </svg>
+    </div>
+
+    <div v-else-if="groupDetail" class="space-y-6">
       <!-- Group Information -->
       <div class="bg-white dark:bg-gray-800 shadow-xs rounded-lg">
         <div class="py-3 mb-4 border-b border-gray-200 dark:border-gray-700">
@@ -126,11 +180,11 @@ const isModuleChecked = (moduleId: string) => {
         <div class="space-y-4">
           <dl class="flex items-center justify-between gap-4">
             <dt class="text-sm font-normal text-gray-500 dark:text-gray-400">Name</dt>
-            <dd class="text-sm font-medium text-gray-900 dark:text-white">{{ group.name }}</dd>
+            <dd class="text-sm font-medium text-gray-900 dark:text-white">{{ groupDetail.name }}</dd>
           </dl>
           <dl class="flex items-center justify-between gap-4">
-            <dt class="text-sm font-normal text-gray-500 dark:text-gray-400">Modules</dt>
-            <dd class="text-sm font-medium text-gray-900 dark:text-white">{{ groupModules.length }}</dd>
+            <dt class="text-sm font-normal text-gray-500 dark:text-gray-400">Level</dt>
+            <dd class="text-sm font-medium text-gray-900 dark:text-white">{{ groupDetail.level }}</dd>
           </dl>
           <dl class="flex items-center justify-between gap-4">
             <dt class="text-sm font-normal text-gray-500 dark:text-gray-400">Users</dt>
@@ -139,24 +193,23 @@ const isModuleChecked = (moduleId: string) => {
         </div>
       </div>
 
-      <!-- Modules -->
+      <!-- Rules (read-only) -->
       <div class="bg-white dark:bg-gray-800 shadow-xs rounded-lg">
         <div class="py-3 mb-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Modules</h3>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Permissions</h3>
         </div>
-        <div class="space-y-4">
-          <div v-for="module in allModules" :key="module.id" class="flex items-center">
-            <input
-              :id="`module-${module.id}`"
-              type="checkbox"
-              :checked="isModuleChecked(module.id)"
-              @change="handleModuleChange(module.id, ($event.target as HTMLInputElement).checked)"
-              class="w-3 h-3 text-primary-600 bg-gray-100 border-gray-300 rounded-xs focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-            >
-            <label :for="`module-${module.id}`" class="ms-2 text-sm text-gray-900 dark:text-gray-300">
-              {{ module.label }}
-            </label>
+        <div v-if="groupRules.length > 0" class="space-y-2">
+          <div
+            v-for="rule in groupRules"
+            :key="rule.resource"
+            class="flex items-center justify-between gap-4 py-1"
+          >
+            <span class="text-sm font-medium text-gray-900 dark:text-white capitalize">{{ rule.resource.replace('_', ' ') }}</span>
+            <span class="text-xs text-gray-500 dark:text-gray-400">{{ formatActions(rule.actions) }}</span>
           </div>
+        </div>
+        <div v-else class="text-sm text-gray-500 dark:text-gray-400 py-2">
+          No permissions assigned
         </div>
       </div>
 
@@ -165,9 +218,9 @@ const isModuleChecked = (moduleId: string) => {
         <div class="py-3 mb-4 border-b border-gray-200 dark:border-gray-700">
           <div class="flex items-center justify-between gap-4">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Users</h3>
-            <div v-if="availableUsers.length > 0" class="relative">
-              <button 
-                @click="addUserDropdownOpen = !addUserDropdownOpen"
+            <div class="relative">
+              <button
+                @click="handleToggleAddUser"
                 class="flex shrink-0 items-center text-sm font-medium text-primary-700 hover:underline dark:text-primary-500"
               >
                 <svg class="me-1 h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -175,34 +228,36 @@ const isModuleChecked = (moduleId: string) => {
                 </svg>
                 Add user
               </button>
-              <div 
+              <div
                 v-show="addUserDropdownOpen"
-                class="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-700 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-10 max-h-48 overflow-y-auto"
+                class="absolute right-0 top-full mt-1 w-56 bg-white dark:bg-gray-700 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-10 max-h-48 overflow-y-auto"
               >
-                <ul class="p-2">
+                <div v-if="loadingUsers" class="p-3 text-center text-sm text-gray-500">Loading...</div>
+                <ul v-else-if="availableUsers.length > 0" class="p-2">
                   <li
                     v-for="user in availableUsers"
                     :key="user.id"
                     @click="handleAddUser(user.id)"
                     class="px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-sm cursor-pointer"
                   >
-                    {{ user.name }}
+                    {{ user.email }}
                   </li>
                 </ul>
+                <div v-else class="p-3 text-center text-sm text-gray-500">No users available</div>
               </div>
             </div>
           </div>
         </div>
         <div class="space-y-1">
           <div
-            v-for="userId in groupUsers"
-            :key="userId"
+            v-for="user in groupUsers"
+            :key="user.id"
             class="flex items-center justify-between gap-4 py-1 hover:bg-gray-100 dark:hover:bg-gray-700"
           >
-            <span class="text-sm text-gray-900 dark:text-gray-300">{{ getUserName(userId) }}</span>
+            <span class="text-sm text-gray-900 dark:text-gray-300">{{ user.email }}</span>
             <button
               type="button"
-              @click="handleRemoveUser(userId)"
+              @click="handleRemoveUser(user.id)"
               class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-6 h-6 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white"
             >
               <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -229,9 +284,14 @@ const isModuleChecked = (moduleId: string) => {
     </template>
   </Drawer>
 
-  <!-- Confirm Remove Modal -->
+  <EditGroupModal
+    v-model="editModalOpen"
+    :group="groupDetail"
+    @group-updated="handleGroupUpdated"
+  />
+
   <Confirm
-    v-if="group"
+    v-if="groupDetail"
     v-model="confirmRemoveOpen"
     id="confirm-remove-group-modal"
     confirm-text="Yes, remove"
@@ -240,8 +300,7 @@ const isModuleChecked = (moduleId: string) => {
     @cancel="confirmRemoveOpen = false"
   >
     <p class="text-sm text-gray-700 dark:text-gray-300">
-      Are you sure you want to remove <strong>{{ group.name }}</strong>? This action cannot be undone.
+      Are you sure you want to remove <strong>{{ groupDetail.name }}</strong>? This action cannot be undone.
     </p>
   </Confirm>
 </template>
-

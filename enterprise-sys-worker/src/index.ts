@@ -3,10 +3,10 @@ config();
 
 import { container, initiateContainer, listen } from '@orchesty/nodejs-sdk';
 import { OAuth2Provider } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Provider/OAuth2/OAuth2Provider';
-import SmtpApplication from '@orchesty/connector-smtp/dist/SmtpApplication';
 import SmtpSendEmail from '@orchesty/connector-smtp/dist/Connector/SmtpSendEmail';
-import SlackApplication from '@orchesty/connector-slack/dist/SlackApplication';
 import SlackSendMessageConnector from '@orchesty/connector-slack/dist/Connectors/SlackSendMessageConnector';
+import SmtpApplicationWithInfo from './Application/SmtpApplicationWithInfo';
+import SlackApplicationWithInfo from './Application/SlackApplicationWithInfo';
 import InviteEmailMapper from './CustomNode/InviteEmailMapper';
 import RestoreAccessEmailMapper from './CustomNode/RestoreAccessEmailMapper';
 
@@ -16,10 +16,10 @@ function prepare(): void {
     const oauth2Provider = container.get(OAuth2Provider);
 
     // ── Applications ──
-    const smtpApp = new SmtpApplication();
+    const smtpApp = new SmtpApplicationWithInfo();
     container.setApplication(smtpApp);
 
-    const slackApp = new SlackApplication(oauth2Provider);
+    const slackApp = new SlackApplicationWithInfo(oauth2Provider);
     container.setApplication(slackApp);
 
     // ── Connectors & Batches ──

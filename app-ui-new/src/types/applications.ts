@@ -46,6 +46,7 @@ export interface ApplicationInstall {
   webhookSettings?: WebhookSetting[];
   worker?: string; // Custom field for grouping by worker
   logo?: string; // Base64 encoded SVG from API
+  info?: string; // Markdown documentation from the worker SDK
 }
 
 export interface ApplicationWithStatus extends Application {

@@ -68,6 +68,19 @@ services:
             - '@hbpf.manager.group'
             - '@hbpf.system_topology'
 
+    hbpf.group.handler:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\EnterpriseGroupHandler
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.access.manager'
+            - '@hbpf.manager.group'
+            - '@hbpf.factory.mask'
+
+    Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\EnterpriseGroupController:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\EnterpriseGroupController
+        arguments:
+            - '@hbpf.group.handler'
+
     hbpf.auth0.jwks_cache:
         class: Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0\JwksCacheService
         arguments:

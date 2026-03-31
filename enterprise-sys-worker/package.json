@@ -8,7 +8,7 @@
     "test": "jest --coverage --detectOpenHandles --passWithNoTests",
     "lint": "eslint src --fix",
     "start": "nodemon src/index.ts",
-    "build": "rm -rf dist && tsc -p tsconfig.prod.json && copyfiles -u 1 src/**/*.html dist/src/"
+    "build": "rm -rf dist && tsc -p tsconfig.prod.json && copyfiles -u 1 \"src/**/*.html\" \"src/**/*.md\" dist/src/"
   },
   "keywords": [],
   "dependencies": {
