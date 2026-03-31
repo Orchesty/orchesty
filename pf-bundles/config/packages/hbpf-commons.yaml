@@ -52,18 +52,3 @@ services:
             - '@hbpf.transport.curl_client_factory'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
-
-    ##########################
-    #      ACL Provider      #
-    ##########################
-
-    hbpf.acl.provider:
-        class: Hanaboso\AclBundle\Provider\Impl\AclProvider
-        arguments:
-            - '@hbpf.database_manager_locator'
-            - '@hbpf.user.provider.resource'
-            - '%resource_enum%'
-            - '@hbpf.acl.cache.null'
-
-    hbpf.acl.cache.null:
-        class: Hanaboso\AclBundle\Cache\NullCache
