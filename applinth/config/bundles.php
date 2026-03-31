@@ -2,7 +2,6 @@
 
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use EmailServiceBundle\EmailServiceBundle;
-use Hanaboso\AclBundle\HbPFAclBundle;
 use Hanaboso\Applinth\ApplinthBundle;
 use Hanaboso\CommonsBundle\HbPFCommonsBundle;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\HbPFApiGatewayBundle;
@@ -27,7 +26,6 @@ return [
 
     EmailServiceBundle::class     => ['all' => TRUE],
     HbPFCommonsBundle::class      => ['all' => TRUE],
-    HbPFAclBundle::class          => ['all' => TRUE],
     HbPFApiGatewayBundle::class   => ['all' => TRUE],
     HbPFConfiguratorBundle::class => ['all' => TRUE],
     HbPFLogsBundle::class         => ['all' => TRUE],

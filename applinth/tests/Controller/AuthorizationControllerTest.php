@@ -112,7 +112,7 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
     {
         $handler = self::createPartialMock(ServiceLocator::class, ['installApp']);
         $this->setProperty($handler, 'sdkRepository', $this->dm->getRepository(Sdk::class));
-        $handler->expects(self::any())->method('installApp')->willReturnCallback(function (): array {
+        $handler->expects(self::atLeastOnce())->method('installApp')->willReturnCallback(function (): array {
             $app = new ApplicationInstall();
             $app
                 ->setKey('user/app/id')
