@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Han
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Hanaboso\AclBundle\Document\Group;
 use Hanaboso\AclBundle\Manager\GroupManager;
 use Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler;
 use Hanaboso\PipesFramework\User\Manager\UserManager as UsersManager;
@@ -12,6 +13,7 @@ use Hanaboso\UserBundle\Model\Token\TokenManager;
 use Hanaboso\UserBundle\Model\User\UserManager;
 use Hanaboso\UserBundle\Model\User\UserManagerException;
 use Hanaboso\UserBundle\Provider\ResourceProvider;
+use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Throwable;
 
@@ -49,6 +51,33 @@ final class EnterpriseUserHandler extends UserHandler
     )
     {
         parent::__construct($userManager, $usersManager, $dm, $tokenManager, $resourceProvider);
+    }
+
+    /**
+     * @param mixed[] $data
+     *
+     * @return mixed[]
+     * @throws MongoDBException
+     * @throws PipesFrameworkException
+     */
+    public function setupUser(array $data): array
+    {
+        $result = parent::setupUser($data);
+
+        /** @var User|null $user */
+        $user = $this->dm->getRepository(User::class)->findOneBy(['email' => $data['email']]);
+
+        if ($user instanceof User) {
+            $group = new Group(NULL);
+            $group->setName('superadmin');
+            $group->setLevel(0);
+            $group->addUser($user);
+
+            $this->dm->persist($group);
+            $this->dm->flush();
+        }
+
+        return $result;
     }
 
     /**

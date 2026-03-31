@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6bac51f61cf5462f6c71e457e92842db",
+    "content-hash": "fdfb50a5c420b17bb79876199ac909fd",
     "packages": [
         {
             "name": "brick/math",
@@ -1498,29 +1498,29 @@
         },
         {
             "name": "hanaboso/acl-bundle",
-            "version": "1.11.0",
+            "version": "1.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/acl-bundle.git",
-                "reference": "19cde70ef463c0056cd352a0a036abb62c430795"
+                "reference": "8f314f9f1a47ff0b136bc162fb533aa6de3b280f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/acl-bundle/zipball/19cde70ef463c0056cd352a0a036abb62c430795",
-                "reference": "19cde70ef463c0056cd352a0a036abb62c430795",
+                "url": "https://api.github.com/repos/hanaboso/acl-bundle/zipball/8f314f9f1a47ff0b136bc162fb533aa6de3b280f",
+                "reference": "8f314f9f1a47ff0b136bc162fb533aa6de3b280f",
                 "shasum": ""
             },
             "require": {
-                "hanaboso/user-bundle": "^1.11",
+                "hanaboso/user-bundle": "^1.12",
                 "php": "^8.4"
             },
             "require-dev": {
-                "doctrine/doctrine-bundle": "^2.15",
-                "doctrine/doctrine-fixtures-bundle": "^3.7",
-                "doctrine/mongodb-odm-bundle": "^5.3",
-                "hanaboso/php-check-utils": "^1.7",
-                "predis/predis": "^1.1",
-                "symfony/security-bundle": "^7.3"
+                "doctrine/doctrine-bundle": "^3.2",
+                "doctrine/doctrine-fixtures-bundle": "^4.3",
+                "doctrine/mongodb-odm-bundle": "^5.6",
+                "hanaboso/php-check-utils": "^2.0",
+                "predis/predis": "^3.4",
+                "symfony/security-bundle": "^8.0"
             },
             "suggest": {
                 "doctrine/doctrine-bundle": "Install me, if you using MySQL.",
@@ -1540,9 +1540,9 @@
             ],
             "description": "Hanaboso - acl-bundle",
             "support": {
-                "source": "https://github.com/hanaboso/acl-bundle/tree/1.11.0"
+                "source": "https://github.com/hanaboso/acl-bundle/tree/1.12.0"
             },
-            "time": "2025-07-30T07:22:06+00:00"
+            "time": "2026-03-30T14:42:01+00:00"
         },
         {
             "name": "hanaboso/commons-bundle",
@@ -1779,16 +1779,16 @@
         },
         {
             "name": "hanaboso/user-bundle",
-            "version": "1.12.0",
+            "version": "1.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/user-bundle.git",
-                "reference": "49186e3b71a2e90fa5b0ca3ad7a81703149001aa"
+                "reference": "622b141e5d1052b3cee7ded7ccd142d1cabdb30f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/49186e3b71a2e90fa5b0ca3ad7a81703149001aa",
-                "reference": "49186e3b71a2e90fa5b0ca3ad7a81703149001aa",
+                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/622b141e5d1052b3cee7ded7ccd142d1cabdb30f",
+                "reference": "622b141e5d1052b3cee7ded7ccd142d1cabdb30f",
                 "shasum": ""
             },
             "require": {
@@ -1801,7 +1801,7 @@
             },
             "require-dev": {
                 "doctrine/doctrine-bundle": "^3.2",
-                "doctrine/mongodb-odm-bundle": "^5.5",
+                "doctrine/mongodb-odm-bundle": "^5.6",
                 "doctrine/orm": "^3.6",
                 "ext-apcu": "*",
                 "hanaboso/php-check-utils": "^2.0",
@@ -1824,9 +1824,9 @@
             ],
             "description": "Hanaboso - user-bundle",
             "support": {
-                "source": "https://github.com/hanaboso/user-bundle/tree/1.12.0"
+                "source": "https://github.com/hanaboso/user-bundle/tree/1.13.0"
             },
-            "time": "2026-01-07T09:48:07+00:00"
+            "time": "2026-03-30T14:16:09+00:00"
         },
         {
             "name": "hanaboso/utils",
@@ -2197,7 +2197,7 @@
             "dist": {
                 "type": "path",
                 "url": "../pf-bundles",
-                "reference": "a1cf4f9b6efb7185efb41172ad83e6156939f197"
+                "reference": "592340210fa79c5180b5e45f26312c70142bc631"
             },
             "require": {
                 "doctrine/mongodb-odm-bundle": "^5.6",
@@ -2208,7 +2208,6 @@
                 "ext-json": "*",
                 "ext-mbstring": "*",
                 "ext-mongodb": "*",
-                "hanaboso/acl-bundle": "^1.11",
                 "hanaboso/email-service-bundle": "^1.7",
                 "hanaboso/mongo-data-grid": "^2.0",
                 "hanaboso/rabbit-mq-bundle": "^1.10",
@@ -6344,7 +6343,7 @@
         },
         {
             "name": "web-token/jwt-library",
-            "version": "4.1.3",
+            "version": "4.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-token/jwt-library.git",
@@ -6417,7 +6416,7 @@
             ],
             "support": {
                 "issues": "https://github.com/web-token/jwt-library/issues",
-                "source": "https://github.com/web-token/jwt-library/tree/4.1.3"
+                "source": "https://github.com/web-token/jwt-library/tree/4.1.4"
             },
             "funding": [
                 {
@@ -6491,16 +6490,16 @@
     "packages-dev": [
         {
             "name": "brianium/paratest",
-            "version": "v7.19.2",
+            "version": "v7.20.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paratestphp/paratest.git",
-                "reference": "66e4f7910cecf67736bccf2b8bd53a2e3eb98bd9"
+                "reference": "81c80677c9ec0ed4ef16b246167f11dec81a6e3d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/66e4f7910cecf67736bccf2b8bd53a2e3eb98bd9",
-                "reference": "66e4f7910cecf67736bccf2b8bd53a2e3eb98bd9",
+                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/81c80677c9ec0ed4ef16b246167f11dec81a6e3d",
+                "reference": "81c80677c9ec0ed4ef16b246167f11dec81a6e3d",
                 "shasum": ""
             },
             "require": {
@@ -6524,7 +6523,7 @@
                 "ext-pcntl": "*",
                 "ext-pcov": "*",
                 "ext-posix": "*",
-                "phpstan/phpstan": "^2.1.40",
+                "phpstan/phpstan": "^2.1.44",
                 "phpstan/phpstan-deprecation-rules": "^2.0.4",
                 "phpstan/phpstan-phpunit": "^2.0.16",
                 "phpstan/phpstan-strict-rules": "^2.0.10",
@@ -6568,7 +6567,7 @@
             ],
             "support": {
                 "issues": "https://github.com/paratestphp/paratest/issues",
-                "source": "https://github.com/paratestphp/paratest/tree/v7.19.2"
+                "source": "https://github.com/paratestphp/paratest/tree/v7.20.0"
             },
             "funding": [
                 {
@@ -6580,7 +6579,7 @@
                     "type": "paypal"
                 }
             ],
-            "time": "2026-03-09T14:33:17+00:00"
+            "time": "2026-03-29T15:46:14+00:00"
         },
         {
             "name": "dealerdirect/phpcodesniffer-composer-installer",
@@ -8110,11 +8109,11 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.1.42",
+            "version": "2.1.45",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/1279e1ce86ba768f0780c9d889852b4e02ff40d0",
-                "reference": "1279e1ce86ba768f0780c9d889852b4e02ff40d0",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/f8cdfd9421b7edb7686a2d150a234870464eac70",
+                "reference": "f8cdfd9421b7edb7686a2d150a234870464eac70",
                 "shasum": ""
             },
             "require": {
@@ -8159,7 +8158,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-03-17T14:58:32+00:00"
+            "time": "2026-03-30T13:22:02+00:00"
         },
         {
             "name": "phpstan/phpstan-doctrine",
@@ -8802,16 +8801,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "13.0.5",
+            "version": "13.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "d57826e8921a534680c613924bfd921ded8047f4"
+                "reference": "9e426f7282c313c9138eeb9f25461e1a6be1e647"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/d57826e8921a534680c613924bfd921ded8047f4",
-                "reference": "d57826e8921a534680c613924bfd921ded8047f4",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/9e426f7282c313c9138eeb9f25461e1a6be1e647",
+                "reference": "9e426f7282c313c9138eeb9f25461e1a6be1e647",
                 "shasum": ""
             },
             "require": {
@@ -8833,7 +8832,7 @@
                 "sebastian/cli-parser": "^5.0.0",
                 "sebastian/comparator": "^8.0.0",
                 "sebastian/diff": "^8.0.0",
-                "sebastian/environment": "^9.0.0",
+                "sebastian/environment": "^9.1.0",
                 "sebastian/exporter": "^8.0.0",
                 "sebastian/global-state": "^9.0.0",
                 "sebastian/object-enumerator": "^8.0.0",
@@ -8880,31 +8879,15 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/13.0.5"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/13.0.6"
             },
             "funding": [
                 {
-                    "url": "https://phpunit.de/sponsors.html",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/sebastianbergmann",
-                    "type": "github"
-                },
-                {
-                    "url": "https://liberapay.com/sebastianbergmann",
-                    "type": "liberapay"
-                },
-                {
-                    "url": "https://thanks.dev/u/gh/sebastianbergmann",
-                    "type": "thanks_dev"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/phpunit/phpunit",
-                    "type": "tidelift"
+                    "url": "https://phpunit.de/sponsoring.html",
+                    "type": "other"
                 }
             ],
-            "time": "2026-02-18T12:40:03+00:00"
+            "time": "2026-03-31T06:44:39+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -9942,16 +9925,16 @@
         },
         {
             "name": "spaze/phpstan-disallowed-calls",
-            "version": "v4.9.0",
+            "version": "v4.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spaze/phpstan-disallowed-calls.git",
-                "reference": "e80372a55bdad13d22a62fdf2116a67a5438c34b"
+                "reference": "382dd9b251b82f8ca81538b89200e69dfce44489"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spaze/phpstan-disallowed-calls/zipball/e80372a55bdad13d22a62fdf2116a67a5438c34b",
-                "reference": "e80372a55bdad13d22a62fdf2116a67a5438c34b",
+                "url": "https://api.github.com/repos/spaze/phpstan-disallowed-calls/zipball/382dd9b251b82f8ca81538b89200e69dfce44489",
+                "reference": "382dd9b251b82f8ca81538b89200e69dfce44489",
                 "shasum": ""
             },
             "require": {
@@ -9991,13 +9974,13 @@
                     "homepage": "https://www.michalspacek.cz"
                 }
             ],
-            "description": "PHPStan rules to detect disallowed method & function calls, constant, namespace, attribute & superglobal usages, with powerful rules to re-allow a call or a usage in places where it should be allowed.",
+            "description": "PHPStan rules to detect disallowed method & function calls, constant, namespace, attribute, property & superglobal usages, with powerful rules to re-allow a call or a usage in places where it should be allowed.",
             "keywords": [
                 "static analysis"
             ],
             "support": {
                 "issues": "https://github.com/spaze/phpstan-disallowed-calls/issues",
-                "source": "https://github.com/spaze/phpstan-disallowed-calls/tree/v4.9.0"
+                "source": "https://github.com/spaze/phpstan-disallowed-calls/tree/v4.9.1"
             },
             "funding": [
                 {
@@ -10005,7 +9988,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-03-13T22:27:50+00:00"
+            "time": "2026-03-26T20:37:24+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",

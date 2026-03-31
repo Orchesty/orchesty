@@ -14,6 +14,7 @@ parameters:
 			path: ../tests/app/config/reference.php
 	ergebnis:
 		classesAllowedToBeExtended:
+			- Hanaboso\AclBundle\Enum\ResourceEnum
 			- Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract
 			- Hanaboso\PipesFramework\Configurator\Document\TopologyProgress
 			- Hanaboso\PipesFramework\Configurator\Model\TopologyManager

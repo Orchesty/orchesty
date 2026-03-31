@@ -1,0 +1,12 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    Hanaboso\PipesFrameworkEnterprise\Acl\Subscriber\AclSubscriber:
+        class: Hanaboso\PipesFrameworkEnterprise\Acl\Subscriber\AclSubscriber
+        arguments:
+            - '@hbpf.access.manager'
+            - '@security.helper'
+            - '@hbpf.database_manager_locator'
+        tags:
+            - { name: kernel.event_subscriber }
