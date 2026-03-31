@@ -1,0 +1,37 @@
+{
+  "name": "orchesty-worker",
+  "description": "Orchesty integration worker",
+  "version": "1.0.0",
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --coverage --detectOpenHandles --passWithNoTests",
+    "lint": "eslint src --fix",
+    "start": "nodemon src/index.ts",
+    "build": "rm -rf dist && tsc -p tsconfig.prod.json && copyfiles -u 1 src/**/*.html dist/src/"
+  },
+  "keywords": [],
+  "dependencies": {
+    "@orchesty/connector-slack": "^1.0.1",
+    "@orchesty/connector-smtp": "^1.0.1",
+    "@orchesty/nodejs-sdk": "^5.0.3",
+    "dotenv": "^16.4.7"
+  },
+  "overrides": {
+    "@orchesty/nodejs-sdk": "^5.0.3"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^9.39.2",
+    "@hanaboso/eslint-plugin": "^1.2.5",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.0.3",
+    "copyfiles": "^2.4.1",
+    "eslint": "^9.39.2",
+    "jest": "^30.2.0",
+    "nodemon": "^3.1.11",
+    "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

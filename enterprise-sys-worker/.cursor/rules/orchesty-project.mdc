@@ -1,0 +1,81 @@
+---
+description: Orchesty integration worker — architecture, registration, and payload flow
+alwaysApply: true
+---
+
+# Orchesty Integration Worker
+
+This project is an Orchesty integration worker. It connects external services via connectors, batches, and mappers that are orchestrated by the Orchesty platform. The worker can run as a standalone Node.js application with a dev server or inside Docker, and registers itself with an existing Orchesty instance.
+
+All source code lives in `src/`. The SDK is `@orchesty/nodejs-sdk`. Pre-built connectors for various services are available as `@orchesty/connector-*` packages.
+
+## Architecture
+
+- **Application** — handles authentication (OAuth2 / Basic / Client Credentials) and builds authenticated HTTP requests.
+- **Connector** — calls a single API endpoint; delegates auth to its Application.
+- **Batch** — like a connector but processes paginated / bulk data. Called repeatedly by the platform (one page per invocation).
+- **CustomNode** — pure data transformation (mapper / filter); no HTTP calls, no application dependency.
+
+## Registration
+
+Every element **must** be registered in `src/index.ts`.
+
+Use `container.setNode()` for **all nodes** (Connector, Batch, CustomNode). This ensures the SDK injects `db` (MongoDbClient) and `sender` (CurlSender) automatically. Use `container.setApplication()` only for Applications.
+
+**Never** use the low-level `container.setConnector()`, `container.setBatch()`, or `container.setCustomNode()` directly — they skip dependency injection and cause runtime errors like "MongoDbClient has not been set."
+
+For **Connectors and Batches** that call an API, pass the Application instance as the **second argument** to `setNode()`. Without it, the node won't know which application to use for authentication and will throw "Application has not been set." CustomNodes (mappers / filters) don't need an application.
+
+```typescript
+// OAuth2 applications require the OAuth2Provider from the container
+import { OAuth2Provider } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Provider/OAuth2/OAuth2Provider';
+
+const oauth2Provider = container.get(OAuth2Provider);
+
+// OAuth2 Application — pass provider to constructor
+const app = new MyOAuth2App(oauth2Provider);
+container.setApplication(app);
+
+// Basic/Client Credentials Application — no constructor args
+const basicApp = new MyBasicApp();
+container.setApplication(basicApp);
+
+// Connector — pass application as 2nd arg
+container.setNode(new MyConnector(), app);
+
+// Batch — pass application as 2nd arg
+container.setNode(new MyBatch(), app);
+
+// CustomNode (mapper / filter) — no application needed
+container.setNode(new MyMapper());
+```
+
+## Topology Payload Flow
+
+Every node in a topology receives its input via `dto.getJsonData()` and must set its output via `dto.setJsonData()` (or `dto.setNewJsonData()` / `dto.setData()`). The output of one node becomes the input of the next.
+
+When designing a topology, **plan the payload shape at each step**:
+
+1. **Base connectors** define their own minimal input/output contract (e.g. `{ id: string }` in, raw API response out).
+2. **Derived connectors** adapt between the topology payload and the base connector contract — they extract what the base needs from the upstream payload and merge the API result back for the downstream node.
+3. **CustomNodes (mappers)** reshape data between different payload formats (e.g. ServiceA record -> ServiceB record).
+
+Example payload flow for a sync topology:
+
+| Step | Node | Input payload | Output payload |
+|------|------|---------------|----------------|
+| 1 | ListItems (batch) | `{}` | single item from ServiceA |
+| 2 | LookupInServiceB | item | `{ ...item, serviceBId }` |
+| 3 | Mapper | `{ ...item, serviceBId }` | `{ serviceBRecord }` |
+| 4 | CreateInServiceB | `{ serviceBRecord }` | ServiceB response |
+
+## Official Connector Packages
+
+Pre-built connectors for many services are available on npm under the `@orchesty` scope. Search for them at: https://www.npmjs.com/search?q=%40orchesty%2Fconnector
+
+Install only the packages your integration needs, e.g. `npm install @orchesty/connector-hubspot`. Each package typically provides an Application class and ready-made connectors that you import and register in `src/index.ts` alongside your custom nodes.
+
+## Docs & References
+
+- Orchesty docs & tutorials: https://docs.orchesty.io/category/get-started/
+- Connector examples: https://github.com/Orchesty/orchesty-nodejs-connectors/tree/master/lib

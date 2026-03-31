@@ -5,6 +5,8 @@ import { isAuth0Enabled } from '@/auth/auth0-plugin'
 import { useAuthStore } from '@/stores/auth'
 import { useCloudMode } from '@/composables/useCloudMode'
 import { STORAGE_KEYS } from '@/config'
+import { activateUser, setNewPassword } from '@/services/authService'
+import api from '@/services/api'
 
 import EnterpriseDashboardLayout from '@/layouts/DashboardLayout.vue'
 import DashboardView from '@/views/dashboard/DashboardView.vue'
@@ -13,6 +15,7 @@ import SetupView from '@/views/auth/SetupView.vue'
 import ForgotPasswordView from '@/views/auth/ForgotPasswordView.vue'
 import ResetPasswordView from '@/views/auth/ResetPasswordView.vue'
 import AcceptInviteView from '@/views/auth/AcceptInviteView.vue'
+import AuthErrorView from '@/views/auth/AuthErrorView.vue'
 
 const enterpriseOnlyChildren: RouteRecordRaw[] = [
   {
@@ -65,6 +68,11 @@ const enterpriseOverrides: Record<string, RouteRecordRaw> = {
     name: 'accept-invite',
     component: AcceptInviteView,
     props: true,
+  },
+  'auth-error': {
+    path: '/auth-error',
+    name: 'auth-error',
+    component: AuthErrorView,
   },
   settings: {
     path: 'settings',
@@ -120,9 +128,16 @@ export function createEnterpriseRouter() {
     return createAppRouter(mergeRoutes(coreRoutes))
   }
 
+  const routes = mergeRoutes(coreRoutes)
+  routes.push({
+    path: '/auth-error',
+    name: 'auth-error',
+    component: AuthErrorView,
+  })
+
   const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
-    routes: mergeRoutes(coreRoutes),
+    routes,
   })
 
   let auth0CallbackHandled = false
@@ -139,6 +154,15 @@ export function createEnterpriseRouter() {
     })
   }
 
+  async function verifyUserOnBackend(): Promise<boolean> {
+    try {
+      await api.get('/api/user/whoami')
+      return true
+    } catch {
+      return false
+    }
+  }
+
   router.beforeEach(async (to, _from, next) => {
     const authStore = useAuthStore()
     const auth0 = useAuth0()
@@ -146,18 +170,52 @@ export function createEnterpriseRouter() {
 
     await waitForAuth0Loading(auth0)
 
+    if (to.path === '/auth-error') {
+      next()
+      return
+    }
+
+    const loginFailed = sessionStorage.getItem(STORAGE_KEYS.AUTH0_LOGIN_FAILED) === 'true'
+    if (loginFailed && auth0.isAuthenticated.value) {
+      next('/auth-error')
+      return
+    }
+
     const hasPreExistingSession = authStore.isAuthenticated
     const effectivelyAuthenticated = auth0.isAuthenticated.value || hasPreExistingSession
     const handoffFailed = sessionStorage.getItem(STORAGE_KEYS.CLOUD_HANDOFF_FAILED) === 'true'
     const isCloudReady = cloudLoaded.value && cloudMode.value
 
-    // Process Auth0 callback only if no pre-existing session (e.g. cloud handoff)
-    // to avoid overwriting it with a stale Auth0 session from a different user.
     if (auth0.isAuthenticated.value && !auth0CallbackHandled && !hasPreExistingSession) {
       auth0CallbackHandled = true
       try {
         await authStore.handleAuth0Callback(auth0)
+
+        const userExists = await verifyUserOnBackend()
+        if (!userExists) {
+          sessionStorage.setItem(STORAGE_KEYS.AUTH0_LOGIN_FAILED, 'true')
+          authStore.token = null
+          authStore.user = null
+          localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
+          localStorage.removeItem(STORAGE_KEYS.AUTH_USER)
+          next('/auth-error')
+          return
+        }
+
         backendVerified = true
+        sessionStorage.removeItem(STORAGE_KEYS.AUTH0_LOGIN_FAILED)
+
+        const pendingInviteToken = localStorage.getItem(STORAGE_KEYS.PENDING_INVITE_TOKEN)
+        if (pendingInviteToken) {
+          try {
+            await activateUser(pendingInviteToken)
+            await setNewPassword(pendingInviteToken, crypto.randomUUID())
+          } catch (inviteErr) {
+            console.error('[Auth0 Router] Failed to finalize invite:', inviteErr)
+          } finally {
+            localStorage.removeItem(STORAGE_KEYS.PENDING_INVITE_TOKEN)
+          }
+        }
       } catch (err: unknown) {
         backendVerified = false
         console.error('[Auth0 Router] handleAuth0Callback FAILED:', err)
@@ -175,7 +233,6 @@ export function createEnterpriseRouter() {
       to.path.startsWith('/accept-invite')
     const requiresAuth = !isPublicRoute
 
-    // In cloud mode, redirect auth-related routes to the cloud sign-in
     const cloudAuthRoutes = ['/sign-in', '/forgot-password']
     const isCloudAuthRoute =
       cloudAuthRoutes.includes(to.path) || to.path.startsWith('/reset-password')

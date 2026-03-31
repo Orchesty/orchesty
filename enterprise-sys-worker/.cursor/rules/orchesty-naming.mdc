@@ -1,0 +1,87 @@
+---
+description: Naming conventions and directory structure for the Orchesty worker project
+globs: src/**/*.ts
+alwaysApply: false
+---
+
+# Naming Conventions
+
+## Directory Structure
+
+Organize `src/` by service / feature domain. Group related connector, batch, and mapper files together:
+
+```
+src/
+  index.ts                          # Entry point — register all elements here
+  MyService/
+    MyServiceApplication.ts         # Application (auth provider)
+    Connector/
+      MyServiceGetResource.ts
+      MyServiceCreateResource.ts
+    Batch/
+      MyServiceListResources.ts
+    CustomNode/
+      MyServiceToOtherMapper.ts
+    __tests__/
+      MyServiceGetResource.ts
+      MyServiceCreateResource.ts
+      Data/
+        MyServiceGetResource/
+          input.json
+          output.json
+          mock.json
+  OtherService/
+    OtherServiceApplication.ts
+    Connector/
+      ...
+  Mapper/
+    ServiceAToServiceB/             # Cross-service mappers can live in a shared Mapper/ dir
+      ServiceAToServiceBMapper.ts
+```
+
+## Element Names (getName())
+
+- **Kebab-case**, prefixed by service name.
+- Must be **unique** across the entire worker.
+- Once deployed in a topology, **never rename** — the Orchesty platform references nodes by name.
+
+| Type | Pattern | Example |
+|------|---------|---------|
+| Connector | `{service}-{action}` | `my-service-get-resource` |
+| Batch | `{service}-{action}` | `my-service-list-resources` |
+| CustomNode | `{descriptive-name}` | `map-service-a-to-service-b` |
+| Application | `{service}` | `my-service` |
+
+## File & Class Names
+
+- **PascalCase** for class names and file names.
+- File name must match the class name: `MyServiceGetResource.ts` -> `class MyServiceGetResource`.
+- One class per file.
+
+| Type | Class Suffix | Example |
+|------|-------------|---------|
+| Connector | none or `Connector` | `MyServiceGetResource` |
+| Batch | `Batch` | `MyServiceListResourcesBatch` |
+| CustomNode / Mapper | `Mapper` or `Filter` | `ServiceAToServiceBMapper` |
+| Application | `Application` | `MyServiceApplication` |
+
+## Exports
+
+- Use `export default class` for all elements (connectors, batches, custom nodes, applications).
+- Export `IInput`, `IOutput` interfaces and a `NAME` constant alongside the default class.
+- Keep one default export per file.
+
+```typescript
+export const NAME = 'my-service-get-resource';
+
+export interface IInput { ... }
+export interface IOutput { ... }
+
+export default class MyServiceGetResource extends AConnector { ... }
+```
+
+## Test Files
+
+- Test files go in `__tests__/` next to the source.
+- Test file name matches the source file name (without `.test`): `__tests__/MyServiceGetResource.ts`.
+- Data fixtures live in `__tests__/Data/{ClassName}/`.

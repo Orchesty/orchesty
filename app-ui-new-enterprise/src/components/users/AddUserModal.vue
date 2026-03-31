@@ -290,10 +290,18 @@ function handleClose() {
 
       <!-- Invite link generated -->
       <template v-else>
+        <div class="mb-3 flex items-start gap-2 rounded-lg border border-green-200 bg-green-50 p-3 dark:border-green-800 dark:bg-green-900/20">
+          <svg class="mt-0.5 h-4 w-4 shrink-0 text-green-600 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 2 11 13" /><path d="m22 2-7 20-4-9-9-4 20-7z" />
+          </svg>
+          <p class="text-sm text-green-700 dark:text-green-300">
+            An invitation email has been sent to <strong>{{ inviteResult!.email }}</strong>.
+          </p>
+        </div>
         <p class="mb-3 text-sm text-gray-500 dark:text-gray-400">
           {{ inviteResult?.inviteLink
-            ? 'Share this link with the invited user. They will sign in through the cloud portal.'
-            : 'Share this link with the invited user. They will be able to create their password and sign in.' }}
+            ? 'You can also share this link directly. They will sign in through the cloud portal.'
+            : 'You can also share this link directly with the user.' }}
         </p>
 
         <div class="rounded-lg border border-gray-200 p-3 dark:border-gray-700">

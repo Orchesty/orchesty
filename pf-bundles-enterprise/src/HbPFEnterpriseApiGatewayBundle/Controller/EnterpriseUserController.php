@@ -8,9 +8,11 @@ use Hanaboso\UserBundle\Model\User\UserManagerException;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use InvalidArgumentException;
 use Psr\Log\NullLogger;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Class EnterpriseUserController
@@ -25,11 +27,36 @@ final class EnterpriseUserController
     /**
      * EnterpriseUserController constructor.
      *
-     * @param EnterpriseUserHandler $userHandler
+     * @param EnterpriseUserHandler  $userHandler
+     * @param TokenStorageInterface  $tokenStorage
      */
-    public function __construct(private readonly EnterpriseUserHandler $userHandler)
+    public function __construct(
+        private readonly EnterpriseUserHandler $userHandler,
+        private readonly TokenStorageInterface $tokenStorage,
+    )
     {
         $this->logger = new NullLogger();
+    }
+
+    /**
+     * If the request reaches this action, the Auth0Authenticator firewall
+     * has already verified the JWT and confirmed the user exists in MongoDB.
+     *
+     * @return Response
+     */
+    #[Route('/user/whoami', methods: ['GET'], priority: 10)]
+    public function whoamiAction(): Response
+    {
+        $token = $this->tokenStorage->getToken();
+        $user  = $token?->getUser();
+
+        if (!$user) {
+            return new JsonResponse(['message' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        return new JsonResponse([
+            'email' => $user->getUserIdentifier(),
+        ]);
     }
 
     /**

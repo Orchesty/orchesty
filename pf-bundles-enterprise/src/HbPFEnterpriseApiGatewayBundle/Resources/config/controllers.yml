@@ -17,6 +17,7 @@ services:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\EnterpriseUserController
         arguments:
             - '@hbpf.user.handler.users'
+            - '@security.token_storage'
 
     Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\CloudWebhookController:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\CloudWebhookController
@@ -44,6 +45,16 @@ services:
             - '%orchesty_cloud_instance_id%'
             - '%orchesty_cloud_instance_secret%'
 
+    hbpf.system_topology:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\SystemTopologyService
+        arguments:
+            $curlManager: '@hbpf.transport.curl_manager'
+            $dml: '@hbpf.database_manager_locator'
+            $systemOrchestyUrl: '%system_orchesty_url%'
+            $startingPointHost: '%startingPointHost%'
+            $frontendHost: '%frontendHost%'
+            $logger: '@?logger'
+
     hbpf.user.handler.users:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\EnterpriseUserHandler
         arguments:
@@ -55,6 +66,7 @@ services:
             - '@hbpf.cloud.member_sync'
             - '@security.password_hasher_factory'
             - '@hbpf.manager.group'
+            - '@hbpf.system_topology'
 
     hbpf.auth0.jwks_cache:
         class: Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0\JwksCacheService

@@ -20,15 +20,17 @@ const emit = defineEmits<{
 const emailInput = ref('')
 const submitting = ref(false)
 const result = ref<InviteResult | null>(null)
+const addedDirectly = ref(false)
 const copied = ref(false)
 const errorMessage = ref('')
 
-const showResults = computed(() => result.value !== null)
+const showResults = computed(() => result.value !== null || addedDirectly.value)
 
 watch(() => props.modelValue, (newValue) => {
   if (!newValue) {
     emailInput.value = ''
     result.value = null
+    addedDirectly.value = false
     copied.value = false
     errorMessage.value = ''
   }
@@ -73,6 +75,9 @@ const handleSubmit = async () => {
     if (r.hash) {
       result.value = r
       emit('user-invited')
+    } else if (r.added) {
+      addedDirectly.value = true
+      emit('user-invited')
     } else {
       errorMessage.value = r.error || 'Failed to create invitation'
     }
@@ -93,7 +98,7 @@ const handleClose = () => {
   <Modal
     :model-value="modelValue"
     id="invite-user-modal"
-    :title="showResults ? 'Invite link' : 'Invite user'"
+    :title="addedDirectly ? 'User added' : showResults ? 'Invite link' : 'Invite user'"
     size="md"
     @update:model-value="emit('update:modelValue', $event)"
   >
@@ -119,10 +124,33 @@ const handleClose = () => {
       </form>
     </template>
 
-    <!-- Result View -->
+    <!-- User re-activated -->
+    <template v-else-if="addedDirectly">
+      <div class="flex flex-col items-center py-4">
+        <svg class="mb-3 h-12 w-12 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p class="text-sm font-medium text-gray-900 dark:text-white">
+          User access restored
+        </p>
+        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          {{ emailInput }} can now sign in to this instance again.
+        </p>
+      </div>
+    </template>
+
+    <!-- Invite link result -->
     <template v-else>
+      <div class="mb-3 flex items-start gap-2 rounded-lg border border-green-200 bg-green-50 p-3 dark:border-green-800 dark:bg-green-900/20">
+        <svg class="mt-0.5 h-4 w-4 shrink-0 text-green-600 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 2 11 13" /><path d="m22 2-7 20-4-9-9-4 20-7z" />
+        </svg>
+        <p class="text-sm text-green-700 dark:text-green-300">
+          An invitation email has been sent to <strong>{{ result!.email }}</strong>.
+        </p>
+      </div>
       <p class="mb-3 text-sm text-gray-500 dark:text-gray-400">
-        Share this link with the invited user. They will be able to create their password and sign in.
+        You can also share this link directly with the user.
       </p>
 
       <div class="rounded-lg border border-gray-200 p-3 dark:border-gray-700">
