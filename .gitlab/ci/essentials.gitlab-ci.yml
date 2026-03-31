@@ -8,7 +8,7 @@ stages:
   - rel-x.y
 
 variables:
-  DIND_IMAGE: "docker:28.0-cli"
+  DIND_IMAGE: "docker:28-cli"
 
   REGISTRY: "dkr.hanaboso.net/pipes/pipes"
   REGISTRY_RELEASE: "index.docker.io/orchesty"
@@ -44,7 +44,7 @@ workflow:
     DOCKER_TLS_CERTDIR: ""
 
   services:
-    - docker:28.0-dind
+    - docker:28-dind
 
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin

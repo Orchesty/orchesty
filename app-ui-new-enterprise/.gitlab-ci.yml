@@ -1,0 +1,21 @@
+.base-frontend-enterprise:
+  variables:
+    DIR: app-ui-new-enterprise
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}frontend-enterprise
+
+frontend-enterprise:test:
+  stage: test
+  extends:
+    - .base-test
+    - .base-frontend-enterprise
+
+frontend-enterprise:build:
+  stage: build
+  variables:
+    MAKE_TARGET: rebuild
+  needs:
+    - job: frontend-enterprise:test
+      optional: false
+  extends:
+    - .base-dind-build
+    - .base-frontend-enterprise
