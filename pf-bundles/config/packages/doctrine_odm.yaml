@@ -26,7 +26,6 @@ doctrine_mongodb:
             database: "%env(string:MONGODB_DB)%"
             mappings:
                 HbPFUserBundle: ~
-                HbPFAclBundle: ~
                 HbPFCommonsBundle: ~
                 ApplicationDocument:
                     type: attribute

@@ -13,7 +13,6 @@
         "ext-mongodb": "*",
         "doctrine/mongodb-odm-bundle": "^5.6",
         "doctrine/orm": "^3.6",
-        "hanaboso/acl-bundle": "^1.11",
         "hanaboso/email-service-bundle": "^1.7",
         "hanaboso/mongo-data-grid": "^2.0",
         "hanaboso/rabbit-mq-bundle": "^1.10",

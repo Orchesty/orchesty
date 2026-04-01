@@ -31,6 +31,7 @@ final class HbPFEnterpriseApiGatewayExtension extends Extension implements Prepe
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('controllers.yml');
+        $loader->load('services.yml');
     }
 
     /**

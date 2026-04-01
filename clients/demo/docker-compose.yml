@@ -93,8 +93,8 @@ services:
         environment:
             APP_ENV: dev
             APP_DEBUG: 'true'
-            PHP_WEBROOT: /var/www/pipes/pf-bundles-enterprise/public
-            #PHP_WEBROOT: /var/www/pipes/pf-bundles/public
+            #PHP_WEBROOT: /var/www/pipes/pf-bundles-enterprise/public
+            PHP_WEBROOT: /var/www/pipes/pf-bundles/public
             #PHP_WEBROOT: /var/www/pipes/applinth/public
             COMPOSER_HOME: ${HOME}/dev/.composer
             BACKEND_URL: ${BACKEND_URL}/
@@ -124,8 +124,8 @@ services:
                 pXzObmLNvN3u75L2pADOg4p+GkgwtFdfSa5HhMoQD2jEEmL3otvyjf8jF5t8u2YP
                 GcXwowJ2vWSQ6pyW17FLVqmUy2ZW5VSowkPp29CvYQ==
                 -----END EC PRIVATE KEY-----
-        working_dir: /var/www/pipes/pf-bundles-enterprise
-        #working_dir: /var/www/pipes/pf-bundles
+        #working_dir: /var/www/pipes/pf-bundles-enterprise
+        working_dir: /var/www/pipes/pf-bundles
         #working_dir: /var/www/pipes/applinth
         volumes:
             - ../../:/var/www/pipes:cached
@@ -282,10 +282,10 @@ services:
             CI: 'true'
             VITE_BACKEND_URL: ${BACKEND_ENTERPRISE_URL}
             VITE_STARTINGPONT_URL: ${DEV_IP}:82
-            VITE_AUTH0_DOMAIN: dev-qsa0lopaqbhr0vmj.eu.auth0.com
-            VITE_AUTH0_CLIENT_ID: 1XIsyOq2kpTDt4qOlop2rEAQzPcE2Q5p
-            VITE_AUTH0_AUDIENCE: https://api.orchesty.cloud
-            VITE_AUTH0_REDIRECT: 'true'
+#            VITE_AUTH0_DOMAIN: dev-qsa0lopaqbhr0vmj.eu.auth0.com
+#            VITE_AUTH0_CLIENT_ID: 1XIsyOq2kpTDt4qOlop2rEAQzPcE2Q5p
+#            VITE_AUTH0_AUDIENCE: https://api.orchesty.cloud
+#            VITE_AUTH0_REDIRECT: 'true'
         ports:
             - ${DEV_IP}:85:3000
         volumes:

@@ -181,7 +181,7 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
     private function mockStatisticHandlerException(string $fn): void
     {
         $mock = self::createPartialMock(StatisticsHandler::class, [$fn]);
-        $mock->expects(self::any())->method($fn)->willThrowException(new MongoDBException());
+        $mock->expects(self::atLeastOnce())->method($fn)->willThrowException(new MongoDBException());
         self::getContainer()->set('hbpf._application.handler.statistics', $mock);
     }
 

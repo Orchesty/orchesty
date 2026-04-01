@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "require": {
         "doctrine/mongodb-odm-bundle": "^5.6",
+        "hanaboso/acl-bundle": "^1.11",
         "orchesty/backend": "^3.3"
     },
     "require-dev": {
