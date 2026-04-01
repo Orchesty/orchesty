@@ -68,7 +68,11 @@ applinth-link:
 	echo "http://$(shell grep 'DEV_IP' .env | cut -d "=" -f2):81/?u=$$($(DE) applinth-marketplace-ui /bin/bash -c 'node JWEGen.js')"
 
 init-more: init
-	$(DCB) bin/console user:create "$(shell grep 'ORCHESTY_USER' .env | cut -d "=" -f2)" "$(shell grep 'ORCHESTY_PASSWORD' .env | cut -d "=" -f2)"
+	$(DCB) sh -c '\
+		curl -s -X POST "http://localhost/api/user/setup" \
+			-H "Content-Type: application/json" \
+			-d "{\"email\":\"$(shell grep ORCHESTY_USER .env | cut -d= -f2)\",\"password\":\"$(shell grep ORCHESTY_PASSWORD .env | cut -d= -f2)\"}" > /dev/null && \
+		printf "\033[32mUser was successfully created.\033[0m\n"'
 	$(DCB) sh -c '\
 		TOKEN=$$(curl -s -X POST http://localhost/api/user/login \
 			-H "Content-Type: application/json" \
