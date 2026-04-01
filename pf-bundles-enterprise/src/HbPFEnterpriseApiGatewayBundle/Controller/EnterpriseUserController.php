@@ -106,6 +106,29 @@ final class EnterpriseUserController
     }
 
     /**
+     * Overrides the vendor UserBundle's resetPasswordAction to send
+     * the forgot-password email via Orchesty topology instead of Symfony Mailer.
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/user/reset_password', methods: ['POST'], priority: 10)]
+    public function resetPasswordAction(Request $request): Response
+    {
+        try {
+            $email = $request->request->getString('email');
+            if ($email === '') {
+                return $this->getErrorResponse(new InvalidArgumentException('Missing parameter "email"'), 400);
+            }
+
+            return $this->getResponse($this->userHandler->forgotPassword($email));
+        } catch (Exception $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
      * @param string $id
      *
      * @return Response

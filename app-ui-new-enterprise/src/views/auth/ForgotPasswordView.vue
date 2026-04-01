@@ -1,25 +1,32 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import { isAuth0Enabled } from '@/auth/auth0-plugin'
-import { requestPasswordReset as auth0ResetPassword } from '@/services/auth0Service'
 import { resetPassword as legacyResetPassword } from '@/services/authService'
+import { useCloudMode } from '@/composables/useCloudMode'
+
+const { cloudUrl, loadCloudMode } = useCloudMode()
 
 const email = ref('')
 const error = ref('')
 const success = ref(false)
 const submitting = ref(false)
 
+onMounted(async () => {
+  if (isAuth0Enabled) {
+    await loadCloudMode()
+    if (cloudUrl.value) {
+      window.location.href = `${cloudUrl.value}/forgot-password`
+    }
+  }
+})
+
 async function handleSubmit() {
   error.value = ''
   success.value = false
   submitting.value = true
   try {
-    if (isAuth0Enabled) {
-      await auth0ResetPassword(email.value)
-    } else {
-      await legacyResetPassword(email.value)
-    }
+    await legacyResetPassword(email.value)
     success.value = true
   } catch (err: any) {
     error.value = err.message || 'Failed to send reset email. Please try again.'

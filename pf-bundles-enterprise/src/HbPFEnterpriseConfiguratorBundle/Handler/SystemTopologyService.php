@@ -132,6 +132,25 @@ final class SystemTopologyService
 
     /**
      * @param string $email
+     * @param string $hash
+     *
+     * @return mixed[]
+     */
+    public function sendForgotPasswordEmail(string $email, string $hash): array
+    {
+        return $this->triggerTopology(
+            'system-transaction-emails',
+            'forgot-password',
+            [
+                'email'       => $email,
+                'hash'        => $hash,
+                'frontendUrl' => $this->resolveEmailFrontendUrl(),
+            ],
+        );
+    }
+
+    /**
+     * @param string $email
      *
      * @return mixed[]
      */

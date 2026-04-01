@@ -11,6 +11,11 @@ import InviteEmailMapper from './CustomNode/InviteEmailMapper';
 import RestoreAccessEmailMapper from './CustomNode/RestoreAccessEmailMapper';
 import CloudInviteEmailMapper from './CustomNode/CloudInviteEmailMapper';
 import CloudRestoreAccessEmailMapper from './CustomNode/CloudRestoreAccessEmailMapper';
+import ForgotPasswordEmailMapper from './CustomNode/ForgotPasswordEmailMapper';
+import CloudForgotPasswordEmailMapper from './CustomNode/CloudForgotPasswordEmailMapper';
+import AdminForgotPasswordEmailMapper from './CustomNode/AdminForgotPasswordEmailMapper';
+import AdminInviteEmailMapper from './CustomNode/AdminInviteEmailMapper';
+import AdminRestoreAccessEmailMapper from './CustomNode/AdminRestoreAccessEmailMapper';
 
 function prepare(): void {
     initiateContainer();
@@ -35,6 +40,15 @@ function prepare(): void {
     // ── Custom Nodes (cloud) ──
     container.setNode(new CloudInviteEmailMapper());
     container.setNode(new CloudRestoreAccessEmailMapper());
+
+    // ── Custom Nodes (admin) ──
+    container.setNode(new AdminInviteEmailMapper());
+    container.setNode(new AdminRestoreAccessEmailMapper());
+    container.setNode(new AdminForgotPasswordEmailMapper());
+
+    // ── Custom Nodes (forgot password) ──
+    container.setNode(new ForgotPasswordEmailMapper());
+    container.setNode(new CloudForgotPasswordEmailMapper());
 }
 
 prepare();

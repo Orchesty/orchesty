@@ -133,6 +133,33 @@ final class EnterpriseUserHandler extends UserHandler
     }
 
     /**
+     * Generates a password reset token and sends a forgot-password email
+     * via the system topology. Always returns the same message to prevent
+     * email enumeration.
+     *
+     * @param string $email
+     *
+     * @return mixed[]
+     */
+    public function forgotPassword(string $email): array
+    {
+        /** @var User|null $user */
+        $user = $this->dm->getRepository(User::class)->findOneBy(['email' => $email]);
+
+        if (!$user || $user->isDeleted()) {
+            return ['message' => 'If the email exists, reset instructions will be sent.'];
+        }
+
+        try {
+            $token = $this->tokenManager->create($user);
+            $this->systemTopologyService->sendForgotPasswordEmail($email, $token->getHash());
+        } catch (Throwable) {
+        }
+
+        return ['message' => 'If the email exists, reset instructions will be sent.'];
+    }
+
+    /**
      * Handles invite with cloud-aware logic:
      * - soft-deleted users are re-activated
      * - existing cloud account users are added directly
