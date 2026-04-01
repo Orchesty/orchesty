@@ -9,6 +9,8 @@ import SmtpApplicationWithInfo from './Application/SmtpApplicationWithInfo';
 import SlackApplicationWithInfo from './Application/SlackApplicationWithInfo';
 import InviteEmailMapper from './CustomNode/InviteEmailMapper';
 import RestoreAccessEmailMapper from './CustomNode/RestoreAccessEmailMapper';
+import CloudInviteEmailMapper from './CustomNode/CloudInviteEmailMapper';
+import CloudRestoreAccessEmailMapper from './CustomNode/CloudRestoreAccessEmailMapper';
 
 function prepare(): void {
     initiateContainer();
@@ -26,9 +28,13 @@ function prepare(): void {
     container.setNode(new SmtpSendEmail(), smtpApp);
     container.setNode(new SlackSendMessageConnector(), slackApp);
 
-    // ── Custom Nodes ──
+    // ── Custom Nodes (enterprise instance) ──
     container.setNode(new InviteEmailMapper());
     container.setNode(new RestoreAccessEmailMapper());
+
+    // ── Custom Nodes (cloud) ──
+    container.setNode(new CloudInviteEmailMapper());
+    container.setNode(new CloudRestoreAccessEmailMapper());
 }
 
 prepare();

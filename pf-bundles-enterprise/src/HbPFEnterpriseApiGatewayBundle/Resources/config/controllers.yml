@@ -53,6 +53,7 @@ services:
             $systemOrchestyUrl: '%system_orchesty_url%'
             $startingPointHost: '%startingPointHost%'
             $frontendHost: '%frontendHost%'
+            $cloudFrontendUrl: '%orchesty_cloud_frontend_url%'
             $logger: '@?logger'
 
     hbpf.user.handler.users:

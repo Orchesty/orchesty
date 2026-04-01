@@ -1,13 +1,12 @@
 import ACommonNode from '@orchesty/nodejs-sdk/dist/lib/Commons/ACommonNode';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 
-export const NAME = 'invite-email-mapper';
+export const NAME = 'cloud-invite-email-mapper';
 
 interface IInput {
     email: string;
-    hash: string;
+    token: string;
     frontendUrl: string;
-    cloudMode?: boolean;
 }
 
 interface IOutput {
@@ -17,19 +16,17 @@ interface IOutput {
     html: string;
 }
 
-export default class InviteEmailMapper extends ACommonNode {
+export default class CloudInviteEmailMapper extends ACommonNode {
 
     public getName(): string {
         return NAME;
     }
 
     public processAction(dto: ProcessDto<IInput>): ProcessDto<IOutput> {
-        const { email, hash, frontendUrl, cloudMode } = dto.getJsonData();
+        const { email, token, frontendUrl } = dto.getJsonData();
 
         const baseUrl = frontendUrl.replace(/\/+$/, '');
-        const inviteUrl = cloudMode
-            ? `${baseUrl}/instance-invite?token=${encodeURIComponent(hash)}`
-            : `${baseUrl}/accept-invite/${hash}`;
+        const inviteUrl = `${baseUrl}/invite?token=${encodeURIComponent(token)}`;
 
         const html = `<!DOCTYPE html>
 <html lang="en">
@@ -41,14 +38,14 @@ export default class InviteEmailMapper extends ACommonNode {
         <table width="560" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:8px;overflow:hidden">
           <tr>
             <td style="background-color:#1a56db;padding:32px 40px;text-align:center">
-              <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:600">Orchesty</h1>
+              <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:600">Orchesty Cloud</h1>
             </td>
           </tr>
           <tr>
             <td style="padding:40px">
               <h2 style="margin:0 0 16px;color:#111827;font-size:20px;font-weight:600">You've been invited</h2>
               <p style="margin:0 0 24px;color:#4b5563;font-size:15px;line-height:1.6">
-                You have been invited to join an Orchesty instance. Click the button below to accept the invitation and set up your account.
+                You have been invited to join an organization on Orchesty Cloud. Click the button below to accept the invitation and get started.
               </p>
               <table cellpadding="0" cellspacing="0" style="margin:0 0 24px">
                 <tr>
@@ -73,9 +70,9 @@ export default class InviteEmailMapper extends ACommonNode {
 </html>`;
 
         return dto.setNewJsonData<IOutput>({
-            from: '"Orchesty" <noreply@orchesty.io>',
+            from: '"Orchesty Cloud" <noreply@orchesty.io>',
             to: email,
-            subject: "You've been invited to Orchesty",
+            subject: "You've been invited to Orchesty Cloud",
             html,
         });
     }

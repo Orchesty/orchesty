@@ -36,6 +36,7 @@ final class SystemTopologyService
      * @param string $systemOrchestyUrl
      * @param string $startingPointHost
      * @param string $frontendHost
+     * @param string $cloudFrontendUrl
      * @param LoggerInterface|null $logger
      */
     public function __construct(
@@ -44,6 +45,7 @@ final class SystemTopologyService
         private readonly string $systemOrchestyUrl,
         private readonly string $startingPointHost,
         private readonly string $frontendHost,
+        private readonly string $cloudFrontendUrl = '',
         private readonly ?LoggerInterface $logger = NULL,
     )
     {
@@ -114,13 +116,16 @@ final class SystemTopologyService
      */
     public function sendInviteEmail(string $email, string $hash): array
     {
+        $frontendUrl = $this->resolveEmailFrontendUrl();
+
         return $this->triggerTopology(
             'system-transaction-emails',
             'invite',
             [
                 'email'       => $email,
                 'hash'        => $hash,
-                'frontendUrl' => rtrim($this->frontendHost, '/'),
+                'frontendUrl' => $frontendUrl,
+                'cloudMode'   => $this->isCloudMode(),
             ],
         );
     }
@@ -137,9 +142,23 @@ final class SystemTopologyService
             'restore-access',
             [
                 'email'       => $email,
-                'frontendUrl' => rtrim($this->frontendHost, '/'),
+                'frontendUrl' => $this->resolveEmailFrontendUrl(),
             ],
         );
+    }
+
+    private function isCloudMode(): bool
+    {
+        return $this->cloudFrontendUrl !== '';
+    }
+
+    private function resolveEmailFrontendUrl(): string
+    {
+        if ($this->isCloudMode()) {
+            return rtrim($this->cloudFrontendUrl, '/');
+        }
+
+        return rtrim($this->frontendHost, '/');
     }
 
     private function resolveBaseUrl(): string
