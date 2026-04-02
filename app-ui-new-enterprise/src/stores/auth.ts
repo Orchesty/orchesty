@@ -30,7 +30,7 @@ export const useAuthStore = defineStore('auth', () => {
   const { lastActivityTime, touch: touchActivity } = useActivityTracker()
 
   function startSessionTimer(): void {
-    if (isAuth0Enabled) return
+    if (isAuth0Enabled && !hasCloudHandoffSession()) return
 
     stopSessionTimer()
 
@@ -134,36 +134,38 @@ export const useAuthStore = defineStore('auth', () => {
     startSessionTimer()
   }
 
+  function clearAuth0Cache(): void {
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith('@@auth0spajs@@'))
+      .forEach((k) => localStorage.removeItem(k))
+  }
+
   async function logout(): Promise<void> {
     stopSessionTimer()
 
     const { cloudMode, cloudUrl } = useCloudMode()
 
     localStorage.removeItem(STORAGE_KEYS.CLOUD_HANDOFF_SESSION)
+    localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
+    localStorage.removeItem(STORAGE_KEYS.AUTH_USER)
+    token.value = null
+    user.value = null
+
+    if (isAuth0Enabled) {
+      clearAuth0Cache()
+    }
+
+    if (cloudMode.value && cloudUrl.value) {
+      window.location.href = `${cloudUrl.value}/sign-out`
+      return
+    }
 
     if (isAuth0Enabled && _auth0) {
-      localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
-      localStorage.removeItem(STORAGE_KEYS.AUTH_USER)
-      token.value = null
-      user.value = null
-
-      if (cloudMode.value && cloudUrl.value) {
-        window.location.href = `${cloudUrl.value}/sign-out`
-        return
-      }
-
-      _auth0.logout({ logoutParams: { returnTo: window.location.origin } })
+      await _auth0.logout({ logoutParams: { returnTo: window.location.origin } })
       return
     }
 
     await authService.logout()
-
-    token.value = null
-    user.value = null
-
-    if (cloudMode.value && cloudUrl.value) {
-      window.location.href = `${cloudUrl.value}/sign-out`
-    }
   }
 
   function initializeAuth(): void {
@@ -183,9 +185,7 @@ export const useAuthStore = defineStore('auth', () => {
         lastTokenRefreshTime.value = now
         localStorage.setItem(STORAGE_KEYS.LAST_TOKEN_REFRESH, String(now))
         touchActivity()
-        if (!isAuth0Enabled) {
-          startSessionTimer()
-        }
+        startSessionTimer()
       } catch (error) {
         console.error('Failed to parse stored user data:', error)
         localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)

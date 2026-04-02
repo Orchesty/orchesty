@@ -11,6 +11,7 @@ import type {
   ProcessAuditTrashApiResponse,
   ProcessAuditApiFilter
 } from '@/types/processes'
+import type { ConnectorErrorRecord, ConnectorErrorApiResponse } from '@/types/connectors'
 import api from '@/services/api'
 
 /**
@@ -249,5 +250,56 @@ export async function fetchProcessAuditTrash(
   return {
     items,
     total: response.data.paging.total
+  }
+}
+
+/**
+ * Fetch connector error records for a specific process (by correlationId)
+ * with pagination and sorting. Uses the same endpoint as connector error records
+ * but filters by correlationId instead of nodeId.
+ */
+export async function fetchProcessAuditErrorRecords(
+  correlationId: string,
+  page: number = 1,
+  limit: number = 10,
+  sortField: string = 'created',
+  sortDirection: string = 'desc'
+): Promise<PaginatedResponse<ConnectorErrorRecord>> {
+  const filterObj: ProcessAuditApiFilter = {
+    search: null,
+    filter: [
+      [{ column: 'correlationId', operator: 'EQ', value: [correlationId] }],
+      [{ column: 'status', operator: 'EQ', value: ['FAILED'] }]
+    ],
+    sorter: [{ column: sortField, direction: sortDirection.toUpperCase() }],
+    paging: { itemsPerPage: limit, page }
+  }
+
+  const response = await api.get<ConnectorErrorApiResponse>('/api/metrics/connectors', {
+    params: { filter: JSON.stringify(filterObj) }
+  })
+
+  const records = response.data.items.map(item => ({
+    id: item.id,
+    timestamp: item.created,
+    topologyId: item.topologyId,
+    topology: item.topologyId,
+    nodeId: item.nodeId,
+    applicationId: item.applicationId,
+    correlationId: item.correlationId || '',
+    userId: item.userId || '',
+    duration: item.duration || 0,
+    code: item.status,
+    message: item.message || ''
+  }))
+
+  return {
+    data: records,
+    meta: {
+      totalItems: response.data.paging.total,
+      totalPages: response.data.paging.lastPage,
+      currentPage: response.data.paging.page,
+      itemsPerPage: response.data.paging.itemsPerPage,
+    },
   }
 }

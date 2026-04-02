@@ -1,44 +1,30 @@
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
+
+const isDark = ref(false)
 
 export function useDarkMode() {
   const initDarkMode = () => {
-    const toggle = document.getElementById('theme-toggle') as HTMLInputElement | null
-    if (!toggle) {
-      console.error('Theme toggle element not found!')
-      return
-    }
-
-    // Load saved preference or use system preference
-    if (
+    isDark.value =
       localStorage.theme === 'dark' ||
       (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
-    ) {
+
+    if (isDark.value) {
       document.documentElement.classList.add('dark')
-      toggle.checked = true
     } else {
       document.documentElement.classList.remove('dark')
-      toggle.checked = false
     }
+  }
 
-    // Handle toggle change
-    const handleChange = function (this: HTMLInputElement) {
-      if (this.checked) {
-        document.documentElement.classList.add('dark')
-        localStorage.theme = 'dark'
-      } else {
-        document.documentElement.classList.remove('dark')
-        localStorage.theme = 'light'
-      }
-      
-      document.dispatchEvent(new Event('rerender-charts'))
+  const toggleDarkMode = () => {
+    isDark.value = !isDark.value
+    if (isDark.value) {
+      document.documentElement.classList.add('dark')
+      localStorage.theme = 'dark'
+    } else {
+      document.documentElement.classList.remove('dark')
+      localStorage.theme = 'light'
     }
-
-    toggle.addEventListener('change', handleChange)
-
-    // Cleanup function
-    return () => {
-      toggle.removeEventListener('change', handleChange)
-    }
+    document.dispatchEvent(new Event('rerender-charts'))
   }
 
   onMounted(() => {
@@ -46,7 +32,8 @@ export function useDarkMode() {
   })
 
   return {
+    isDark,
+    toggleDarkMode,
     initDarkMode,
   }
 }
-

@@ -27,8 +27,8 @@ final class EnterpriseUserController
     /**
      * EnterpriseUserController constructor.
      *
-     * @param EnterpriseUserHandler  $userHandler
-     * @param TokenStorageInterface  $tokenStorage
+     * @param EnterpriseUserHandler $userHandler
+     * @param TokenStorageInterface $tokenStorage
      */
     public function __construct(
         private readonly EnterpriseUserHandler $userHandler,

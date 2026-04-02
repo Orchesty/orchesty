@@ -28,7 +28,19 @@ Enterprise frontend for Orchesty. Consumes `app-ui-new` (core) as a library and 
 | `ORCHESTY_CLOUD_FRONTEND_URL` | Cloud | Cloud frontend URL (e.g. `http://localhost:5173`). Used for email links in cloud mode. |
 | `ORCHESTY_CLOUD_INSTANCE_ID` | Cloud | Instance ID registered in the cloud platform |
 | `ORCHESTY_CLOUD_INSTANCE_SECRET` | Cloud | Shared secret for cloud API authentication |
+| `ORCHESTY_CLOUD_INSTANCE_NAME` | Cloud | Human-readable instance name displayed in the browser title (e.g. `My Company`). Sets the page title to `[name] - Orchesty` in cloud mode. |
 | `SYSTEM_ORCHESTY_URL` | Emails | Orchesty starting-point URL for triggering system topologies (transactional emails). If empty, uses the local starting-point. |
+
+### Feature Flags
+
+Server-driven feature flags control which enterprise features are available in the UI based on the user's subscription. They are set as environment variables on the backend and served to the frontend via `GET /api/status` in the `features` object. In on-prem mode (non-cloud), all features are always enabled.
+
+| Variable | Default | Controls |
+|---|---|---|
+| `ORCHESTY_FEATURE_ENTERPRISE_DASHBOARDS` | `false` | Enterprise Control Center dashboard (multi-tab with Overview, Applications, Connectors, Topologies, Processes, Limiter). When `false`, only the core Processes grid is shown. |
+| `ORCHESTY_FEATURE_TRACE_AUDITING` | `false` | Trace view + sidebar link, Trace drawer icon in topbar, and "Audit entities" tab in Settings. |
+| `ORCHESTY_FEATURE_AUDIT_LOGS` | `false` | Audit logs page + navbar menu item. |
+| `ORCHESTY_FEATURE_PULSE` | `false` | "Context" tab in topology detail view. |
 
 ## Authentication Modes
 
@@ -62,13 +74,14 @@ Auth0 availability is determined in `src/auth/auth0-plugin.ts`:
 isAuth0Enabled = !!(VITE_AUTH0_DOMAIN && VITE_AUTH0_CLIENT_ID)
 ```
 
-Cloud mode is determined at runtime from the backend response:
+Cloud mode and feature flags are determined at runtime from the backend response:
 
 ```typescript
 // src/composables/useCloudMode.ts
 const res = await fetch(`${BACKEND_URL}/api/status`)
 const data = await res.json()
 cloudMode.value = data.cloudMode === true
+// data.features = { enterpriseDashboards, traceAuditing, auditLogs, pulse }
 ```
 
 - **Cloud:** `isAuth0Enabled = true`, backend reports `cloudMode = true` — auto-redirect to Auth0, no form

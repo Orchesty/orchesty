@@ -17,8 +17,10 @@
     "@orchesty/nodejs-sdk": "^5.0.3",
     "dotenv": "^16.4.7"
   },
-  "overrides": {
-    "@orchesty/nodejs-sdk": "^5.0.3"
+  "pnpm": {
+    "overrides": {
+      "@orchesty/nodejs-sdk": "^5.0.3"
+    }
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",

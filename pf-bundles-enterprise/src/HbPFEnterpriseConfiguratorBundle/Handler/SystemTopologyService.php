@@ -12,6 +12,7 @@ use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
 use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
+use Hanaboso\Utils\String\Json;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
@@ -31,13 +32,15 @@ final class SystemTopologyService
     private DocumentManager $dm;
 
     /**
-     * @param CurlManagerInterface $curlManager
+     * SystemTopologyService constructor.
+     *
+     * @param CurlManagerInterface   $curlManager
      * @param DatabaseManagerLocator $dml
-     * @param string $systemOrchestyUrl
-     * @param string $startingPointHost
-     * @param string $frontendHost
-     * @param string $cloudFrontendUrl
-     * @param LoggerInterface|null $logger
+     * @param string                 $systemOrchestyUrl
+     * @param string                 $startingPointHost
+     * @param string                 $frontendHost
+     * @param string                 $cloudFrontendUrl
+     * @param LoggerInterface|null   $logger
      */
     public function __construct(
         private readonly CurlManagerInterface $curlManager,
@@ -55,10 +58,10 @@ final class SystemTopologyService
     }
 
     /**
-     * @param string $topologyName
-     * @param string $nodeName
+     * @param string  $topologyName
+     * @param string  $nodeName
      * @param mixed[] $data
-     * @param string $user
+     * @param string  $user
      *
      * @return mixed[]
      */
@@ -74,7 +77,7 @@ final class SystemTopologyService
         $url     = sprintf('%s/%s', rtrim($baseUrl, '/'), $path);
 
         $headers = $this->getHeaders();
-        $body    = json_encode($data, JSON_THROW_ON_ERROR);
+        $body    = Json::encode($data);
 
         try {
             $request = new RequestDto(
@@ -88,8 +91,8 @@ final class SystemTopologyService
             $response = $this->curlManager->send($request);
 
             return [
-                'success'    => $response->getStatusCode() === 200,
                 'statusCode' => $response->getStatusCode(),
+                'success'    => $response->getStatusCode() === 200,
             ];
         } catch (Throwable $e) {
             $this->logger?->error(
@@ -102,8 +105,8 @@ final class SystemTopologyService
             );
 
             return [
-                'success' => FALSE,
                 'error'   => $e->getMessage(),
+                'success' => FALSE,
             ];
         }
     }
@@ -122,10 +125,10 @@ final class SystemTopologyService
             'system-transaction-emails',
             'invite',
             [
-                'email'       => $email,
-                'hash'        => $hash,
-                'frontendUrl' => $frontendUrl,
                 'cloudMode'   => $this->isCloudMode(),
+                'email'       => $email,
+                'frontendUrl' => $frontendUrl,
+                'hash'        => $hash,
             ],
         );
     }
@@ -143,8 +146,8 @@ final class SystemTopologyService
             'forgot-password',
             [
                 'email'       => $email,
-                'hash'        => $hash,
                 'frontendUrl' => $this->resolveEmailFrontendUrl(),
+                'hash'        => $hash,
             ],
         );
     }
@@ -166,11 +169,17 @@ final class SystemTopologyService
         );
     }
 
+    /**
+     * @return bool
+     */
     private function isCloudMode(): bool
     {
         return $this->cloudFrontendUrl !== '';
     }
 
+    /**
+     * @return string
+     */
     private function resolveEmailFrontendUrl(): string
     {
         if ($this->isCloudMode()) {
@@ -180,6 +189,9 @@ final class SystemTopologyService
         return rtrim($this->frontendHost, '/');
     }
 
+    /**
+     * @return string
+     */
     private function resolveBaseUrl(): string
     {
         if ($this->systemOrchestyUrl !== '') {

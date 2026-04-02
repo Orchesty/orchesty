@@ -125,6 +125,7 @@ onUnmounted(() => {
 <style scoped>
 /* Scoped styles for elements inside the component tree (input, theme vars) */
 :deep(.dp__theme_light) {
+  --dp-border-radius: 0.5rem;
   --dp-primary-color: #10C86C;
   --dp-primary-text-color: #ffffff;
   --dp-background-color: #ffffff;
@@ -142,6 +143,7 @@ onUnmounted(() => {
 }
 
 :deep(.dp__theme_dark) {
+  --dp-border-radius: 0.5rem;
   --dp-primary-color: #1BEA83;
   --dp-primary-text-color: #141414;
   --dp-background-color: #1F1F1F;

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, useRouter } from 'vue-router'
 import { onMounted, computed } from 'vue'
+import { Moon, Sun } from 'lucide-vue-next'
 import { useDarkMode } from '@/composables/useDarkMode'
 import { useAuthStore } from '@/stores/auth'
 import DropdownMenu, { type DropdownMenuSection } from '@/components/ui/DropdownMenu.vue'
@@ -15,7 +16,7 @@ const props = withDefaults(defineProps<Props>(), {
   extraNavSlots: () => [],
 })
 
-useDarkMode()
+const { isDark, toggleDarkMode } = useDarkMode()
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -35,11 +36,6 @@ const accountMenuSections = computed<DropdownMenuSection[]>(() => [
       { type: 'link', label: 'Account settings', to: '/orchesty/account' },
       { type: 'link', label: 'Users', to: '/users' },
       ...props.extraMenuItems.map(item => ({ type: 'link' as const, label: item.label, to: item.to })),
-    ],
-  },
-  {
-    items: [
-      { type: 'custom', slotName: 'dark-mode-toggle' },
     ],
   },
   {
@@ -72,6 +68,16 @@ onMounted(async () => {
         <div class="flex shrink-0 items-center justify-end">
           <slot name="extra-nav-buttons" />
 
+          <!-- Dark mode toggle -->
+          <button
+            type="button"
+            class="rounded-lg p-2 text-gray-500 hover:bg-gray-100 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700"
+            @click="toggleDarkMode"
+          >
+            <Moon v-if="!isDark" class="h-5 w-5" />
+            <Sun v-else class="h-5 w-5" />
+          </button>
+
           <DropdownMenu
             id="account-dropdown"
             :sections="accountMenuSections"
@@ -91,21 +97,6 @@ onMounted(async () => {
                   />
                 </svg>
               </button>
-            </template>
-
-            <template #dark-mode-toggle>
-              <label
-                class="group flex cursor-pointer items-center justify-between gap-2 px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
-              >
-                <span>Dark mode</span>
-                <div class="ml-auto inline-flex items-center">
-                  <input id="theme-toggle" type="checkbox" value="" class="peer sr-only" />
-                  <div
-                    class="peer relative h-5 w-9 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-primary-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-hidden peer-focus:ring-4 peer-focus:ring-primary-300 dark:border-gray-500 dark:bg-gray-600 dark:peer-focus:ring-primary-800 rtl:peer-checked:after:-translate-x-full"
-                  ></div>
-                  <span class="sr-only">Toggle dark mode</span>
-                </div>
-              </label>
             </template>
 
             <template #sign-out>

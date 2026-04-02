@@ -9,6 +9,11 @@ services:
         arguments:
             $orchesryCloudUrl: '%orchesty_cloud_url%'
             $orchesryCloudFrontendUrl: '%orchesty_cloud_frontend_url%'
+            $orchesryCloudInstanceName: '%orchesty_cloud_instance_name%'
+            $featureEnterpriseDashboards: '%feature_enterprise_dashboards%'
+            $featureTraceAuditing: '%feature_trace_auditing%'
+            $featureAuditLogs: '%feature_audit_logs%'
+            $featurePulse: '%feature_pulse%'
 
     Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\AuditEntityController:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\AuditEntityController

@@ -23,11 +23,11 @@ final class EnterpriseGroupController
     use ControllerTrait;
 
     /**
+     * EnterpriseGroupController constructor.
+     *
      * @param EnterpriseGroupHandler $groupHandler
      */
-    public function __construct(
-        private readonly EnterpriseGroupHandler $groupHandler,
-    )
+    public function __construct(private readonly EnterpriseGroupHandler $groupHandler)
     {
         $this->logger = new NullLogger();
     }
@@ -131,7 +131,6 @@ final class EnterpriseGroupController
     }
 
     /**
-     * @param string $id
      * @param string $userId
      *
      * @return Response
@@ -148,6 +147,12 @@ final class EnterpriseGroupController
         }
     }
 
+    /**
+     * @param string $id
+     * @param string $userId
+     *
+     * @return Response
+     */
     #[Route('/group/{id}/user/{userId}', methods: ['POST'], priority: 10)]
     public function addUserAction(string $id, string $userId): Response
     {

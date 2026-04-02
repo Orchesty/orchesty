@@ -22,6 +22,8 @@ final class EnterpriseGroupHandler
 {
 
     /**
+     * EnterpriseGroupHandler constructor.
+     *
      * @param DocumentManager $dm
      * @param AccessManager   $accessManager
      * @param GroupManager    $groupManager
@@ -71,6 +73,7 @@ final class EnterpriseGroupHandler
 
     /**
      * @param string $name
+     * @param int    $level
      *
      * @return mixed[]
      * @throws AclException
@@ -81,9 +84,13 @@ final class EnterpriseGroupHandler
             throw new InvalidArgumentException('Group name cannot be empty.');
         }
 
-        $group = $this->accessManager->addGroup($name);
+        if ($level < 1) {
+            throw new AclException('Group level must be at least 1.');
+        }
 
         /** @var Group $group */
+        $group = $this->accessManager->addGroup($name);
+
         $group->setLevel($level);
         $this->dm->flush();
 
@@ -93,6 +100,7 @@ final class EnterpriseGroupHandler
     /**
      * @param string      $id
      * @param string|null $name
+     * @param int|null    $level
      *
      * @return mixed[]
      * @throws AclException
@@ -107,10 +115,14 @@ final class EnterpriseGroupHandler
             $dto->addUser($user);
         }
 
+        /** @var Group $updatedGroup */
         $updatedGroup = $this->accessManager->updateGroup($dto);
 
-        /** @var Group $updatedGroup */
         if ($level !== NULL) {
+            if ($level < 1) {
+                throw new AclException('Group level must be at least 1.');
+            }
+
             $updatedGroup->setLevel($level);
             $this->dm->flush();
         }
@@ -172,7 +184,6 @@ final class EnterpriseGroupHandler
     {
         $user = $this->findUserOrFail($userId);
 
-        /** @var \Hanaboso\AclBundle\Repository\Document\GroupRepository $repo */
         $repo   = $this->dm->getRepository(Group::class);
         $groups = $repo->getUserGroups($user);
 
@@ -234,18 +245,18 @@ final class EnterpriseGroupHandler
         /** @var Rule $rule */
         foreach ($group->getRules() as $rule) {
             $rules[] = [
-                'resource'     => $rule->getResource(),
                 'actions'      => $this->maskFactory->getActionsFromMask($rule->getActionMask()),
                 'propertyMask' => $rule->getPropertyMask(),
+                'resource'     => $rule->getResource(),
             ];
         }
 
         return [
             'id'         => $group->getId(),
-            'name'       => $group->getName(),
             'level'      => $group->getLevel(),
-            'usersCount' => count($group->getUsers()),
+            'name'       => $group->getName(),
             'rules'      => $rules,
+            'usersCount' => count([...$group->getUsers()]),
         ];
     }
 
@@ -262,8 +273,8 @@ final class EnterpriseGroupHandler
         /** @var User $user */
         foreach ($group->getUsers() as $user) {
             $users[] = [
-                'id'    => $user->getId(),
                 'email' => $user->getEmail(),
+                'id'    => $user->getId(),
             ];
         }
 

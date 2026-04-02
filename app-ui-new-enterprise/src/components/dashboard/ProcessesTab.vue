@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed, nextTick, onActivated, onDeactivated } from 'vue'
+import { ref, watch, computed, nextTick, onMounted, onActivated, onDeactivated } from 'vue'
 import ProcessAuditDrawer from '@/components/dashboard/ProcessAuditDrawer.vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
@@ -183,6 +183,10 @@ watch(
   },
   { deep: true }
 )
+
+onMounted(() => {
+  loadData()
+})
 
 onActivated(() => {
   isActive.value = true

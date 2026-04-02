@@ -67,7 +67,7 @@ phpcoverage:
 	$(DE) php vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --cache-directory var/cache/coverage --coverage-filter src tests
 
 phpcoverage-ci:
-	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -p $$(nproc) -c 10
+	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -p $$(nproc) -c 1
 
 database-create:
 	$(DE) php bin/console doctrine:mongodb:schema:update --dm default || true

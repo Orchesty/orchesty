@@ -4,6 +4,7 @@ import { useAuth0 } from '@auth0/auth0-vue'
 import { isAuth0Enabled } from '@/auth/auth0-plugin'
 import { useAuthStore } from '@/stores/auth'
 import { useCloudMode } from '@/composables/useCloudMode'
+import { useFeatures } from '@/composables/useFeatures'
 import { STORAGE_KEYS } from '@/config'
 import { activateUser, setNewPassword } from '@/services/authService'
 import api from '@/services/api'
@@ -22,11 +23,13 @@ const enterpriseOnlyChildren: RouteRecordRaw[] = [
     path: 'audit-logs',
     name: 'audit-logs',
     component: () => import('@/views/audit-logs/AuditLogsView.vue'),
+    meta: { feature: 'auditLogs' },
   },
   {
     path: 'trace',
     name: 'trace',
     component: () => import('@/views/trace/TraceView.vue'),
+    meta: { feature: 'traceAuditing' },
   },
 ]
 
@@ -167,12 +170,27 @@ export function createEnterpriseRouter() {
     const authStore = useAuthStore()
     const auth0 = useAuth0()
     const { cloudMode, cloudUrl, loaded: cloudLoaded } = useCloudMode()
+    const { enterpriseDashboards, traceAuditing, auditLogs, pulse } = useFeatures()
 
     await waitForAuth0Loading(auth0)
 
     if (to.path === '/auth-error') {
       next()
       return
+    }
+
+    const featureKey = to.meta.feature as string | undefined
+    if (featureKey) {
+      const featureMap: Record<string, boolean> = {
+        enterpriseDashboards: enterpriseDashboards.value,
+        traceAuditing: traceAuditing.value,
+        auditLogs: auditLogs.value,
+        pulse: pulse.value,
+      }
+      if (!featureMap[featureKey]) {
+        next('/dashboard')
+        return
+      }
     }
 
     const loginFailed = sessionStorage.getItem(STORAGE_KEYS.AUTH0_LOGIN_FAILED) === 'true'

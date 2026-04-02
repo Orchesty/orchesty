@@ -44,7 +44,7 @@ final class EnterpriseUserHandler extends UserHandler
         UserManager $userManager,
         UsersManager $usersManager,
         DocumentManager $dm,
-        TokenManager $tokenManager,
+        private readonly TokenManager $tokenManager,
         ResourceProvider $resourceProvider,
         private readonly CloudMemberSyncService $cloudMemberSyncService,
         private readonly PasswordHasherFactoryInterface $passwordHasherFactory,
