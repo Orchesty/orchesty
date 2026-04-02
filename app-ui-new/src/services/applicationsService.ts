@@ -172,6 +172,7 @@ function mapApiInstallToComponent(
     applicationSettings: flatSettings,
     worker: workerName,
     logo: apiResponse.logo,
+    info: apiResponse.info || undefined,
   }
 }
 

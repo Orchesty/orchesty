@@ -32,8 +32,14 @@ services:
             ORCHESTY_CLOUD_URL: ''
             ORCHESTY_CLOUD_INSTANCE_ID: ''
             ORCHESTY_CLOUD_INSTANCE_SECRET: ''
+            ORCHESTY_CLOUD_INSTANCE_NAME: ''
             AUTH0_DOMAIN: ''
             AUTH0_AUDIENCE: ''
+            SYSTEM_ORCHESTY_URL: ''
+            ORCHESTY_FEATURE_ENTERPRISE_DASHBOARDS: 'false'
+            ORCHESTY_FEATURE_TRACE_AUDITING: 'false'
+            ORCHESTY_FEATURE_AUDIT_LOGS: 'false'
+            ORCHESTY_FEATURE_PULSE: 'false'
 
     swagger-ui:
         image: swaggerapi/swagger-ui

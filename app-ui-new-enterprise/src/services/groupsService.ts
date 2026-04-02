@@ -1,143 +1,42 @@
-import type { Group, GroupQueryParams } from '@/types/users'
-import groupsDataJson from '@/assets/mock-data/groups-data.json'
+import type { Group, GroupListResponse } from '@/types/users'
+import api from './api'
 
-// Simulated API delay
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-
-export async function fetchGroups(params: GroupQueryParams): Promise<{
-  data: Group[]
-  meta: {
-    total: number
-    totalPages: number
-    currentPage: number
-    perPage: number
-  }
-}> {
-  await delay(300)
-
-  let filteredData = [...(groupsDataJson.data as Group[])]
-
-  // Filter by search (group name)
-  if (params.search) {
-    const searchLower = params.search.toLowerCase()
-    filteredData = filteredData.filter((group) =>
-      group.name.toLowerCase().includes(searchLower)
-    )
-  }
-
-  // Sort
-  if (params.sort) {
-    filteredData.sort((a, b) => {
-      const aValue = a[params.sort as keyof Group]
-      const bValue = b[params.sort as keyof Group]
-      
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        return params.order === 'asc'
-          ? aValue.localeCompare(bValue)
-          : bValue.localeCompare(aValue)
-      }
-      
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
-        return params.order === 'asc' ? aValue - bValue : bValue - aValue
-      }
-
-      if (Array.isArray(aValue) && Array.isArray(bValue)) {
-        return params.order === 'asc'
-          ? aValue.length - bValue.length
-          : bValue.length - aValue.length
-      }
-      
-      return 0
-    })
-  }
-
-  // Pagination
-  const page = params.page || 1
-  const perPage = params.limit || 10
-  const startIndex = (page - 1) * perPage
-  const endIndex = startIndex + perPage
-  const paginatedData = filteredData.slice(startIndex, endIndex)
-
-  return {
-    data: paginatedData,
-    meta: {
-      total: filteredData.length,
-      totalPages: Math.ceil(filteredData.length / perPage),
-      currentPage: page,
-      perPage
-    }
-  }
+export async function fetchGroups(): Promise<GroupListResponse> {
+  const response = await api.get<GroupListResponse>('/api/group/list')
+  return response.data
 }
 
-export async function fetchGroupDetail(id: string): Promise<Group | null> {
-  await delay(200)
-
-  const group = (groupsDataJson.data as Group[]).find((g) => g.id === id)
-  return group || null
+export async function fetchGroupDetail(id: string): Promise<Group> {
+  const response = await api.get<Group>(`/api/group/${id}`)
+  return response.data
 }
 
-export async function createGroup(data: {
-  name: string
-  modules: string[]
-}): Promise<{ success: boolean; message: string; group?: Group }> {
-  await delay(500)
-
-  const newGroup: Group = {
-    id: `group-${Date.now()}`,
-    name: data.name,
-    modules: data.modules,
-    users: []
-  }
-
-  return {
-    success: true,
-    message: 'Group created successfully',
-    group: newGroup
-  }
+export async function createGroup(name: string, level: number = 999): Promise<Group> {
+  const response = await api.post<Group>('/api/group', { name, level })
+  return response.data
 }
 
 export async function updateGroup(
   id: string,
-  data: Partial<Group>
-): Promise<{ success: boolean; message: string }> {
-  await delay(400)
-
-  return {
-    success: true,
-    message: 'Group updated successfully'
-  }
+  data: { name?: string; level?: number },
+): Promise<Group> {
+  const response = await api.put<Group>(`/api/group/${id}`, data)
+  return response.data
 }
 
-export async function removeGroup(id: string): Promise<{ success: boolean; message: string }> {
-  await delay(400)
-
-  return {
-    success: true,
-    message: 'Group removed successfully'
-  }
+export async function removeGroup(id: string): Promise<void> {
+  await api.delete(`/api/group/${id}`)
 }
 
-export async function addUserToGroup(
-  groupId: string,
-  userId: string
-): Promise<{ success: boolean; message: string }> {
-  await delay(300)
-
-  return {
-    success: true,
-    message: 'User added to group successfully'
-  }
+export async function addUserToGroup(groupId: string, userId: string): Promise<void> {
+  await api.post(`/api/group/${groupId}/user/${userId}`)
 }
 
-export async function removeUserFromGroup(
-  groupId: string,
-  userId: string
-): Promise<{ success: boolean; message: string }> {
-  await delay(300)
-
-  return {
-    success: true,
-    message: 'User removed from group successfully'
-  }
+export async function removeUserFromGroup(groupId: string, userId: string): Promise<void> {
+  await api.delete(`/api/group/${groupId}/user/${userId}`)
 }
 
+export async function fetchUserGroups(userId: string): Promise<GroupListResponse> {
+  const response = await api.get<GroupListResponse>(`/api/user/${userId}/groups`)
+  return response.data
+}

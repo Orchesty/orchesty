@@ -18,13 +18,13 @@ const submitting = ref(false)
 
 function handleGoogleLogin() {
   auth0?.loginWithRedirect({
-    authorizationParams: { connection: 'google-oauth2' },
+    authorizationParams: { connection: 'google-oauth2', prompt: 'select_account' },
   })
 }
 
 function handleGitHubLogin() {
   auth0?.loginWithRedirect({
-    authorizationParams: { connection: 'github' },
+    authorizationParams: { connection: 'github', prompt: 'select_account' },
   })
 }
 

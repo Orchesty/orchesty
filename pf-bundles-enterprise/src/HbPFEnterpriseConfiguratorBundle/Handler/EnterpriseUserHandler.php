@@ -38,16 +38,18 @@ final class EnterpriseUserHandler extends UserHandler
      * @param CloudMemberSyncService         $cloudMemberSyncService
      * @param PasswordHasherFactoryInterface $passwordHasherFactory
      * @param GroupManager                   $groupManager
+     * @param SystemTopologyService          $systemTopologyService
      */
     public function __construct(
         UserManager $userManager,
         UsersManager $usersManager,
         DocumentManager $dm,
-        TokenManager $tokenManager,
+        private readonly TokenManager $tokenManager,
         ResourceProvider $resourceProvider,
         private readonly CloudMemberSyncService $cloudMemberSyncService,
         private readonly PasswordHasherFactoryInterface $passwordHasherFactory,
         private readonly GroupManager $groupManager,
+        private readonly SystemTopologyService $systemTopologyService,
     )
     {
         parent::__construct($userManager, $usersManager, $dm, $tokenManager, $resourceProvider);
@@ -106,6 +108,7 @@ final class EnterpriseUserHandler extends UserHandler
             $existing->setDeleted(FALSE);
             $this->dm->flush();
             $this->cloudMemberSyncService->syncMemberAdd($email, $name);
+            $this->systemTopologyService->sendRestoreAccessEmail($email);
 
             return ['email' => $email, 'added' => TRUE];
         }
@@ -130,6 +133,33 @@ final class EnterpriseUserHandler extends UserHandler
     }
 
     /**
+     * Generates a password reset token and sends a forgot-password email
+     * via the system topology. Always returns the same message to prevent
+     * email enumeration.
+     *
+     * @param string $email
+     *
+     * @return mixed[]
+     */
+    public function forgotPassword(string $email): array
+    {
+        /** @var User|null $user */
+        $user = $this->dm->getRepository(User::class)->findOneBy(['email' => $email]);
+
+        if (!$user || $user->isDeleted()) {
+            return ['message' => 'If the email exists, reset instructions will be sent.'];
+        }
+
+        try {
+            $token = $this->tokenManager->create($user);
+            $this->systemTopologyService->sendForgotPasswordEmail($email, $token->getHash());
+        } catch (Throwable) {
+        }
+
+        return ['message' => 'If the email exists, reset instructions will be sent.'];
+    }
+
+    /**
      * Handles invite with cloud-aware logic:
      * - soft-deleted users are re-activated
      * - existing cloud account users are added directly
@@ -150,6 +180,7 @@ final class EnterpriseUserHandler extends UserHandler
                 $existing->setDeleted(FALSE);
                 $this->dm->flush();
                 $this->cloudMemberSyncService->syncMemberAdd($email);
+                $this->systemTopologyService->sendRestoreAccessEmail($email);
 
                 return ['email' => $email, 'added' => TRUE];
             }
@@ -172,13 +203,35 @@ final class EnterpriseUserHandler extends UserHandler
 
             $cloudResult = $this->cloudMemberSyncService->createCloudInvite($email);
             if ($cloudResult !== NULL) {
-                return array_merge(['email' => $email], $cloudResult);
+                $result = array_merge(['email' => $email], $cloudResult);
+                $this->systemTopologyService->sendInviteEmail($email, $result['hash'] ?? '');
+
+                return $result;
             }
+
+            $this->systemTopologyService->sendInviteEmail($email, $localResult['hash'] ?? '');
 
             return $localResult;
         }
 
-        return parent::inviteUser($email);
+        $result = parent::inviteUser($email);
+        $this->systemTopologyService->sendInviteEmail($email, $result['hash'] ?? '');
+
+        return $result;
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return mixed[]
+     * @throws UserManagerException
+     */
+    public function regenerateInvite(string $id): array
+    {
+        $result = parent::regenerateInvite($id);
+        $this->systemTopologyService->sendInviteEmail($result['email'], $result['hash']);
+
+        return $result;
     }
 
     /**

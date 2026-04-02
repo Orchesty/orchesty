@@ -32,7 +32,7 @@ const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue = []
 }
 
-const SKIP_REFRESH_URLS = ['/api/user/check_logged', '/api/user/login']
+const SKIP_REFRESH_URLS = ['/api/user/check_logged', '/api/user/login', '/api/user/whoami']
 
 let forceLogoutInProgress = false
 
@@ -48,6 +48,12 @@ function forceLogout() {
     Object.keys(localStorage)
       .filter((k) => k.startsWith('@@auth0spajs@@'))
       .forEach((k) => localStorage.removeItem(k))
+
+    sessionStorage.setItem(STORAGE_KEYS.AUTH0_LOGIN_FAILED, 'true')
+    if (window.location.pathname !== '/auth-error') {
+      window.location.href = '/auth-error'
+    }
+    return
   }
 
   const { cloudMode, cloudUrl } = useCloudMode()

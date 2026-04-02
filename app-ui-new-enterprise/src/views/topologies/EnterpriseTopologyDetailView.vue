@@ -2,12 +2,21 @@
 import { ref, computed } from 'vue'
 import { TopologyDetailView, TabCard, Button } from '@orchesty/ui-core'
 import type { TopologyTab } from '@orchesty/ui-core'
+import { useFeatures } from '@/composables/useFeatures'
 
 interface Props {
   id: string
 }
 
 defineProps<Props>()
+
+const { pulse } = useFeatures()
+
+const hiddenTabs = computed(() => {
+  const tabs: string[] = []
+  if (!pulse.value) tabs.push('context')
+  return tabs
+})
 
 const extraTabs: TopologyTab[] = [
   { id: 'access', label: 'Access' },
@@ -54,7 +63,7 @@ const handlePermissionChange = (groupId: string, permission: 'manager' | 'develo
 </script>
 
 <template>
-  <TopologyDetailView :id="id" :extra-tabs="extraTabs">
+  <TopologyDetailView :id="id" :extra-tabs="extraTabs" :hidden-tabs="hiddenTabs">
     <template #extra-tab-content="{ activeTab }">
       <div v-show="activeTab === 'access'">
         <TabCard>

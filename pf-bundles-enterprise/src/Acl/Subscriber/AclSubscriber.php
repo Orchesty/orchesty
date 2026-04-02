@@ -61,6 +61,13 @@ final class AclSubscriber implements EventSubscriberInterface
 
         '/api/dashboards' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::OVERVIEW]],
 
+        '/api/group' => [
+            'DELETE' => [ActionEnum::DELETE, ResourceEnum::SETTINGS],
+            'GET'    => [ActionEnum::READ, ResourceEnum::SETTINGS],
+            'POST'   => [ActionEnum::WRITE, ResourceEnum::SETTINGS],
+            'PUT'    => [ActionEnum::WRITE, ResourceEnum::SETTINGS],
+        ],
+
         '/api/logs' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::LOGS]],
 
         '/api/metrics/connectors' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::CONNECTOR]],

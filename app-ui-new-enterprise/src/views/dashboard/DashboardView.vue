@@ -11,10 +11,13 @@ import ConnectorDetailDrawer from '@/components/dashboard/ConnectorDetailDrawer.
 import ProcessesDrawer from '@/components/dashboard/ProcessesDrawer.vue'
 import ProcessAuditDrawer from '@/components/dashboard/ProcessAuditDrawer.vue'
 import AppRunningProcessesDrawer from '@/components/dashboard/AppRunningProcessesDrawer.vue'
+import { useFeatures } from '@/composables/useFeatures'
 import type { Connector } from '@/types/connectors'
 import type { Process } from '@/types/processes'
 import type { TimeFilter as TimeFilterType, ProcessFilter, HeatmapClickData, ProcessesExternalFilters } from '@/types/dashboard'
 import { formatDateTimeLocal } from '@/utils/timeRangeConverter'
+
+const { enterpriseDashboards } = useFeatures()
 
 const dashboardTabs = [
   { id: 'overview', label: 'Overview' },
@@ -154,7 +157,18 @@ const handleOpenAppProcesses = (data: { applicationId: string; topologyIds: stri
 </script>
 
 <template>
-  <main class="h-full overflow-y-auto"><div class="px-4 pb-4 pt-6">
+  <!-- Core-only view: Process grid -->
+  <main v-if="!enterpriseDashboards" class="h-full overflow-y-auto">
+    <div class="px-4 pb-4 pt-6">
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Processes</h1>
+      </div>
+      <ProcessesTab time-filter="24h" />
+    </div>
+  </main>
+
+  <!-- Enterprise dashboard -->
+  <main v-else class="h-full overflow-y-auto"><div class="px-4 pb-4 pt-6">
     <!-- Page Header -->
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Control Center</h1>

@@ -6,4 +6,6 @@ export const STORAGE_KEYS = {
   LAST_TOKEN_REFRESH: 'lastTokenRefreshTime',
   CLOUD_HANDOFF_SESSION: 'cloud_handoff_session',
   CLOUD_HANDOFF_FAILED: 'cloud_handoff_failed',
+  PENDING_INVITE_TOKEN: 'pending_invite_token',
+  AUTH0_LOGIN_FAILED: 'auth0_login_failed',
 } as const

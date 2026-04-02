@@ -11,19 +11,19 @@ importers:
   app-ui-new:
     dependencies:
       '@vuepic/vue-datepicker':
-        specifier: ^12.1.0
+        specifier: ^12.0.0
         version: 12.1.0(vue@3.5.31(typescript@5.9.3))
       '@vueuse/core':
-        specifier: ^11.3.0
+        specifier: ^11.0.0
         version: 11.3.0(vue@3.5.31(typescript@5.9.3))
       ajv:
         specifier: ^8.18.0
         version: 8.18.0
       apexcharts:
-        specifier: ^5.10.4
+        specifier: ^5.0.0
         version: 5.10.4
       axios:
-        specifier: ^1.13.6
+        specifier: ^1.0.0
         version: 1.13.6(debug@4.4.3)
       clsx:
         specifier: ^2.1.1
@@ -35,16 +35,19 @@ importers:
         specifier: ^3.14.0
         version: 3.14.0
       flowbite:
-        specifier: ^4.0.1
+        specifier: ^4.0.0
         version: 4.0.1(rollup@4.60.0)
       flowbite-datepicker:
         specifier: ^2.0.0
         version: 2.0.0(rollup@4.60.0)
       lucide-vue-next:
-        specifier: ^0.460.0
-        version: 0.460.0(vue@3.5.31(typescript@5.9.3))
+        specifier: ^0.400.0
+        version: 0.400.0(vue@3.5.31(typescript@5.9.3))
+      marked:
+        specifier: ^17.0.5
+        version: 17.0.5
       pinia:
-        specifier: ^3.0.4
+        specifier: ^3.0.0
         version: 3.0.4(typescript@5.9.3)(vue@3.5.31(typescript@5.9.3))
       rete-editor:
         specifier: file:local-packages/rete-editor-1.5.5.tgz
@@ -53,13 +56,13 @@ importers:
         specifier: ^2.6.1
         version: 2.6.1
       vue:
-        specifier: ^3.5.30
+        specifier: ^3.5.0
         version: 3.5.31(typescript@5.9.3)
       vue-router:
-        specifier: ^4.6.4
+        specifier: ^4.0.0
         version: 4.6.4(vue@3.5.31(typescript@5.9.3))
       vue3-apexcharts:
-        specifier: ^1.11.1
+        specifier: ^1.0.0
         version: 1.11.1(apexcharts@5.10.4)(vue@3.5.31(typescript@5.9.3))
     devDependencies:
       '@tailwindcss/typography':
@@ -2159,6 +2162,11 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
+  lucide-vue-next@0.400.0:
+    resolution: {integrity: sha512-JQMby6HuSr/ALLL3IAjpca/hP499vWy4+zqzCrTsAzdg0BHM0Lge84bMMxvpqqXnU24uRQkmOZCi5ksecTogfw==}
+    peerDependencies:
+      vue: '>=3.0.1'
+
   lucide-vue-next@0.460.0:
     resolution: {integrity: sha512-IhM1tm3gPhc3u6RagNra4W6Oe48Mz0l3fAJzk0oSLzsRQqt3WU3XiX5ngRyjIs8fzCtvgzu7fC6Qk7XVhS00DQ==}
     peerDependencies:
@@ -2173,6 +2181,11 @@ packages:
 
   map-stream@0.1.0:
     resolution: {integrity: sha512-CkYQrPYZfWnu/DAmVCpTSX/xHpKZ80eKh2lAkyA6AJTef6bW+6JpbQZN5rofum7da+SyN1bi5ctTm+lTfcCW3g==}
+
+  marked@17.0.5:
+    resolution: {integrity: sha512-6hLvc0/JEbRjRgzI6wnT2P1XuM1/RrrDEX0kPt0N7jGm1133g6X7DlxFasUIx+72aKAr904GTxhSLDrd5DIlZg==}
+    engines: {node: '>= 20'}
+    hasBin: true
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -4844,6 +4857,10 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
+  lucide-vue-next@0.400.0(vue@3.5.31(typescript@5.9.3)):
+    dependencies:
+      vue: 3.5.31(typescript@5.9.3)
+
   lucide-vue-next@0.460.0(vue@3.5.31(typescript@5.9.3)):
     dependencies:
       vue: 3.5.31(typescript@5.9.3)
@@ -4855,6 +4872,8 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.5
 
   map-stream@0.1.0: {}
+
+  marked@17.0.5: {}
 
   math-intrinsics@1.1.0: {}
 

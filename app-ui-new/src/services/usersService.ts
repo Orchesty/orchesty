@@ -72,7 +72,13 @@ export async function inviteUsers(emails: string[]): Promise<InviteResult[]> {
         added: response.data.added,
       })
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to invite user'
+      let message = 'Failed to invite user'
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosErr = error as { response?: { data?: { message?: string } } }
+        message = axiosErr.response?.data?.message || message
+      } else if (error instanceof Error) {
+        message = error.message
+      }
       results.push({ email, error: message })
     }
   }

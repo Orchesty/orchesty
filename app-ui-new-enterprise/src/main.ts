@@ -17,8 +17,12 @@ async function bootstrap() {
   const pinia = createPinia()
   app.use(pinia)
 
-  const { loadCloudMode } = useCloudMode()
+  const { loadCloudMode, cloudMode, instanceName } = useCloudMode()
   await loadCloudMode()
+
+  if (cloudMode.value && instanceName.value) {
+    document.title = `${instanceName.value} - Orchesty`
+  }
 
   await handleCloudAuthHandoff()
 
