@@ -32,6 +32,7 @@ final class MetricConnectorAggregationFilter extends GridAggregationFilterAbstra
     protected function getConditions(): array
     {
         return [
+            'correlationId' => 'tags.correlation_id',
             'created' => 'fields.created',
             'nodeId' => 'tags.node_id',
             'status' => 'status',
