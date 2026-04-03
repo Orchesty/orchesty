@@ -31,6 +31,12 @@ class Category
     protected ?string $parent = NULL;
 
     /**
+     * @var bool
+     */
+    #[ODM\Field(type: 'bool', options: ['default' => FALSE])]
+    protected bool $system = FALSE;
+
+    /**
      * @return string
      */
     public function getName(): string
@@ -66,6 +72,26 @@ class Category
     public function setParent(?string $parent): self
     {
         $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSystem(): bool
+    {
+        return $this->system;
+    }
+
+    /**
+     * @param bool $system
+     *
+     * @return Category
+     */
+    public function setSystem(bool $system): self
+    {
+        $this->system = $system;
 
         return $this;
     }

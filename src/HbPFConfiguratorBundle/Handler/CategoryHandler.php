@@ -82,6 +82,10 @@ final class CategoryHandler
     {
         $category = $this->getCategory($id);
 
+        if ($category->isSystem()) {
+            throw new CategoryException('System categories cannot be modified.', CategoryException::CATEGORY_USED);
+        }
+
         $this->categoryManager->updateCategory($category, $data);
 
         return $this->getCategoryData($category);
@@ -97,6 +101,10 @@ final class CategoryHandler
     public function deleteCategory(string $id): array
     {
         $category = $this->getCategory($id);
+
+        if ($category->isSystem()) {
+            throw new CategoryException('System categories cannot be deleted.', CategoryException::CATEGORY_USED);
+        }
 
         $this->categoryManager->deleteCategory($category);
 
@@ -130,6 +138,7 @@ final class CategoryHandler
         return [
             'name'   => $category->getName(),
             'parent' => $category->getParent(),
+            'system' => $category->isSystem(),
             '_id'    => $category->getId(),
         ];
     }
