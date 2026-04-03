@@ -6,6 +6,7 @@ import ApplicationCard from '@/components/applications/ApplicationCard.vue';
 import ApplicationDetailDrawer from '@/components/applications/ApplicationDetailDrawer.vue';
 import SearchInput from '@/components/ui/SearchInput.vue';
 import { useToast } from '@/composables/useToast';
+import { useAuthorization } from '@/composables/useAuthorization';
 
 const FILTER_KEY = 'orchesty_apps_filter';
 const DRAWER_KEY = 'orchesty_apps_drawer';
@@ -17,11 +18,18 @@ const workersExpanded = ref<Record<string, boolean>>({});
 const loading = ref(false);
 const searchQuery = ref('');
 const { showToast } = useToast();
+const { hasRole } = useAuthorization();
+
+const visibleWorkers = computed(() => {
+  if (hasRole('system_manager')) return workers.value
+  return workers.value.filter(w => w.name !== 'sys-worker')
+})
 
 const filteredWorkers = computed(() => {
-  if (!searchQuery.value) return workers.value
+  const base = visibleWorkers.value
+  if (!searchQuery.value) return base
   const q = searchQuery.value.toLowerCase()
-  return workers.value
+  return base
     .map(worker => ({
       ...worker,
       applications: worker.applications.filter(app =>

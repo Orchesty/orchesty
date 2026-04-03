@@ -151,15 +151,12 @@ function formatActions(actions: string[]): string {
     <template #header-actions>
       <div v-if="groupDetail" class="flex items-center justify-between">
         <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{{ groupDetail.name }}</h3>
-        <button
-          @click="handleEditGroup"
-          class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-        >
-          <svg class="h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <Button variant="outline" @click="handleEditGroup">
+          <svg class="h-4 w-4 mr-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
           </svg>
           Edit
-        </button>
+        </Button>
       </div>
     </template>
 
@@ -273,14 +270,12 @@ function formatActions(actions: string[]): string {
     </div>
 
     <template #footer-actions>
-      <div class="flex items-center justify-between w-full">
-        <Button variant="danger" @click="confirmRemoveOpen = true">
-          Remove
-        </Button>
-        <Button variant="outline" @click="emit('update:modelValue', false)">
-          Close
-        </Button>
-      </div>
+      <Button variant="outline" @click="emit('update:modelValue', false)">
+        Close
+      </Button>
+      <Button variant="danger" @click="confirmRemoveOpen = true">
+        Remove
+      </Button>
     </template>
   </Drawer>
 

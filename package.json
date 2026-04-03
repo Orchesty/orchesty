@@ -1,3 +1,10 @@
 {
-  "private": true
+  "private": true,
+  "scripts": {
+    "build:help": "node Help/scripts/build-help.mjs ./Help ./Help/.dist"
+  },
+  "devDependencies": {
+    "gray-matter": "^4.0.3",
+    "minisearch": "^7.2.0"
+  }
 }

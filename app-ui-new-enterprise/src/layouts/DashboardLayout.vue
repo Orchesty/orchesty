@@ -1,16 +1,39 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { RouterView } from 'vue-router'
-import { AppNavbar, AppSidebar } from '@orchesty/ui-core'
+import { computed, provide, onMounted } from 'vue'
+import { RouterView, useRoute, useRouter } from 'vue-router'
+import { AppNavbar, AppSidebar, AUTHORIZATION_KEY, provideHelp } from '@orchesty/ui-core'
 import type { SidebarItem } from '@orchesty/ui-core'
-import { Bot, BotMessageSquare } from 'lucide-vue-next'
+import { Bot, BotMessageSquare, ShieldX } from 'lucide-vue-next'
 import TraceDrawer from '@/components/trace/TraceDrawer.vue'
 import { useTraceDrawer } from '@/composables/useTraceDrawer'
 import { useFeatures } from '@/composables/useFeatures'
+import { usePermissions } from '@/composables/usePermissions'
 import type { ChatMessage } from '@/types/trace'
 
+const route = useRoute()
+const router = useRouter()
 const { isTraceDrawerOpen, toggleDrawer } = useTraceDrawer()
 const { traceAuditing, auditLogs } = useFeatures()
+
+const { provider, loaded, loadPermissions } = usePermissions()
+provide(AUTHORIZATION_KEY, provider)
+provideHelp()
+
+const isChatUserOnly = computed(() => loaded.value && !provider.hasRole('monitoring'))
+
+onMounted(async () => {
+  await loadPermissions()
+  if (!provider.hasRole('monitoring') && route.path === '/') {
+    router.replace('/trace')
+  }
+})
+
+const accessDenied = computed(() => {
+  if (!loaded.value) return false
+  const permission = route.meta.permission as string | undefined
+  if (!permission) return false
+  return !provider.can(permission)
+})
 
 const handleSaveReport = (_message: ChatMessage) => {
   // TODO: Implement save report functionality
@@ -19,7 +42,7 @@ const handleSaveReport = (_message: ChatMessage) => {
 const enterpriseSidebarItems = computed<SidebarItem[]>(() => {
   const items: SidebarItem[] = []
   if (traceAuditing.value) {
-    items.push({ id: 'trace', label: 'Trace', path: '/trace', icon: Bot, iconStrokeWidth: 1.6, iconSizeClass: 'h-7 w-7', insertAfter: 'dashboard' })
+    items.push({ id: 'trace', label: 'Trace', path: '/trace', icon: Bot, iconStrokeWidth: 1.6, iconSizeClass: 'h-7 w-7', insertAfter: 'dashboard', permission: 'trace:read' })
   }
   return items
 })
@@ -36,7 +59,7 @@ const enterpriseMenuItems = computed(() => {
 <template>
   <div class="flex h-screen flex-col overflow-hidden bg-gray-50 dark:bg-gray-900">
     <AppNavbar :extra-menu-items="enterpriseMenuItems">
-      <template v-if="traceAuditing" #extra-nav-buttons>
+      <template v-if="traceAuditing && !isChatUserOnly" #extra-nav-buttons>
         <button
           type="button"
           @click="toggleDrawer"
@@ -48,9 +71,16 @@ const enterpriseMenuItems = computed(() => {
       </template>
     </AppNavbar>
     <div class="flex flex-1 overflow-hidden">
-      <AppSidebar :extra-items="enterpriseSidebarItems" />
+      <AppSidebar v-if="!isChatUserOnly" :extra-items="enterpriseSidebarItems" />
       <div id="main-content" class="flex-1 overflow-hidden bg-gray-50 dark:bg-gray-900">
-        <RouterView />
+        <div v-if="accessDenied" class="flex h-full items-center justify-center">
+          <div class="text-center">
+            <ShieldX class="mx-auto mb-4 h-16 w-16 text-gray-300 dark:text-gray-600" :stroke-width="1.2" />
+            <h2 class="mb-2 text-xl font-semibold text-gray-900 dark:text-white">Access denied</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">You don't have permission to view this page.</p>
+          </div>
+        </div>
+        <RouterView v-else />
       </div>
     </div>
 

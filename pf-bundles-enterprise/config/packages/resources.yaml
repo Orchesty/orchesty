@@ -1,7 +1,15 @@
 parameters:
     resource_enum: Hanaboso\PipesFrameworkEnterprise\ResourceEnum
-    action_enum: Hanaboso\AclBundle\Enum\ActionEnum
-    resource_actions: []
+    action_enum: Hanaboso\PipesFrameworkEnterprise\Acl\Enum\ActionEnum
+    resource_actions:
+        default_actions: ['read']
+        resources:
+            topology: ['write', 'delete', 'run']
+            scheduled_task: ['write']
+            application: ['write', 'delete']
+            user: ['write', 'delete']
+            user_task: ['write']
+            settings: ['write', 'delete']
 
     db_res:
         resources:

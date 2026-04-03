@@ -140,7 +140,7 @@ onBeforeUnmount(() => {
 
     <!-- Footer -->
     <div
-      class="mt-6 flex items-center justify-end border-t border-gray-200 pt-6 dark:border-gray-700"
+      class="mt-6 flex items-center justify-end gap-3 border-t border-gray-200 pt-6 dark:border-gray-700"
     >
       <slot name="footer-actions">
         <!-- Default Close Button -->

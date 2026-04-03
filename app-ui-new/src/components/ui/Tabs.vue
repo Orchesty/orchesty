@@ -16,6 +16,7 @@ interface Props {
   contentId?: string
   activeClasses?: string
   inactiveClasses?: string
+  storageKey?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -24,19 +25,38 @@ const props = withDefaults(defineProps<Props>(), {
   activeClasses: 'text-primary-600 border-primary-600 dark:text-primary-500 dark:border-primary-500',
   inactiveClasses:
     'text-gray-500 border-transparent hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300',
+  storageKey: '',
 })
 
 const emit = defineEmits<{
   tabChange: [tabId: string]
 }>()
 
-const activeTab = ref(props.defaultTab || props.tabs[0]?.id || '')
+function resolveInitialTab(): string {
+  if (props.storageKey) {
+    const isReload = (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming)?.type === 'reload'
+    if (isReload) {
+      const stored = sessionStorage.getItem(props.storageKey)
+      if (stored && props.tabs.some(t => t.id === stored)) {
+        return stored
+      }
+    } else {
+      sessionStorage.removeItem(props.storageKey)
+    }
+  }
+  return props.defaultTab || props.tabs[0]?.id || ''
+}
+
+const activeTab = ref(resolveInitialTab())
 
 // Provide active tab to child components
 provide('activeTab', activeTab)
 
 const setActiveTab = (tabId: string) => {
   activeTab.value = tabId
+  if (props.storageKey) {
+    sessionStorage.setItem(props.storageKey, tabId)
+  }
   emit('tabChange', tabId)
 }
 
@@ -59,17 +79,16 @@ watch(() => props.defaultTab, (newTab) => {
 }, { immediate: true })
 
 onMounted(() => {
-  // Reinitialize Flowbite tabs after component mount
   if (typeof window !== 'undefined') {
     const windowWithFlowbite = window as Window & { initFlowbite?: () => void }
     if (windowWithFlowbite.initFlowbite) {
       setTimeout(() => {
         windowWithFlowbite.initFlowbite?.()
         
-        // Activate the default tab after Flowbite initialization
-        if (props.defaultTab) {
+        const tabToActivate = activeTab.value
+        if (tabToActivate) {
           setTimeout(() => {
-            activateTab(props.defaultTab)
+            activateTab(tabToActivate)
           }, 50)
         }
       }, 100)

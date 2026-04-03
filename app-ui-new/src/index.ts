@@ -33,6 +33,7 @@ export {
   AUTHORIZATION_KEY,
   type AuthorizationProvider,
 } from './composables/useAuthorization'
+export { useHelp, provideHelp } from './composables/useHelp'
 
 // Services
 export { default as api } from './services/api'
@@ -53,6 +54,7 @@ export * from './services/trashService'
 export * from './services/usersService'
 export * from './services/workersService'
 export * from './services/accountService'
+export * from './services/helpService'
 
 // Types
 export type * from './types/api'
@@ -105,6 +107,7 @@ export { default as KeyValueInput } from './components/ui/KeyValueInput.vue'
 export { default as LoadingSpinner } from './components/ui/LoadingSpinner.vue'
 export { default as Modal } from './components/ui/Modal.vue'
 export { default as MoreActions } from './components/ui/MoreActions.vue'
+export type { MoreActionsSection, MoreActionsItem } from './components/ui/MoreActions.vue'
 export { default as PasswordInput } from './components/ui/PasswordInput.vue'
 export { default as SearchInput } from './components/ui/SearchInput.vue'
 export { default as SidebarMoreActions } from './components/ui/SidebarMoreActions.vue'
@@ -127,6 +130,9 @@ export { default as QuickFilter } from './components/ui/datagrid/QuickFilter.vue
 export { default as SearchableDropdownFilter } from './components/ui/datagrid/SearchableDropdownFilter.vue'
 export { default as DataGridTextarea } from './components/ui/datagrid/Textarea.vue'
 export { default as DataGridTextInput } from './components/ui/datagrid/TextInput.vue'
+
+// Help components
+export { default as HelpDrawer } from './components/help/HelpDrawer.vue'
 
 // Layout components
 export { default as AppNavbar } from './components/layout/AppNavbar.vue'

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { ChartPie, Clock, OctagonAlert, List, Workflow, Grip, Settings } from 'lucide-vue-next'
 import { useSidebar } from '@/composables/useSidebar'
 import { useCronAlerts } from '@/composables/useCronAlerts'
+import { useAuthorization } from '@/composables/useAuthorization'
 import type { SidebarItem } from '@/config/navigation'
 
 interface Props {
@@ -15,6 +16,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const route = useRoute()
+const { can } = useAuthorization()
 
 const isActive = (path: string) => {
   return route.path.startsWith(path)
@@ -35,13 +37,13 @@ onMounted(() => {
 })
 
 const coreItems: SidebarItem[] = [
-  { id: 'dashboard', label: 'Control Center', path: '/dashboard', icon: ChartPie },
-  { id: 'scheduled-tasks', label: 'Scheduled Tasks', path: '/scheduled-tasks', icon: Clock, badge: 'cron-alerts' },
-  { id: 'trash', label: 'Failed Messages', path: '/trash', icon: OctagonAlert },
-  { id: 'logs', label: 'Logs', path: '/logs', icon: List },
-  { id: 'topologies', label: 'Topologies', path: '/topologies', icon: Workflow },
-  { id: 'applications', label: 'Applications', path: '/applications', icon: Grip },
-  { id: 'settings', label: 'Settings', path: '/settings', icon: Settings },
+  { id: 'dashboard', label: 'Control Center', path: '/dashboard', icon: ChartPie, permission: 'overview:read' },
+  { id: 'scheduled-tasks', label: 'Scheduled Tasks', path: '/scheduled-tasks', icon: Clock, badge: 'cron-alerts', permission: 'scheduled_task:read' },
+  { id: 'trash', label: 'Failed Messages', path: '/trash', icon: OctagonAlert, permission: 'user_task:read' },
+  { id: 'logs', label: 'Logs', path: '/logs', icon: List, permission: 'logs:read' },
+  { id: 'topologies', label: 'Topologies', path: '/topologies', icon: Workflow, permission: 'topology:read' },
+  { id: 'applications', label: 'Applications', path: '/applications', icon: Grip, permission: 'application:read' },
+  { id: 'settings', label: 'Settings', path: '/settings', icon: Settings, permission: 'settings:read' },
 ]
 
 const allItems = (() => {
@@ -61,6 +63,10 @@ const allItems = (() => {
 
   return [...result, ...appendItems]
 })()
+
+const visibleItems = computed(() =>
+  allItems.filter((item) => !item.permission || can(item.permission)),
+)
 </script>
 
 <template>
@@ -71,7 +77,7 @@ const allItems = (() => {
   >
     <div class="h-full overflow-y-auto border-r border-gray-200 px-3 py-4 dark:border-gray-700">
       <ul class="space-y-3">
-        <li v-for="item in allItems" :key="item.id">
+        <li v-for="item in visibleItems" :key="item.id">
           <RouterLink
             :to="item.path"
             :class="[

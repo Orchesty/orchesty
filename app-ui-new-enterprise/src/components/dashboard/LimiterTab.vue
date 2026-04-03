@@ -208,8 +208,11 @@ onMounted(async () => {
   try {
     const settings = await fetchApplicationLimiterSettings()
     appSettings.value = settings
+  } catch {
+    // application:read not available for this role — limiter data still works
+  }
 
-    // Load data
+  try {
     await loadData()
     await nextTick()
 

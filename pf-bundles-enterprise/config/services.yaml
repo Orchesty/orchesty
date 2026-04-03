@@ -51,6 +51,8 @@ services:
             $dml: '@hbpf.database_manager_locator'
             $resourceProvider: '@hbpf.user.provider.resource'
             $curlManager: '@hbpf.transport.curl_manager'
+            $passwordHasherFactory: '@Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface'
+            $groupManager: '@hbpf.manager.group'
 
     Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\ApiKey\EnterpriseApiKeyAuthenticator:
         arguments:

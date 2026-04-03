@@ -24,6 +24,7 @@ interface CategoryApiItem {
   _id: string
   name: string
   parent: string | null
+  system?: boolean
 }
 
 interface CategoriesApiResponse {
@@ -288,6 +289,7 @@ export async function fetchTopologiesTree(): Promise<TopologiesTreeNode[]> {
       name: cat.name,
       parentFolderId: cat.parent,
       isExpanded: false,
+      system: cat.system ?? false,
       children: [...children],
     })
   }
@@ -346,6 +348,7 @@ export async function fetchCategories(): Promise<FolderItem[]> {
     name: cat.name,
     parentFolderId: cat.parent,
     isExpanded: false,
+    system: cat.system ?? false,
     children: [],
   }))
 }

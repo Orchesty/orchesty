@@ -5,7 +5,6 @@ import { useAuth0 } from '@auth0/auth0-vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import { useAuthStore } from '@/stores/auth'
 import { isAuth0Enabled } from '@/auth/auth0-plugin'
-import { loginWithEmail, injectTokensIntoAuth0Cache } from '@/services/auth0Service'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -32,14 +31,8 @@ async function handleEmailLogin() {
   error.value = ''
   submitting.value = true
   try {
-    if (isAuth0Enabled) {
-      const tokens = await loginWithEmail(email.value, password.value)
-      injectTokensIntoAuth0Cache(tokens)
-      window.location.href = '/'
-    } else {
-      await authStore.login(email.value, password.value)
-      router.push('/dashboard')
-    }
+    await authStore.login(email.value, password.value)
+    router.push('/dashboard')
   } catch (err: any) {
     error.value = err.message || 'Invalid credentials. Please try again.'
   } finally {

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import TopologyTreeItem from './TopologyTreeItem.vue'
 import type { TopologiesTreeNode } from '@/types/topologies-page'
 import { fetchTopologiesTree } from '@/services/topologiesService'
+import { useAuthorization } from '@/composables/useAuthorization'
 
 interface Props {
   modelValue?: boolean
@@ -27,12 +28,21 @@ const COLLAPSED_WIDTH = 0
 const STORAGE_KEY_WIDTH = 'topologySidebarWidth'
 const STORAGE_KEY_COLLAPSED = 'topologySidebarCollapsed'
 
+const { hasRole } = useAuthorization()
+
 // State
 const isCollapsed = ref(props.modelValue)
 const sidebarWidth = ref(MIN_WIDTH)
 const treeData = ref<TopologiesTreeNode[]>([])
 const loadingTree = ref(false)
 const treeError = ref(false)
+
+const filteredTreeData = computed(() => {
+  if (hasRole('system_manager')) return treeData.value
+  return treeData.value.filter(
+    node => !(node.type === 'folder' && 'system' in node && node.system),
+  )
+})
 
 async function fetchWithRetry<T>(fn: () => Promise<T>, retries = 2, delayMs = 500): Promise<T> {
   for (let i = 0; i <= retries; i++) {
@@ -281,7 +291,7 @@ watch(() => props.modelValue, (newValue) => {
       <!-- Tree data -->
       <div v-else class="space-y-1">
         <TopologyTreeItem
-          v-for="item in treeData"
+          v-for="item in filteredTreeData"
           :key="item.id"
           :item="item"
           @select-topology="handleSelectTopology"

@@ -86,6 +86,15 @@ services:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\EnterpriseGroupController
         arguments:
             - '@hbpf.group.handler'
+            - '@security.token_storage'
+
+    Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Subscriber\UserActivateSubscriber:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Subscriber\UserActivateSubscriber
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.manager.group'
+        tags:
+            - { name: kernel.event_subscriber }
 
     Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\NotificationController:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\NotificationController

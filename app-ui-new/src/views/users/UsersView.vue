@@ -29,7 +29,7 @@ const usersTabs: Tab[] = [
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage users and invitations</p>
       </div>
 
-      <Tabs :tabs="usersTabs" content-id="users-management-content">
+      <Tabs :tabs="usersTabs" content-id="users-management-content" storage-key="users-tab">
         <div id="users-content" role="tabpanel" aria-labelledby="users-tab">
           <UsersTab />
         </div>

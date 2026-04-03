@@ -73,7 +73,10 @@ final class EnterpriseUserController
                 return $this->getErrorResponse(new InvalidArgumentException('Missing parameter "email"'), 400);
             }
 
-            return $this->getResponse($this->userHandler->inviteUser($email));
+            $data     = $request->request->all();
+            $groupIds = isset($data['groups']) && is_array($data['groups']) ? $data['groups'] : [];
+
+            return $this->getResponse($this->userHandler->inviteUser($email, $groupIds));
         } catch (UserManagerException $e) {
             return $this->getErrorResponse($e, 400);
         } catch (Exception $e) {

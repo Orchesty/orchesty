@@ -5,7 +5,6 @@ import Button from '@/components/ui/Button.vue'
 import UsersTab from '@/components/users/UsersTab.vue'
 import InvitedTab from '@/components/users/InvitedTab.vue'
 import GroupsTab from '@/components/users/GroupsTab.vue'
-import PermissionsTab from '@/components/users/PermissionsTab.vue'
 import AddUserModal from '@/components/users/AddUserModal.vue'
 import InviteUserModal from '@/components/users/InviteUserModal.vue'
 import { useCloudMode } from '@/composables/useCloudMode'
@@ -47,13 +46,6 @@ const usersTabs: Tab[] = [
     target: 'groups-content',
     icon: 'M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z',
     iconViewBox: '0 0 18 18'
-  },
-  {
-    id: 'permissions',
-    label: 'Permissions',
-    target: 'permissions-content',
-    icon: 'M10 .5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19ZM8.374 17.4a7.6 7.6 0 0 1-5.9-7.4c0-.83.137-1.655.406-2.441l.239.019a3.887 3.887 0 0 1 2.082.678l1.17.585a4.928 4.928 0 0 1 2.014 3.325 3.497 3.497 0 0 0 1.567 2.346 1.178 1.178 0 0 1 .044 1.848l-1.622 1.04Zm6.196-2.6a1.172 1.172 0 0 0-.91-.1 1.049 1.049 0 0 1-.56-.1 2.624 2.624 0 0 1-.726-2.127 1.473 1.473 0 0 0-.377-1.175 3.27 3.27 0 0 0-1.446-.9l-2.3-.508a1 1 0 0 1-.629-.554l-.6-1.205a1.074 1.074 0 0 1 .207-1.2A2.033 2.033 0 0 1 8.7 6.3a3.975 3.975 0 0 0 2.261-.9A2.727 2.727 0 0 0 12 3.54a.85.85 0 0 1 .393-.588A7.463 7.463 0 0 1 17.5 10a7.587 7.587 0 0 1-2.93 5.8Z',
-    iconViewBox: '0 0 20 20'
   }
 ]
 </script>
@@ -75,7 +67,7 @@ const usersTabs: Tab[] = [
     </div>
 
     <!-- Tabs -->
-    <Tabs :tabs="usersTabs" content-id="users-management-content">
+    <Tabs :tabs="usersTabs" content-id="users-management-content" storage-key="users-tab">
       <!-- Users Tab Content -->
       <div id="users-content" role="tabpanel" aria-labelledby="users-tab">
         <UsersTab ref="usersTabRef" :hide-invite-button="true" />
@@ -89,11 +81,6 @@ const usersTabs: Tab[] = [
       <!-- Groups Tab Content -->
       <div id="groups-content" role="tabpanel" aria-labelledby="groups-tab" class="hidden">
         <GroupsTab />
-      </div>
-
-      <!-- Permissions Tab Content -->
-      <div id="permissions-content" role="tabpanel" aria-labelledby="permissions-tab" class="hidden">
-        <PermissionsTab />
       </div>
     </Tabs>
 

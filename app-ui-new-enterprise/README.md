@@ -102,6 +102,49 @@ Configured in `pf-bundles-enterprise/config/packages/security.yaml` and `pf-bund
 - **Docker Compose (dev):** `clients/demo/docker-compose.yml` — `environment` section of `frontend-new-enterprise` (frontend) and `backend-enterprise` (backend) services.
 - **Production:** Inject as environment variables into the respective containers. Frontend vars must be available at Vite build time (or use runtime env injection in the Docker entrypoint).
 
+## Roles & Permissions
+
+The enterprise application uses a hierarchical role-based access control system. Each user is assigned exactly one **role** (an immutable preset). Additionally, users can be added to **access groups** for fine-grained, per-topology permissions (e.g. `run`).
+
+### Roles (from lowest to highest)
+
+| Role | Level | Description |
+|---|---|---|
+| Chat User | 5 | Access to Trace chat only. No sidebar. Topology run permissions via access groups. |
+| Monitoring | 4 | Read-only access to dashboard, topologies, scheduled tasks, processes, logs, failed messages. |
+| Process Management | 3 | Monitoring + manage scheduled tasks, enable/disable topologies, start events, reprocess failed messages. |
+| Developer | 2 | Process Management + full topology editing/deletion, application management. |
+| System Manager | 1 | Developer + settings, SDKs, API tokens. Access to system topologies and sys-worker. |
+| Super Admin | 0 | Full access including user and group management. |
+
+Each higher role inherits all permissions from the levels below it.
+
+### Access Groups
+
+Access groups are user-defined and stored in the database. They are used to assign per-topology permissions (`read`, `edit`, `delete`, `run`) to specific users. This is especially useful for the Chat User role, which can run specific topologies via MCP without seeing them in the UI.
+
+### System Topologies
+
+Topologies placed in a category with `system: true` are protected:
+
+- **Delete** is always blocked (even for Super Admin)
+- **Write/Edit** requires System Manager or higher
+- The system folder is **hidden from the sidebar** for users below System Manager
+- The `sys-worker` in the Applications page is similarly hidden for non-System Manager roles
+
+To mark a category as system, set the `system` field in MongoDB:
+
+```javascript
+db.Category.updateOne({ name: "system" }, { $set: { system: true } })
+```
+
+### UI Visibility Rules
+
+- Sidebar items and pages are hidden based on the user's role permissions
+- Direct navigation to a restricted page shows an "Access denied" screen
+- The Chat User role sees no sidebar and is redirected to `/trace` on login
+- The Trace drawer button (topbar) is hidden for Chat User (they use the full Trace page instead)
+
 ## Project Setup
 
 ```sh

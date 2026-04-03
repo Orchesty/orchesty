@@ -59,12 +59,16 @@ export interface InviteResult {
   error?: string
 }
 
-export async function inviteUsers(emails: string[]): Promise<InviteResult[]> {
+export async function inviteUsers(emails: string[], groupIds?: string[]): Promise<InviteResult[]> {
   const results: InviteResult[] = []
 
   for (const email of emails) {
     try {
-      const response = await api.post<{ email: string; hash?: string; inviteLink?: string; added?: boolean }>('/api/user/invite', { email })
+      const body: Record<string, unknown> = { email }
+      if (groupIds?.length) {
+        body.groups = groupIds
+      }
+      const response = await api.post<{ email: string; hash?: string; inviteLink?: string; added?: boolean }>('/api/user/invite', body)
       results.push({
         email: response.data.email ?? email,
         hash: response.data.hash,
