@@ -11,6 +11,10 @@ export interface AuditLogEntry {
   objectId: string
   action: AuditAction
   note: string
+  requestBody?: Record<string, unknown> | null
+  userAgent?: string | null
+  ip?: string
+  statusCode?: number
 }
 
 export interface AuditLogQueryParams extends QueryParams {

@@ -99,6 +99,22 @@ services:
     Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\NotificationController:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\NotificationController
 
+    hbpf.audit_log.handler:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\AuditLogHandler
+        arguments:
+            - '@Hanaboso\PipesFrameworkEnterprise\AuditLog\Repository\AuditLogRepository'
+
+    Hanaboso\PipesFrameworkEnterprise\AuditLog\Repository\AuditLogRepository:
+        class: Hanaboso\PipesFrameworkEnterprise\AuditLog\Repository\AuditLogRepository
+        factory: ['@doctrine_mongodb.odm.default_document_manager', 'getRepository']
+        arguments:
+            - 'Hanaboso\PipesFrameworkEnterprise\AuditLog\Document\AuditLog'
+
+    Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\AuditLogController:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\AuditLogController
+        arguments:
+            - '@hbpf.audit_log.handler'
+
     hbpf.auth0.jwks_cache:
         class: Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0\JwksCacheService
         arguments:

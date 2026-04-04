@@ -40,6 +40,8 @@ final class AclSubscriber implements EventSubscriberInterface
 
         '/api/applications/topologies/nodes' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::TOPOLOGY]],
 
+        '/api/audit-logs' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::SETTINGS]],
+
         '/api/applications' => [
             'DELETE' => [ActionEnum::DELETE, ResourceEnum::APPLICATION],
             'GET'    => [ActionEnum::READ, ResourceEnum::APPLICATION],

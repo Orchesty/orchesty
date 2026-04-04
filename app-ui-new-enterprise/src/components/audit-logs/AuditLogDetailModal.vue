@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch } from 'vue'
+import { computed } from 'vue'
 import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
 import type { AuditLogEntry } from '@/types/audit-logs'
@@ -18,9 +18,12 @@ const emit = defineEmits<{
   (e: 'export'): void
 }>()
 
-watch(() => props.modelValue, (newValue) => {
-  if (!newValue) {
-    // Modal closed
+const formattedBody = computed(() => {
+  if (!props.log?.requestBody) return null
+  try {
+    return JSON.stringify(props.log.requestBody, null, 2)
+  } catch {
+    return null
   }
 })
 
@@ -59,8 +62,31 @@ const handleClose = () => {
         <dd class="text-sm text-gray-900 dark:text-white">{{ log.action }}</dd>
       </div>
       <div class="flex flex-col">
-        <dt class="mb-1 text-sm text-gray-500 dark:text-gray-400">Note</dt>
-        <dd class="text-sm text-gray-900 dark:text-white">{{ log.note }}</dd>
+        <dt class="mb-1 text-sm text-gray-500 dark:text-gray-400">Request</dt>
+        <dd class="text-sm text-gray-900 dark:text-white font-mono">{{ log.note }}</dd>
+      </div>
+
+      <div v-if="log.ip || log.userAgent" class="flex gap-6">
+        <div v-if="log.ip" class="flex flex-col">
+          <dt class="mb-1 text-sm text-gray-500 dark:text-gray-400">IP Address</dt>
+          <dd class="text-sm text-gray-900 dark:text-white font-mono">{{ log.ip }}</dd>
+        </div>
+        <div v-if="log.statusCode" class="flex flex-col">
+          <dt class="mb-1 text-sm text-gray-500 dark:text-gray-400">Status</dt>
+          <dd class="text-sm text-gray-900 dark:text-white font-mono">{{ log.statusCode }}</dd>
+        </div>
+      </div>
+
+      <div v-if="log.userAgent" class="flex flex-col">
+        <dt class="mb-1 text-sm text-gray-500 dark:text-gray-400">User Agent</dt>
+        <dd class="text-xs text-gray-600 dark:text-gray-400 break-all">{{ log.userAgent }}</dd>
+      </div>
+
+      <div v-if="formattedBody" class="flex flex-col">
+        <dt class="mb-1 text-sm text-gray-500 dark:text-gray-400">Request Body</dt>
+        <dd>
+          <pre class="mt-1 max-h-64 overflow-auto rounded-lg bg-gray-50 p-3 text-xs text-gray-800 dark:bg-gray-800 dark:text-gray-200 font-mono">{{ formattedBody }}</pre>
+        </dd>
       </div>
     </div>
 

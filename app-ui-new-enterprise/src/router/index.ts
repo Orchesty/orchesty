@@ -23,7 +23,7 @@ const enterpriseOnlyChildren: RouteRecordRaw[] = [
     path: 'audit-logs',
     name: 'audit-logs',
     component: () => import('@/views/audit-logs/AuditLogsView.vue'),
-    meta: { feature: 'auditLogs' },
+    meta: { feature: 'auditLogs', permission: 'settings:read' },
   },
   {
     path: 'trace',

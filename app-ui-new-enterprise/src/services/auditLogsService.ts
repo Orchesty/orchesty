@@ -1,6 +1,51 @@
 import type { AuditLogEntry, AuditLogQueryParams } from '@/types/audit-logs'
 import type { PaginatedResponse } from '@/types/api'
-import auditLogsDataJson from '@/assets/mock-data/audit-logs-data.json'
+import api from '@/services/api'
+
+function buildTimeRange(timeRange?: string): { from?: string; to?: string } {
+  if (!timeRange || timeRange === 'all') return {}
+
+  const now = new Date()
+  let from: Date
+
+  switch (timeRange) {
+    case 'yesterday': {
+      const y = new Date(now)
+      y.setDate(y.getDate() - 1)
+      y.setHours(0, 0, 0, 0)
+      from = y
+      break
+    }
+    case 'today': {
+      from = new Date(now)
+      from.setHours(0, 0, 0, 0)
+      break
+    }
+    case 'last7days':
+      from = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+      break
+    case 'last30days':
+      from = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+      break
+    case 'last90days':
+      from = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000)
+      break
+    default:
+      if (timeRange.startsWith('custom:')) {
+        const parts = timeRange.split(':')
+        return {
+          from: parts[1] ? new Date(parts[1]).toISOString() : undefined,
+          to: parts[2] ? new Date(parts[2]).toISOString() : undefined,
+        }
+      }
+      return {}
+  }
+
+  return {
+    from: from.toISOString(),
+    to: now.toISOString(),
+  }
+}
 
 /**
  * Fetch audit log entries with filtering, sorting, and pagination
@@ -8,56 +53,36 @@ import auditLogsDataJson from '@/assets/mock-data/audit-logs-data.json'
 export async function fetchAuditLogs(
   params: AuditLogQueryParams
 ): Promise<PaginatedResponse<AuditLogEntry>> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300))
+  const { from, to } = buildTimeRange(params.timeRange)
 
-  let filtered = [...auditLogsDataJson.data] as AuditLogEntry[]
+  const filter: Record<string, string> = {}
+  if (params.search) filter.search = params.search
+  if (from) filter.from = from
+  if (to) filter.to = to
 
-  // Filter by search (user or object)
-  if (params.search && params.search.trim() !== '') {
-    const searchLower = params.search.toLowerCase()
-    filtered = filtered.filter(
-      (log) =>
-        log.user.toLowerCase().includes(searchLower) ||
-        log.object.toLowerCase().includes(searchLower)
-    )
+  const queryParams: Record<string, string | number> = {
+    page: params.page || 1,
+    limit: params.limit || 20,
   }
 
-  // Filter by time range (mock - in real app would filter by timestamp)
-  if (params.timeRange && params.timeRange !== 'all') {
-    // For now, just return all data. In real app, filter by timestamp
-    // based on params.timeRange (yesterday, today, last7days, etc.)
-  }
+  if (params.sort) queryParams.sort = params.sort
+  if (params.order) queryParams.order = params.order
+  if (Object.keys(filter).length > 0) queryParams.filter = JSON.stringify(filter)
 
-  // Sorting
-  if (params.sort) {
-    filtered.sort((a, b) => {
-      const aVal = a[params.sort as keyof AuditLogEntry]
-      const bVal = b[params.sort as keyof AuditLogEntry]
+  const response = await api.get('/api/audit-logs', { params: queryParams })
+  const body = response.data
 
-      if (typeof aVal === 'string' && typeof bVal === 'string') {
-        const comparison = aVal.localeCompare(bVal)
-        return params.order === 'desc' ? -comparison : comparison
-      }
-
-      return 0
-    })
-  }
-
-  // Pagination
-  const page = params.page || 1
-  const limit = params.limit || 20
-  const start = (page - 1) * limit
-  const end = start + limit
-  const paginatedData = filtered.slice(start, end)
+  const total = body.total ?? 0
+  const page = body.page ?? 1
+  const limit = body.limit ?? 20
 
   return {
-    data: paginatedData,
+    data: body.items ?? [],
     meta: {
-      totalItems: filtered.length,
+      totalItems: total,
       currentPage: page,
       itemsPerPage: limit,
-      totalPages: Math.ceil(filtered.length / limit),
+      totalPages: Math.ceil(total / limit) || 1,
     },
   }
 }
@@ -66,33 +91,40 @@ export async function fetchAuditLogs(
  * Fetch a single audit log entry by ID
  */
 export async function fetchAuditLogDetail(id: string): Promise<AuditLogEntry | null> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 200))
-
-  const log = auditLogsDataJson.data.find((log) => log.id === id)
-  return log ? (log as AuditLogEntry) : null
+  try {
+    const response = await api.get(`/api/audit-logs/${id}`)
+    return response.data as AuditLogEntry
+  } catch {
+    return null
+  }
 }
 
 /**
- * Export audit logs (mock function)
+ * Export audit logs as CSV
  */
 export async function exportAuditLogs(params: AuditLogQueryParams): Promise<Blob> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500))
+  const allItems: AuditLogEntry[] = []
+  let page = 1
+  const limit = 100
+  let hasMore = true
 
-  // In a real app, this would call an API endpoint and return a CSV/Excel file
-  const logs = await fetchAuditLogs(params)
-  
-  // Create a simple CSV
+  while (hasMore) {
+    const response = await fetchAuditLogs({ ...params, page, limit })
+    allItems.push(...response.data)
+    hasMore = response.data.length === limit
+    page++
+
+    if (page > 100) break
+  }
+
   const csvHeader = 'Timestamp,User,Object,Action,Note\n'
-  const csvRows = logs.data
+  const csvRows = allItems
     .map(
       (log) =>
         `"${log.timestamp}","${log.user}","${log.object}","${log.action}","${log.note}"`
     )
     .join('\n')
-  
+
   const csvContent = csvHeader + csvRows
   return new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
 }
-

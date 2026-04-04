@@ -49,7 +49,7 @@ const enterpriseSidebarItems = computed<SidebarItem[]>(() => {
 
 const enterpriseMenuItems = computed(() => {
   const items: { type: 'link'; label: string; to: string }[] = []
-  if (auditLogs.value) {
+  if (auditLogs.value && provider.can('settings:read')) {
     items.push({ type: 'link' as const, label: 'Audit logs', to: '/audit-logs' })
   }
   return items
