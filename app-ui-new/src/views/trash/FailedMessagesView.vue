@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
@@ -38,7 +38,15 @@ const {
   getTopologyName,
   getNodeName,
   getNodeIdsByName,
+  mappings,
 } = useTopologyNodeFilter()
+
+/** Deep-link from connector audit: raw Mongo node id(s); wins over dropdown until user edits node filter */
+const prefilledNodeIdsFromQuery = ref<string[] | null>(null)
+/** Deep-link time preset (e.g. 24h, 7d); used when custom date range is not set */
+const timeRangeFromQuery = ref<string | null>(null)
+const syncingNodeFilterFromQuery = ref(false)
+const skipFilterAutoLoad = ref(false)
 
 // Toast notifications
 const { showToast } = useToast()
@@ -201,7 +209,9 @@ const buildCurrentFilterParams = (): TrashQueryParams => {
 
   if (searchFilter.value) params.search = searchFilter.value
   if (correlationIdFilter.value) params.correlationId = correlationIdFilter.value
-  if (nodeFilter.value) {
+  if (prefilledNodeIdsFromQuery.value?.length) {
+    params.node = prefilledNodeIdsFromQuery.value
+  } else if (nodeFilter.value) {
     const nodeIds = getNodeIdsByName(nodeFilter.value)
     params.node = nodeIds.length > 0 ? nodeIds : [nodeFilter.value]
   }
@@ -209,10 +219,86 @@ const buildCurrentFilterParams = (): TrashQueryParams => {
   if (dateTimeRange.value.from && dateTimeRange.value.to) {
     params.dateFrom = dateTimeRange.value.from
     params.dateTo = dateTimeRange.value.to
+  } else if (timeRangeFromQuery.value) {
+    params.timeRange = timeRangeFromQuery.value
   }
 
   return params
 }
+
+function applyTrashQueryFromRoute() {
+  const q = route.query
+
+  const corrRaw = q.correlationId
+  const corr =
+    typeof corrRaw === 'string' ? corrRaw : Array.isArray(corrRaw) ? corrRaw[0] : ''
+  if (typeof corr === 'string' && corr.trim()) {
+    correlationIdFilter.value = corr.trim()
+  } else {
+    correlationIdFilter.value = ''
+  }
+
+  const nodeRaw = q.node
+  const nodeStr =
+    typeof nodeRaw === 'string'
+      ? nodeRaw
+      : Array.isArray(nodeRaw)
+        ? nodeRaw.join(',')
+        : ''
+  if (nodeStr.trim()) {
+    prefilledNodeIdsFromQuery.value = nodeStr.split(',').map((s) => s.trim()).filter(Boolean)
+  } else {
+    prefilledNodeIdsFromQuery.value = null
+  }
+
+  const trRaw = q.timeRange
+  const tr =
+    typeof trRaw === 'string' ? trRaw : Array.isArray(trRaw) ? trRaw[0] : ''
+  if (typeof tr === 'string' && tr.trim()) {
+    timeRangeFromQuery.value = tr.trim()
+  } else {
+    timeRangeFromQuery.value = null
+  }
+
+  syncNodeFilterLabelFromPrefilledIds()
+}
+
+function syncNodeFilterLabelFromPrefilledIds() {
+  const ids = prefilledNodeIdsFromQuery.value
+  if (!ids?.length) return
+  const id = ids[0]
+  if (id === undefined) return
+  const name = getNodeName(id)
+  syncingNodeFilterFromQuery.value = true
+  nodeFilter.value = name
+  syncingNodeFilterFromQuery.value = false
+}
+
+watch(
+  () => mappings.value,
+  () => {
+    if (prefilledNodeIdsFromQuery.value?.length) {
+      syncNodeFilterLabelFromPrefilledIds()
+    }
+  },
+  { immediate: true },
+)
+
+watch(nodeFilter, () => {
+  if (syncingNodeFilterFromQuery.value) return
+  prefilledNodeIdsFromQuery.value = null
+})
+
+watch(
+  dateTimeRange,
+  () => {
+    const dr = dateTimeRange.value
+    if (dr.from && dr.to && timeRangeFromQuery.value) {
+      timeRangeFromQuery.value = null
+    }
+  },
+  { deep: true },
+)
 
 // Load data
 const loadData = async () => {
@@ -246,14 +332,27 @@ const {
   defaultSort: { field: 'timestamp', direction: 'desc' },
   onDataLoad: loadData,
   filters: [searchFilter, correlationIdFilter, nodeFilter, topologyFilter, dateTimeRange],
+  skipAutoLoad: skipFilterAutoLoad,
 })
 
+function hydrateFromRouteAndLoad() {
+  skipFilterAutoLoad.value = true
+  applyTrashQueryFromRoute()
+  skipFilterAutoLoad.value = false
+  void loadData()
+}
+
 onMounted(() => {
-  if (route.query.correlationId) {
-    correlationIdFilter.value = route.query.correlationId as string
-  }
-  loadData()
+  hydrateFromRouteAndLoad()
 })
+
+watch(
+  () => route.query,
+  () => {
+    hydrateFromRouteAndLoad()
+  },
+  { deep: true },
+)
 
 // Drawer handlers
 const openDrawer = (item: TrashItem) => {

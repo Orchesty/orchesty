@@ -13,7 +13,7 @@ import ProcessAuditDrawer from '@/components/dashboard/ProcessAuditDrawer.vue'
 import AppRunningProcessesDrawer from '@/components/dashboard/AppRunningProcessesDrawer.vue'
 import { useFeatures } from '@/composables/useFeatures'
 import type { Connector } from '@/types/connectors'
-import type { Process } from '@/types/processes'
+import type { Process, ProcessConnector } from '@/types/processes'
 import type { TimeFilter as TimeFilterType, ProcessFilter, HeatmapClickData, ProcessesExternalFilters } from '@/types/dashboard'
 import { formatDateTimeLocal } from '@/utils/timeRangeConverter'
 
@@ -119,18 +119,57 @@ const handleAuditBack = () => {
   auditDrawerOpen.value = false
 }
 
+const pendingConnectorFromAudit = ref(false)
+const pendingAuditFromConnector = ref(false)
+const connectorFromAudit = ref(false)
+
 const onAuditDrawerHidden = () => {
   if (pendingProcessesOpen.value) {
     pendingProcessesOpen.value = false
     processesDrawerOpen.value = true
   }
+  if (pendingConnectorFromAudit.value) {
+    pendingConnectorFromAudit.value = false
+    connectorFromAudit.value = true
+    connectorDrawerOpen.value = true
+  }
 }
 
-// Connector detail drawer (shared by ConnectorsTab and ApplicationsTab)
+const handleAuditOpenConnector = (processConnector: ProcessConnector) => {
+  selectedConnector.value = {
+    id: processConnector.connector,
+    application: processConnector.application,
+    avgRequestTime: 0,
+    requests: processConnector.called,
+    errors400: processConnector.errors400,
+    errors500: processConnector.errors500,
+    lastRequestStatus: 0,
+    status: processConnector.errors400 + processConnector.errors500 > 0 ? 'errors' : 'ok',
+  }
+  pendingConnectorFromAudit.value = true
+  auditDrawerOpen.value = false
+}
+
+const handleConnectorBackToAudit = () => {
+  pendingAuditFromConnector.value = true
+  connectorDrawerOpen.value = false
+}
+
+const onConnectorDrawerHidden = () => {
+  if (pendingAuditFromConnector.value) {
+    pendingAuditFromConnector.value = false
+    connectorFromAudit.value = false
+    auditDrawerOpen.value = true
+  }
+  connectorFromAudit.value = false
+}
+
+// Connector detail drawer (shared by ConnectorsTab, ApplicationsTab, and ProcessAuditDrawer)
 const connectorDrawerOpen = ref(false)
 const selectedConnector = ref<Connector | null>(null)
 
 const handleOpenConnectorDetail = (connector: Connector) => {
+  connectorFromAudit.value = false
   selectedConnector.value = connector
   connectorDrawerOpen.value = true
 }
@@ -278,6 +317,10 @@ const handleOpenAppProcesses = (data: { applicationId: string; topologyIds: stri
       v-model="connectorDrawerOpen"
       :connector="selectedConnector"
       :time-filter="activeTimeFilter"
+      :show-back-button="connectorFromAudit"
+      back-label="Back to Process Audit"
+      @back="handleConnectorBackToAudit"
+      @hidden="onConnectorDrawerHidden"
     />
 
     <!-- Processes Drawer (opened from heatmap click) -->
@@ -297,6 +340,7 @@ const handleOpenAppProcesses = (data: { applicationId: string; topologyIds: stri
       drawer-id="dashboard-audit-drawer"
       @back="handleAuditBack"
       @hidden="onAuditDrawerHidden"
+      @open-connector-detail="handleAuditOpenConnector"
     />
 
     <!-- App Running Processes Drawer (opened from limiter summary grid) -->

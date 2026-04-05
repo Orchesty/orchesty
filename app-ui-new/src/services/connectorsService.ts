@@ -242,6 +242,17 @@ export async function fetchConnectorDetail(
   }
 }
 
+/** Quick filter for connector / process audit error records (HTTP response code family). */
+export type ConnectorErrorRecordsCodeFilter = 'all' | '400' | '500'
+
+export function metricStatusForConnectorErrorCodeFilter(
+  codeFilter: ConnectorErrorRecordsCodeFilter,
+): 'FAILED' | 'FAILED_400' | 'FAILED_500' {
+  if (codeFilter === '400') return 'FAILED_400'
+  if (codeFilter === '500') return 'FAILED_500'
+  return 'FAILED'
+}
+
 /**
  * Fetch connector error records with pagination.
  * Filters by nodeId array so all nodes with the same name are included.
@@ -252,7 +263,8 @@ export async function fetchConnectorErrorRecords(
   page: number = 1,
   limit: number = 10,
   sortField: string = 'created',
-  sortDirection: string = 'desc'
+  sortDirection: string = 'desc',
+  codeFilter: ConnectorErrorRecordsCodeFilter = 'all',
 ): Promise<PaginatedResponse<ConnectorErrorRecord>> {
   const dateRange = convertTimeFilterToDateTimeRange(timeFilter)
   const dateFrom = formatDateTimeForApi(dateRange.from) || ''
@@ -262,7 +274,13 @@ export async function fetchConnectorErrorRecords(
     filter: [
       [{ column: 'created', operator: 'GTE', value: [dateFrom] }],
       [{ column: 'nodeId', operator: 'EQ', value: nodeIds }],
-      [{ column: 'status', operator: 'EQ', value: ['FAILED'] }]
+      [
+        {
+          column: 'status',
+          operator: 'EQ',
+          value: [metricStatusForConnectorErrorCodeFilter(codeFilter)],
+        },
+      ],
     ],
     sorter: [{ column: sortField, direction: sortDirection.toUpperCase() }],
     paging: {

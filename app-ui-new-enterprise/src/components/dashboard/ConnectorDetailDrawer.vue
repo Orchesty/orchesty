@@ -2,33 +2,37 @@
 import { ref, watch, computed } from 'vue'
 import Drawer from '@/components/ui/Drawer.vue'
 import TimeFilter from '@/components/ui/TimeFilter.vue'
-import DataGrid from '@/components/ui/DataGrid.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
-import ConnectorMetricDetailModal from '@/components/dashboard/ConnectorMetricDetailModal.vue'
-import type { Connector, ConnectorDetail, ConnectorErrorRecord } from '@/types/connectors'
-import type { TimeFilter as TimeFilterType, TableColumn } from '@/types/dashboard'
-import type { ActionConfig } from '@/types/datagrid'
-import { fetchConnectorDetail, fetchConnectorErrorRecords, fetchConnectorChartData } from '@/services/connectorsService'
+import AuditErrorRecordsFailedMessagesTabs from '@/components/dashboard/AuditErrorRecordsFailedMessagesTabs.vue'
+import type { Connector, ConnectorDetail } from '@/types/connectors'
+import type { TimeFilter as TimeFilterType } from '@/types/dashboard'
+import { fetchConnectorDetail, fetchConnectorChartData } from '@/services/connectorsService'
 import { useApexChart } from '@/composables/useApexChart'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import { useDateFormat } from '@/composables/useDateFormat'
-import GridLink from '@/components/ui/datagrid/GridLink.vue'
 import StatusBadge from '@/components/ui/StatusBadge.vue'
 
 interface Props {
   modelValue: boolean
   connector: Connector | null
   timeFilter: TimeFilterType
+  showBackButton?: boolean
+  backLabel?: string
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  showBackButton: false,
+  backLabel: 'Back',
+})
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
+  'back': []
+  'hidden': []
 }>()
 
 // Use topology/node mappings composable
-const { getTopologyName, getApplicationNameByNodeId, getNodeName, getNodeIdsByName } = useTopologyNodeMappings()
+const { getApplicationNameByNodeId, getNodeName, getNodeIdsByName } = useTopologyNodeMappings()
 const { formatDurationMs } = useDateFormat()
 
 // Local time filter (independent from global)
@@ -36,12 +40,13 @@ const localTimeFilter = ref<TimeFilterType>(props.timeFilter)
 
 // Data state
 const connectorDetail = ref<ConnectorDetail | null>(null)
-const errorRecords = ref<ConnectorErrorRecord[]>([])
-const currentPage = ref(1)
-const totalPages = ref(1)
-const totalItems = ref(0)
-const itemsPerPage = ref(10)
 const loading = ref(false)
+
+const resolvedNodeIds = computed(() => {
+  if (!props.connector) return [] as string[]
+  const nodeIds = getNodeIdsByName(getNodeName(props.connector.id))
+  return nodeIds.length > 0 ? nodeIds : [props.connector.id]
+})
 
 // Chart data
 const chartData = ref<{ categories: number[]; errors400: number[]; errors500: number[] } | null>(null)
@@ -154,8 +159,7 @@ const loadData = async () => {
 
   loading.value = true
 
-  const nodeIds = getNodeIdsByName(getNodeName(props.connector.id))
-  const resolvedIds = nodeIds.length > 0 ? nodeIds : [props.connector.id]
+  const resolvedIds = resolvedNodeIds.value
 
   try {
     const detail = await fetchConnectorDetail(resolvedIds, localTimeFilter.value)
@@ -163,19 +167,6 @@ const loadData = async () => {
 
     const chart = await fetchConnectorChartData(resolvedIds, localTimeFilter.value, 20)
     chartData.value = chart
-
-    const apiSortField = sortField.value === 'timestamp' ? 'created' : sortField.value
-    const records = await fetchConnectorErrorRecords(
-      resolvedIds,
-      localTimeFilter.value,
-      currentPage.value,
-      itemsPerPage.value,
-      apiSortField,
-      sortDirection.value
-    )
-    errorRecords.value = records.data
-    totalPages.value = records.meta.totalPages
-    totalItems.value = records.meta.totalItems
   } catch (error) {
     console.error('Error loading connector detail:', error)
   } finally {
@@ -190,66 +181,14 @@ watch(
     if (newValue && props.connector) {
       // Reset to global time filter when opening
       localTimeFilter.value = props.timeFilter
-      currentPage.value = 1
       loadData()
     }
   },
 )
 
 watch(localTimeFilter, () => {
-  currentPage.value = 1
   loadData()
 })
-
-watch(currentPage, () => {
-  loadData()
-})
-
-// Sort state
-const sortField = ref('timestamp')
-const sortDirection = ref<'asc' | 'desc'>('desc')
-
-// Pagination handlers
-const handlePageChange = (page: number) => {
-  currentPage.value = page
-}
-
-const handlePerPageChange = (perPage: number) => {
-  itemsPerPage.value = perPage
-  currentPage.value = 1
-}
-
-const handleSort = (config: { field: string; direction: 'asc' | 'desc' }) => {
-  sortField.value = config.field
-  sortDirection.value = config.direction
-  currentPage.value = 1
-  loadData()
-}
-
-// Metric detail modal state
-const metricDetailOpen = ref(false)
-const selectedRecord = ref<ConnectorErrorRecord | null>(null)
-
-const openMetricDetail = (record: ConnectorErrorRecord) => {
-  selectedRecord.value = record
-  metricDetailOpen.value = true
-}
-
-// Table columns for error records
-const errorRecordsColumns: TableColumn[] = [
-  { key: 'timestamp', label: 'Timestamp', sortable: true, className: 'w-48' },
-  { key: 'topology', label: 'Topology' },
-  { key: 'code', label: 'Code' },
-  { key: 'message', label: 'Error Message' },
-]
-
-const errorRecordActions: ActionConfig[] = [
-  {
-    icon: 'search',
-    title: 'View detail',
-    onClick: (row) => openMetricDetail(row as ConnectorErrorRecord),
-  },
-]
 </script>
 
 <template>
@@ -258,9 +197,21 @@ const errorRecordActions: ActionConfig[] = [
     id="connector-detail-drawer"
     label="Connector Details"
     @update:model-value="emit('update:modelValue', $event)"
+    @hidden="emit('hidden')"
   >
     <!-- Header Actions Slot -->
     <template #header-actions>
+      <button
+        v-if="showBackButton"
+        type="button"
+        class="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+        @click="emit('back')"
+      >
+        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        {{ backLabel }}
+      </button>
       <div v-if="connector" class="flex items-center justify-between">
         <div>
           <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{{ getNodeName(connector.id) }}</h3>
@@ -348,68 +299,16 @@ const errorRecordActions: ActionConfig[] = [
         </div>
       </div>
 
-      <!-- Error Records Table -->
-      <div>
-        <div class="mb-3">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Error Records</h3>
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Recent error occurrences and details
-          </p>
-        </div>
-
-        <DataGrid
-          :columns="errorRecordsColumns"
-          :data="errorRecords"
-          :loading="loading"
-          :current-page="currentPage"
-          :total-pages="totalPages"
-          :total-items="totalItems"
-          :items-per-page="itemsPerPage"
-          :sort-field="sortField"
-          :sort-direction="sortDirection"
-          :actions="errorRecordActions"
-          @page-change="handlePageChange"
-          @per-page-change="handlePerPageChange"
-          @sort="handleSort"
-        >
-          <!-- Custom cell for timestamp -->
-          <template #cell-timestamp="{ value }">
-            <span class="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              {{ value }}
-            </span>
-          </template>
-
-          <!-- Custom cell for topology -->
-          <template #cell-topology="{ row }">
-            <GridLink :to="{ name: 'topology-detail', params: { id: row.topologyId } }">
-              {{ getTopologyName(row.topologyId) }}
-            </GridLink>
-          </template>
-
-          <!-- Custom cell for code -->
-          <template #cell-code="{ value }">
-            <StatusBadge :variant="value >= 400 && value < 500 ? 'yellow' : 'red'">
-              {{ value }}
-            </StatusBadge>
-          </template>
-
-          <!-- Custom cell for message -->
-          <template #cell-message="{ value }">
-            <span class="break-words text-xs">
-              {{ value }}
-            </span>
-          </template>
-        </DataGrid>
-      </div>
+      <AuditErrorRecordsFailedMessagesTabs
+        v-if="connector"
+        filter-mode="connector"
+        :node-ids="resolvedNodeIds"
+        :time-filter="localTimeFilter"
+      />
     </div>
 
     <!-- Loading State -->
     <LoadingSpinner v-else-if="loading" class="py-12" text="Loading connector details..." />
   </Drawer>
-
-  <ConnectorMetricDetailModal
-    v-model="metricDetailOpen"
-    :record="selectedRecord"
-  />
 </template>
 

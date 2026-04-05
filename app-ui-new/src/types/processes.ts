@@ -32,6 +32,9 @@ export interface ProcessConnector {
 export interface ProcessTrashItem {
   whereItFailed: string
   errorMessage: string
+  /** Present when API returns them (per-row navigation to Failed message modal) */
+  topologyId?: string
+  correlationId?: string
 }
 
 export interface ProcessAuditDetail {
@@ -42,8 +45,6 @@ export interface ProcessAuditDetail {
   endTime: string
   status: 'running' | 'completed' | 'failed'
   connectors: ProcessConnector[]
-  trashCount: number
-  trashItems: ProcessTrashItem[]
 }
 
 // API Response Types for Total Counts
