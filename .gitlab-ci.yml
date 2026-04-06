@@ -18,6 +18,7 @@ include:
   - local: "/detector/.gitlab-ci.yml"
   - local: "/fluentd/.gitlab-ci.yml"
   - local: "/limiter/.gitlab-ci.yml"
+  - local: "/notifier/.gitlab-ci.yml"
   - local: "/pf-bundles/.gitlab-ci.yml" # aka backend
   - local: "/pf-bundles-enterprise/.gitlab-ci.yml" # aka enterprise backend
   - local: "/saas/applinth-billing-processor/.gitlab-ci.yml"

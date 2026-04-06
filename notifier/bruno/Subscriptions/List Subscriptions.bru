@@ -1,0 +1,17 @@
+meta {
+  name: List Subscriptions
+  seq: 1
+}
+
+get {
+  url: http://{{baseUrl}}/api/subscriptions
+}
+
+headers {
+  X-Tenant-Id: {{tenantId}}
+  X-User-Id: {{userId}}
+}
+
+assert {
+  res.status: eq 200
+}

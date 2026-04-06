@@ -1,0 +1,168 @@
+openapi: 3.0.0
+
+info:
+    title: Notifier
+    version: '1.0'
+
+servers:
+    -
+        url: http://127.0.0.77
+        description: Docker External
+    -
+        url: http://app:8080
+        description: Docker Internal
+
+paths:
+    /status:
+        get:
+            tags: [ Status ]
+            responses:
+                '200':
+                    $ref: '#/components/responses/Status'
+
+    /api/subscriptions:
+        get:
+            tags: [ Subscriptions ]
+            parameters:
+                - $ref: '#/components/parameters/X-Tenant-Id'
+                - $ref: '#/components/parameters/X-User-Id'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Subscriptions'
+                '500':
+                    $ref: '#/components/responses/500'
+
+        put:
+            tags: [ Subscriptions ]
+            parameters:
+                - $ref: '#/components/parameters/X-Tenant-Id'
+                - $ref: '#/components/parameters/X-User-Id'
+            requestBody:
+                $ref: '#/components/requestBodies/UpsertSubscription'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Subscriptions'
+                '500':
+                    $ref: '#/components/responses/500'
+
+components:
+    parameters:
+        X-Tenant-Id:
+            name: X-Tenant-Id
+            in: header
+            required: true
+            schema:
+                type: string
+                example: orchesty
+
+        X-User-Id:
+            name: X-User-Id
+            in: header
+            required: true
+            schema:
+                type: string
+                example: 000000000000000000000000
+
+    requestBodies:
+        UpsertSubscription:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/UpsertRequest'
+
+    responses:
+        Status:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            database:
+                                type: boolean
+                                example: true
+                            rabbitmq:
+                                type: boolean
+                                example: true
+                            redis:
+                                type: boolean
+                                example: true
+
+        Subscriptions:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: array
+                        items:
+                            $ref: '#/components/schemas/Subscription'
+
+        500:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    example:
+                        message: 'Internal Server Error'
+
+    schemas:
+        Message:
+            type: object
+            properties:
+                message:
+                    type: string
+
+        Subscription:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: 000000000000000000000000
+                tenant_id:
+                    type: string
+                    example: orchesty
+                user_id:
+                    type: string
+                    example: 000000000000000000000000
+                subject_type:
+                    type: string
+                    example: event_type
+                subject_id:
+                    type: string
+                    example: topology_failed
+                channel:
+                    type: string
+                    example: email
+                enabled:
+                    type: boolean
+                    example: true
+                filters:
+                    $ref: '#/components/schemas/SubFilters'
+
+        SubFilters:
+            type: object
+            properties:
+                topology_names:
+                    type: array
+                    items:
+                        type: string
+
+        UpsertRequest:
+            type: object
+            required:
+                - event_type
+            properties:
+                event_type:
+                    type: string
+                    example: topology_failed
+                channel:
+                    type: string
+                    example: email
+                    default: email
+                enabled:
+                    type: boolean
+                    example: true
+                filters:
+                    $ref: '#/components/schemas/SubFilters'

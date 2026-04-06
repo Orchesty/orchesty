@@ -1,0 +1,26 @@
+meta {
+  name: Upsert Subscription
+  seq: 2
+}
+
+put {
+  url: http://{{baseUrl}}/api/subscriptions
+  body: json
+}
+
+headers {
+  X-Tenant-Id: {{tenantId}}
+  X-User-Id: {{userId}}
+}
+
+body:json {
+  {
+    "event_type": "message_in_trash",
+    "channel": "email",
+    "enabled": true
+  }
+}
+
+assert {
+  res.status: eq 200
+}
