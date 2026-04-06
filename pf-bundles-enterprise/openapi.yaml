@@ -1384,6 +1384,25 @@ paths:
                 "500":
                     $ref: '#/components/responses/InternalServerError'
 
+    /api/notifications/subscriptions:
+        get:
+            tags: [ Notifications ]
+            responses:
+                "200":
+                    $ref: '#/components/responses/NotificationSubscriptions'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+        put:
+            tags: [ Notifications ]
+            requestBody:
+                $ref: '#/components/requestBodies/UpsertNotificationSubscription'
+            responses:
+                "200":
+                    $ref: '#/components/responses/NotificationSubscriptions'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
 components:
     ######################
     ##     Requests     ##
@@ -1689,6 +1708,13 @@ components:
                                 type: string
                             data:
                                 type: object
+
+        UpsertNotificationSubscription:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/UpsertNotificationSubscription'
 
     ######################
     ##    Responses     ##
@@ -2178,6 +2204,15 @@ components:
                         status: NOT_FOUND
                         message: Application with key 'Unknown' not found!
                         error_code: 404
+
+        NotificationSubscriptions:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: array
+                        items:
+                            $ref: '#/components/schemas/NotificationSubscription'
 
         InternalServerError:
             description: ''
@@ -3553,6 +3588,59 @@ components:
             type: array
             items:
                 type: string
+
+        NotificationSubscription:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: 000000000000000000000000
+                tenant_id:
+                    type: string
+                    example: orchesty
+                user_id:
+                    type: string
+                    example: 000000000000000000000000
+                subject_type:
+                    type: string
+                    example: event_type
+                subject_id:
+                    type: string
+                    example: topology_failed
+                channel:
+                    type: string
+                    example: email
+                enabled:
+                    type: boolean
+                    example: true
+                filters:
+                    $ref: '#/components/schemas/NotificationSubFilters'
+
+        NotificationSubFilters:
+            type: object
+            properties:
+                topology_names:
+                    type: array
+                    items:
+                        type: string
+
+        UpsertNotificationSubscription:
+            type: object
+            required:
+                - event_type
+            properties:
+                event_type:
+                    type: string
+                    example: topology_failed
+                channel:
+                    type: string
+                    example: email
+                    default: email
+                enabled:
+                    type: boolean
+                    example: true
+                filters:
+                    $ref: '#/components/schemas/NotificationSubFilters'
 
     ######################
     ##    Parameters    ##

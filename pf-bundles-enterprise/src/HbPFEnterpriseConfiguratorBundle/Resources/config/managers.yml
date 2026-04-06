@@ -11,3 +11,9 @@ services:
             - '@hbpf.transport.curl_manager'
             - '%startingPointHost%'
             - 'Hanaboso\PipesFrameworkEnterprise\Database\Document\Topology'
+
+    hbpf.notification.manager:
+        class: Hanaboso\PipesFrameworkEnterprise\Configurator\Notification\NotificationManager
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '%notifierHost%'

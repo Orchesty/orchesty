@@ -12,3 +12,8 @@ services:
             - '@hbpf.user_task.handler.user_task'
             - '@hbpf.topology.tester'
             - 'Hanaboso\PipesFrameworkEnterprise\Database\Document\Topology'
+
+    hbpf.notification.handler:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\NotificationHandler
+        arguments:
+            - '@hbpf.notification.manager'

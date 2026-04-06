@@ -30,6 +30,7 @@ final class HbPFEnterpriseConfiguratorExtension extends Extension implements Pre
         $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader->load('controllers.yml');
         $loader->load('handlers.yml');
         $loader->load('managers.yml');
     }
