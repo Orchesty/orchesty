@@ -144,6 +144,28 @@ final class TopologyGeneratorBridge
      *
      * @return ResponseDto
      * @throws CurlException
+     * @throws JsonException
+     * @throws LockException
+     * @throws MappingException
+     * @throws TopologyConfigException
+     */
+    public function restartTopology(string $topologyId): ResponseDto
+    {
+        $this->generateTopology($topologyId);
+
+        try {
+            $this->stopTopology($topologyId, FALSE);
+        } catch (Throwable) {
+        }
+
+        return $this->runTopology($topologyId);
+    }
+
+    /**
+     * @param string $topologyId
+     *
+     * @return ResponseDto
+     * @throws CurlException
      */
     public function deleteTopology(string $topologyId): ResponseDto
     {
