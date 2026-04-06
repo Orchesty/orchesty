@@ -52,7 +52,7 @@ init: up
 	$(DCR) rabbitmq-plugins enable rabbitmq_consistent_hash_exchange
 	$(DCR) rabbitmq-plugins enable rabbitmq_management
 	$(DCW) topology-api:8080 -t 600
-	$(DCB) bin/console service:install enteprise-system-worker enteprise-system-worker:8080
+	$(DCB) bin/console service:install enterprise-system-worker enterprise-system-worker:8080
 	$(DCB) bin/console service:install node-sdk node-sdk:8080
 	$(DCB) bin/console service:install php-sdk php-sdk:80
 	$(DCB) bin/console topology:install -c -u --force ''
@@ -75,7 +75,7 @@ init-more: init
 			-H "Content-Type: application/json" \
 			-d "{\"email\":\"$(shell grep ORCHESTY_USER .env | cut -d= -f2)\",\"password\":\"$(shell grep ORCHESTY_PASSWORD .env | cut -d= -f2)\"}" > /dev/null && \
 		printf "\033[32mUser was successfully created.\033[0m\n"'
-	$(DCB) sh -c '\
+	$(DCBE) sh -c '\
 		TOKEN=$$(curl -s -X POST http://localhost/api/user/login \
 			-H "Content-Type: application/json" \
 			-H "Accept: application/json" \
@@ -91,7 +91,7 @@ init-more: init
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
 			-d "{\"enabled\":true}" > /dev/null && \
 		printf "\033[32mApplication http-status (node-sdk) was successfully installed.\033[0m\n"'
-	$(DCB) sh -c '\
+	$(DCBE) sh -c '\
 		TOKEN=$$(curl -s -X POST http://localhost/api/user/login \
 			-H "Content-Type: application/json" \
 			-H "Accept: application/json" \
@@ -107,6 +107,41 @@ init-more: init
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
 			-d "{\"enabled\":true}" > /dev/null && \
 		printf "\033[32mApplication http-status (php-sdk) was successfully installed.\033[0m\n"'
+	$(DCBE) sh -c '\
+		TOKEN=$$(curl -s -X POST http://localhost/api/user/login \
+			-H "Content-Type: application/json" \
+			-H "Accept: application/json" \
+			-d "{\"email\":\"$(shell grep ORCHESTY_USER .env | cut -d= -f2)\",\"password\":\"$(shell grep ORCHESTY_PASSWORD .env | cut -d= -f2)\"}" \
+			| grep -o "\"token\":\"[^\"]*\"" | sed "s/\"token\":\"//;s/\"//") && \
+		curl -s -X POST "http://localhost/api/applications/smtp?sdk=enterprise-system-worker" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/applications/smtp?sdk=enterprise-system-worker" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{\"authorization_form\":{\"connectionUrl\":\"smtp://mailhog:1025\"}}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/applications/smtp/changeState?sdk=enterprise-system-worker" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{\"enabled\":true}" > /dev/null && \
+		printf "\033[32mApplication smtp (enterprise-system-worker) was successfully installed.\033[0m\n"'
+	$(DCBE) sh -c '\
+		TOKEN=$$(curl -s -X POST http://localhost/api/user/login \
+			-H "Content-Type: application/json" \
+			-H "Accept: application/json" \
+			-d "{\"email\":\"$(shell grep ORCHESTY_USER .env | cut -d= -f2)\",\"password\":\"$(shell grep ORCHESTY_PASSWORD .env | cut -d= -f2)\"}" \
+			| grep -o "\"token\":\"[^\"]*\"" | sed "s/\"token\":\"//;s/\"//") && \
+		curl -s -X PUT "http://localhost/api/notifications/subscriptions" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{\"event_type\":\"topology_failed_message\",\"channel\":\"email\",\"enabled\":true}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/notifications/subscriptions" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{\"event_type\":\"topology_failed\",\"channel\":\"email\",\"enabled\":true}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/notifications/subscriptions" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{\"event_type\":\"topology_slow\",\"channel\":\"email\",\"enabled\":true}" > /dev/null && \
+		printf "\033[32mNotification subscriptions were successfully created.\033[0m\n"'
+	$(DCBE) sh -c '\
+		curl -s -X POST "http://starting-point:8080/topologies/http-status/nodes/start/run-by-name" > /dev/null && \
+		printf "\033[32mTopology http-status was successfully triggered.\033[0m\n"'
 
 mongo-import:
 	$(DC) cp AuditEntity.json mongo:/tmp
