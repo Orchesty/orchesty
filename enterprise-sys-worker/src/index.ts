@@ -16,6 +16,11 @@ import CloudForgotPasswordEmailMapper from './CustomNode/CloudForgotPasswordEmai
 import AdminForgotPasswordEmailMapper from './CustomNode/AdminForgotPasswordEmailMapper';
 import AdminInviteEmailMapper from './CustomNode/AdminInviteEmailMapper';
 import AdminRestoreAccessEmailMapper from './CustomNode/AdminRestoreAccessEmailMapper';
+import NotificationRouter from './CustomNode/NotificationRouter';
+import TopologyFailedEmailMapper from './CustomNode/TopologyFailedEmailMapper';
+import TopologyFailedMessageEmailMapper from './CustomNode/TopologyFailedMessageEmailMapper';
+import TopologyFailedRepeatedlyEmailMapper from './CustomNode/TopologyFailedRepeatedlyEmailMapper';
+import TopologySlowEmailMapper from './CustomNode/TopologySlowEmailMapper';
 
 function prepare(): void {
     initiateContainer();
@@ -49,6 +54,13 @@ function prepare(): void {
     // ── Custom Nodes (forgot password) ──
     container.setNode(new ForgotPasswordEmailMapper());
     container.setNode(new CloudForgotPasswordEmailMapper());
+
+    // ── Custom Nodes (notifications) ──
+    container.setNode(new NotificationRouter());
+    container.setNode(new TopologyFailedEmailMapper());
+    container.setNode(new TopologyFailedRepeatedlyEmailMapper());
+    container.setNode(new TopologyFailedMessageEmailMapper());
+    container.setNode(new TopologySlowEmailMapper());
 }
 
 prepare();
