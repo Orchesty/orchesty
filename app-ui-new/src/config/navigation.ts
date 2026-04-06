@@ -10,6 +10,7 @@ export interface SidebarItem {
   badge?: 'cron-alerts'
   insertAfter?: string
   permission?: string
+  role?: string
 }
 
 export interface NavbarMenuItem {

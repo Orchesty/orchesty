@@ -222,9 +222,8 @@ func (c kubernetesClient) createConfigMap(obj []byte) error {
 	defer cancel()
 	cm := res.(*coreV1.ConfigMap)
 	_, err = c.configClient.Create(ctx, cm, metaV1.CreateOptions{})
-	// if already exists, dont throw error
 	if err != nil && strings.Contains(err.Error(), "already exists") {
-		return nil
+		_, err = c.configClient.Update(ctx, cm, metaV1.UpdateOptions{})
 	}
 	return err
 }
@@ -240,9 +239,8 @@ func (c kubernetesClient) create(obj []byte) error {
 
 	deployment := res.(*appsV1.Deployment)
 	_, err = c.deploymentClient.Create(ctx, deployment, metaV1.CreateOptions{})
-	// if already exists, dont throw error
 	if err != nil && strings.Contains(err.Error(), "already exists") {
-		return nil
+		_, err = c.deploymentClient.Update(ctx, deployment, metaV1.UpdateOptions{})
 	}
 	return err
 }

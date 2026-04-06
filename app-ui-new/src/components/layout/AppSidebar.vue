@@ -16,7 +16,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const route = useRoute()
-const { can } = useAuthorization()
+const { can, hasRole } = useAuthorization()
 
 const isActive = (path: string) => {
   return route.path.startsWith(path)
@@ -65,7 +65,11 @@ const allItems = (() => {
 })()
 
 const visibleItems = computed(() =>
-  allItems.filter((item) => !item.permission || can(item.permission)),
+  allItems.filter((item) => {
+    if (item.permission && !can(item.permission)) return false
+    if (item.role && !hasRole(item.role)) return false
+    return true
+  }),
 )
 </script>
 

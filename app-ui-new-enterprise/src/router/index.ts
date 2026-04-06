@@ -31,6 +31,12 @@ const enterpriseOnlyChildren: RouteRecordRaw[] = [
     component: () => import('@/views/trace/TraceView.vue'),
     meta: { feature: 'traceAuditing', permission: 'trace:read' },
   },
+  {
+    path: 'resources',
+    name: 'resources',
+    component: () => import('@/views/resources/ResourcesView.vue'),
+    meta: { role: 'system_manager' },
+  },
 ]
 
 const enterpriseOverrides: Record<string, RouteRecordRaw> = {

@@ -3,7 +3,7 @@ import { computed, provide, onMounted } from 'vue'
 import { RouterView, useRoute, useRouter } from 'vue-router'
 import { AppNavbar, AppSidebar, AUTHORIZATION_KEY, provideHelp } from '@orchesty/ui-core'
 import type { SidebarItem } from '@orchesty/ui-core'
-import { Bot, BotMessageSquare, ShieldX } from 'lucide-vue-next'
+import { Bot, BotMessageSquare, Server, ShieldX } from 'lucide-vue-next'
 import TraceDrawer from '@/components/trace/TraceDrawer.vue'
 import { useTraceDrawer } from '@/composables/useTraceDrawer'
 import { useFeatures } from '@/composables/useFeatures'
@@ -31,8 +31,10 @@ onMounted(async () => {
 const accessDenied = computed(() => {
   if (!loaded.value) return false
   const permission = route.meta.permission as string | undefined
-  if (!permission) return false
-  return !provider.can(permission)
+  if (permission && !provider.can(permission)) return true
+  const role = route.meta.role as string | undefined
+  if (role && !provider.hasRole(role)) return true
+  return false
 })
 
 const handleSaveReport = (_message: ChatMessage) => {
@@ -44,6 +46,7 @@ const enterpriseSidebarItems = computed<SidebarItem[]>(() => {
   if (traceAuditing.value) {
     items.push({ id: 'trace', label: 'Trace', path: '/trace', icon: Bot, iconStrokeWidth: 1.6, iconSizeClass: 'h-7 w-7', insertAfter: 'dashboard', permission: 'trace:read' })
   }
+  items.push({ id: 'resources', label: 'Resources', path: '/resources', icon: Server, role: 'system_manager', insertAfter: 'logs' })
   return items
 })
 

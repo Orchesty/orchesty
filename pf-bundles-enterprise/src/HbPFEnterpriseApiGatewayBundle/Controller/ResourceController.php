@@ -1,0 +1,82 @@
+<?php declare(strict_types=1);
+
+namespace Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller;
+
+use Exception;
+use Hanaboso\PipesFrameworkEnterprise\Configurator\Handler\TopologyHandler;
+use Hanaboso\Utils\Traits\ControllerTrait;
+use Psr\Log\NullLogger;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+
+/**
+ * Class ResourceController
+ *
+ * @package Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller
+ */
+final class ResourceController
+{
+
+    use ControllerTrait;
+
+    /**
+     * ResourceController constructor.
+     *
+     * @param TopologyHandler $handler
+     */
+    public function __construct(
+        private readonly TopologyHandler $handler,
+    )
+    {
+        $this->logger = new NullLogger();
+    }
+
+    /**
+     * @return Response
+     */
+    #[Route('/resources/bridges', methods: ['GET'], priority: 10)]
+    public function listBridgesAction(): Response
+    {
+        try {
+            return $this->getResponse($this->handler->getRunningBridges());
+        } catch (Exception $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @param string  $topologyId
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/resources/bridges/{topologyId}', methods: ['DELETE'], requirements: ['topologyId' => '[a-f0-9]{24}'], priority: 10)]
+    public function decommissionBridgeAction(string $topologyId, Request $request): Response
+    {
+        try {
+            $forceCleanup = $request->query->getBoolean('forceCleanup', FALSE);
+            $this->handler->decommissionBridge($topologyId, $forceCleanup);
+
+            return $this->getResponse([]);
+        } catch (Exception $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @param string $topologyId
+     *
+     * @return Response
+     */
+    #[Route('/resources/bridges/{topologyId}/restart', methods: ['POST'], requirements: ['topologyId' => '[a-f0-9]{24}'], priority: 10)]
+    public function restartBridgeAction(string $topologyId): Response
+    {
+        try {
+            return $this->getResponse($this->handler->restartBridge($topologyId));
+        } catch (Exception $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+}

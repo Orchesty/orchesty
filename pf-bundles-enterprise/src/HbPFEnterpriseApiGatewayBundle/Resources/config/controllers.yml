@@ -115,6 +115,11 @@ services:
         arguments:
             - '@hbpf.audit_log.handler'
 
+    Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\ResourceController:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\ResourceController
+        arguments:
+            - '@hbpf.configurator.handler.topology'
+
     hbpf.auth0.jwks_cache:
         class: Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0\JwksCacheService
         arguments:
