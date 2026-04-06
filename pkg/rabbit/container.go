@@ -15,6 +15,7 @@ type Container struct {
 	Repeater   types.Publisher
 	Counter    types.Publisher
 	Limiter    types.Publisher
+	Events     types.Publisher
 }
 
 func NewContainer(client *rabbitmq.Client, topology model.Topology) Container {
@@ -47,6 +48,13 @@ func (this *Container) initServiceQueues(client *rabbitmq.Client) {
 	this.Limiter = client.NewPublisher("", enum.Queue_Limiter)
 	this.Repeater = client.NewPublisher("", enum.Queue_Repeater)
 	this.Counter = client.NewPublisher("", enum.Queue_Counter)
+
+	client.AddExchange(rabbitmq.Exchange{
+		Name:    "orchesty.events",
+		Kind:    "topic",
+		Options: rabbitmq.DefaultExchangeOptions,
+	})
+	this.Events = client.NewPublisher("orchesty.events", "topology.message")
 }
 
 func (this *Container) initNodes(client *rabbitmq.Client, topology model.Topology) {
