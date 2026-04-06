@@ -9,7 +9,12 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-func NewRabbitService() *rabbitmq.Client {
+type RabbitService struct {
+	Client *rabbitmq.Client
+	Events *rabbitmq.Publisher
+}
+
+func NewRabbitService() RabbitService {
 	queueName := "pipes.multi-counter"
 	client := rabbitmq.NewClient(config.RabbitMq.Dsn, config.Log, true)
 	client.AddQueue(rabbitmq.Queue{
@@ -21,11 +26,23 @@ func NewRabbitService() *rabbitmq.Client {
 			},
 		},
 	})
+
+	client.AddExchange(rabbitmq.Exchange{
+		Name:    "orchesty.events",
+		Kind:    "topic",
+		Options: rabbitmq.DefaultExchangeOptions,
+	})
+
 	if err := client.InitializeQueuesExchanges(); err != nil {
 		panic(err)
 	}
 
-	return client
+	events := client.NewPublisher("orchesty.events", "topology.failed")
+
+	return RabbitService{
+		Client: client,
+		Events: events,
+	}
 }
 
 func ParseMessage(msg amqp.Delivery) *model.ParsedMessage {
