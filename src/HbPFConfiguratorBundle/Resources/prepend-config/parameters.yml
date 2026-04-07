@@ -11,7 +11,7 @@ parameters:
     env(XML_PARSER_API_DSN): "xml-parser-api"
     xml_parser_api_host: "%env(string:XML_PARSER_API_DSN)%"
 
-    env(LIMITER_URL): "limiter"
+    env(LIMITER_URL): "http://limiter:3333"
     limiter: "%env(string:LIMITER_URL)%"
 
     topology_api: "%env(string:TOPOLOGY_API_DSN)%"

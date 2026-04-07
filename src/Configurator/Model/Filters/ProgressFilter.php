@@ -100,6 +100,7 @@ final class ProgressFilter extends GridFilterAbstract
                     'ip' => 'this.processedCount < this.total',
                     'success' => 'this.processedCount === this.total && this.nok === 0',
                     'failed' => 'this.processedCount === this.total && this.nok > 0',
+                    'terminated' => 'this.terminated === true',
                     default => throw new Exception(sprintf('value [%s] is not supported', $value[0]), 500),
                 };
 
