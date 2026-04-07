@@ -135,6 +135,29 @@ final class NodeHandler
     }
 
     /**
+     * @return mixed[]
+     */
+    public function getConnectorNodes(): array
+    {
+        /** @var \Hanaboso\PipesFramework\Database\Repository\NodeRepository $repo */
+        $repo  = $this->dm->getRepository(Node::class);
+        $nodes = $repo->getConnectorNodes();
+
+        $items = [];
+        foreach ($nodes as $node) {
+            $items[] = [
+                '_id'         => $node->getId(),
+                'name'        => $node->getName(),
+                'topology_id' => $node->getTopology(),
+                'application' => $node->getApplication(),
+                'type'        => $node->getType(),
+            ];
+        }
+
+        return ['items' => $items];
+    }
+
+    /**
      * @param string $topologyId
      *
      * @return mixed[]

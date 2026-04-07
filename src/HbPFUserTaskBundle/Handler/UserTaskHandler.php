@@ -26,7 +26,11 @@ final readonly class UserTaskHandler
 
     use GridHandlerTrait;
 
-    public const string IDS = 'ids';
+    public const string IDS            = 'ids';
+    public const string RESULT_MESSAGE = 'resultMessage';
+    public const string SEARCH         = 'search';
+    public const string DATE_FROM      = 'dateFrom';
+    public const string DATE_TO        = 'dateTo';
 
     /**
      * UserTaskHandler constructor.
@@ -218,29 +222,64 @@ final readonly class UserTaskHandler
      */
     private function filterBody(array $data): GridRequestDto
     {
-        $fields = [self::IDS, UserTask::CORRELATION_ID, UserTask::TOPOLOGY_ID, UserTask::NODE_ID, UserTask::TYPE];
+        $fields = [self::IDS, UserTask::CORRELATION_ID, UserTask::TOPOLOGY_ID, UserTask::NODE_ID, UserTask::TYPE, self::RESULT_MESSAGE];
         Validations::checkParamsAny($fields, $data);
-        $dto = new GridRequestDto([]);
+
+        $dtoHeaders = [];
+        if (!empty($data[self::SEARCH])) {
+            $dtoHeaders[GridRequestDto::SEARCH] = $data[self::SEARCH];
+        }
+
+        $dto = new GridRequestDto($dtoHeaders);
         $dto->setItemsPerPage(100);
 
         foreach ($fields as $field) {
             if (array_key_exists($field, $data)) {
+                if ($field === self::IDS) {
+                    $column   = UserTask::ID;
+                    $operator = 'IN';
+                    $value    = $data[$field];
+                } elseif ($field === self::RESULT_MESSAGE) {
+                    $column   = 'resultMessage';
+                    $operator = 'EQ';
+                    $value    = [$data[$field]];
+                } else {
+                    $column   = $field;
+                    $operator = 'EQ';
+                    $value    = is_array($data[$field]) ? $data[$field] : [$data[$field]];
+                }
+
                 $dto->setAdditionalFilters(
                     [
                         [
-                            $field === self::IDS ? [
-                                'column'   => UserTask::ID,
-                                'operator' => 'IN',
-                                'value'    => $data[$field],
-                            ] : [
-                                'column'   => $field,
-                                'operator' => 'EQ',
-                                'value'    => [$data[$field]],
+                            [
+                                'column'   => $column,
+                                'operator' => $operator,
+                                'value'    => $value,
                             ],
                         ],
                     ],
                 );
             }
+        }
+
+        if (!empty($data[self::DATE_FROM])) {
+            $operator = !empty($data[self::DATE_TO]) ? 'BETWEEN' : 'GTE';
+            $value    = $operator === 'BETWEEN'
+                ? [$data[self::DATE_FROM], $data[self::DATE_TO]]
+                : [$data[self::DATE_FROM]];
+
+            $dto->setAdditionalFilters(
+                [
+                    [
+                        [
+                            'column'   => UserTask::CREATED,
+                            'operator' => $operator,
+                            'value'    => $value,
+                        ],
+                    ],
+                ],
+            );
         }
 
         return $dto;

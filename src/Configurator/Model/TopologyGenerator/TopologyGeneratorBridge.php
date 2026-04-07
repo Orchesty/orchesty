@@ -45,6 +45,7 @@ final class TopologyGeneratorBridge
     protected const string STARTING_POINT_URL     = '%s/topologies/%s/invalidate-cache';
     protected const string LIMITER_URL             = '%s/terminate/topology-id/%s';
     protected const string LIMITER_CORRELATION_URL = '%s/terminate/correlation-id/%s';
+    protected const string LIMITER_SNAPSHOT_URL    = '%s/metrics/snapshot';
 
     private const array HEADERS = ['Content-Type' => 'application/json'];
 
@@ -226,6 +227,25 @@ final class TopologyGeneratorBridge
     {
         $uri         = sprintf(self::LIMITER_CORRELATION_URL, $this->configs[self::LIMITER], $correlationId);
         $requestDto  = new RequestDto(new Uri($uri), CurlManager::METHOD_DELETE, new ProcessDto(), '', $headers);
+        $responseDto = $this->curlManager->send($requestDto);
+
+        if ($responseDto->getStatusCode() === 200) {
+            return Json::decode($responseDto->getBody());
+        } else {
+            throw new CurlException(sprintf('Request error: %s', $responseDto->getReasonPhrase()));
+        }
+    }
+
+    /**
+     * @param mixed[] $headers
+     *
+     * @return mixed[]
+     * @throws CurlException
+     */
+    public function getLimiterSnapshot(array $headers): array
+    {
+        $uri         = sprintf(self::LIMITER_SNAPSHOT_URL, $this->configs[self::LIMITER]);
+        $requestDto  = new RequestDto(new Uri($uri), CurlManager::METHOD_GET, new ProcessDto(), '', $headers);
         $responseDto = $this->curlManager->send($requestDto);
 
         if ($responseDto->getStatusCode() === 200) {

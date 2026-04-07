@@ -118,6 +118,17 @@ final class NodeRepository extends DocumentRepository
     }
 
     /**
+     * @return Node[]
+     */
+    public function getConnectorNodes(): array
+    {
+        return $this->createQueryBuilder()
+            ->field('type')->in([TypeEnum::CONNECTOR->value, TypeEnum::BATCH_CONNECTOR->value])
+            ->getQuery()
+            ->toArray();
+    }
+
+    /**
      * @param string $nodeId
      *
      * @return Node

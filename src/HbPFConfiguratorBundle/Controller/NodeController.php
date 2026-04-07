@@ -58,6 +58,15 @@ final class NodeController
     }
 
     /**
+     * @return Response
+     */
+    #[Route('/nodes/connectors', methods: ['GET'], priority: 10)]
+    public function getConnectorNodesAction(): Response
+    {
+        return $this->getResponse($this->nodeHandler->getConnectorNodes());
+    }
+
+    /**
      * @param string $id
      *
      * @return Response
