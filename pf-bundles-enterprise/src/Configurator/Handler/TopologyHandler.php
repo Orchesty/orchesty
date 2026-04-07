@@ -219,14 +219,17 @@ final class TopologyHandler extends BaseTopologyHandler
      */
     public function terminateProcesses(string $topologyId, ?string $correlationId = NULL): array
     {
-        $headers = $this->topologyManager->getHeadersForTopologyRunRequest();
+        $headers      = $this->topologyManager->getHeadersForTopologyRunRequest();
+        $limiterError = NULL;
+
         try {
             if ($correlationId) {
                 $this->generatorBridge->removeAllLimiterMessagesByCorrelationId($correlationId, $headers);
             } else {
                 $this->generatorBridge->removeAllLimiterAndRepeaterMessages($topologyId, $headers);
             }
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $limiterError = $e->getMessage();
         }
 
         $filter = ['finished' => NULL];
@@ -246,7 +249,56 @@ final class TopologyHandler extends BaseTopologyHandler
             ]],
         ]);
 
-        return ['success' => TRUE];
+        $result = ['success' => TRUE];
+        if ($limiterError) {
+            $result['limiterError'] = $limiterError;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getLimiterSnapshot(): array
+    {
+        $headers = $this->topologyManager->getHeadersForTopologyRunRequest();
+
+        return $this->generatorBridge->getLimiterSnapshot($headers);
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getGroupedConnectorNodes(): array
+    {
+        /** @var \Hanaboso\PipesFramework\Database\Repository\NodeRepository $repo */
+        $repo  = $this->dm->getRepository(\Hanaboso\PipesFramework\Database\Document\Node::class);
+        $nodes = $repo->getConnectorNodes();
+
+        $groups = [];
+        foreach ($nodes as $node) {
+            $key = $node->getName() . '|' . ($node->getApplication() ?? '');
+
+            if (!isset($groups[$key])) {
+                $groups[$key] = [
+                    'name'        => $node->getName(),
+                    'application' => $node->getApplication() ?? '',
+                    'type'        => $node->getType(),
+                    'nodeIds'     => [],
+                    'topologyIds' => [],
+                ];
+            }
+
+            $groups[$key]['nodeIds'][] = $node->getId();
+
+            $topologyId = $node->getTopology();
+            if (!in_array($topologyId, $groups[$key]['topologyIds'], TRUE)) {
+                $groups[$key]['topologyIds'][] = $topologyId;
+            }
+        }
+
+        return ['items' => array_values($groups)];
     }
 
     /**

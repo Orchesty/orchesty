@@ -207,9 +207,10 @@ const getBarChartOptions = () => {
         @sort="handleSort"
       >
         <template #cell-topology="{ row }">
-          <GridLink :to="{ name: 'topology-detail', params: { id: row.topologyId } }">
+          <GridLink v-if="row.topologyId" :to="{ name: 'topology-detail', params: { id: row.topologyId } }">
             {{ getTopologyName(row.topologyId) }}
           </GridLink>
+          <span v-else class="text-gray-400">—</span>
         </template>
         <template #cell-node="{ row }">
           <span class="text-gray-900 dark:text-white">{{ getNodeName(row.nodeId) }}</span>

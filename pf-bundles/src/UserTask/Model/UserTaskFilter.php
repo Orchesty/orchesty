@@ -59,6 +59,7 @@ final class UserTaskFilter extends GridFilterAbstract
             UserTask::TYPE           => UserTask::TYPE,
             UserTask::UPDATED        => UserTask::UPDATED,
             UserTask::USER           => UserTask::USER,
+            'resultMessage'          => 'message.headers.result-message',
         ];
     }
 

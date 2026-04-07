@@ -10,6 +10,7 @@ interface Props {
   cancelText?: string
   confirmVariant?: 'danger' | 'primary'
   size?: 'sm' | 'md' | 'lg' | 'xl'
+  loading?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -17,6 +18,7 @@ const props = withDefaults(defineProps<Props>(), {
   cancelText: 'No, cancel',
   confirmVariant: 'danger',
   size: 'md',
+  loading: false,
 })
 
 const emit = defineEmits<{
@@ -29,13 +31,13 @@ const emit = defineEmits<{
 const modalInstance = ref<any>(null)
 
 const handleClose = () => {
+  if (props.loading) return
   emit('update:modelValue', false)
   emit('cancel')
 }
 
 const handleConfirm = () => {
   emit('confirm')
-  emit('update:modelValue', false)
 }
 
 // Initialize Flowbite modal when component mounts
@@ -55,7 +57,7 @@ onMounted(async () => {
       backdropClasses: 'bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-[65]',
       closable: true,
       onHide: () => {
-        // Synchronize Vue state when modal is hidden by Flowbite (e.g., clicking backdrop)
+        if (props.loading) return
         emit('update:modelValue', false)
       },
       onShow: () => {
@@ -112,6 +114,7 @@ const sizeClass = {
           <button
             type="button"
             class="absolute end-2.5 top-2.5 ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
+            :disabled="loading"
             :data-modal-hide="id"
             @click="handleClose"
           >
@@ -140,10 +143,10 @@ const sizeClass = {
           
           <!-- Modal footer (no border, centered buttons) -->
           <div class="flex items-center justify-center gap-3 p-4 md:p-5">
-            <Button :variant="confirmVariant" @click="handleConfirm">
+            <Button :variant="confirmVariant" :loading="loading" @click="handleConfirm">
               {{ confirmText }}
             </Button>
-            <Button variant="outline" @click="handleClose">
+            <Button variant="outline" :disabled="loading" @click="handleClose">
               {{ cancelText }}
             </Button>
           </div>

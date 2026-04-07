@@ -28,6 +28,7 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
+  'terminated': []
 }>()
 
 const { getTopologyName, getApplicationName } = useTopologyNodeMappings()
@@ -208,16 +209,24 @@ const handleTerminateConfirm = async () => {
   if (!terminateTarget.value) return
   terminating.value = true
   try {
-    await terminateProcesses(
+    const result = await terminateProcesses(
       terminateTarget.value.topologyId,
       terminateTarget.value.correlationId,
     )
-    showToast(
-      terminateTarget.value.correlationId
-        ? 'Process terminated successfully'
-        : 'All processes terminated successfully',
-      'success',
-    )
+
+    if (result.limiterError) {
+      console.error('Limiter delete failed:', result.limiterError)
+      showToast('Processes terminated, but limiter messages could not be deleted: ' + result.limiterError, 'warning')
+    } else {
+      showToast(
+        terminateTarget.value.correlationId
+          ? 'Process terminated successfully'
+          : 'All processes terminated successfully',
+        'success',
+      )
+    }
+
+    emit('terminated')
     loadRunning()
     loadProcesses()
   } catch (error) {

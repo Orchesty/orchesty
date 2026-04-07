@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, onActivated, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
@@ -8,8 +8,9 @@ import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
 import SearchableDropdownFilter from '@/components/ui/datagrid/SearchableDropdownFilter.vue'
 import TextInput from '@/components/ui/datagrid/TextInput.vue'
 import SearchInput from '@/components/ui/SearchInput.vue'
-import DropdownMenu, { type DropdownMenuSection } from '@/components/ui/DropdownMenu.vue'
 import Confirm from '@/components/ui/Confirm.vue'
+import MoreActions from '@/components/ui/MoreActions.vue'
+import type { MoreActionsSection } from '@/components/ui/MoreActions.vue'
 import TrashDetailDrawer from '@/components/trash/TrashDetailDrawer.vue'
 import type { TrashItem, TrashQueryParams } from '@/types/trash'
 import type { BulkAction } from '@/types/datagrid'
@@ -21,7 +22,11 @@ import {
   approveTrashItem,
   rejectTrashItem,
   updateTrashItem,
+  approveByFilter,
+  rejectByFilter,
 } from '@/services/trashService'
+import type { TrashFilterParams } from '@/services/trashService'
+import { convertTimeFilterToDateTimeRange, formatDateTimeForApiFilter } from '@/utils/timeRangeConverter'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useTopologyNodeFilter } from '@/composables/useTopologyNodeFilter'
 import { useToast } from '@/composables/useToast'
@@ -72,6 +77,8 @@ const bulkApproveConfirmOpen = ref(false)
 const bulkRejectConfirmOpen = ref(false)
 const approveAllConfirmOpen = ref(false)
 const rejectAllConfirmOpen = ref(false)
+const approveAllProcessing = ref(false)
+const rejectAllProcessing = ref(false)
 
 // Count computed properties
 const selectedCount = computed(() => selectedRows.value.size)
@@ -121,52 +128,7 @@ const handleRejectAll = () => {
   rejectAllConfirmOpen.value = true
 }
 
-const confirmApproveAll = async () => {
-  try {
-    // Fetch all items matching current filters to collect IDs
-    const params = buildCurrentFilterParams()
-    params.page = 1
-    params.perPage = totalItems.value || 9999
-    const response = await fetchTrashItems(params)
-    const ids = response.data.map((item) => item.id)
-
-    if (ids.length > 0) {
-      await bulkApprove(ids)
-    }
-
-    showToast(`${ids.length} message(s) approved successfully`, 'success')
-    selectedRows.value = new Set()
-    loadData()
-  } catch (error) {
-    console.error('Approve all failed:', error)
-    showToast('Failed to approve all messages', 'error')
-  }
-}
-
-const confirmRejectAll = async () => {
-  try {
-    // Fetch all items matching current filters to collect IDs
-    const params = buildCurrentFilterParams()
-    params.page = 1
-    params.perPage = totalItems.value || 9999
-    const response = await fetchTrashItems(params)
-    const ids = response.data.map((item) => item.id)
-
-    if (ids.length > 0) {
-      await bulkReject(ids)
-    }
-
-    showToast(`${ids.length} message(s) rejected successfully`, 'success')
-    selectedRows.value = new Set()
-    loadData()
-  } catch (error) {
-    console.error('Reject all failed:', error)
-    showToast('Failed to reject all messages', 'error')
-  }
-}
-
-// More actions dropdown menu
-const moreActionsMenuSections: DropdownMenuSection[] = [
+const moreActionsSections: MoreActionsSection[] = [
   {
     items: [
       { type: 'button', label: 'Approve All Filtered', onClick: handleApproveAll },
@@ -174,6 +136,63 @@ const moreActionsMenuSections: DropdownMenuSection[] = [
     ],
   },
 ]
+
+function buildBatchFilterParams(): TrashFilterParams {
+  const filter: TrashFilterParams = {}
+
+  if (topologyFilter.value) filter.topologyId = topologyFilter.value
+  if (correlationIdFilter.value) filter.correlationId = correlationIdFilter.value
+  if (searchFilter.value) filter.search = searchFilter.value
+
+  if (prefilledNodeIdsFromQuery.value?.length) {
+    filter.nodeId = prefilledNodeIdsFromQuery.value
+  } else if (nodeFilter.value) {
+    const nodeIds = getNodeIdsByName(nodeFilter.value)
+    filter.nodeId = nodeIds.length > 0 ? nodeIds : [nodeFilter.value]
+  }
+
+  if (dateTimeRange.value.from && dateTimeRange.value.to) {
+    filter.dateFrom = dateTimeRange.value.from
+    filter.dateTo = dateTimeRange.value.to
+  } else if (timeRangeFromQuery.value) {
+    const dateRange = convertTimeFilterToDateTimeRange(timeRangeFromQuery.value)
+    filter.dateFrom = formatDateTimeForApiFilter(dateRange.from)
+  }
+
+  return filter
+}
+
+const confirmApproveAll = async () => {
+  approveAllProcessing.value = true
+  try {
+    await approveByFilter(buildBatchFilterParams())
+    showToast('Messages approved successfully', 'success')
+    selectedRows.value = new Set()
+    loadData()
+  } catch (error) {
+    console.error('Approve all failed:', error)
+    showToast('Failed to approve all messages', 'error')
+  } finally {
+    approveAllProcessing.value = false
+    approveAllConfirmOpen.value = false
+  }
+}
+
+const confirmRejectAll = async () => {
+  rejectAllProcessing.value = true
+  try {
+    await rejectByFilter(buildBatchFilterParams())
+    showToast('Messages rejected successfully', 'success')
+    selectedRows.value = new Set()
+    loadData()
+  } catch (error) {
+    console.error('Reject all failed:', error)
+    showToast('Failed to reject all messages', 'error')
+  } finally {
+    rejectAllProcessing.value = false
+    rejectAllConfirmOpen.value = false
+  }
+}
 
 // Table columns
 const columns: TableColumn[] = [
@@ -249,6 +268,20 @@ function applyTrashQueryFromRoute() {
     prefilledNodeIdsFromQuery.value = nodeStr.split(',').map((s) => s.trim()).filter(Boolean)
   } else {
     prefilledNodeIdsFromQuery.value = null
+  }
+
+  const topoRaw = q.topologyId
+  const topoId = typeof topoRaw === 'string' ? topoRaw : Array.isArray(topoRaw) ? topoRaw[0] : ''
+  if (typeof topoId === 'string' && topoId.trim()) {
+    topologyFilter.value = topoId.trim()
+  }
+
+  const searchRaw = q.search
+  const searchStr = typeof searchRaw === 'string' ? searchRaw : Array.isArray(searchRaw) ? searchRaw[0] : ''
+  if (typeof searchStr === 'string' && searchStr.trim()) {
+    searchFilter.value = searchStr.trim()
+  } else {
+    searchFilter.value = ''
   }
 
   const trRaw = q.timeRange
@@ -342,8 +375,15 @@ function hydrateFromRouteAndLoad() {
   void loadData()
 }
 
+const mounted = ref(false)
+
 onMounted(() => {
   hydrateFromRouteAndLoad()
+  mounted.value = true
+})
+
+onActivated(() => {
+  if (mounted.value) loadData()
 })
 
 watch(
@@ -410,38 +450,12 @@ const handleReject = async () => {
 <template>
   <main class="h-full overflow-y-auto">
     <div class="px-4 pb-4 pt-6">
-    <!-- Page Header with Actions Button -->
-    <div class="mb-6 flex items-center justify-between">
-      <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Failed Messages</h1>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          View failed messages from all topologies
-        </p>
-      </div>
-
-      <!-- More actions dropdown -->
-      <DropdownMenu
-        id="trash-more-dropdown"
-        width="w-44"
-        :sections="moreActionsMenuSections"
-      >
-        <template #trigger>
-          <span class="inline-flex items-center justify-center h-9 w-9 rounded-full border border-gray-200 bg-white text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:z-10 focus:outline-hidden focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">
-            <svg
-              class="h-5 w-5"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-              viewBox="0 0 16 3"
-            >
-              <path
-                d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"
-              />
-            </svg>
-            <span class="sr-only">More actions</span>
-          </span>
-        </template>
-      </DropdownMenu>
+    <!-- Page Header -->
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Failed Messages</h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        View failed messages from all topologies
+      </p>
     </div>
 
     <!-- Card -->
@@ -467,12 +481,18 @@ const handleReject = async () => {
         @update:selected-rows="selectedRows = $event"
       >
         <template #search>
-          <SearchInput
-            v-model="searchFilter"
-            placeholder="Search"
-            mode="server"
-            width="w-72"
-          />
+          <div class="flex flex-col items-end gap-2">
+            <MoreActions
+              id="trash-grid-actions"
+              :sections="moreActionsSections"
+            />
+            <SearchInput
+              v-model="searchFilter"
+              placeholder="Search"
+              mode="server"
+              width="w-72"
+            />
+          </div>
         </template>
 
         <template #filters>
@@ -623,6 +643,7 @@ const handleReject = async () => {
       confirm-text="Yes, approve all"
       cancel-text="Cancel"
       confirm-variant="primary"
+      :loading="approveAllProcessing"
       @confirm="confirmApproveAll"
     >
       <svg
@@ -651,6 +672,7 @@ const handleReject = async () => {
       id="reject-all-confirm"
       confirm-text="Yes, reject all"
       cancel-text="Cancel"
+      :loading="rejectAllProcessing"
       @confirm="confirmRejectAll"
     >
       <svg

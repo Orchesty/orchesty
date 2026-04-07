@@ -36,6 +36,32 @@ final class ResourceController
     /**
      * @return Response
      */
+    #[Route('/nodes/connectors', methods: ['GET'], priority: 20)]
+    public function getGroupedConnectorNodesAction(): Response
+    {
+        try {
+            return $this->getResponse($this->handler->getGroupedConnectorNodes());
+        } catch (Exception $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @return Response
+     */
+    #[Route('/resources/limiter/snapshot', methods: ['GET'], priority: 10)]
+    public function limiterSnapshotAction(): Response
+    {
+        try {
+            return $this->getResponse($this->handler->getLimiterSnapshot());
+        } catch (Exception $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @return Response
+     */
     #[Route('/resources/bridges', methods: ['GET'], priority: 10)]
     public function listBridgesAction(): Response
     {

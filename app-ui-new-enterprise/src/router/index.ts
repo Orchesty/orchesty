@@ -110,6 +110,11 @@ const enterpriseOverrides: Record<string, RouteRecordRaw> = {
     component: () => import('@/views/topologies/EnterpriseTopologyDetailView.vue'),
     props: true,
   },
+  trash: {
+    path: 'trash',
+    name: 'trash',
+    component: () => import('@/views/trash/EnterpriseFailedMessagesView.vue'),
+  },
 }
 
 function mergeRoutes(routes: RouteRecordRaw[]): RouteRecordRaw[] {

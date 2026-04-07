@@ -42,8 +42,10 @@ const handleHeatmapClick = (data: { name: string; nodeId?: string; nodeIds?: str
   if (!data.name) return
 
   emit('openConnectorDetail', {
-    id: data.nodeId || '',
+    nodeIds: data.nodeIds || (data.nodeId ? [data.nodeId] : []),
+    name: data.name,
     application: '',
+    topologyIds: [],
     avgRequestTime: 0,
     requests: 0,
     errors400: 0,

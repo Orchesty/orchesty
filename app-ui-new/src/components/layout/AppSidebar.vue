@@ -38,9 +38,9 @@ onMounted(() => {
 
 const coreItems: SidebarItem[] = [
   { id: 'dashboard', label: 'Control Center', path: '/dashboard', icon: ChartPie, permission: 'overview:read' },
-  { id: 'scheduled-tasks', label: 'Scheduled Tasks', path: '/scheduled-tasks', icon: Clock, badge: 'cron-alerts', permission: 'scheduled_task:read' },
-  { id: 'trash', label: 'Failed Messages', path: '/trash', icon: OctagonAlert, permission: 'user_task:read' },
   { id: 'logs', label: 'Logs', path: '/logs', icon: List, permission: 'logs:read' },
+  { id: 'trash', label: 'Failed Messages', path: '/trash', icon: OctagonAlert, permission: 'user_task:read' },
+  { id: 'scheduled-tasks', label: 'Scheduled Tasks', path: '/scheduled-tasks', icon: Clock, badge: 'cron-alerts', permission: 'scheduled_task:read' },
   { id: 'topologies', label: 'Topologies', path: '/topologies', icon: Workflow, permission: 'topology:read' },
   { id: 'applications', label: 'Applications', path: '/applications', icon: Grip, permission: 'application:read' },
   { id: 'settings', label: 'Settings', path: '/settings', icon: Settings, permission: 'settings:read' },

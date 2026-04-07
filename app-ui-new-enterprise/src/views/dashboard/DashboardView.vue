@@ -136,8 +136,10 @@ const onAuditDrawerHidden = () => {
 
 const handleAuditOpenConnector = (processConnector: ProcessConnector) => {
   selectedConnector.value = {
-    id: processConnector.connector,
+    nodeIds: [processConnector.connector],
+    name: processConnector.connector,
     application: processConnector.application,
+    topologyIds: [],
     avgRequestTime: 0,
     requests: processConnector.called,
     errors400: processConnector.errors400,

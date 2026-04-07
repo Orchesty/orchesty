@@ -38,7 +38,7 @@ const quickFilter = ref<TopologyStatus>('all')
 
 // Table columns
 const columns: TableColumn[] = [
-  { key: 'name', label: 'Topologies', sortable: false },
+  { key: 'name', label: 'Topologies', sortable: true },
   { key: 'processesRun', label: 'Processes run', sortable: true },
   { key: 'failedProcesses', label: 'Failed processes', sortable: true },
   { key: 'lastRunTime', label: 'Last run time', sortable: true },
@@ -49,9 +49,8 @@ const columns: TableColumn[] = [
 // Quick filter options
 const quickFilterOptions: QuickFilterOption[] = [
   { value: 'all', label: 'All' },
-  { value: 'success', label: 'Success' },
-  { value: 'running', label: 'Running' },
-  { value: 'failed', label: 'Failed' },
+  { value: 'enabled', label: 'Enabled' },
+  { value: 'with-activity', label: 'With activity' },
 ]
 
 const loadData = async () => {
@@ -148,7 +147,8 @@ connectLoadData(loadData)
         </template>
 
         <template #cell-processesRun="{ value }">
-          <span class="whitespace-nowrap">{{ value.toLocaleString() }}</span>
+          <span v-if="value > 0" class="whitespace-nowrap">{{ value.toLocaleString() }}</span>
+          <span v-else class="text-gray-400">-</span>
         </template>
 
         <template #cell-failedProcesses="{ value }">
@@ -159,13 +159,15 @@ connectLoadData(loadData)
         </template>
 
         <template #cell-lastRunTime="{ value }">
-          <span class="whitespace-nowrap">{{ value }}</span>
+          <span v-if="value" class="whitespace-nowrap">{{ value }}</span>
+          <span v-else class="text-gray-400">-</span>
         </template>
 
         <template #cell-lastRunStatus="{ value }">
-          <StatusBadge :variant="value === 'success' ? 'green' : value === 'running' ? 'blue' : 'red'">
+          <StatusBadge v-if="value !== 'none'" :variant="value === 'success' ? 'green' : value === 'running' ? 'blue' : 'red'">
             {{ value.charAt(0).toUpperCase() + value.slice(1) }}
           </StatusBadge>
+          <span v-else class="text-gray-400">-</span>
         </template>
 
         <template #cell-actions="{ row }">

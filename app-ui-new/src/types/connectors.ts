@@ -1,17 +1,31 @@
 import type { QueryParams } from './api'
 
 export interface Connector {
-  id: string
+  nodeIds: string[]
+  name: string
   application: string
+  topologyIds: string[]
   avgRequestTime: number // in milliseconds
   requests: number
   errors400: number
   errors500: number
   lastRequestStatus: number // HTTP status code (200, 400, 500, etc.)
-  status: 'ok' | 'errors'
+  status: 'ok' | 'errors' | 'none'
 }
 
-export type ConnectorStatus = 'all' | 'ok' | 'errors'
+export type ConnectorStatus = 'all' | 'with-activity' | 'with-errors'
+
+export interface ConnectorGroupApiItem {
+  name: string
+  application: string
+  type: string
+  nodeIds: string[]
+  topologyIds: string[]
+}
+
+export interface ConnectorGroupsApiResponse {
+  items: ConnectorGroupApiItem[]
+}
 
 export interface ConnectorQueryParams extends QueryParams {
   status?: ConnectorStatus

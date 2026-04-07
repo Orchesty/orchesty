@@ -78,11 +78,14 @@ final class AclSubscriber implements EventSubscriberInterface
 
         '/api/metrics/connectors' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::CONNECTOR]],
         '/api/metrics/limits'     => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::LIMITER]],
+
+        '/api/resources/limiter' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::LIMITER]],
         '/api/metrics/processes'  => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::PROCESS]],
         '/api/metrics/requests'   => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::PROCESS]],
         '/api/metrics/topology'   => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::PROCESS]],
         '/api/metrics/user-tasks' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::USER_TASK]],
 
+        '/api/nodes/connectors' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::CONNECTOR]],
         '/api/nodes' => [
             'GET'   => [ActionEnum::READ, ResourceEnum::TOPOLOGY],
             'PATCH' => [ActionEnum::WRITE, ResourceEnum::SCHEDULED_TASK],

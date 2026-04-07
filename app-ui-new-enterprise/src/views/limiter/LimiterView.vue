@@ -31,6 +31,10 @@ const handleOpenAppProcesses = (data: { applicationId: string; topologyIds: stri
   appProcessesTopologyIds.value = data.topologyIds
   appProcessesDrawerOpen.value = true
 }
+
+const handleTerminated = () => {
+  refreshKey.value++
+}
 </script>
 
 <template>
@@ -78,6 +82,7 @@ const handleOpenAppProcesses = (data: { applicationId: string; topologyIds: stri
         v-model="appProcessesDrawerOpen"
         :application-id="appProcessesAppId"
         :topology-ids="appProcessesTopologyIds"
+        @terminated="handleTerminated"
       />
     </div>
   </main>

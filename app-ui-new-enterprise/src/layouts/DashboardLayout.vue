@@ -46,8 +46,8 @@ const enterpriseSidebarItems = computed<SidebarItem[]>(() => {
   if (traceAuditing.value) {
     items.push({ id: 'trace', label: 'Trace', path: '/trace', icon: Bot, iconStrokeWidth: 1.6, iconSizeClass: 'h-7 w-7', insertAfter: 'dashboard', permission: 'trace:read' })
   }
-  items.push({ id: 'resources', label: 'Resources', path: '/resources', icon: Server, role: 'system_manager', insertAfter: 'logs' })
-  items.push({ id: 'limiter', label: 'Limiter', path: '/limiter', icon: Timer, role: 'system_manager', insertAfter: 'resources' })
+  items.push({ id: 'resources', label: 'Resources', path: '/resources', icon: Server, role: 'system_manager', insertAfter: 'applications' })
+  items.push({ id: 'limiter', label: 'Limiter', path: '/limiter', icon: Timer, iconStrokeWidth: 1.6, iconSizeClass: 'h-7 w-7', role: 'system_manager', insertAfter: 'trash' })
   return items
 })
 

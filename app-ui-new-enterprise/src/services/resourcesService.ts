@@ -34,6 +34,30 @@ export async function restartBridge(topologyId: string): Promise<void> {
   await api.post(`/api/resources/bridges/${topologyId}/restart`)
 }
 
-export async function terminateProcesses(topologyId: string, correlationId?: string): Promise<void> {
-  await api.post(`/api/resources/bridges/${topologyId}/terminate`, correlationId ? { correlationId } : {})
+export interface TerminateResult {
+  success: boolean
+  limiterError?: string
+}
+
+export async function terminateProcesses(topologyId: string, correlationId?: string): Promise<TerminateResult> {
+  const response = await api.post(`/api/resources/bridges/${topologyId}/terminate`, correlationId ? { correlationId } : {})
+  return response.data as TerminateResult
+}
+
+export interface LimiterSnapshotItem {
+  nodeId: string
+  nodeName: string
+  topologyId: string
+  applicationId: string
+  messages: number
+}
+
+export interface LimiterSnapshotResponse {
+  totalMessages: number
+  items: LimiterSnapshotItem[]
+}
+
+export async function fetchLimiterSnapshot(): Promise<LimiterSnapshotResponse> {
+  const response = await api.get('/api/resources/limiter/snapshot')
+  return response.data as LimiterSnapshotResponse
 }
