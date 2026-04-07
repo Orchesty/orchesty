@@ -40,6 +40,11 @@ services:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler
         arguments:
             - '@hbpf.configurator.manager.sdk'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '%tunnelProxyGrpcUrl%'
+            - '%tunnelExtBackendUrl%'
+            - '%tunnelExtStartingPointUrl%'
+            - '%tunnelExtWorkerApiHost%'
 
     hbpf.configurator.handler.topology_progress:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyProgressHandler
