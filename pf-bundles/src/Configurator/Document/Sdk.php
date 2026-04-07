@@ -21,6 +21,10 @@ class Sdk
     public const string NAME    = 'name';
     public const string URL     = 'url';
     public const string HEADERS = 'headers';
+    public const string TYPE    = 'type';
+
+    public const string TYPE_HTTP   = 'http';
+    public const string TYPE_TUNNEL = 'tunnel';
 
     /**
      * @var string
@@ -39,6 +43,12 @@ class Sdk
      */
     #[ODM\Field(type: 'string')]
     private string $headers = '[]';
+
+    /**
+     * @var string
+     */
+    #[ODM\Field(type: 'string')]
+    private string $type = self::TYPE_HTTP;
 
     /**
      * @return string
@@ -101,6 +111,34 @@ class Sdk
     }
 
     /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return Sdk
+     */
+    public function setType(string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTunnel(): bool
+    {
+        return $this->type === self::TYPE_TUNNEL;
+    }
+
+    /**
      * @return mixed[]
      */
     public function toArray(): array
@@ -109,6 +147,7 @@ class Sdk
             self::HEADERS => $this->getHeaders(),
             self::ID      => $this->id,
             self::NAME    => $this->name,
+            self::TYPE    => $this->type,
             self::URL     => $this->url,
         ];
     }

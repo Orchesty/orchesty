@@ -12,4 +12,5 @@ message Frame {
   string method = 3;
   bytes payload = 4;
   int32 status_code = 5;
+  string http_method = 6;
 }

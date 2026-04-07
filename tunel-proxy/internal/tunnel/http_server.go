@@ -12,16 +12,22 @@ import (
 )
 
 type HTTPHandler struct {
-	cm      *ConnectionManager
-	timeout time.Duration
+	cm           *ConnectionManager
+	timeout      time.Duration
+	maxBodyBytes int64
 }
 
-func NewHTTPHandler(cm *ConnectionManager, timeout time.Duration) *HTTPHandler {
-	return &HTTPHandler{cm: cm, timeout: timeout}
+func NewHTTPHandler(cm *ConnectionManager, timeout time.Duration, maxBodyBytes int64) *HTTPHandler {
+	return &HTTPHandler{cm: cm, timeout: timeout, maxBodyBytes: maxBodyBytes}
 }
 
 func (h *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("POST /call/{worker_id}/{path...}", h.handleCall)
+	mux.HandleFunc("/call/{worker_id}/{path...}", h.handleCall)
+	mux.HandleFunc("/health", h.handleHealth)
+}
+
+func (h *HTTPHandler) handleHealth(w http.ResponseWriter, _ *http.Request) {
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *HTTPHandler) handleCall(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +41,7 @@ func (h *HTTPHandler) handleCall(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	body, err := io.ReadAll(r.Body)
+	body, err := io.ReadAll(io.LimitReader(r.Body, h.maxBodyBytes))
 	if err != nil {
 		slog.Error("failed to read request body", "error", err)
 		http.Error(w, "failed to read request body", http.StatusBadRequest)
@@ -48,10 +54,11 @@ func (h *HTTPHandler) handleCall(w http.ResponseWriter, r *http.Request) {
 	defer conn.pending.Remove(requestID)
 
 	frame := &proto.Frame{
-		WorkerId:  workerID,
-		RequestId: requestID,
-		Method:    method,
-		Payload:   body,
+		WorkerId:   workerID,
+		RequestId:  requestID,
+		Method:     method,
+		Payload:    body,
+		HttpMethod: r.Method,
 	}
 
 	if err := conn.Send(frame); err != nil {
@@ -75,7 +82,9 @@ func (h *HTTPHandler) handleCall(w http.ResponseWriter, r *http.Request) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(statusCode)
-		w.Write(resp.Payload)
+		if _, err := w.Write(resp.Payload); err != nil {
+			slog.Debug("failed to write response", "worker_id", workerID, "request_id", requestID, "error", err)
+		}
 
 	case <-time.After(h.timeout):
 		slog.Warn("request timed out", "worker_id", workerID, "request_id", requestID, "timeout", h.timeout)

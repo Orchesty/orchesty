@@ -134,6 +134,11 @@ services:
             EMAIL_DSN: smtp://mailhog:1025
             ALPHA_INSTANCE_ID: 'demo'
             INSTALLER_DIRS: '["/var/www/pipes/clients/demo/node-sdk/src/topology","/var/www/pipes/enterprise-sys-worker/src/topology"]'
+            TUNNEL_PROXY_HOST: 'http://tunnel-proxy:8080'
+            TUNNEL_PROXY_GRPC_URL: ${DEV_IP}:50051
+            TUNNEL_EXT_BACKEND_URL: ${BACKEND_URL}
+            TUNNEL_EXT_STARTING_POINT_URL: http://${DEV_IP}:82
+            TUNNEL_EXT_WORKER_API_HOST: http://${DEV_IP}:8081
             JWE_PRIVATE_KEY: |
                 -----BEGIN EC PRIVATE KEY-----
                 MIHcAgEBBEIAGmQ//yMnyMlFAN/E2yfZjzFL1ziTrAbDwa08KEPBq+NUWHvrxrs7
@@ -192,6 +197,11 @@ services:
             EMAIL_DSN: smtp://mailhog:1025
             ALPHA_INSTANCE_ID: 'demo'
             INSTALLER_DIRS: '["/var/www/pipes/clients/demo/node-sdk/src/topology","/var/www/pipes/enterprise-sys-worker/src/topology"]'
+            TUNNEL_PROXY_HOST: 'http://tunnel-proxy:8080'
+            TUNNEL_PROXY_GRPC_URL: ${DEV_IP}:50051
+            TUNNEL_EXT_BACKEND_URL: ${BACKEND_ENTERPRISE_URL}
+            TUNNEL_EXT_STARTING_POINT_URL: http://${DEV_IP}:82
+            TUNNEL_EXT_WORKER_API_HOST: http://${DEV_IP}:8081
             JWE_PRIVATE_KEY: |
                 -----BEGIN EC PRIVATE KEY-----
                 MIHcAgEBBEIAGmQ//yMnyMlFAN/E2yfZjzFL1ziTrAbDwa08KEPBq+NUWHvrxrs7
@@ -284,6 +294,19 @@ services:
             - ${DEV_IP}:8082:8080
         command: /run.sh -p cmd/trace.go -l 2345
         security_opt: ['seccomp:unconfined']
+
+    tunnel-proxy:
+        image: hanabosocom/go-base:1.24
+        user: ${DEV_UID}:${DEV_GID}
+        ports:
+            - ${DEV_IP}:50051:50051
+        environment:
+            GRPC_ADDR: ":50051"
+            HTTP_ADDR: ":8080"
+            REQUEST_TIMEOUT: "30s"
+        command: go run cmd/server/main.go
+        volumes:
+            - ./../../tunel-proxy/:/app:cached
 
     detector:
         image: hanabosocom/go-base:1.26

@@ -40,6 +40,7 @@ final class TopologyManager extends BaseTopologyManager
      * @param bool                       $checkInfiniteLoop
      * @param CurlManagerInterface       $curl
      * @param string                     $startingPointHost
+     * @param string                     $tunnelProxyHost
      * @param class-string<BaseTopology> $topologyClass
      */
     public function __construct(
@@ -48,10 +49,11 @@ final class TopologyManager extends BaseTopologyManager
         bool $checkInfiniteLoop,
         CurlManagerInterface $curl,
         string $startingPointHost,
+        string $tunnelProxyHost = '',
         string $topologyClass = Topology::class,
     )
     {
-        parent::__construct($dml, $cronManager, $checkInfiniteLoop, $curl, $startingPointHost, $topologyClass);
+        parent::__construct($dml, $cronManager, $checkInfiniteLoop, $curl, $startingPointHost, $tunnelProxyHost, $topologyClass);
 
         /** @var DocumentManager $dm */
         $dm                   = $dml->getDm();

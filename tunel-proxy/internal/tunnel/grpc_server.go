@@ -6,6 +6,8 @@ import (
 	"log/slog"
 
 	proto "github.com/hanaboso/pipes/tunel-proxy/proto"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type TunnelServer struct {
@@ -27,7 +29,7 @@ func (s *TunnelServer) OpenTunnel(stream proto.TunnelService_OpenTunnelServer) e
 	workerID := first.WorkerId
 	if workerID == "" {
 		slog.Error("worker sent empty worker_id in identification frame")
-		return io.ErrUnexpectedEOF
+		return status.Error(codes.InvalidArgument, "worker_id must not be empty")
 	}
 
 	ctx, cancel := context.WithCancel(stream.Context())
@@ -42,20 +44,13 @@ func (s *TunnelServer) OpenTunnel(stream proto.TunnelService_OpenTunnelServer) e
 	slog.Info("starting recv loop", "worker_id", workerID)
 
 	for {
-		select {
-		case <-ctx.Done():
-			slog.Info("stream context cancelled", "worker_id", workerID)
-			return nil
-		default:
-		}
-
 		frame, err := stream.Recv()
 		if err != nil {
-			if err == io.EOF {
-				slog.Info("worker disconnected (EOF)", "worker_id", workerID)
-			} else {
-				slog.Error("recv error", "worker_id", workerID, "error", err)
+			if err == io.EOF || ctx.Err() != nil {
+				slog.Info("worker disconnected", "worker_id", workerID)
+				return nil
 			}
+			slog.Error("recv error", "worker_id", workerID, "error", err)
 			return err
 		}
 

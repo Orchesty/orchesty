@@ -36,7 +36,7 @@ func startTestServers(t *testing.T) (httpAddr string, grpcAddr string, cleanup f
 	go grpcServer.Serve(grpcLis)
 
 	mux := http.NewServeMux()
-	httpHandler := tunnel.NewHTTPHandler(cm, 5*time.Second)
+	httpHandler := tunnel.NewHTTPHandler(cm, 5*time.Second, 50*1024*1024)
 	httpHandler.RegisterRoutes(mux)
 
 	httpLis, err := net.Listen("tcp", "127.0.0.1:0")

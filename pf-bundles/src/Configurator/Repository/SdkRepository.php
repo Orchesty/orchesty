@@ -31,4 +31,19 @@ final class SdkRepository extends DocumentRepository
             );
     }
 
+    /**
+     * @param string $name
+     *
+     * @return Sdk
+     * @throws TopologyException
+     */
+    public function findByName(string $name): Sdk
+    {
+        return $this->findOneBy(['name' => $name]) ??
+            throw new TopologyException(
+                sprintf('SDK with name "%s" was not found.', $name),
+                TopologyException::SDK_HEADERS_NOT_FOUND,
+            );
+    }
+
 }

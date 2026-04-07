@@ -2,20 +2,23 @@ package config
 
 import (
 	"os"
+	"strconv"
 	"time"
 )
 
 type Config struct {
-	GRPCAddr       string
-	HTTPAddr       string
-	RequestTimeout time.Duration
+	GRPCAddr        string
+	HTTPAddr        string
+	RequestTimeout  time.Duration
+	MaxRequestBytes int64
 }
 
 func Load() Config {
 	return Config{
-		GRPCAddr:       envOrDefault("GRPC_ADDR", ":50051"),
-		HTTPAddr:       envOrDefault("HTTP_ADDR", ":8080"),
-		RequestTimeout: parseDuration(envOrDefault("REQUEST_TIMEOUT", "30s")),
+		GRPCAddr:        envOrDefault("GRPC_ADDR", ":50051"),
+		HTTPAddr:        envOrDefault("HTTP_ADDR", ":8080"),
+		RequestTimeout:  parseDuration(envOrDefault("REQUEST_TIMEOUT", "30s")),
+		MaxRequestBytes: parseInt64(envOrDefault("MAX_REQUEST_BODY_MB", "50")) * 1024 * 1024,
 	}
 }
 
@@ -32,4 +35,12 @@ func parseDuration(s string) time.Duration {
 		return 30 * time.Second
 	}
 	return d
+}
+
+func parseInt64(s string) int64 {
+	v, err := strconv.ParseInt(s, 10, 64)
+	if err != nil || v <= 0 {
+		return 50
+	}
+	return v
 }

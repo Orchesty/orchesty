@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"net"
 	"net/http"
@@ -38,7 +39,7 @@ func main() {
 	proto.RegisterTunnelServiceServer(grpcServer, tunnel.NewTunnelServer(cm))
 
 	mux := http.NewServeMux()
-	httpHandler := tunnel.NewHTTPHandler(cm, cfg.RequestTimeout)
+	httpHandler := tunnel.NewHTTPHandler(cm, cfg.RequestTimeout, cfg.MaxRequestBytes)
 	httpHandler.RegisterRoutes(mux)
 
 	httpServer := &http.Server{
@@ -46,30 +47,36 @@ func main() {
 		Handler: mux,
 	}
 
+	errCh := make(chan error, 2)
+
 	go func() {
 		lis, err := net.Listen("tcp", cfg.GRPCAddr)
 		if err != nil {
-			slog.Error("failed to listen on gRPC address", "addr", cfg.GRPCAddr, "error", err)
-			os.Exit(1)
+			errCh <- fmt.Errorf("gRPC listen on %s: %w", cfg.GRPCAddr, err)
+			return
 		}
 		slog.Info("gRPC server listening", "addr", cfg.GRPCAddr)
 		if err := grpcServer.Serve(lis); err != nil {
-			slog.Error("gRPC server error", "error", err)
+			errCh <- fmt.Errorf("gRPC serve: %w", err)
 		}
 	}()
 
 	go func() {
 		slog.Info("HTTP server listening", "addr", cfg.HTTPAddr)
 		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			slog.Error("HTTP server error", "error", err)
-			os.Exit(1)
+			errCh <- fmt.Errorf("HTTP serve: %w", err)
 		}
 	}()
 
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-	sig := <-sigChan
-	slog.Info("received signal, shutting down", "signal", sig)
+
+	select {
+	case sig := <-sigChan:
+		slog.Info("received signal, shutting down", "signal", sig)
+	case err := <-errCh:
+		slog.Error("server failed, shutting down", "error", err)
+	}
 
 	grpcServer.GracefulStop()
 

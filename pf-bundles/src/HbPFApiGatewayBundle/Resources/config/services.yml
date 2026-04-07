@@ -9,6 +9,7 @@ services:
             - '@hbpf.transport.curl_manager'
             - '@hbpf.redirect'
             - '%backendHost%'
+            - '%tunnelProxyHost%'
         calls:
             - ['setLogger',['@monolog.logger.commons']]
 

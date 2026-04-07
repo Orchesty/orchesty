@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { TopologyDetailView, useAuthorization } from '@orchesty/ui-core'
 import type { MoreActionsSection } from '@orchesty/ui-core'
 import Confirm from '@/components/ui/Confirm.vue'
@@ -14,6 +15,8 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const route = useRoute()
+const bridgeTopologyId = computed(() => (route.query.version as string) || props.id)
 
 const { pulse } = useFeatures()
 const { hasRole } = useAuthorization()
@@ -33,7 +36,7 @@ const restarting = ref(false)
 async function handleRestartBridge() {
   restarting.value = true
   try {
-    await restartBridge(props.id)
+    await restartBridge(bridgeTopologyId.value)
     showToast('Bridge has been restarted', 'success')
   } catch (err) {
     console.error('Failed to restart bridge:', err)
@@ -46,7 +49,7 @@ async function handleRestartBridge() {
 async function handleConfirmUnpublish() {
   unpublishing.value = true
   try {
-    await decommissionBridge(props.id, true)
+    await decommissionBridge(bridgeTopologyId.value, true)
     showToast('Topology has been unpublished and bridge decommissioned', 'success')
     unpublishConfirmOpen.value = false
     window.location.reload()
