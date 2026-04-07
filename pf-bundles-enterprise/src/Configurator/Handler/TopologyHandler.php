@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesFrameworkEnterprise\Configurator\Handler;
 
-use DateTime;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
@@ -165,14 +164,16 @@ final class TopologyHandler extends BaseTopologyHandler
             } catch (\Throwable) {
             }
 
-            $this->dm->createQueryBuilder(\Hanaboso\PipesFramework\Configurator\Document\TopologyProgress::class)
-                ->updateMany()
-                ->field('topologyId')->equals($topologyId)
-                ->field('finished')->equals(NULL)
-                ->field('finished')->set(new DateTime())
-                ->field('nok')->set(1)
-                ->getQuery()
-                ->execute();
+            $collection = $this->dm->getDocumentCollection(\Hanaboso\PipesFramework\Configurator\Document\TopologyProgress::class);
+            $collection->updateMany(
+                ['topologyId' => $topologyId, 'finished' => NULL],
+                [['$set' => [
+                    'terminated'     => TRUE,
+                    'finished'       => '$$NOW',
+                    'processedCount' => '$total',
+                    'nok'            => ['$add' => ['$nok', 1]],
+                ]]],
+            );
         }
 
         $this->topologyManager->unPublishTopology($topology);
@@ -208,6 +209,44 @@ final class TopologyHandler extends BaseTopologyHandler
             'success'    => $result->getStatusCode() === 200,
             'statusCode' => $result->getStatusCode(),
         ];
+    }
+
+    /**
+     * @param string      $topologyId
+     * @param string|null $correlationId
+     *
+     * @return mixed[]
+     */
+    public function terminateProcesses(string $topologyId, ?string $correlationId = NULL): array
+    {
+        $headers = $this->topologyManager->getHeadersForTopologyRunRequest();
+        try {
+            if ($correlationId) {
+                $this->generatorBridge->removeAllLimiterMessagesByCorrelationId($correlationId, $headers);
+            } else {
+                $this->generatorBridge->removeAllLimiterAndRepeaterMessages($topologyId, $headers);
+            }
+        } catch (\Throwable) {
+        }
+
+        $filter = ['finished' => NULL];
+        if ($correlationId) {
+            $filter['_id'] = $correlationId;
+        } else {
+            $filter['topologyId'] = $topologyId;
+        }
+
+        $collection = $this->dm->getDocumentCollection(\Hanaboso\PipesFramework\Configurator\Document\TopologyProgress::class);
+        $collection->updateMany($filter, [
+            ['$set' => [
+                'terminated'     => TRUE,
+                'finished'       => '$$NOW',
+                'processedCount' => '$total',
+                'nok'            => ['$add' => ['$nok', 1]],
+            ]],
+        ]);
+
+        return ['success' => TRUE];
     }
 
     /**

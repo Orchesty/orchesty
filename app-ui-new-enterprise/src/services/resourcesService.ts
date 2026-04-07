@@ -33,3 +33,7 @@ export async function decommissionBridge(topologyId: string, forceCleanup: boole
 export async function restartBridge(topologyId: string): Promise<void> {
   await api.post(`/api/resources/bridges/${topologyId}/restart`)
 }
+
+export async function terminateProcesses(topologyId: string, correlationId?: string): Promise<void> {
+  await api.post(`/api/resources/bridges/${topologyId}/terminate`, correlationId ? { correlationId } : {})
+}

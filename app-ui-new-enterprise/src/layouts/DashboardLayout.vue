@@ -3,7 +3,7 @@ import { computed, provide, onMounted } from 'vue'
 import { RouterView, useRoute, useRouter } from 'vue-router'
 import { AppNavbar, AppSidebar, AUTHORIZATION_KEY, provideHelp } from '@orchesty/ui-core'
 import type { SidebarItem } from '@orchesty/ui-core'
-import { Bot, BotMessageSquare, Server, ShieldX } from 'lucide-vue-next'
+import { Bot, BotMessageSquare, Server, Timer, ShieldX } from 'lucide-vue-next'
 import TraceDrawer from '@/components/trace/TraceDrawer.vue'
 import { useTraceDrawer } from '@/composables/useTraceDrawer'
 import { useFeatures } from '@/composables/useFeatures'
@@ -47,6 +47,7 @@ const enterpriseSidebarItems = computed<SidebarItem[]>(() => {
     items.push({ id: 'trace', label: 'Trace', path: '/trace', icon: Bot, iconStrokeWidth: 1.6, iconSizeClass: 'h-7 w-7', insertAfter: 'dashboard', permission: 'trace:read' })
   }
   items.push({ id: 'resources', label: 'Resources', path: '/resources', icon: Server, role: 'system_manager', insertAfter: 'logs' })
+  items.push({ id: 'limiter', label: 'Limiter', path: '/limiter', icon: Timer, role: 'system_manager', insertAfter: 'resources' })
   return items
 })
 

@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import TimeFilter from '@/components/ui/TimeFilter.vue'
 import OverviewTab from '@/components/dashboard/OverviewTab.vue'
 import ConnectorsTab from '@/components/dashboard/ConnectorsTab.vue'
 import TopologiesTab from '@/components/dashboard/TopologiesTab.vue'
 import ProcessesTab from '@/components/dashboard/ProcessesTab.vue'
-import LimiterTab from '@/components/dashboard/LimiterTab.vue'
 import ApplicationsTab from '@/components/dashboard/ApplicationsTab.vue'
 import ConnectorDetailDrawer from '@/components/dashboard/ConnectorDetailDrawer.vue'
 import ProcessesDrawer from '@/components/dashboard/ProcessesDrawer.vue'
 import ProcessAuditDrawer from '@/components/dashboard/ProcessAuditDrawer.vue'
-import AppRunningProcessesDrawer from '@/components/dashboard/AppRunningProcessesDrawer.vue'
 import { useFeatures } from '@/composables/useFeatures'
 import type { Connector } from '@/types/connectors'
 import type { Process, ProcessConnector } from '@/types/processes'
 import type { TimeFilter as TimeFilterType, ProcessFilter, HeatmapClickData, ProcessesExternalFilters } from '@/types/dashboard'
 import { formatDateTimeLocal } from '@/utils/timeRangeConverter'
 
+const router = useRouter()
 const { enterpriseDashboards } = useFeatures()
 
 const dashboardTabs = [
@@ -25,7 +25,6 @@ const dashboardTabs = [
   { id: 'connectors', label: 'Connectors' },
   { id: 'topologies', label: 'Topologies' },
   { id: 'processes', label: 'Processes' },
-  { id: 'limiter', label: 'Limiter' },
 ]
 
 // Active tab state -- Vue-controlled, persisted in localStorage
@@ -183,16 +182,6 @@ const handleTopologyProcessesClick = (topologyId: string) => {
   switchToTab('processes')
 }
 
-// App running processes drawer (opened from limiter summary grid)
-const appProcessesDrawerOpen = ref(false)
-const appProcessesAppId = ref<string | null>(null)
-const appProcessesTopologyIds = ref<string[]>([])
-
-const handleOpenAppProcesses = (data: { applicationId: string; topologyIds: string[] }) => {
-  appProcessesAppId.value = data.applicationId
-  appProcessesTopologyIds.value = data.topologyIds
-  appProcessesDrawerOpen.value = true
-}
 </script>
 
 <template>
@@ -272,7 +261,7 @@ const handleOpenAppProcesses = (data: { applicationId: string; topologyIds: stri
         :refresh-key="refreshKey"
         @heatmap-click="handleHeatmapClick"
         @heatmap-filter-change="handleHeatmapFilterChange"
-        @limiter-view-all="switchToTab('limiter')"
+        @limiter-view-all="router.push('/limiter')"
       />
 
       <ApplicationsTab
@@ -304,12 +293,6 @@ const handleOpenAppProcesses = (data: { applicationId: string; topologyIds: stri
         :refresh-key="refreshKey"
       />
 
-      <LimiterTab
-        v-else-if="activeTab === 'limiter'"
-        :time-filter="activeTimeFilter"
-        :refresh-key="refreshKey"
-        @open-app-processes="handleOpenAppProcesses"
-      />
     </KeepAlive>
 
     <!-- Shared Connector Detail Drawer -->
@@ -343,11 +326,5 @@ const handleOpenAppProcesses = (data: { applicationId: string; topologyIds: stri
       @open-connector-detail="handleAuditOpenConnector"
     />
 
-    <!-- App Running Processes Drawer (opened from limiter summary grid) -->
-    <AppRunningProcessesDrawer
-      v-model="appProcessesDrawerOpen"
-      :application-id="appProcessesAppId"
-      :topology-ids="appProcessesTopologyIds"
-    />
   </div></main>
 </template>

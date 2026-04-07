@@ -192,7 +192,7 @@ const handleClose = () => {
       </template>
 
       <template #cell-status="{ value }">
-        <StatusBadge :variant="value === 'completed' ? 'green' : value === 'running' ? 'blue' : 'red'">
+        <StatusBadge :variant="value === 'completed' ? 'green' : value === 'running' ? 'blue' : value === 'terminated' ? 'yellow' : 'red'">
           {{ value.charAt(0).toUpperCase() + value.slice(1) }}
         </StatusBadge>
       </template>

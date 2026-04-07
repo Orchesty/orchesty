@@ -97,7 +97,7 @@ const visibleItems = computed(() =>
                 aria-hidden="true"
               />
             </span>
-            <span class="ml-3 flex-1 whitespace-nowrap text-left" data-sidebar-collapse-hide>{{ item.label }}</span>
+            <span class="ml-3 hidden flex-1 whitespace-nowrap text-left" data-sidebar-collapse-hide>{{ item.label }}</span>
             <span
               v-if="item.badge === 'cron-alerts' && hasMisconfiguredCrons"
               class="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold leading-none text-white bg-red-600 rounded-full dark:bg-red-500"

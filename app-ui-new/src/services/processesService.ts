@@ -38,10 +38,11 @@ function mapApiItemToProcess(apiItem: ProcessApiItem): Process {
 /**
  * Map API status to UI status
  */
-function mapApiStatusToUiStatus(apiStatus: string): 'running' | 'completed' | 'failed' {
+function mapApiStatusToUiStatus(apiStatus: string): 'running' | 'completed' | 'failed' | 'terminated' {
   if (apiStatus === 'COMPLETED') return 'completed'
   if (apiStatus === 'RUNNING') return 'running'
   if (apiStatus === 'FAILED') return 'failed'
+  if (apiStatus === 'TERMINATED') return 'terminated'
   return 'completed' // default
 }
 
@@ -52,6 +53,7 @@ function mapUiStatusToApiStatus(uiStatus: string): string {
   if (uiStatus === 'completed') return 'COMPLETED'
   if (uiStatus === 'running') return 'RUNNING'
   if (uiStatus === 'failed') return 'FAILED'
+  if (uiStatus === 'terminated') return 'TERMINATED'
   return 'COMPLETED' // default
 }
 

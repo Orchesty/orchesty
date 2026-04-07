@@ -87,6 +87,9 @@ final class ProcessAggregationFilter extends GridAggregationFilterAbstract
                         $builder->matchExpr()->field('finished')->notEqual(NULL),
                         $builder->matchExpr()->field('nok')->notEqual(0),
                     ),
+                    'TERMINATED' => $expr->addAnd(
+                        $builder->matchExpr()->field('terminated')->equals(TRUE),
+                    ),
                     default => throw new LogicException(
                         sprintf('Unknown status value `%s`.', $values[0]),
                         Response::HTTP_BAD_REQUEST,
@@ -164,9 +167,13 @@ final class ProcessAggregationFilter extends GridAggregationFilterAbstract
             ->dateToString('%Y-%m-%dT%H:%M:%SZ', '$created')
             ->field('status')
             ->cond(
-                $builder->expr()->eq('$finished', NULL),
-                'RUNNING',
-                $builder->expr()->cond($builder->expr()->gt('$nok', 0), 'FAILED', 'COMPLETED'),
+                $builder->expr()->eq('$terminated', TRUE),
+                'TERMINATED',
+                $builder->expr()->cond(
+                    $builder->expr()->eq('$finished', NULL),
+                    'RUNNING',
+                    $builder->expr()->cond($builder->expr()->gt('$nok', 0), 'FAILED', 'COMPLETED'),
+                ),
             )
             ->field('duration')
             ->subtract(

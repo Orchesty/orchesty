@@ -9,9 +9,10 @@ import {
   PROCESS_POLL_SLOW_INTERVAL_MS,
 } from '@/config/topology'
 
-function mapApiStatus(status: string): 'running' | 'completed' | 'failed' {
+function mapApiStatus(status: string): 'running' | 'completed' | 'failed' | 'terminated' {
   if (status === 'COMPLETED') return 'completed'
   if (status === 'FAILED') return 'failed'
+  if (status === 'TERMINATED') return 'terminated'
   return 'running'
 }
 

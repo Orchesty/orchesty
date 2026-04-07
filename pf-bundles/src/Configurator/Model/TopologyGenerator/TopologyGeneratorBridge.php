@@ -43,7 +43,8 @@ final class TopologyGeneratorBridge
     protected const string GET_TOPOLOGY_HOST_URL  = 'http://%s/v1/api/topologies/%s/host';
     protected const string GENERATOR_TOPOLOGY_URL = 'http://%s/v1/api/topologies/%s';
     protected const string STARTING_POINT_URL     = '%s/topologies/%s/invalidate-cache';
-    protected const string LIMITER_URL            = '%s/terminate/topology-api/%s';
+    protected const string LIMITER_URL             = '%s/terminate/topology-id/%s';
+    protected const string LIMITER_CORRELATION_URL = '%s/terminate/correlation-id/%s';
 
     private const array HEADERS = ['Content-Type' => 'application/json'];
 
@@ -204,6 +205,26 @@ final class TopologyGeneratorBridge
     public function removeAllLimiterAndRepeaterMessages(string $topologyId, array $headers): array
     {
         $uri         = sprintf(self::LIMITER_URL, $this->configs[self::LIMITER], $topologyId);
+        $requestDto  = new RequestDto(new Uri($uri), CurlManager::METHOD_DELETE, new ProcessDto(), '', $headers);
+        $responseDto = $this->curlManager->send($requestDto);
+
+        if ($responseDto->getStatusCode() === 200) {
+            return Json::decode($responseDto->getBody());
+        } else {
+            throw new CurlException(sprintf('Request error: %s', $responseDto->getReasonPhrase()));
+        }
+    }
+
+    /**
+     * @param string  $correlationId
+     * @param mixed[] $headers
+     *
+     * @return mixed[]
+     * @throws CurlException
+     */
+    public function removeAllLimiterMessagesByCorrelationId(string $correlationId, array $headers): array
+    {
+        $uri         = sprintf(self::LIMITER_CORRELATION_URL, $this->configs[self::LIMITER], $correlationId);
         $requestDto  = new RequestDto(new Uri($uri), CurlManager::METHOD_DELETE, new ProcessDto(), '', $headers);
         $responseDto = $this->curlManager->send($requestDto);
 

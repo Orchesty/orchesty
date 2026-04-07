@@ -37,6 +37,12 @@ const enterpriseOnlyChildren: RouteRecordRaw[] = [
     component: () => import('@/views/resources/ResourcesView.vue'),
     meta: { role: 'system_manager' },
   },
+  {
+    path: 'limiter',
+    name: 'limiter',
+    component: () => import('@/views/limiter/LimiterView.vue'),
+    meta: { role: 'system_manager' },
+  },
 ]
 
 const enterpriseOverrides: Record<string, RouteRecordRaw> = {

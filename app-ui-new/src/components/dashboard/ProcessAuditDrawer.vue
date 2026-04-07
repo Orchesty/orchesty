@@ -248,7 +248,7 @@ const handleClose = () => {
           <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
             >Status</label
           >
-          <StatusBadge :variant="processDetail.status === 'completed' ? 'green' : processDetail.status === 'running' ? 'blue' : 'red'">
+          <StatusBadge :variant="processDetail.status === 'completed' ? 'green' : processDetail.status === 'running' ? 'blue' : processDetail.status === 'terminated' ? 'yellow' : 'red'">
             {{ processDetail.status.charAt(0).toUpperCase() + processDetail.status.slice(1) }}
           </StatusBadge>
         </div>

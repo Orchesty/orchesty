@@ -54,6 +54,7 @@ const quickFilterOptions: QuickFilterOption[] = [
   { value: 'completed', label: 'Completed' },
   { value: 'running', label: 'Running' },
   { value: 'failed', label: 'Failed' },
+  { value: 'terminated', label: 'Terminated' },
 ]
 
 // Load data function
@@ -174,7 +175,7 @@ watch(() => props.refreshKey, () => {
         </template>
 
         <template #cell-status="{ value }">
-          <StatusBadge :variant="value === 'completed' ? 'green' : value === 'running' ? 'blue' : 'red'">
+          <StatusBadge :variant="value === 'completed' ? 'green' : value === 'running' ? 'blue' : value === 'terminated' ? 'yellow' : 'red'">
             {{ value.charAt(0).toUpperCase() + value.slice(1) }}
           </StatusBadge>
         </template>

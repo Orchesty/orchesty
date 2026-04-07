@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Contr
 
 use Exception;
 use Hanaboso\PipesFrameworkEnterprise\Configurator\Handler\TopologyHandler;
+use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
@@ -74,6 +75,25 @@ final class ResourceController
     {
         try {
             return $this->getResponse($this->handler->restartBridge($topologyId));
+        } catch (Exception $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @param string  $topologyId
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/resources/bridges/{topologyId}/terminate', methods: ['POST'], requirements: ['topologyId' => '[a-f0-9]{24}'], priority: 10)]
+    public function terminateProcessesAction(string $topologyId, Request $request): Response
+    {
+        try {
+            $data          = Json::decode($request->getContent());
+            $correlationId = $data['correlationId'] ?? NULL;
+
+            return $this->getResponse($this->handler->terminateProcesses($topologyId, $correlationId));
         } catch (Exception $e) {
             return $this->getErrorResponse($e);
         }
