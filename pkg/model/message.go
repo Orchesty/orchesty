@@ -210,14 +210,20 @@ func (pm ParsedMessage) FinishProcessQuery() mongo.WriteModel {
 			"$set": bson.M{
 				"finished": bson.M{
 					"$cond": bson.A{
+						bson.M{"$eq": bson.A{"$terminated", true}},
+						"$finished",
 						bson.M{
-							"$gte": bson.A{
-								"$processedCount",
-								"$total",
+							"$cond": bson.A{
+								bson.M{
+									"$gte": bson.A{
+										"$processedCount",
+										"$total",
+									},
+								},
+								pm.GetPublishedTimestamp(),
+								nil,
 							},
 						},
-						pm.GetPublishedTimestamp(),
-						nil,
 					},
 				},
 			},
@@ -239,14 +245,20 @@ func (pm ParsedMessage) FinishSubProcessQuery() mongo.WriteModel {
 			"$set": bson.M{
 				"finished": bson.M{
 					"$cond": bson.A{
+						bson.M{"$eq": bson.A{"$terminated", true}},
+						"$finished",
 						bson.M{
-							"$eq": bson.A{
-								"$processedCount",
-								"$total",
+							"$cond": bson.A{
+								bson.M{
+									"$eq": bson.A{
+										"$processedCount",
+										"$total",
+									},
+								},
+								pm.GetPublishedTimestamp(),
+								nil,
 							},
 						},
-						pm.GetPublishedTimestamp(),
-						nil,
 					},
 				},
 			},
