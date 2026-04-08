@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM hanabosocom/go-base:1.24
+FROM --platform=$BUILDPLATFORM hanabosocom/go-base:1.26
 COPY . .
 ARG TARGETOS TARGETARCH
 RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags='-s -w' -o /notifier cmd/notifier.go && upx -9 /notifier

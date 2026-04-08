@@ -5,17 +5,21 @@ namespace Hanaboso\PipesFrameworkEnterprise\Configurator\Handler;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
+use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyTester;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyProgressRepository;
+use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology as BaseTopology;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler as BaseTopologyHandler;
 use Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler;
+use Hanaboso\PipesFramework\UserTask\Document\UserTask;
 use Hanaboso\PipesFramework\UserTask\Enum\UserTaskEnum;
 use Hanaboso\PipesFrameworkEnterprise\Database\Document\Topology;
+use Throwable;
 
 /**
  * Class TopologyHandler
@@ -33,12 +37,12 @@ final class TopologyHandler extends BaseTopologyHandler
     /**
      * TopologyHandler constructor.
      *
-     * @param DatabaseManagerLocator  $dml
-     * @param TopologyManager         $topologyManager
-     * @param NodeManager             $nodeManager
-     * @param TopologyGeneratorBridge $generatorBridge
-     * @param UserTaskHandler         $userTaskHandler
-     * @param TopologyTester          $topologyTester
+     * @param DatabaseManagerLocator     $dml
+     * @param TopologyManager            $topologyManager
+     * @param NodeManager                $nodeManager
+     * @param TopologyGeneratorBridge    $generatorBridge
+     * @param UserTaskHandler            $userTaskHandler
+     * @param TopologyTester             $topologyTester
      * @param class-string<BaseTopology> $topologyClass
      */
     public function __construct(
@@ -51,11 +55,18 @@ final class TopologyHandler extends BaseTopologyHandler
         string $topologyClass = Topology::class,
     )
     {
-        parent::__construct($dml, $topologyManager, $nodeManager, $generatorBridge, $userTaskHandler, $topologyTester, $topologyClass);
+        parent::__construct(
+            $dml,
+            $topologyManager,
+            $nodeManager,
+            $generatorBridge,
+            $userTaskHandler,
+            $topologyTester,
+            $topologyClass,
+        );
 
-        /** @var TopologyProgressRepository $repo */
-        $repo                              = $this->dm->getRepository(\Hanaboso\PipesFramework\Configurator\Document\TopologyProgress::class);
-        $this->topologyProgressRepository  = $repo;
+        $repo                             = $this->dm->getRepository(TopologyProgress::class);
+        $this->topologyProgressRepository = $repo;
     }
 
     /**
@@ -69,7 +80,7 @@ final class TopologyHandler extends BaseTopologyHandler
             'visibility' => TopologyStatusEnum::PUBLIC->value,
         ]);
 
-        $items = [];
+        $items   = [];
         $grouped = [];
 
         foreach ($topologies as $topology) {
@@ -84,7 +95,7 @@ final class TopologyHandler extends BaseTopologyHandler
                 ->execute();
 
             /** @var int $trashCount */
-            $trashCount = $this->dm->createQueryBuilder(\Hanaboso\PipesFramework\UserTask\Document\UserTask::class)
+            $trashCount = $this->dm->createQueryBuilder(UserTask::class)
                 ->field('topologyId')->equals($topologyId)
                 ->field('type')->equals(UserTaskEnum::TRASH->value)
                 ->count()
@@ -92,12 +103,12 @@ final class TopologyHandler extends BaseTopologyHandler
                 ->execute();
 
             $items[] = [
-                '_id'              => $topologyId,
-                'name'             => $topology->getName(),
-                'version'          => $topology->getVersion(),
                 'enabled'          => $topology->isEnabled(),
+                'name'             => $topology->getName(),
                 'runningProcesses' => $runningProcesses,
                 'trashCount'       => $trashCount,
+                'version'          => $topology->getVersion(),
+                '_id'              => $topologyId,
             ];
 
             $grouped[$topology->getName()][] = $topology;
@@ -113,8 +124,8 @@ final class TopologyHandler extends BaseTopologyHandler
         return [
             'items'   => $items,
             'summary' => [
-                'total'     => count($topologies),
                 'reducible' => $reducible,
+                'total'     => count($topologies),
             ],
         ];
     }
@@ -124,8 +135,8 @@ final class TopologyHandler extends BaseTopologyHandler
      * @param bool   $forceCleanup
      *
      * @return void
-     * @throws TopologyException
      * @throws MongoDBException
+     * @throws TopologyException
      */
     public function decommissionBridge(string $topologyId, bool $forceCleanup = FALSE): void
     {
@@ -147,12 +158,12 @@ final class TopologyHandler extends BaseTopologyHandler
 
         try {
             $this->generatorBridge->stopTopology($topologyId, TRUE);
-        } catch (\Throwable) {
+        } catch (Throwable) {
         }
 
         try {
             $this->generatorBridge->deleteTopology($topologyId);
-        } catch (\Throwable) {
+        } catch (Throwable) {
         }
 
         if ($forceCleanup) {
@@ -161,17 +172,17 @@ final class TopologyHandler extends BaseTopologyHandler
             $headers = $this->topologyManager->getHeadersForTopologyRunRequest();
             try {
                 $this->generatorBridge->removeAllLimiterAndRepeaterMessages($topologyId, $headers);
-            } catch (\Throwable) {
+            } catch (Throwable) {
             }
 
-            $collection = $this->dm->getDocumentCollection(\Hanaboso\PipesFramework\Configurator\Document\TopologyProgress::class);
+            $collection = $this->dm->getDocumentCollection(TopologyProgress::class);
             $collection->updateMany(
-                ['topologyId' => $topologyId, 'finished' => NULL],
+                ['finished' => NULL, 'topologyId' => $topologyId],
                 [['$set' => [
-                    'terminated'     => TRUE,
                     'finished'       => '$$NOW',
-                    'processedCount' => '$total',
                     'nok'            => ['$add' => ['$nok', 1]],
+                    'processedCount' => '$total',
+                    'terminated'     => TRUE,
                 ]]],
             );
         }
@@ -206,8 +217,8 @@ final class TopologyHandler extends BaseTopologyHandler
         $result = $this->generatorBridge->restartTopology($topologyId);
 
         return [
-            'success'    => $result->getStatusCode() === 200,
             'statusCode' => $result->getStatusCode(),
+            'success'    => $result->getStatusCode() === 200,
         ];
     }
 
@@ -228,7 +239,7 @@ final class TopologyHandler extends BaseTopologyHandler
             } else {
                 $this->generatorBridge->removeAllLimiterAndRepeaterMessages($topologyId, $headers);
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $limiterError = $e->getMessage();
         }
 
@@ -239,13 +250,13 @@ final class TopologyHandler extends BaseTopologyHandler
             $filter['topologyId'] = $topologyId;
         }
 
-        $collection = $this->dm->getDocumentCollection(\Hanaboso\PipesFramework\Configurator\Document\TopologyProgress::class);
+        $collection = $this->dm->getDocumentCollection(TopologyProgress::class);
         $collection->updateMany($filter, [
             ['$set' => [
-                'terminated'     => TRUE,
                 'finished'       => '$$NOW',
-                'processedCount' => '$total',
                 'nok'            => ['$add' => ['$nok', 1]],
+                'processedCount' => '$total',
+                'terminated'     => TRUE,
             ]],
         ]);
 
@@ -272,21 +283,20 @@ final class TopologyHandler extends BaseTopologyHandler
      */
     public function getGroupedConnectorNodes(): array
     {
-        /** @var \Hanaboso\PipesFramework\Database\Repository\NodeRepository $repo */
-        $repo  = $this->dm->getRepository(\Hanaboso\PipesFramework\Database\Document\Node::class);
+        $repo  = $this->dm->getRepository(Node::class);
         $nodes = $repo->getConnectorNodes();
 
         $groups = [];
         foreach ($nodes as $node) {
-            $key = $node->getName() . '|' . ($node->getApplication() ?? '');
+            $key = sprintf('%s|%s', $node->getName(), $node->getApplication() ?? '');
 
             if (!isset($groups[$key])) {
                 $groups[$key] = [
-                    'name'        => $node->getName(),
                     'application' => $node->getApplication() ?? '',
-                    'type'        => $node->getType(),
+                    'name'        => $node->getName(),
                     'nodeIds'     => [],
                     'topologyIds' => [],
+                    'type'        => $node->getType(),
                 ];
             }
 

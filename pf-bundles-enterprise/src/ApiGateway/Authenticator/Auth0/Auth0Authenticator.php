@@ -75,7 +75,9 @@ final class Auth0Authenticator extends AbstractAuthenticator
         private readonly GroupManager $groupManager,
     )
     {
-        $this->dm = $dml->get();
+        /** @var DocumentManager $dm */
+        $dm       = $dml->get();
+        $this->dm = $dm;
         /** @phpstan-var class-string<User> $userClass */
         $userClass            = $resourceProvider->getResource(ResourceEnum::USER);
         $this->userRepository = $this->dm->getRepository($userClass);
@@ -213,6 +215,10 @@ final class Auth0Authenticator extends AbstractAuthenticator
      * Auto-creates a User when Auth0 JWT is valid but the user doesn't exist
      * in the instance DB yet (e.g. webhook hasn't arrived from cloud).
      * Also cleans up any matching TmpUser from a pending invite.
+     *
+     * @param string $email
+     *
+     * @return User
      */
     private function provisionAuth0User(string $email): User
     {

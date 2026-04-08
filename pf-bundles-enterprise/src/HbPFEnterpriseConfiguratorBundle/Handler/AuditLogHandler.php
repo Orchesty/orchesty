@@ -19,9 +19,7 @@ final class AuditLogHandler
      *
      * @param AuditLogRepository $repository
      */
-    public function __construct(
-        private readonly AuditLogRepository $repository,
-    )
+    public function __construct(private readonly AuditLogRepository $repository)
     {
     }
 
@@ -69,9 +67,9 @@ final class AuditLogHandler
 
         return [
             'items' => $items,
-            'total' => $result['total'],
-            'page'  => $page,
             'limit' => $limit,
+            'page'  => $page,
+            'total' => $result['total'],
         ];
     }
 

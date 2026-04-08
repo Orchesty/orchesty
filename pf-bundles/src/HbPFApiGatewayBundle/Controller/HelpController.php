@@ -2,6 +2,8 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
+use Hanaboso\Utils\File\File;
+use Hanaboso\Utils\String\Json;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,9 +24,7 @@ final class HelpController extends AbstractController
      *
      * @param string $helpDir
      */
-    public function __construct(
-        private readonly string $helpDir = '/srv/app/help',
-    )
+    public function __construct(private readonly string $helpDir = '/srv/app/help')
     {
     }
 
@@ -74,13 +74,9 @@ final class HelpController extends AbstractController
             return new JsonResponse(['error' => 'Not found.'], Response::HTTP_NOT_FOUND);
         }
 
-        $content = file_get_contents($file);
+        $content = File::getContent($file);
 
-        if ($content === FALSE) {
-            return new JsonResponse(['error' => 'Failed to read file.'], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-
-        return new JsonResponse(json_decode($content, TRUE, 512, JSON_THROW_ON_ERROR));
+        return new JsonResponse(Json::decode($content));
     }
 
 }

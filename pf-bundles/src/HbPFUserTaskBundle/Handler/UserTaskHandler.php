@@ -226,7 +226,7 @@ final readonly class UserTaskHandler
         Validations::checkParamsAny($fields, $data);
 
         $dtoHeaders = [];
-        if (!empty($data[self::SEARCH])) {
+        if (isset($data[self::SEARCH]) && $data[self::SEARCH] !== '') {
             $dtoHeaders[GridRequestDto::SEARCH] = $data[self::SEARCH];
         }
 
@@ -263,8 +263,8 @@ final readonly class UserTaskHandler
             }
         }
 
-        if (!empty($data[self::DATE_FROM])) {
-            $operator = !empty($data[self::DATE_TO]) ? 'BETWEEN' : 'GTE';
+        if (isset($data[self::DATE_FROM]) && $data[self::DATE_FROM] !== '') {
+            $operator = isset($data[self::DATE_TO]) && $data[self::DATE_TO] !== '' ? 'BETWEEN' : 'GTE';
             $value    = $operator === 'BETWEEN'
                 ? [$data[self::DATE_FROM], $data[self::DATE_TO]]
                 : [$data[self::DATE_FROM]];

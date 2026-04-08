@@ -24,24 +24,13 @@ final class UserActivateSubscriber implements EventSubscriberInterface
 {
 
     /**
+     * UserActivateSubscriber constructor.
+     *
      * @param DocumentManager $dm
      * @param GroupManager    $groupManager
      */
-    public function __construct(
-        private readonly DocumentManager $dm,
-        private readonly GroupManager $groupManager,
-    )
+    public function __construct(private readonly DocumentManager $dm, private readonly GroupManager $groupManager)
     {
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            UserEvent::USER_ACTIVATE => 'onUserActivate',
-        ];
     }
 
     /**
@@ -59,7 +48,7 @@ final class UserActivateSubscriber implements EventSubscriberInterface
         $collection = $db->selectCollection('PendingGroupAssignment');
         $pending    = $collection->findOneAndDelete(['email' => $user->getEmail()]);
 
-        if ($pending && !empty($pending['groupIds'])) {
+        if (is_array($pending) && isset($pending['groupIds']) && $pending['groupIds'] !== []) {
             foreach ($pending['groupIds'] as $groupId) {
                 try {
                     /** @var Group|null $group */
@@ -74,6 +63,16 @@ final class UserActivateSubscriber implements EventSubscriberInterface
             } catch (Throwable) {
             }
         }
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            UserEvent::USER_ACTIVATE => 'onUserActivate',
+        ];
     }
 
 }

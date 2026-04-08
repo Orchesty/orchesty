@@ -24,6 +24,7 @@ use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\Traits\LoggerTrait;
 use JsonException;
 use Psr\Log\NullLogger;
+use Throwable;
 
 /**
  * Class TopologyGeneratorBridge
@@ -39,10 +40,10 @@ final class TopologyGeneratorBridge
     public const string STARTING_POINT = 'starting-point';
     public const string LIMITER        = 'limiter';
 
-    protected const string BASE_TOPOLOGY_URL      = 'http://%s/v1/api/topologies/%s';
-    protected const string GET_TOPOLOGY_HOST_URL  = 'http://%s/v1/api/topologies/%s/host';
-    protected const string GENERATOR_TOPOLOGY_URL = 'http://%s/v1/api/topologies/%s';
-    protected const string STARTING_POINT_URL     = '%s/topologies/%s/invalidate-cache';
+    protected const string BASE_TOPOLOGY_URL       = 'http://%s/v1/api/topologies/%s';
+    protected const string GET_TOPOLOGY_HOST_URL   = 'http://%s/v1/api/topologies/%s/host';
+    protected const string GENERATOR_TOPOLOGY_URL  = 'http://%s/v1/api/topologies/%s';
+    protected const string STARTING_POINT_URL      = '%s/topologies/%s/invalidate-cache';
     protected const string LIMITER_URL             = '%s/terminate/topology-id/%s';
     protected const string LIMITER_CORRELATION_URL = '%s/terminate/correlation-id/%s';
     protected const string LIMITER_SNAPSHOT_URL    = '%s/metrics/snapshot';

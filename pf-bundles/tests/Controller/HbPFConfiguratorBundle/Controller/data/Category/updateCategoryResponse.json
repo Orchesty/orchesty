@@ -3,6 +3,7 @@
     "body": {
         "_id": "5e3297eee83e1850c8387dc4",
         "name": "edited",
-        "parent": "5e3297eee83e1850c8387dc3"
+        "parent": "5e3297eee83e1850c8387dc3",
+        "system": false
     }
 }

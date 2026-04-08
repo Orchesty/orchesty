@@ -23,59 +23,55 @@ final class PermissionPresets
     public const string SYSTEM_MANAGER     = 'system_manager';
     public const string SUPER_ADMIN        = 'super_admin';
 
-    /**
-     * @var array<string, array{label: string, description: string, level: int}>
-     */
     private const array PRESET_META = [
         self::CHAT_USER => [
-            'label'       => 'Chat User',
             'description' => 'Access to Trace chat only. Topology run permissions are assigned via access groups.',
+            'label'       => 'Chat User',
             'level'       => 5,
         ],
+        self::DEVELOPER => [
+            'description' => 'Process Management + full topology editing, application management.',
+            'label'       => 'Developer',
+            'level'       => 2,
+        ],
         self::MONITORING => [
-            'label'       => 'Monitoring',
             'description' => 'Read-only access to dashboard, topologies, scheduled tasks, processes, logs and failed messages.',
+            'label'       => 'Monitoring',
             'level'       => 4,
         ],
         self::PROCESS_MANAGEMENT => [
-            'label'       => 'Process Management',
             'description' => 'Monitoring + manage scheduled tasks, run/enable topologies, reprocess failed messages.',
+            'label'       => 'Process Management',
             'level'       => 3,
         ],
-        self::DEVELOPER => [
-            'label'       => 'Developer',
-            'description' => 'Process Management + full topology editing, application management.',
-            'level'       => 2,
+        self::SUPER_ADMIN => [
+            'description' => 'Full access including user and group management.',
+            'label'       => 'Super Admin',
+            'level'       => 0,
         ],
         self::SYSTEM_MANAGER => [
-            'label'       => 'System Manager',
             'description' => 'Developer + settings, SDKs, API tokens.',
+            'label'       => 'System Manager',
             'level'       => 1,
-        ],
-        self::SUPER_ADMIN => [
-            'label'       => 'Super Admin',
-            'description' => 'Full access including user and group management.',
-            'level'       => 0,
         ],
     ];
 
-    /**
-     * Rules added at each level (delta from the previous level).
-     *
-     * @var array<string, array<string, string[]>>
-     */
     private const array PRESET_RULES = [
         self::CHAT_USER => [
             ResourceEnum::TRACE => [ActionEnum::READ],
         ],
+        self::DEVELOPER => [
+            ResourceEnum::APPLICATION => [ActionEnum::READ, ActionEnum::WRITE, ActionEnum::DELETE],
+            ResourceEnum::TOPOLOGY    => [ActionEnum::READ, ActionEnum::WRITE, ActionEnum::DELETE, ActionEnum::RUN],
+        ],
         self::MONITORING => [
-            ResourceEnum::OVERVIEW       => [ActionEnum::READ],
-            ResourceEnum::TOPOLOGY       => [ActionEnum::READ],
-            ResourceEnum::SCHEDULED_TASK => [ActionEnum::READ],
-            ResourceEnum::PROCESS        => [ActionEnum::READ],
-            ResourceEnum::LOGS           => [ActionEnum::READ],
             ResourceEnum::CONNECTOR      => [ActionEnum::READ],
             ResourceEnum::LIMITER        => [ActionEnum::READ],
+            ResourceEnum::LOGS           => [ActionEnum::READ],
+            ResourceEnum::OVERVIEW       => [ActionEnum::READ],
+            ResourceEnum::PROCESS        => [ActionEnum::READ],
+            ResourceEnum::SCHEDULED_TASK => [ActionEnum::READ],
+            ResourceEnum::TOPOLOGY       => [ActionEnum::READ],
             ResourceEnum::USER_TASK      => [ActionEnum::READ],
         ],
         self::PROCESS_MANAGEMENT => [
@@ -83,15 +79,11 @@ final class PermissionPresets
             ResourceEnum::TOPOLOGY       => [ActionEnum::READ, ActionEnum::RUN],
             ResourceEnum::USER_TASK      => [ActionEnum::READ, ActionEnum::WRITE],
         ],
-        self::DEVELOPER => [
-            ResourceEnum::TOPOLOGY   => [ActionEnum::READ, ActionEnum::WRITE, ActionEnum::DELETE, ActionEnum::RUN],
-            ResourceEnum::APPLICATION => [ActionEnum::READ, ActionEnum::WRITE, ActionEnum::DELETE],
+        self::SUPER_ADMIN => [
+            ResourceEnum::USER => [ActionEnum::READ, ActionEnum::WRITE, ActionEnum::DELETE],
         ],
         self::SYSTEM_MANAGER => [
             ResourceEnum::SETTINGS => [ActionEnum::READ, ActionEnum::WRITE, ActionEnum::DELETE],
-        ],
-        self::SUPER_ADMIN => [
-            ResourceEnum::USER => [ActionEnum::READ, ActionEnum::WRITE, ActionEnum::DELETE],
         ],
     ];
 
@@ -138,10 +130,10 @@ final class PermissionPresets
         foreach (self::HIERARCHY as $name) {
             $meta          = self::PRESET_META[$name];
             $result[$name] = [
-                'name'        => $name,
-                'label'       => $meta['label'],
                 'description' => $meta['description'],
+                'label'       => $meta['label'],
                 'level'       => $meta['level'],
+                'name'        => $name,
                 'rules'       => self::resolve($name),
             ];
         }

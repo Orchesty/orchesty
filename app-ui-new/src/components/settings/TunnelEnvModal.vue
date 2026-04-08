@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue'
 import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
-import { fetchTunnelEnv } from '@/services/workersService'
+import { fetchWorkerEnv } from '@/services/workersService'
 
 interface Props {
   modelValue: boolean
@@ -26,9 +26,9 @@ watch(
       loading.value = true
       copied.value = false
       try {
-        envContent.value = await fetchTunnelEnv(props.workerId)
+        envContent.value = await fetchWorkerEnv(props.workerId)
       } catch (error) {
-        console.error('Failed to fetch tunnel env:', error)
+        console.error('Failed to fetch worker env:', error)
         envContent.value = '# Failed to generate environment variables'
       } finally {
         loading.value = false

@@ -113,10 +113,10 @@ final class EnterpriseGroupController
             $rules = isset($data['rules']) && is_array($data['rules']) ? $data['rules'] : NULL;
 
             return $this->getResponse($this->groupHandler->updateGroup($id, $name, $level, $rules));
-        } catch (LogicException $e) {
-            return $this->getErrorResponse($e, 403);
         } catch (InvalidArgumentException $e) {
             return $this->getErrorResponse($e, 404);
+        } catch (LogicException $e) {
+            return $this->getErrorResponse($e, 403);
         } catch (AclException $e) {
             return $this->getErrorResponse($e, 400);
         } catch (Exception $e) {
@@ -136,10 +136,10 @@ final class EnterpriseGroupController
             $this->groupHandler->deleteGroup($id);
 
             return $this->getResponse([]);
-        } catch (LogicException $e) {
-            return $this->getErrorResponse($e, 403);
         } catch (InvalidArgumentException $e) {
             return $this->getErrorResponse($e, 404);
+        } catch (LogicException $e) {
+            return $this->getErrorResponse($e, 403);
         } catch (AclException $e) {
             return $this->getErrorResponse($e, 400);
         } catch (Exception $e) {

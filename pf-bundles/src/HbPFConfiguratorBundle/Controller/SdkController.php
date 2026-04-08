@@ -118,4 +118,19 @@ final class SdkController extends AbstractController
         }
     }
 
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route('/sdks/{id}/env', requirements: ['id' => '\w+'], methods: ['GET'])]
+    public function getEnvAction(string $id): Response
+    {
+        try {
+            return $this->getResponse($this->handler->getEnv($id));
+        } catch (DocumentNotFoundException $e) {
+            return $this->getErrorResponse($e, 404);
+        }
+    }
+
 }

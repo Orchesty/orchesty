@@ -93,11 +93,9 @@ const handleSaveWorker = async (data: Omit<Worker, 'id'> | Partial<Worker>) => {
       showToast('Worker created successfully', 'success')
       workerModalOpen.value = false
       await loadData()
-      if (created.type === 'tunnel') {
-        tunnelEnvWorkerId.value = created.id
-        tunnelEnvWorkerName.value = created.name
-        tunnelEnvModalOpen.value = true
-      }
+      tunnelEnvWorkerId.value = created.id
+      tunnelEnvWorkerName.value = created.name
+      tunnelEnvModalOpen.value = true
       return
     } else if (selectedWorker.value) {
       await updateWorker(selectedWorker.value.id, data)
@@ -198,7 +196,6 @@ onMounted(() => {
         <template #cell-actions="{ row }">
           <div class="flex items-center gap-2 justify-end">
             <button
-              v-if="(row as Worker).type === 'tunnel'"
               type="button"
               @click="handleShowTunnelEnv(row as Worker)"
               class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"

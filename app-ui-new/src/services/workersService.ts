@@ -115,3 +115,8 @@ export async function fetchTunnelEnv(id: string): Promise<string> {
   const response = await api.get<{ env: string }>(`/api/sdks/${id}/tunnel-env`)
   return response.data.env
 }
+
+export async function fetchWorkerEnv(id: string): Promise<string> {
+  const response = await api.get<{ env: string }>(`/api/sdks/${id}/env`)
+  return response.data.env
+}

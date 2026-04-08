@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFrameworkEnterprise\AuditLog\Repository;
 use DateTime;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Hanaboso\PipesFrameworkEnterprise\AuditLog\Document\AuditLog;
+use MongoDB\BSON\Regex;
 
 /**
  * Class AuditLogRepository
@@ -46,8 +47,8 @@ final class AuditLogRepository extends DocumentRepository
         if ($search !== NULL && $search !== '') {
             $regex = preg_quote($search, '/');
             $qb->addOr(
-                $qb->expr()->field('userEmail')->equals(new \MongoDB\BSON\Regex($regex, 'i')),
-                $qb->expr()->field('resourceName')->equals(new \MongoDB\BSON\Regex($regex, 'i')),
+                $qb->expr()->field('userEmail')->equals(new Regex($regex, 'i')),
+                $qb->expr()->field('resourceName')->equals(new Regex($regex, 'i')),
             );
         }
 
@@ -78,10 +79,11 @@ final class AuditLogRepository extends DocumentRepository
             ->limit($limit);
 
         /** @var AuditLog[] $items */
-        $items = $qb->getQuery()->execute()->toArray();
+        $items = $qb->getQuery()->execute()->toArray(); /** @phpstan-ignore-line */
 
         return [
             'items' => array_values($items),
+            /** @phpstan-ignore cast.int */
             'total' => (int) $total,
         ];
     }

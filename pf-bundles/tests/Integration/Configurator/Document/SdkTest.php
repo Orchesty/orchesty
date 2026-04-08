@@ -31,6 +31,7 @@ final class SdkTest extends DatabaseTestCaseAbstract
                 'headers' => [],
                 'id'    => $sdk->getId(),
                 'name'   => 'key',
+                'type' => 'http',
                 'url' => 'value',
             ],
             $sdk->toArray(),

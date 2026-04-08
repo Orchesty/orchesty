@@ -56,23 +56,36 @@ class AuditLog
     #[ODM\Field(type: 'int')]
     private int $statusCode;
 
-    /** @var mixed[]|null */
+    /**
+     * @var mixed[]|null
+     */
     #[ODM\Field(type: 'hash', nullable: TRUE)]
     private ?array $requestBody = NULL;
 
     #[ODM\Field(type: 'string', nullable: TRUE)]
     private ?string $userAgent = NULL;
 
+    /**
+     * AuditLog constructor.
+     */
     public function __construct()
     {
         $this->timestamp = new DateTime();
     }
 
+    /**
+     * @return DateTime
+     */
     public function getTimestamp(): DateTime
     {
         return $this->timestamp;
     }
 
+    /**
+     * @param DateTime $timestamp
+     *
+     * @return self
+     */
     public function setTimestamp(DateTime $timestamp): self
     {
         $this->timestamp = $timestamp;
@@ -80,11 +93,19 @@ class AuditLog
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getUserId(): string
     {
         return $this->userId;
     }
 
+    /**
+     * @param string $userId
+     *
+     * @return self
+     */
     public function setUserId(string $userId): self
     {
         $this->userId = $userId;
@@ -92,11 +113,19 @@ class AuditLog
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getUserEmail(): string
     {
         return $this->userEmail;
     }
 
+    /**
+     * @param string $userEmail
+     *
+     * @return self
+     */
     public function setUserEmail(string $userEmail): self
     {
         $this->userEmail = $userEmail;
@@ -104,11 +133,19 @@ class AuditLog
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getAction(): string
     {
         return $this->action;
     }
 
+    /**
+     * @param string $action
+     *
+     * @return self
+     */
     public function setAction(string $action): self
     {
         $this->action = $action;
@@ -116,11 +153,19 @@ class AuditLog
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getResource(): string
     {
         return $this->resource;
     }
 
+    /**
+     * @param string $resource
+     *
+     * @return self
+     */
     public function setResource(string $resource): self
     {
         $this->resource = $resource;
@@ -128,11 +173,19 @@ class AuditLog
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getResourceId(): string
     {
         return $this->resourceId;
     }
 
+    /**
+     * @param string $resourceId
+     *
+     * @return self
+     */
     public function setResourceId(string $resourceId): self
     {
         $this->resourceId = $resourceId;
@@ -140,11 +193,19 @@ class AuditLog
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getResourceName(): ?string
     {
         return $this->resourceName;
     }
 
+    /**
+     * @param string|null $resourceName
+     *
+     * @return self
+     */
     public function setResourceName(?string $resourceName): self
     {
         $this->resourceName = $resourceName;
@@ -152,11 +213,19 @@ class AuditLog
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getMethod(): string
     {
         return $this->method;
     }
 
+    /**
+     * @param string $method
+     *
+     * @return self
+     */
     public function setMethod(string $method): self
     {
         $this->method = $method;
@@ -164,11 +233,19 @@ class AuditLog
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getPath(): string
     {
         return $this->path;
     }
 
+    /**
+     * @param string $path
+     *
+     * @return self
+     */
     public function setPath(string $path): self
     {
         $this->path = $path;
@@ -176,11 +253,19 @@ class AuditLog
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getIp(): string
     {
         return $this->ip;
     }
 
+    /**
+     * @param string $ip
+     *
+     * @return self
+     */
     public function setIp(string $ip): self
     {
         $this->ip = $ip;
@@ -188,11 +273,19 @@ class AuditLog
         return $this;
     }
 
+    /**
+     * @return int
+     */
     public function getStatusCode(): int
     {
         return $this->statusCode;
     }
 
+    /**
+     * @param int $statusCode
+     *
+     * @return self
+     */
     public function setStatusCode(int $statusCode): self
     {
         $this->statusCode = $statusCode;
@@ -210,6 +303,8 @@ class AuditLog
 
     /**
      * @param mixed[]|null $requestBody
+     *
+     * @return self
      */
     public function setRequestBody(?array $requestBody): self
     {
@@ -218,11 +313,19 @@ class AuditLog
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getUserAgent(): ?string
     {
         return $this->userAgent;
     }
 
+    /**
+     * @param string|null $userAgent
+     *
+     * @return self
+     */
     public function setUserAgent(?string $userAgent): self
     {
         $this->userAgent = $userAgent;
@@ -238,20 +341,20 @@ class AuditLog
         $resourceLabel = ucfirst(str_replace('_', ' ', $this->resource));
 
         return [
+            'action'      => $this->action,
             'id'          => $this->id,
-            'timestamp'   => $this->timestamp->format('c'),
-            'user'        => $this->userEmail,
-            'userId'      => $this->userId,
+            'ip'          => $this->ip,
+            'note'        => sprintf('%s %s', $this->method, $this->path),
             'object'      => $this->resourceName
                 ? sprintf('%s: %s', $resourceLabel, $this->resourceName)
                 : $resourceLabel,
             'objectId'    => $this->resourceId,
-            'action'      => $this->action,
-            'note'        => sprintf('%s %s', $this->method, $this->path),
             'requestBody' => $this->requestBody,
-            'userAgent'   => $this->userAgent,
-            'ip'          => $this->ip,
             'statusCode'  => $this->statusCode,
+            'timestamp'   => $this->timestamp->format('c'),
+            'user'        => $this->userEmail,
+            'userAgent'   => $this->userAgent,
+            'userId'      => $this->userId,
         ];
     }
 

@@ -26,9 +26,7 @@ final class ResourceController
      *
      * @param TopologyHandler $handler
      */
-    public function __construct(
-        private readonly TopologyHandler $handler,
-    )
+    public function __construct(private readonly TopologyHandler $handler)
     {
         $this->logger = new NullLogger();
     }
@@ -78,7 +76,12 @@ final class ResourceController
      *
      * @return Response
      */
-    #[Route('/resources/bridges/{topologyId}', methods: ['DELETE'], requirements: ['topologyId' => '[a-f0-9]{24}'], priority: 10)]
+    #[Route(
+        '/resources/bridges/{topologyId}',
+        methods: ['DELETE'],
+        requirements: ['topologyId' => '[a-f0-9]{24}'],
+        priority: 10,
+    )]
     public function decommissionBridgeAction(string $topologyId, Request $request): Response
     {
         try {
@@ -96,7 +99,12 @@ final class ResourceController
      *
      * @return Response
      */
-    #[Route('/resources/bridges/{topologyId}/restart', methods: ['POST'], requirements: ['topologyId' => '[a-f0-9]{24}'], priority: 10)]
+    #[Route(
+        '/resources/bridges/{topologyId}/restart',
+        methods: ['POST'],
+        requirements: ['topologyId' => '[a-f0-9]{24}'],
+        priority: 10,
+    )]
     public function restartBridgeAction(string $topologyId): Response
     {
         try {
@@ -112,7 +120,12 @@ final class ResourceController
      *
      * @return Response
      */
-    #[Route('/resources/bridges/{topologyId}/terminate', methods: ['POST'], requirements: ['topologyId' => '[a-f0-9]{24}'], priority: 10)]
+    #[Route(
+        '/resources/bridges/{topologyId}/terminate',
+        methods: ['POST'],
+        requirements: ['topologyId' => '[a-f0-9]{24}'],
+        priority: 10,
+    )]
     public function terminateProcessesAction(string $topologyId, Request $request): Response
     {
         try {

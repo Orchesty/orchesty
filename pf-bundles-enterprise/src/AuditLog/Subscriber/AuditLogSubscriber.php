@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFrameworkEnterprise\AuditLog\Document\AuditLog;
 use Hanaboso\PipesFrameworkEnterprise\AuditLog\Enum\AuditActionEnum;
 use Hanaboso\UserBundle\Document\User;
+use Hanaboso\Utils\String\Json;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
@@ -31,7 +32,7 @@ final class AuditLogSubscriber implements EventSubscriberInterface
         'newPassword',
     ];
 
-    private const int MAX_BODY_SIZE = 8192;
+    private const int MAX_BODY_SIZE = 8_192;
 
     private const array SKIP_PATHS = [
         '/api/user/check_logged',
@@ -43,21 +44,21 @@ final class AuditLogSubscriber implements EventSubscriberInterface
     ];
 
     private const array RESOURCE_PREFIX_MAP = [
-        '/api/applications'     => 'application',
-        '/api/audit/entities'   => 'audit_entity',
-        '/api/categories'       => 'category',
-        '/api/dashboards'       => 'dashboard',
-        '/api/group'            => 'group',
-        '/api/logs'             => 'logs',
-        '/api/metrics'          => 'metrics',
-        '/api/nodes'            => 'node',
-        '/api/permissions'      => 'permissions',
-        '/api/processes'        => 'process',
-        '/api/sdks'             => 'sdk',
-        '/api/topologies'       => 'topology',
-        '/api/user-task'        => 'user_task',
-        '/api/user'             => 'user',
-        '/api/apiTokens'        => 'api_token',
+        '/api/apiTokens'      => 'api_token',
+        '/api/applications'   => 'application',
+        '/api/audit/entities' => 'audit_entity',
+        '/api/categories'     => 'category',
+        '/api/dashboards'     => 'dashboard',
+        '/api/group'          => 'group',
+        '/api/logs'           => 'logs',
+        '/api/metrics'        => 'metrics',
+        '/api/nodes'          => 'node',
+        '/api/permissions'    => 'permissions',
+        '/api/processes'      => 'process',
+        '/api/sdks'           => 'sdk',
+        '/api/topologies'     => 'topology',
+        '/api/user'           => 'user',
+        '/api/user-task'      => 'user_task',
     ];
 
     /**
@@ -66,10 +67,7 @@ final class AuditLogSubscriber implements EventSubscriberInterface
      * @param Security        $security
      * @param DocumentManager $dm
      */
-    public function __construct(
-        private readonly Security $security,
-        private readonly DocumentManager $dm,
-    )
+    public function __construct(private readonly Security $security, private readonly DocumentManager $dm)
     {
     }
 
@@ -207,7 +205,7 @@ final class AuditLogSubscriber implements EventSubscriberInterface
         $segments = explode('/', trim($path, '/'));
         $last     = end($segments);
 
-        if ($last !== FALSE && $last !== '' && !str_contains($last, '.')) {
+        if ($last !== '' && !str_contains($last, '.')) {
             return $last;
         }
 
@@ -222,6 +220,8 @@ final class AuditLogSubscriber implements EventSubscriberInterface
      */
     private function extractResourceName(string $path, array $body): ?string
     {
+        $path;
+
         if (isset($body['name']) && is_string($body['name'])) {
             return $body['name'];
         }
@@ -246,7 +246,7 @@ final class AuditLogSubscriber implements EventSubscriberInterface
 
         $sanitized = $this->redactSensitive($body);
 
-        $encoded = json_encode($sanitized, JSON_THROW_ON_ERROR);
+        $encoded = Json::encode($sanitized);
         if (strlen($encoded) > self::MAX_BODY_SIZE) {
             return ['_truncated' => TRUE, '_size' => strlen($encoded)];
         }

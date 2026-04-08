@@ -53,7 +53,15 @@ final class TopologyManager extends BaseTopologyManager
         string $topologyClass = Topology::class,
     )
     {
-        parent::__construct($dml, $cronManager, $checkInfiniteLoop, $curl, $startingPointHost, $tunnelProxyHost, $topologyClass);
+        parent::__construct(
+            $dml,
+            $cronManager,
+            $checkInfiniteLoop,
+            $curl,
+            $startingPointHost,
+            $tunnelProxyHost,
+            $topologyClass,
+        );
 
         /** @var DocumentManager $dm */
         $dm                   = $dml->getDm();

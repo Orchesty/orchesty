@@ -14,7 +14,7 @@
   "license": "Apache-2.0",
   "packageManager": "pnpm@9.1.4",
   "dependencies": {
-    "@aws-sdk/client-ses": "^3.1015.0",
+    "@aws-sdk/client-ses": "^3.1026.0",
     "@orchesty/connector-airtable": "^1.0.1",
     "@orchesty/connector-amazon-apps-common": "^1.0.2",
     "@orchesty/connector-amazon-apps-lambda": "^1.0.2",
@@ -67,9 +67,9 @@
     "@orchesty/connector-zendesk": "^1.0.1",
     "@orchesty/connector-zoho": "^1.0.1",
     "@orchesty/connector-zoom": "^1.0.1",
-    "@orchesty/nodejs-sdk": "^5.0.3",
+    "@orchesty/nodejs-sdk": "^5.0.5",
     "copyfiles": "^2.4.1",
-    "lodash": "^4.17.23",
+    "lodash": "^4.18.1",
     "luxon": "^3.7.2",
     "mongodb": "^7.1.1",
     "mysql2": "^3.20.0"
@@ -80,15 +80,15 @@
     "@hanaboso/eslint-plugin": "^1.2.5",
     "@types/jest": "^30.0.0",
     "@types/luxon": "^3.7.1",
-    "@types/node": "^25.5.0",
+    "@types/node": "^25.5.2",
     "@types/supertest": "^7.2.0",
     "axios-mock-adapter": "^2.1.0",
-    "eslint": "^10.1.0",
+    "eslint": "^10.2.0",
     "jest": "^30.3.0",
     "nodemon": "^3.1.14",
-    "ts-jest": "^29.4.6",
+    "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.2"
   },
   "pnpm": {
     "overrides": {

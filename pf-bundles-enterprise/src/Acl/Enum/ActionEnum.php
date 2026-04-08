@@ -18,10 +18,10 @@ class ActionEnum extends BaseActionEnum
      * @var string[]
      */
     protected static array $choices = [
-        self::READ   => self::READ,
-        self::WRITE  => self::WRITE,
         self::DELETE => self::DELETE,
+        self::READ   => self::READ,
         self::RUN    => self::RUN,
+        self::WRITE  => self::WRITE,
     ];
 
 }

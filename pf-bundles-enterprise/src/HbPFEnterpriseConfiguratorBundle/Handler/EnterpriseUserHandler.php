@@ -7,8 +7,8 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\AclBundle\Document\Group;
 use Hanaboso\AclBundle\Manager\GroupManager;
 use Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler;
-use Hanaboso\PipesFrameworkEnterprise\Acl\PermissionPresets;
 use Hanaboso\PipesFramework\User\Manager\UserManager as UsersManager;
+use Hanaboso\PipesFrameworkEnterprise\Acl\PermissionPresets;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\UserBundle\Model\Token\TokenManager;
 use Hanaboso\UserBundle\Model\User\UserManager;
@@ -77,33 +77,6 @@ final class EnterpriseUserHandler extends UserHandler
         }
 
         return $result;
-    }
-
-    /**
-     * Creates all preset groups in the database if they don't exist yet.
-     */
-    private function ensurePresetGroups(): void
-    {
-        $repo          = $this->dm->getRepository(Group::class);
-        $existingNames = [];
-
-        /** @var Group $g */
-        foreach ($repo->findAll() as $g) {
-            $existingNames[] = $g->getName();
-        }
-
-        foreach (PermissionPresets::all() as $name => $preset) {
-            if (in_array($name, $existingNames, TRUE)) {
-                continue;
-            }
-
-            $group = new Group(NULL);
-            $group->setName($name);
-            $group->setLevel($preset['level']);
-            $this->dm->persist($group);
-        }
-
-        $this->dm->flush();
     }
 
     /**
@@ -317,6 +290,33 @@ final class EnterpriseUserHandler extends UserHandler
         $this->dm->flush();
 
         return $user->toArray();
+    }
+
+    /**
+     * Creates all preset groups in the database if they don't exist yet.
+     */
+    private function ensurePresetGroups(): void
+    {
+        $repo          = $this->dm->getRepository(Group::class);
+        $existingNames = [];
+
+        /** @var Group $g */
+        foreach ($repo->findAll() as $g) {
+            $existingNames[] = $g->getName();
+        }
+
+        foreach (PermissionPresets::all() as $name => $preset) {
+            if (in_array($name, $existingNames, TRUE)) {
+                continue;
+            }
+
+            $group = new Group(NULL);
+            $group->setName($name);
+            $group->setLevel($preset['level']);
+            $this->dm->persist($group);
+        }
+
+        $this->dm->flush();
     }
 
     /**

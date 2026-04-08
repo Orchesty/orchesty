@@ -15,6 +15,7 @@ use Hanaboso\PipesFrameworkEnterprise\Acl\PermissionPresets;
 use Hanaboso\UserBundle\Document\User;
 use InvalidArgumentException;
 use LogicException;
+use Throwable;
 
 /**
  * Class EnterpriseGroupHandler
@@ -146,9 +147,9 @@ final class EnterpriseGroupHandler
                 }
 
                 $ruleData[] = [
-                    'resource'      => $resource,
                     'action_mask'   => $actionMask,
                     'property_mask' => 2,
+                    'resource'      => $resource,
                 ];
             }
 
@@ -160,9 +161,9 @@ final class EnterpriseGroupHandler
             /** @var Rule $existingRule */
             foreach ($group->getRules() as $existingRule) {
                 $existingRuleData[] = [
-                    'resource'      => $existingRule->getResource(),
                     'action_mask'   => $existingRule->getActionMask(),
                     'property_mask' => $existingRule->getPropertyMask(),
+                    'resource'      => $existingRule->getResource(),
                 ];
             }
             if ($existingRuleData !== []) {
@@ -207,10 +208,10 @@ final class EnterpriseGroupHandler
             }
 
             $presets[] = [
-                'name'        => $name,
-                'label'       => $preset['label'],
                 'description' => $preset['description'],
+                'label'       => $preset['label'],
                 'level'       => $preset['level'],
+                'name'        => $name,
                 'rules'       => $rules,
             ];
         }
@@ -306,7 +307,9 @@ final class EnterpriseGroupHandler
         $group = $this->findGroupOrFail($groupId);
         $user  = $this->findUserOrFail($userId);
 
+        /** @phpstan-ignore method.nonObject */
         $users = $group->getUsers()->toArray();
+        /** @phpstan-ignore method.nonObject */
         $group->getUsers()->clear();
         $this->dm->flush();
 
@@ -373,9 +376,9 @@ final class EnterpriseGroupHandler
             foreach ($group->getRules() as $rule) {
                 if ($rule->getResource() === $scopedKey) {
                     $result[] = [
+                        'actions'   => $this->maskFactory->getActionsFromMask($rule->getActionMask()),
                         'groupId'   => $group->getId(),
                         'groupName' => $group->getName(),
-                        'actions'   => $this->maskFactory->getActionsFromMask($rule->getActionMask()),
                     ];
 
                     break;
@@ -432,9 +435,9 @@ final class EnterpriseGroupHandler
                     $hadExistingAccess = TRUE;
                 } else {
                     $otherRules[] = [
-                        'resource'      => $rule->getResource(),
                         'action_mask'   => $rule->getActionMask(),
                         'property_mask' => $rule->getPropertyMask(),
+                        'resource'      => $rule->getResource(),
                     ];
                 }
             }
@@ -452,16 +455,13 @@ final class EnterpriseGroupHandler
             $ruleData = $otherRules;
 
             if ($hasNewAccess) {
-                $actionMask = $this->maskFactory->maskActionFromYmlArray(
-                    $newAccessByGroupId[$groupId],
-                    'topology',
-                );
+                $actionMask = $this->maskFactory->maskActionFromYmlArray($newAccessByGroupId[$groupId], 'topology');
 
                 if ($actionMask > 0) {
                     $ruleData[] = [
-                        'resource'      => $scopedKey,
                         'action_mask'   => $actionMask,
                         'property_mask' => 2,
+                        'resource'      => $scopedKey,
                     ];
                 }
             }
@@ -573,10 +573,11 @@ final class EnterpriseGroupHandler
         $usersCount = 0;
         foreach ($group->getUsers() as $user) {
             try {
+                /** @phpstan-ignore instanceof.alwaysTrue */
                 if ($user instanceof User && $user->getEmail()) {
                     $usersCount++;
                 }
-            } catch (\Throwable) {
+            } catch (Throwable) {
             }
         }
 
@@ -602,13 +603,14 @@ final class EnterpriseGroupHandler
         $users = [];
         foreach ($group->getUsers() as $user) {
             try {
+                /** @phpstan-ignore instanceof.alwaysTrue */
                 if ($user instanceof User) {
                     $users[] = [
                         'email' => $user->getEmail(),
                         'id'    => $user->getId(),
                     ];
                 }
-            } catch (\Throwable) {
+            } catch (Throwable) {
             }
         }
 

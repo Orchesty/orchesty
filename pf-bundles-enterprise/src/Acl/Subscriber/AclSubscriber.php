@@ -4,14 +4,14 @@ namespace Hanaboso\PipesFrameworkEnterprise\Acl\Subscriber;
 
 use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\AclBundle\Document\Group;
-use Hanaboso\PipesFrameworkEnterprise\Acl\Enum\ActionEnum;
-use Hanaboso\PipesFrameworkEnterprise\Acl\PermissionPresets;
 use Hanaboso\AclBundle\Exception\AclException;
 use Hanaboso\AclBundle\Manager\AccessManager;
 use Hanaboso\AclBundle\Repository\Document\GroupRepository;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Database\Document\Category;
 use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFrameworkEnterprise\Acl\Enum\ActionEnum;
+use Hanaboso\PipesFrameworkEnterprise\Acl\PermissionPresets;
 use Hanaboso\PipesFrameworkEnterprise\ResourceEnum;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\Utils\String\Json;
@@ -38,16 +38,16 @@ final class AclSubscriber implements EventSubscriberInterface
             'POST'   => [ActionEnum::WRITE, ResourceEnum::SETTINGS],
         ],
 
-        '/api/applications/topologies/nodes' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::TOPOLOGY]],
-
-        '/api/audit-logs' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::SETTINGS]],
-
         '/api/applications' => [
             'DELETE' => [ActionEnum::DELETE, ResourceEnum::APPLICATION],
             'GET'    => [ActionEnum::READ, ResourceEnum::APPLICATION],
             'POST'   => [ActionEnum::WRITE, ResourceEnum::APPLICATION],
             'PUT'    => [ActionEnum::WRITE, ResourceEnum::APPLICATION],
         ],
+
+        '/api/applications/topologies/nodes' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::TOPOLOGY]],
+
+        '/api/audit-logs' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::SETTINGS]],
 
         '/api/audit/entities' => [
             'DELETE' => [ActionEnum::DELETE, ResourceEnum::SETTINGS],
@@ -78,18 +78,16 @@ final class AclSubscriber implements EventSubscriberInterface
 
         '/api/metrics/connectors' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::CONNECTOR]],
         '/api/metrics/limits'     => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::LIMITER]],
-
-        '/api/resources/limiter' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::LIMITER]],
         '/api/metrics/processes'  => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::PROCESS]],
         '/api/metrics/requests'   => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::PROCESS]],
         '/api/metrics/topology'   => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::PROCESS]],
         '/api/metrics/user-tasks' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::USER_TASK]],
 
-        '/api/nodes/connectors' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::CONNECTOR]],
         '/api/nodes' => [
             'GET'   => [ActionEnum::READ, ResourceEnum::TOPOLOGY],
             'PATCH' => [ActionEnum::WRITE, ResourceEnum::SCHEDULED_TASK],
         ],
+        '/api/nodes/connectors' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::CONNECTOR]],
 
         '/api/processes'            => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::PROCESS]],
         '/api/processes/graph'      => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::OVERVIEW]],
@@ -97,6 +95,8 @@ final class AclSubscriber implements EventSubscriberInterface
         '/api/processes/total'      => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::OVERVIEW]],
 
         '/api/progress' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::PROCESS]],
+
+        '/api/resources/limiter' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::LIMITER]],
 
         '/api/sdks' => [
             'DELETE' => [ActionEnum::DELETE, ResourceEnum::SETTINGS],
@@ -128,8 +128,6 @@ final class AclSubscriber implements EventSubscriberInterface
         '/api/user/change_password'  => [],
         '/api/user/check_logged'     => [],
         '/api/user/exists'           => [],
-        '/api/user/me/groups'        => [],
-        '/api/user/whoami'           => [],
         '/api/user/invite'           => ['DEFAULT' => [ActionEnum::WRITE, ResourceEnum::USER]],
         '/api/user/invited'          => [
             'DELETE' => [ActionEnum::DELETE, ResourceEnum::USER],
@@ -138,7 +136,9 @@ final class AclSubscriber implements EventSubscriberInterface
         ],
         '/api/user/list'             => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::USER]],
         '/api/user/logout'           => [],
+        '/api/user/me/groups'        => [],
         '/api/user/reset_password'   => [],
+        '/api/user/whoami'           => [],
     ];
 
     private const array TOPOLOGY_SCOPED_MAP = [
@@ -263,6 +263,16 @@ final class AclSubscriber implements EventSubscriberInterface
     }
 
     /**
+     * @return array<string, string>
+     */
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            KernelEvents::CONTROLLER => 'onKernelController',
+        ];
+    }
+
+    /**
      * @param Group[] $groups
      * @param string  $action
      * @param string  $resource
@@ -281,22 +291,12 @@ final class AclSubscriber implements EventSubscriberInterface
             }
 
             $rules        = PermissionPresets::resolve($groupName);
-            $baseResource = str_contains($resource, ':') ? strstr($resource, ':', TRUE) : $resource;
+            $baseResource = str_contains($resource, ':') ? (string) strstr($resource, ':', TRUE) : $resource;
 
             return isset($rules[$baseResource]) && in_array($action, $rules[$baseResource], TRUE);
         }
 
         return FALSE;
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            KernelEvents::CONTROLLER => 'onKernelController',
-        ];
     }
 
     /**

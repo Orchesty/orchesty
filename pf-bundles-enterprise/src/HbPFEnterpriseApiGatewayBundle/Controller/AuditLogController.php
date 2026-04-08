@@ -28,9 +28,7 @@ final class AuditLogController
      *
      * @param AuditLogHandler $handler
      */
-    public function __construct(
-        private readonly AuditLogHandler $handler,
-    )
+    public function __construct(private readonly AuditLogHandler $handler)
     {
         $this->logger = new NullLogger();
     }
