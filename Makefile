@@ -16,6 +16,7 @@ test-go:
 	cd starting-point && $(TEST) && $(DOWN)
 	cd notifier && $(TEST) && $(DOWN)
 	cd topology-generator && $(TEST) && $(DOWN)
+	cd trace && $(TEST) && $(DOWN)
 
 test-php:
 	cd pf-bundles && $(TEST) && $(DOWN)
@@ -59,4 +60,5 @@ rebuild-all:
 	cd clients/demo/node-sdk && make build TAG=$(TAG)
 	cd applinth && make build TAG=$(TAG)
 	cd notifier && make build TAG=$(TAG)
+	cd trace && make build TAG=$(TAG)
 	cd worker-api && make build TAG=$(TAG)

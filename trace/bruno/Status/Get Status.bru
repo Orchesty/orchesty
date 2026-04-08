@@ -1,0 +1,13 @@
+meta {
+  name: Get Status
+  seq: 1
+}
+
+get {
+  url: http://{{baseUrl}}/status
+}
+
+assert {
+  res.status: eq 200
+  res.body.backend: isBoolean true
+}

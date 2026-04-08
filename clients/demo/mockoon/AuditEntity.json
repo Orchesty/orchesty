@@ -1,0 +1,72 @@
+[
+    {
+        "key": "post",
+        "name": "Post",
+        "fields": [
+            {
+                "key": "id",
+                "name": "ID"
+            },
+            {
+                "key": "externalId",
+                "name": "External ID"
+            }
+        ]
+    },
+    {
+        "key": "user",
+        "name": "User",
+        "fields": [
+            {
+                "key": "id",
+                "name": "ID"
+            },
+            {
+                "key": "externalId",
+                "name": "External ID"
+            }
+        ]
+    },
+    {
+        "key": "comment",
+        "name": "Comment",
+        "fields": [
+            {
+                "key": "id",
+                "name": "ID"
+            },
+            {
+                "key": "externalId",
+                "name": "External ID"
+            }
+        ]
+    },
+    {
+        "key": "product",
+        "name": "Product",
+        "fields": [
+            {
+                "key": "id",
+                "name": "ID"
+            },
+            {
+                "key": "externalId",
+                "name": "External ID"
+            }
+        ]
+    },
+    {
+        "key": "category",
+        "name": "Category",
+        "fields": [
+            {
+                "key": "id",
+                "name": "ID"
+            },
+            {
+                "key": "externalId",
+                "name": "External ID"
+            }
+        ]
+    }
+]

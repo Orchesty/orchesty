@@ -39,8 +39,9 @@ final class McpManager
      * McpManager constructor.
      *
      * @param DocumentManager $dm
+     * @param LokiManager     $lokiManager
      */
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, private readonly LokiManager $lokiManager)
     {
         $this->auditEntityRepository      = $dm->getRepository(AuditEntity::class);
         $this->auditDataRepository        = $dm->getRepository(AuditData::class);
@@ -130,10 +131,12 @@ final class McpManager
             $queryBuilder->getQuery()->execute()->toArray(), /** @phpstan-ignore-line */
         );
 
-        return array_map(
+        $correlationIds = array_map(
             static fn(TopologyProgress $progress): string => $progress->getId(),
             $this->topologyProgressRepository->findBy(['auditData' => ['$in' => $auditDataIds]]),
         );
+
+        return $this->lokiManager->queryByCorrelationIds($correlationIds);
     }
 
 }
