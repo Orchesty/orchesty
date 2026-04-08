@@ -1,0 +1,19 @@
+.base-trace:
+  variables:
+    DIR: trace
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}trace
+
+trace:test:
+  stage: test
+  extends:
+    - .base-test
+    - .base-trace
+
+trace:build:
+  stage: build
+  needs:
+    - job: trace:test
+      optional: false
+  extends:
+    - .base-dind-build
+    - .base-trace

@@ -1,0 +1,94 @@
+meta {
+  name: Trace
+  type: ws
+  seq: 1
+  tags: [
+    ws
+  ]
+}
+
+ws {
+  url: ws://{{baseUrl}}/trace
+  body: ws
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+body:ws {
+  name: token
+  type: json
+  content: '''
+    {
+      "type": "provider",
+      "data": {
+        "user": "orchesty",
+        "worker": "enterprise-system-worker",
+        "workerProviderUrl": "http://enterprise-system-worker:8080/connector/open-ai-trace-connector/action"
+      }
+    }
+  '''
+}
+
+docs {
+  # Messages
+  
+  ## Client
+  
+  ### Token
+  ```json
+  {
+    "type": "token",
+    "data": {
+      "token": ""
+    }
+  }
+  ```
+  
+  ### Provider
+  ```json
+  {
+    "type": "provider",
+    "data": {
+      "user": "orchesty",
+      "worker": "enterprise-system-worker",
+      "workerProviderUrl": "http://enterprise-system-worker:8080/connector/open-ai-trace-connector/action"
+    }
+  }
+  ```
+  
+  ### Request
+  ```json
+  {
+    "type": "request",
+    "data": {
+      "content": "Můžeš mi najít produkt s externím ID X prosím?"
+    }
+  }
+  ```
+  
+  ## Server
+  
+  ### Response
+  ```json
+  {
+    "type": "response",
+    "data": {
+      "content": ""
+    }
+  }
+  ```
+  
+  ### Error
+  ```json
+  {
+    "type": "error",
+    "data": {
+      "code": 400,
+      "message": ""
+    }
+  }
+  ```
+}

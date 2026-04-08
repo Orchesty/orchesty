@@ -26,4 +26,5 @@ include:
   - local: "/saas/usccp/.gitlab-ci.yml"
   - local: "/starting-point/.gitlab-ci.yml"
   - local: "/topology-generator/.gitlab-ci.yml"
+  - local: "/trace/.gitlab-ci.yml"
   - local: "/worker-api/.gitlab-ci.yml"
