@@ -17,3 +17,11 @@ services:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\NotificationHandler
         arguments:
             - '@hbpf.notification.manager'
+
+    hbpf.cloud.metrics_handler:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\CloudMetricsHandler
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+            - '@hbpf.topology_generator.bridge'
+            - '@hbpf.configurator.manager.topology'

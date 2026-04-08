@@ -4,12 +4,14 @@ namespace Hanaboso\PipesFrameworkEnterprise\Acl\Subscriber;
 
 use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\AclBundle\Document\Group;
-use Hanaboso\AclBundle\Enum\ActionEnum;
 use Hanaboso\AclBundle\Exception\AclException;
 use Hanaboso\AclBundle\Manager\AccessManager;
 use Hanaboso\AclBundle\Repository\Document\GroupRepository;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
+use Hanaboso\PipesFramework\Database\Document\Category;
 use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFrameworkEnterprise\Acl\Enum\ActionEnum;
+use Hanaboso\PipesFrameworkEnterprise\Acl\PermissionPresets;
 use Hanaboso\PipesFrameworkEnterprise\ResourceEnum;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\Utils\String\Json;
@@ -42,6 +44,10 @@ final class AclSubscriber implements EventSubscriberInterface
             'POST'   => [ActionEnum::WRITE, ResourceEnum::APPLICATION],
             'PUT'    => [ActionEnum::WRITE, ResourceEnum::APPLICATION],
         ],
+
+        '/api/applications/topologies/nodes' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::TOPOLOGY]],
+
+        '/api/audit-logs' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::SETTINGS]],
 
         '/api/audit/entities' => [
             'DELETE' => [ActionEnum::DELETE, ResourceEnum::SETTINGS],
@@ -81,6 +87,7 @@ final class AclSubscriber implements EventSubscriberInterface
             'GET'   => [ActionEnum::READ, ResourceEnum::TOPOLOGY],
             'PATCH' => [ActionEnum::WRITE, ResourceEnum::SCHEDULED_TASK],
         ],
+        '/api/nodes/connectors' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::CONNECTOR]],
 
         '/api/processes'            => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::PROCESS]],
         '/api/processes/graph'      => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::OVERVIEW]],
@@ -88,6 +95,8 @@ final class AclSubscriber implements EventSubscriberInterface
         '/api/processes/total'      => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::OVERVIEW]],
 
         '/api/progress' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::PROCESS]],
+
+        '/api/resources/limiter' => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::LIMITER]],
 
         '/api/sdks' => [
             'DELETE' => [ActionEnum::DELETE, ResourceEnum::SETTINGS],
@@ -127,7 +136,9 @@ final class AclSubscriber implements EventSubscriberInterface
         ],
         '/api/user/list'             => ['DEFAULT' => [ActionEnum::READ, ResourceEnum::USER]],
         '/api/user/logout'           => [],
+        '/api/user/me/groups'        => [],
         '/api/user/reset_password'   => [],
+        '/api/user/whoami'           => [],
     ];
 
     private const array TOPOLOGY_SCOPED_MAP = [
@@ -156,6 +167,11 @@ final class AclSubscriber implements EventSubscriberInterface
     private ObjectRepository $topologyRepository;
 
     /**
+     * @var ObjectRepository<Category>
+     */
+    private ObjectRepository $categoryRepository;
+
+    /**
      * AclSubscriber constructor.
      *
      * @param AccessManager          $accessManager
@@ -172,6 +188,7 @@ final class AclSubscriber implements EventSubscriberInterface
         $this->userRepository     = $dm->getRepository(User::class);
         $this->groupRepository    = $dm->getRepository(Group::class);
         $this->topologyRepository = $dm->getRepository(Topology::class);
+        $this->categoryRepository = $dm->getRepository(Category::class);
     }
 
     /**
@@ -205,17 +222,23 @@ final class AclSubscriber implements EventSubscriberInterface
             return;
         }
 
-        foreach ($this->groupRepository->getUserGroups($managedUser) as $group) {
+        $groups = $this->groupRepository->getUserGroups($managedUser);
+
+        foreach ($groups as $group) {
             if ($group->getLevel() === 0) {
                 return;
             }
         }
 
-        [$action, $resource, $topologyNames] = $match;
+        [$action, $resource, $topologyNames, $originalResource] = $match;
+
+        $this->enforceSystemTopologyRestrictions($pathInfo, $request->getMethod(), $groups);
+
+        if ($this->isAllowedByPreset($groups, $action, $originalResource)) {
+            return;
+        }
 
         if ($topologyNames !== []) {
-            $hasGenericAccess = NULL;
-
             foreach ($topologyNames as $topologyName) {
                 try {
                     $this->accessManager->isAllowed(
@@ -224,21 +247,12 @@ final class AclSubscriber implements EventSubscriberInterface
                         $managedUser,
                     );
 
-                    continue;
+                    return;
                 } catch (AclException) {
-                }
-
-                if ($hasGenericAccess === NULL) {
-                    try {
-                        $this->accessManager->isAllowed($action, $resource, $managedUser);
-                        $hasGenericAccess = TRUE;
-                    } catch (AclException $e) {
-                        throw new AccessDeniedHttpException('Access denied.', $e);
-                    }
                 }
             }
 
-            return;
+            throw new AccessDeniedHttpException('Access denied.');
         }
 
         try {
@@ -259,14 +273,45 @@ final class AclSubscriber implements EventSubscriberInterface
     }
 
     /**
+     * @param Group[] $groups
+     * @param string  $action
+     * @param string  $resource
+     *
+     * @return bool
+     */
+    private function isAllowedByPreset(array $groups, string $action, string $resource): bool
+    {
+        $presetNames = PermissionPresets::names();
+
+        foreach ($groups as $group) {
+            $groupName = $group->getName();
+
+            if (!in_array($groupName, $presetNames, TRUE)) {
+                continue;
+            }
+
+            $rules        = PermissionPresets::resolve($groupName);
+            $baseResource = str_contains($resource, ':') ? (string) strstr($resource, ':', TRUE) : $resource;
+
+            return isset($rules[$baseResource]) && in_array($action, $rules[$baseResource], TRUE);
+        }
+
+        return FALSE;
+    }
+
+    /**
      * @param string  $path
      * @param string  $method
      * @param Request $request
      *
-     * @return array{string, string, string[]}|null
+     * @return array{string, string, string[], string}|null
      */
     private function processAcl(string $path, string $method, Request $request): ?array
     {
+        if ($method === 'POST' && preg_match('#^/api/topologies/([a-f0-9]+)/run$#', $path, $m)) {
+            return $this->resolveTopologyRun($m[1]);
+        }
+
         $bestPrefix  = NULL;
         $bestMethods = NULL;
 
@@ -287,11 +332,27 @@ final class AclSubscriber implements EventSubscriberInterface
     }
 
     /**
+     * @param string $topologyId
+     *
+     * @return array{string, string, string[], string}
+     */
+    private function resolveTopologyRun(string $topologyId): array
+    {
+        $topology = $this->topologyRepository->find($topologyId);
+
+        if ($topology !== NULL) {
+            return [ActionEnum::RUN, ResourceEnum::TOPOLOGY, [$topology->getName()], ResourceEnum::TOPOLOGY];
+        }
+
+        return [ActionEnum::RUN, ResourceEnum::TOPOLOGY, [], ResourceEnum::TOPOLOGY];
+    }
+
+    /**
      * @param string               $matchedPrefix
      * @param array{string,string} $match
      * @param Request              $request
      *
-     * @return array{string, string, string[]}
+     * @return array{string, string, string[], string}
      */
     private function getTopologyScope(string $matchedPrefix, array $match, Request $request): array
     {
@@ -299,11 +360,65 @@ final class AclSubscriber implements EventSubscriberInterface
             $topologyNames = $this->getTopologyNames($request);
 
             if ($topologyNames !== []) {
-                return [$match[0], self::TOPOLOGY_SCOPED_MAP[$matchedPrefix], $topologyNames];
+                return [$match[0], self::TOPOLOGY_SCOPED_MAP[$matchedPrefix], $topologyNames, $match[1]];
             }
         }
 
-        return [$match[0], $match[1], []];
+        return [$match[0], $match[1], [], $match[1]];
+    }
+
+    /**
+     * Block DELETE on system topologies entirely; require system_manager for WRITE.
+     *
+     * @param string  $path
+     * @param string  $method
+     * @param Group[] $groups
+     */
+    private function enforceSystemTopologyRestrictions(string $path, string $method, array $groups): void
+    {
+        if (!preg_match('#^/api/topologies/([a-f0-9]+)#', $path, $m)) {
+            return;
+        }
+
+        if (!in_array($method, ['DELETE', 'PUT', 'PATCH', 'POST'], TRUE)) {
+            return;
+        }
+
+        $topology = $this->topologyRepository->find($m[1]);
+
+        if ($topology === NULL) {
+            return;
+        }
+
+        $categoryId = $topology->getCategory();
+
+        if ($categoryId === NULL) {
+            return;
+        }
+
+        $category = $this->categoryRepository->find($categoryId);
+
+        if ($category === NULL || !$category->isSystem()) {
+            return;
+        }
+
+        if ($method === 'DELETE') {
+            throw new AccessDeniedHttpException('System topologies cannot be deleted.');
+        }
+
+        $hasSystemManager = FALSE;
+        foreach ($groups as $group) {
+            if (in_array($group->getName(), [PermissionPresets::SYSTEM_MANAGER, PermissionPresets::SUPER_ADMIN], TRUE)
+                || $group->getLevel() === 0) {
+                $hasSystemManager = TRUE;
+
+                break;
+            }
+        }
+
+        if (!$hasSystemManager) {
+            throw new AccessDeniedHttpException('System topologies require System Manager permissions.');
+        }
     }
 
     /**

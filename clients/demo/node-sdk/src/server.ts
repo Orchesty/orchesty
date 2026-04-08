@@ -4,7 +4,7 @@ import { start } from './index';
 
 (async () => {
     await start();
-    listen();
+    await listen();
 })().catch((e: unknown) => {
     const error = e as Error;
     logger.error(error.message, {}, false, error);

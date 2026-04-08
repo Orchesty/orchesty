@@ -113,7 +113,8 @@ async function handleRegenerate(user: InvitedUser) {
     linkModalOpen.value = true
   } catch (error) {
     console.error('Failed to regenerate invite:', error)
-    showToast('Failed to regenerate invite link', 'error')
+    showToast('Invitation may have already been accepted or expired', 'warning')
+    loadData()
   }
 }
 

@@ -26,6 +26,7 @@ function mapApiWorkerToWorker(apiWorker: WorkerApiResponse): Worker {
     id: apiWorker.id,
     name: apiWorker.name,
     url: apiWorker.url,
+    type: apiWorker.type ?? 'http',
     headers: headersArrayToObject(apiWorker.headers),
   }
 }
@@ -75,6 +76,7 @@ export async function createWorker(data: Omit<Worker, 'id'>): Promise<Worker> {
   const requestData = {
     name: data.name,
     url: data.url,
+    type: data.type,
     headers: headersObjectToArray(data.headers),
   }
 
@@ -91,6 +93,7 @@ export async function updateWorker(id: string, data: Partial<Worker>): Promise<W
     id,
     ...(data.name !== undefined && { name: data.name }),
     ...(data.url !== undefined && { url: data.url }),
+    ...(data.type !== undefined && { type: data.type }),
     ...(data.headers !== undefined && { headers: headersObjectToArray(data.headers) }),
   }
 
@@ -103,8 +106,17 @@ export async function updateWorker(id: string, data: Partial<Worker>): Promise<W
  * Delete a worker
  */
 export async function deleteWorker(id: string): Promise<void> {
-  // Backend expects id in the request body for DELETE
   await api.delete(`/api/sdks/${id}`, {
     data: { id },
   })
+}
+
+export async function fetchTunnelEnv(id: string): Promise<string> {
+  const response = await api.get<{ env: string }>(`/api/sdks/${id}/tunnel-env`)
+  return response.data.env
+}
+
+export async function fetchWorkerEnv(id: string): Promise<string> {
+  const response = await api.get<{ env: string }>(`/api/sdks/${id}/env`)
+  return response.data.env
 }

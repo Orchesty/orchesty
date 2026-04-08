@@ -81,4 +81,32 @@ final class SdkController extends AbstractController
         );
     }
 
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route('/sdks/{id}/tunnel-env', requirements: ['id' => '\w+'], methods: ['GET'])]
+    public function getTunnelEnvAction(string $id): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::getTunnelEnvAction',
+            ['id' => $id],
+        );
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route('/sdks/{id}/env', requirements: ['id' => '\w+'], methods: ['GET'])]
+    public function getEnvAction(string $id): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::getEnvAction',
+            ['id' => $id],
+        );
+    }
+
 }

@@ -1,4 +1,4 @@
-import { ref, watch, onActivated, onDeactivated } from 'vue'
+import { ref, watch, onMounted, onActivated, onDeactivated } from 'vue'
 import { convertTimeFilterToDateTimeRange } from '@/utils/timeRangeConverter'
 import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 import type { TimeFilter } from '@/types/dashboard'
@@ -50,6 +50,10 @@ export function useDashboardTimeSync(options: UseDashboardTimeSyncOptions) {
         loadData()
       })
     }
+
+    onMounted(() => {
+      loadData()
+    })
 
     onActivated(() => {
       isActive.value = true

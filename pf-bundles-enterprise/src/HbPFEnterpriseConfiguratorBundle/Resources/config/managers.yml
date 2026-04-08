@@ -10,6 +10,7 @@ services:
             - '%checkInfiniteLoop%'
             - '@hbpf.transport.curl_manager'
             - '%startingPointHost%'
+            - '%tunnelProxyHost%'
             - 'Hanaboso\PipesFrameworkEnterprise\Database\Document\Topology'
 
     hbpf.notification.manager:

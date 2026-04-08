@@ -10,3 +10,11 @@ services:
             - '@hbpf.database_manager_locator'
         tags:
             - { name: kernel.event_subscriber }
+
+    Hanaboso\PipesFrameworkEnterprise\AuditLog\Subscriber\AuditLogSubscriber:
+        class: Hanaboso\PipesFrameworkEnterprise\AuditLog\Subscriber\AuditLogSubscriber
+        arguments:
+            - '@security.helper'
+            - '@doctrine_mongodb.odm.default_document_manager'
+        tags:
+            - { name: kernel.event_subscriber }

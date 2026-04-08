@@ -1,4 +1,4 @@
-import type { PaginatedResponse, QueryParams } from '@/types/api'
+import type { PaginatedResponse } from '@/types/api'
 import type {
   Connector,
   ConnectorQueryParams,
@@ -10,44 +10,12 @@ import type {
   ConnectorGraphApiItem,
   ConnectorGraphApiResponse,
   ConnectorErrorApiItem,
-  ConnectorErrorApiResponse
+  ConnectorErrorApiResponse,
+  ConnectorGroupsApiResponse,
 } from '@/types/connectors'
 import type { TimeFilter } from '@/types/dashboard'
 import api from '@/services/api'
 import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
-
-/**
- * Map API connector item to UI Connector model
- */
-function mapApiItemToConnector(apiItem: ConnectorApiItem): Connector {
-  const hasErrors = apiItem.status400 > 0 || apiItem.status500 > 0
-  return {
-    id: apiItem.nodeId,
-    application: apiItem.applicationId,
-    avgRequestTime: apiItem.duration,
-    requests: apiItem.count,
-    errors400: apiItem.status400,
-    errors500: apiItem.status500,
-    lastRequestStatus: apiItem.lastStatus,
-    status: hasErrors ? 'errors' : 'ok'
-  }
-}
-
-/**
- * Map UI sort field to API column name
- */
-function mapSortFieldToApiColumn(field: string): string {
-  const fieldMap: Record<string, string> = {
-    'avgRequestTime': 'duration',
-    'requests': 'count',
-    'lastRequestStatus': 'lastStatus',
-    'application': 'applicationId',
-    'name': 'nodeId',
-    'errors400': 'status400',
-    'errors500': 'status500'
-  }
-  return fieldMap[field] || field
-}
 
 /**
  * Map graph API response to chart data format
@@ -86,80 +54,100 @@ function mapErrorApiItemToRecord(
 }
 
 /**
- * Fetch connectors with filters, sorting, and pagination
- *
- * @param params - Query parameters for filtering, sorting, and pagination
- * @returns Paginated response with connectors data
+ * Fetch grouped connector nodes merged with time-filtered metrics.
+ * Backend returns connectors grouped by name+application; frontend aggregates metrics per group.
  */
 export async function fetchConnectors(
   params: ConnectorQueryParams,
 ): Promise<PaginatedResponse<Connector>> {
-  // Build API filter object
-  const filterObj: ConnectorApiFilter = {
+  const metricsFilter: ConnectorApiFilter = {
     search: null,
     filter: [],
     sorter: [],
-    paging: {
-      itemsPerPage: params.limit || 10,
-      page: params.page || 1
-    }
+    paging: { itemsPerPage: 9999, page: 1 },
   }
 
-  // Add status filter (ok = COMPLETED, errors = FAILED)
-  if (params.status && params.status !== 'all') {
-    if (params.status === 'ok') {
-      filterObj.filter.push([{ column: 'status', operator: 'EQ', value: ['COMPLETED'] }])
-    } else if (params.status === 'errors') {
-      filterObj.filter.push([{ column: 'status', operator: 'EQ', value: ['FAILED'] }])
-    }
-  }
-
-  // Add node filter
-  if (params.node) {
-    const nodeValues = Array.isArray(params.node) ? params.node : [params.node]
-    filterObj.filter.push([{ column: 'nodeId', operator: 'EQ', value: nodeValues }])
-  }
-
-  // Add application filter
-  if (params.application) {
-    filterObj.filter.push([{ column: 'applicationId', operator: 'EQ', value: [params.application] }])
-  }
-
-  // Add date range filter
   if (params.dateFrom) {
-    filterObj.filter.push([params.dateTo
+    metricsFilter.filter.push([params.dateTo
       ? { column: 'created', operator: 'BETWEEN', value: [params.dateFrom, params.dateTo] }
       : { column: 'created', operator: 'GTE', value: [params.dateFrom] }
     ])
   }
 
-  // Add sorting
-  if (params.sort && params.order) {
-    const apiColumn = mapSortFieldToApiColumn(params.sort)
-    filterObj.sorter.push({
-      column: apiColumn,
-      direction: params.order.toUpperCase()
-    })
+  const [groupsResponse, metricsResponse] = await Promise.all([
+    api.get<ConnectorGroupsApiResponse>('/api/nodes/connectors'),
+    api.get<ConnectorApiResponse>('/api/metrics/connectors/overview', {
+      params: { filter: JSON.stringify(metricsFilter) },
+    }),
+  ])
+
+  const metricsMap = new Map<string, ConnectorApiItem>()
+  for (const item of metricsResponse.data.items) {
+    metricsMap.set(item.nodeId, item)
   }
 
-  // Make API call
-  const response = await api.get<ConnectorApiResponse>('/api/metrics/connectors/overview', {
-    params: {
-      filter: JSON.stringify(filterObj)
+  let connectors: Connector[] = groupsResponse.data.items.map(group => {
+    let totalRequests = 0
+    let totalErrors400 = 0
+    let totalErrors500 = 0
+    let totalDuration = 0
+    let lastStatus = 0
+
+    for (const nodeId of group.nodeIds) {
+      const m = metricsMap.get(nodeId)
+      if (!m) continue
+      totalRequests += m.count
+      totalErrors400 += m.status400
+      totalErrors500 += m.status500
+      totalDuration += m.duration * m.count
+      if (m.lastStatus) lastStatus = m.lastStatus
+    }
+
+    const avgRequestTime = totalRequests > 0 ? Math.round(totalDuration / totalRequests) : 0
+    const hasErrors = totalErrors400 > 0 || totalErrors500 > 0
+
+    return {
+      nodeIds: group.nodeIds,
+      name: group.name,
+      application: group.application || '',
+      topologyIds: group.topologyIds,
+      avgRequestTime,
+      requests: totalRequests,
+      errors400: totalErrors400,
+      errors500: totalErrors500,
+      lastRequestStatus: lastStatus,
+      status: totalRequests > 0 ? (hasErrors ? 'errors' : 'ok') : 'none' as const,
     }
   })
 
-  // Map API items to UI model
-  const connectors = response.data.items.map(mapApiItemToConnector)
+  if (params.application) {
+    connectors = connectors.filter(c => c.application === params.application)
+  }
+
+  if (params.status === 'with-activity') {
+    connectors = connectors.filter(c => c.requests > 0)
+  } else if (params.status === 'with-errors') {
+    connectors = connectors.filter(c => c.errors400 > 0 || c.errors500 > 0)
+  }
+
+  const sortField = params.sort || 'name'
+  const sortDir = params.order === 'desc' ? -1 : 1
+  connectors.sort((a, b) => {
+    const av = a[sortField as keyof Connector] ?? ''
+    const bv = b[sortField as keyof Connector] ?? ''
+    if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * sortDir
+    return String(av).localeCompare(String(bv)) * sortDir
+  })
+
+  const page = params.page || 1
+  const limit = params.limit || 25
+  const totalItems = connectors.length
+  const totalPages = Math.max(1, Math.ceil(totalItems / limit))
+  const paged = connectors.slice((page - 1) * limit, page * limit)
 
   return {
-    data: connectors,
-    meta: {
-      totalItems: response.data.paging.total,
-      totalPages: response.data.paging.lastPage,
-      currentPage: response.data.paging.page,
-      itemsPerPage: response.data.paging.itemsPerPage,
-    },
+    data: paged,
+    meta: { totalItems, totalPages, currentPage: page, itemsPerPage: limit },
   }
 }
 
@@ -181,7 +169,7 @@ export async function fetchConnectorDetail(
       [{ column: 'nodeId', operator: 'EQ', value: nodeIds }]
     ],
     sorter: [],
-    paging: { itemsPerPage: 1, page: 1 }
+    paging: { itemsPerPage: 9999, page: 1 }
   }
 
   const lastRecordFilter: ConnectorApiFilter = {
@@ -209,8 +197,10 @@ export async function fetchConnectorDetail(
   if (items.length === 0) {
     return {
       connector: {
-        id: nodeIds[0] ?? '',
+        nodeIds,
+        name: '',
         application: '',
+        topologyIds: [],
         avgRequestTime: 0,
         requests: 0,
         errors400: 0,
@@ -228,18 +218,56 @@ export async function fetchConnectorDetail(
     }
   }
 
-  const overview = items[0]!
-  const connector = mapApiItemToConnector(overview)
+  let totalRequests = 0
+  let totalErrors400 = 0
+  let totalErrors500 = 0
+  let totalDuration = 0
+  let lastStatus = 0
+
+  for (const item of items) {
+    totalRequests += item.count
+    totalErrors400 += item.status400
+    totalErrors500 += item.status500
+    totalDuration += item.duration * item.count
+    if (item.lastStatus) lastStatus = item.lastStatus
+  }
+
+  const avgRequestTime = totalRequests > 0 ? Math.round(totalDuration / totalRequests) : 0
+  const hasErrors = totalErrors400 > 0 || totalErrors500 > 0
+
+  const connector: Connector = {
+    nodeIds,
+    name: items[0]!.nodeId,
+    application: items[0]!.applicationId,
+    topologyIds: [...new Set(items.map(i => i.topologyId))],
+    avgRequestTime,
+    requests: totalRequests,
+    errors400: totalErrors400,
+    errors500: totalErrors500,
+    lastRequestStatus: lastStatus,
+    status: hasErrors ? 'errors' : 'ok',
+  }
   return {
     connector,
-    errors400: overview.status400,
-    errors500: overview.status500,
-    totalRequests: overview.count,
-    lastRequestStatus: overview.lastStatus,
+    errors400: totalErrors400,
+    errors500: totalErrors500,
+    totalRequests,
+    lastRequestStatus: lastStatus,
     lastRequestTime: lastRecord?.duration || 0,
-    avgRequestTime: overview.duration,
+    avgRequestTime,
     errorRecords: [],
   }
+}
+
+/** Quick filter for connector / process audit error records (HTTP response code family). */
+export type ConnectorErrorRecordsCodeFilter = 'all' | '400' | '500'
+
+export function metricStatusForConnectorErrorCodeFilter(
+  codeFilter: ConnectorErrorRecordsCodeFilter,
+): 'FAILED' | 'FAILED_400' | 'FAILED_500' {
+  if (codeFilter === '400') return 'FAILED_400'
+  if (codeFilter === '500') return 'FAILED_500'
+  return 'FAILED'
 }
 
 /**
@@ -252,7 +280,8 @@ export async function fetchConnectorErrorRecords(
   page: number = 1,
   limit: number = 10,
   sortField: string = 'created',
-  sortDirection: string = 'desc'
+  sortDirection: string = 'desc',
+  codeFilter: ConnectorErrorRecordsCodeFilter = 'all',
 ): Promise<PaginatedResponse<ConnectorErrorRecord>> {
   const dateRange = convertTimeFilterToDateTimeRange(timeFilter)
   const dateFrom = formatDateTimeForApi(dateRange.from) || ''
@@ -262,7 +291,13 @@ export async function fetchConnectorErrorRecords(
     filter: [
       [{ column: 'created', operator: 'GTE', value: [dateFrom] }],
       [{ column: 'nodeId', operator: 'EQ', value: nodeIds }],
-      [{ column: 'status', operator: 'EQ', value: ['FAILED'] }]
+      [
+        {
+          column: 'status',
+          operator: 'EQ',
+          value: [metricStatusForConnectorErrorCodeFilter(codeFilter)],
+        },
+      ],
     ],
     sorter: [{ column: sortField, direction: sortDirection.toUpperCase() }],
     paging: {

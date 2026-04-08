@@ -35,6 +35,14 @@ func routes() []Route {
 				Protected: true,
 			},
 		},
+		"/metrics": {
+			{
+				Method:    GET,
+				Pattern:   "/snapshot",
+				Handler:   Snapshot,
+				Protected: true,
+			},
+		},
 	}
 
 	return prefixRoutes(routeList)

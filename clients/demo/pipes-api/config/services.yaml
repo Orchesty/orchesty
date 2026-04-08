@@ -14,7 +14,6 @@ parameters:
         - '%kernel.project_dir%/vendor/orchesty/php-connectors/src/Resources/config/'
 
     kernel.root_dir: '%kernel.project_dir%/src'
-
 services:
     _defaults:
         autowire: false

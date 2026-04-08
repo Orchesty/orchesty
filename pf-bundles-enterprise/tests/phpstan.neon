@@ -12,8 +12,12 @@ parameters:
 		-
 			message: '#.*#'
 			path: ../tests/app/config/reference.php
+		-
+			identifier: method.internalClass
+			path: ../src/HbPFEnterpriseConfiguratorBundle/Handler/CloudMetricsHandler.php
 	ergebnis:
 		classesAllowedToBeExtended:
+			- Hanaboso\AclBundle\Enum\ActionEnum
 			- Hanaboso\AclBundle\Enum\ResourceEnum
 			- Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract
 			- Hanaboso\PipesFramework\Configurator\Document\TopologyProgress
@@ -26,6 +30,8 @@ parameters:
 			- PipesFrameworkEnterpriseTests\DatabaseTestCaseAbstract
 			- PipesFrameworkEnterpriseTests\KernelTestCaseAbstract
 		classesNotRequiredToBeAbstractOrFinal:
+			- Hanaboso\PipesFrameworkEnterprise\Acl\Enum\ActionEnum
+			- Hanaboso\PipesFrameworkEnterprise\AuditLog\Document\AuditLog
 			- Hanaboso\PipesFrameworkEnterprise\Configurator\Document\TopologyProgress
 			- Hanaboso\PipesFrameworkEnterprise\Database\Document\Topology
 			- Hanaboso\PipesFrameworkEnterprise\Configurator\Model\TopologyManager

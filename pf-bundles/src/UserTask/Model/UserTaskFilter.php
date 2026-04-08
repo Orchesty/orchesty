@@ -48,6 +48,7 @@ final class UserTaskFilter extends GridFilterAbstract
     protected function filterCols(): array
     {
         return [
+            'resultMessage'          => 'message.headers.result-message',
             UserTask::CORRELATION_ID => UserTask::CORRELATION_ID,
             UserTask::CREATED        => UserTask::CREATED,
             UserTask::ID             => UserTask::ID,

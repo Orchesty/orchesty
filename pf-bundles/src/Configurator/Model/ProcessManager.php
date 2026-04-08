@@ -211,7 +211,7 @@ final readonly class ProcessManager
             'okCount'    => $topologyProgress->getOk(),
             'source'     => $topologyProgress->getSource(),
             'started'    => $startedAt->format(DateTimeUtils::DATE_TIME_UTC),
-            'status'     => $finishedAt === NULL ? 'IN PROGRESS' : ($nokCount > 0 ? 'FAILED' : 'COMPLETED'),
+            'status'     => $topologyProgress->isTerminated() ? 'TERMINATED' : ($finishedAt === NULL ? 'IN PROGRESS' : ($nokCount > 0 ? 'FAILED' : 'COMPLETED')),
             'topology'   => [
                 'breakpointCount' => $totalCountBreakpoint,
                 'limiterCount'    => $totalCountLimiter,

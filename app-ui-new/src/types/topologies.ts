@@ -6,10 +6,11 @@ export interface Topology {
   processesRun: number
   failedProcesses: number
   lastRunTime: string
-  lastRunStatus: 'success' | 'running' | 'failed'
+  lastRunStatus: 'success' | 'running' | 'failed' | 'none'
+  enabled: boolean
 }
 
-export type TopologyStatus = 'all' | 'success' | 'running' | 'failed'
+export type TopologyStatus = 'all' | 'enabled' | 'with-activity'
 
 export interface TopologyQueryParams extends QueryParams {
   status?: TopologyStatus

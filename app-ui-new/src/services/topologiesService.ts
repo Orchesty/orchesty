@@ -24,6 +24,7 @@ interface CategoryApiItem {
   _id: string
   name: string
   parent: string | null
+  system?: boolean
 }
 
 interface CategoriesApiResponse {
@@ -56,115 +57,85 @@ interface TopologyListApiResponse {
 }
 
 /**
- * Map API topology item to UI Topology model
- */
-function mapApiItemToTopology(apiItem: TopologyApiItem): Topology {
-  return {
-    id: apiItem.topologyId,
-    name: apiItem.topologyId, // Will be replaced by topology name in component
-    processesRun: apiItem.count,
-    failedProcesses: apiItem.failedCount,
-    lastRunTime: formatDateTime(apiItem.created),
-    lastRunStatus: mapApiStatusToUiStatus(apiItem.status)
-  }
-}
-
-/**
  * Map API status to UI status
  */
 function mapApiStatusToUiStatus(apiStatus: string): 'success' | 'running' | 'failed' {
-  // API values: RUNNING, COMPLETED, FAILED
   if (apiStatus === 'COMPLETED') return 'success'
   if (apiStatus === 'RUNNING') return 'running'
   if (apiStatus === 'FAILED') return 'failed'
-  return 'success' // default
+  return 'success'
 }
 
 /**
- * Map UI status to API status
- */
-function mapUiStatusToApiStatus(uiStatus: string): string {
-  if (uiStatus === 'success') return 'COMPLETED'
-  if (uiStatus === 'running') return 'RUNNING'
-  if (uiStatus === 'failed') return 'FAILED'
-  return 'COMPLETED' // default
-}
-
-/**
- * Map UI sort field to API column name
- */
-function mapSortFieldToApiColumn(field: string): string {
-  const fieldMap: Record<string, string> = {
-    'name': 'topologyId',
-    'processesRun': 'count',
-    'failedProcesses': 'failedCount',
-    'lastRunTime': 'created',
-    'lastRunStatus': 'status'
-  }
-  return fieldMap[field] || field
-}
-
-/**
- * Fetch topologies with filters, sorting, and pagination
- *
- * @param params - Query parameters for filtering, sorting, and pagination
- * @returns Paginated response with topologies data
+ * Fetch all topologies merged with time-filtered metrics.
+ * Returns ALL topologies regardless of activity; metrics show zeros where no activity exists.
  */
 export async function fetchTopologies(
   params: TopologyQueryParams,
 ): Promise<PaginatedResponse<Topology>> {
-  // Build API filter object
-  const filterObj: TopologyApiFilter = {
+  const metricsFilter: TopologyApiFilter = {
     search: null,
     filter: [],
     sorter: [],
-    paging: {
-      itemsPerPage: params.limit || 10,
-      page: params.page || 1
-    }
+    paging: { itemsPerPage: 9999, page: 1 },
   }
 
-  // Add status filter
-  if (params.status && params.status !== 'all') {
-    const apiStatus = mapUiStatusToApiStatus(params.status)
-    filterObj.filter.push([{ column: 'status', operator: 'EQ', value: [apiStatus] }])
-  }
-
-  // Add date range filter
   if (params.dateFrom) {
-    filterObj.filter.push([params.dateTo
+    metricsFilter.filter.push([params.dateTo
       ? { column: 'created', operator: 'BETWEEN', value: [params.dateFrom, params.dateTo] }
       : { column: 'created', operator: 'GTE', value: [params.dateFrom] }
     ])
   }
 
-  // Add sorting
-  if (params.sort && params.order) {
-    const apiColumn = mapSortFieldToApiColumn(params.sort)
-    filterObj.sorter.push({
-      column: apiColumn,
-      direction: params.order.toUpperCase()
-    })
+  const [topologiesResponse, metricsResponse] = await Promise.all([
+    api.get<TopologyListApiResponse>('/api/topologies'),
+    api.get<TopologyApiResponse>('/api/processes/topologies', {
+      params: { filter: JSON.stringify(metricsFilter) },
+    }),
+  ])
+
+  const metricsMap = new Map<string, TopologyApiItem>()
+  for (const item of metricsResponse.data.items) {
+    metricsMap.set(item.topologyId, item)
   }
 
-  // Make API call
-  const response = await api.get<TopologyApiResponse>('/api/processes/topologies', {
-    params: {
-      filter: JSON.stringify(filterObj)
+  let topologies: Topology[] = topologiesResponse.data.items.map(topo => {
+    const metrics = metricsMap.get(topo._id)
+    return {
+      id: topo._id,
+      name: topo.name,
+      enabled: topo.enabled,
+      processesRun: metrics?.count ?? 0,
+      failedProcesses: metrics?.failedCount ?? 0,
+      lastRunTime: metrics ? formatDateTime(metrics.created) : '',
+      lastRunStatus: metrics ? mapApiStatusToUiStatus(metrics.status) : 'none' as const,
     }
   })
 
-  // Map API items to UI model
-  const topologies = response.data.items.map(mapApiItemToTopology)
+  if (params.status === 'enabled') {
+    topologies = topologies.filter(t => t.enabled)
+  } else if (params.status === 'with-activity') {
+    topologies = topologies.filter(t => t.processesRun > 0)
+  }
+
+  const sortField = params.sort || 'name'
+  const sortDir = params.order === 'desc' ? -1 : 1
+  topologies.sort((a, b) => {
+    const av = a[sortField as keyof Topology] ?? ''
+    const bv = b[sortField as keyof Topology] ?? ''
+    if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * sortDir
+    return String(av).localeCompare(String(bv)) * sortDir
+  })
+
+  const page = params.page || 1
+  const limit = params.limit || 25
+  const totalItems = topologies.length
+  const totalPages = Math.max(1, Math.ceil(totalItems / limit))
+  const paged = topologies.slice((page - 1) * limit, page * limit)
 
   return {
-    data: topologies,
-    meta: {
-      totalItems: response.data.paging.total,
-      totalPages: response.data.paging.lastPage,
-      currentPage: response.data.paging.page,
-      itemsPerPage: response.data.paging.itemsPerPage,
-    },
+    data: paged,
+    meta: { totalItems, totalPages, currentPage: page, itemsPerPage: limit },
   }
 }
 
@@ -288,6 +259,7 @@ export async function fetchTopologiesTree(): Promise<TopologiesTreeNode[]> {
       name: cat.name,
       parentFolderId: cat.parent,
       isExpanded: false,
+      system: cat.system ?? false,
       children: [...children],
     })
   }
@@ -346,6 +318,7 @@ export async function fetchCategories(): Promise<FolderItem[]> {
     name: cat.name,
     parentFolderId: cat.parent,
     isExpanded: false,
+    system: cat.system ?? false,
     children: [],
   }))
 }

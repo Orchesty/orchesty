@@ -57,6 +57,7 @@
     "flowbite-datepicker": "^2.0.0",
     "lucide-vue-next": "^0.400.0",
     "marked": "^17.0.5",
+    "minisearch": "^7.2.0",
     "pinia": "^3.0.0",
     "rete-editor": "file:local-packages/rete-editor-1.5.5.tgz",
     "tailwind-merge": "^2.6.1",

@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import TimeFilter from '@/components/ui/TimeFilter.vue'
 import OverviewTab from '@/components/dashboard/OverviewTab.vue'
 import ConnectorsTab from '@/components/dashboard/ConnectorsTab.vue'
 import TopologiesTab from '@/components/dashboard/TopologiesTab.vue'
 import ProcessesTab from '@/components/dashboard/ProcessesTab.vue'
-import LimiterTab from '@/components/dashboard/LimiterTab.vue'
 import ApplicationsTab from '@/components/dashboard/ApplicationsTab.vue'
 import ConnectorDetailDrawer from '@/components/dashboard/ConnectorDetailDrawer.vue'
 import ProcessesDrawer from '@/components/dashboard/ProcessesDrawer.vue'
 import ProcessAuditDrawer from '@/components/dashboard/ProcessAuditDrawer.vue'
-import AppRunningProcessesDrawer from '@/components/dashboard/AppRunningProcessesDrawer.vue'
 import { useFeatures } from '@/composables/useFeatures'
 import type { Connector } from '@/types/connectors'
-import type { Process } from '@/types/processes'
+import type { Process, ProcessConnector } from '@/types/processes'
 import type { TimeFilter as TimeFilterType, ProcessFilter, HeatmapClickData, ProcessesExternalFilters } from '@/types/dashboard'
 import { formatDateTimeLocal } from '@/utils/timeRangeConverter'
 
+const router = useRouter()
 const { enterpriseDashboards } = useFeatures()
 
 const dashboardTabs = [
@@ -25,7 +25,6 @@ const dashboardTabs = [
   { id: 'connectors', label: 'Connectors' },
   { id: 'topologies', label: 'Topologies' },
   { id: 'processes', label: 'Processes' },
-  { id: 'limiter', label: 'Limiter' },
 ]
 
 // Active tab state -- Vue-controlled, persisted in localStorage
@@ -119,18 +118,59 @@ const handleAuditBack = () => {
   auditDrawerOpen.value = false
 }
 
+const pendingConnectorFromAudit = ref(false)
+const pendingAuditFromConnector = ref(false)
+const connectorFromAudit = ref(false)
+
 const onAuditDrawerHidden = () => {
   if (pendingProcessesOpen.value) {
     pendingProcessesOpen.value = false
     processesDrawerOpen.value = true
   }
+  if (pendingConnectorFromAudit.value) {
+    pendingConnectorFromAudit.value = false
+    connectorFromAudit.value = true
+    connectorDrawerOpen.value = true
+  }
 }
 
-// Connector detail drawer (shared by ConnectorsTab and ApplicationsTab)
+const handleAuditOpenConnector = (processConnector: ProcessConnector) => {
+  selectedConnector.value = {
+    nodeIds: [processConnector.connector],
+    name: processConnector.connector,
+    application: processConnector.application,
+    topologyIds: [],
+    avgRequestTime: 0,
+    requests: processConnector.called,
+    errors400: processConnector.errors400,
+    errors500: processConnector.errors500,
+    lastRequestStatus: 0,
+    status: processConnector.errors400 + processConnector.errors500 > 0 ? 'errors' : 'ok',
+  }
+  pendingConnectorFromAudit.value = true
+  auditDrawerOpen.value = false
+}
+
+const handleConnectorBackToAudit = () => {
+  pendingAuditFromConnector.value = true
+  connectorDrawerOpen.value = false
+}
+
+const onConnectorDrawerHidden = () => {
+  if (pendingAuditFromConnector.value) {
+    pendingAuditFromConnector.value = false
+    connectorFromAudit.value = false
+    auditDrawerOpen.value = true
+  }
+  connectorFromAudit.value = false
+}
+
+// Connector detail drawer (shared by ConnectorsTab, ApplicationsTab, and ProcessAuditDrawer)
 const connectorDrawerOpen = ref(false)
 const selectedConnector = ref<Connector | null>(null)
 
 const handleOpenConnectorDetail = (connector: Connector) => {
+  connectorFromAudit.value = false
   selectedConnector.value = connector
   connectorDrawerOpen.value = true
 }
@@ -144,16 +184,6 @@ const handleTopologyProcessesClick = (topologyId: string) => {
   switchToTab('processes')
 }
 
-// App running processes drawer (opened from limiter summary grid)
-const appProcessesDrawerOpen = ref(false)
-const appProcessesAppId = ref<string | null>(null)
-const appProcessesTopologyIds = ref<string[]>([])
-
-const handleOpenAppProcesses = (data: { applicationId: string; topologyIds: string[] }) => {
-  appProcessesAppId.value = data.applicationId
-  appProcessesTopologyIds.value = data.topologyIds
-  appProcessesDrawerOpen.value = true
-}
 </script>
 
 <template>
@@ -233,7 +263,7 @@ const handleOpenAppProcesses = (data: { applicationId: string; topologyIds: stri
         :refresh-key="refreshKey"
         @heatmap-click="handleHeatmapClick"
         @heatmap-filter-change="handleHeatmapFilterChange"
-        @limiter-view-all="switchToTab('limiter')"
+        @limiter-view-all="router.push('/limiter')"
       />
 
       <ApplicationsTab
@@ -265,12 +295,6 @@ const handleOpenAppProcesses = (data: { applicationId: string; topologyIds: stri
         :refresh-key="refreshKey"
       />
 
-      <LimiterTab
-        v-else-if="activeTab === 'limiter'"
-        :time-filter="activeTimeFilter"
-        :refresh-key="refreshKey"
-        @open-app-processes="handleOpenAppProcesses"
-      />
     </KeepAlive>
 
     <!-- Shared Connector Detail Drawer -->
@@ -278,6 +302,10 @@ const handleOpenAppProcesses = (data: { applicationId: string; topologyIds: stri
       v-model="connectorDrawerOpen"
       :connector="selectedConnector"
       :time-filter="activeTimeFilter"
+      :show-back-button="connectorFromAudit"
+      back-label="Back to Process Audit"
+      @back="handleConnectorBackToAudit"
+      @hidden="onConnectorDrawerHidden"
     />
 
     <!-- Processes Drawer (opened from heatmap click) -->
@@ -297,13 +325,8 @@ const handleOpenAppProcesses = (data: { applicationId: string; topologyIds: stri
       drawer-id="dashboard-audit-drawer"
       @back="handleAuditBack"
       @hidden="onAuditDrawerHidden"
+      @open-connector-detail="handleAuditOpenConnector"
     />
 
-    <!-- App Running Processes Drawer (opened from limiter summary grid) -->
-    <AppRunningProcessesDrawer
-      v-model="appProcessesDrawerOpen"
-      :application-id="appProcessesAppId"
-      :topology-ids="appProcessesTopologyIds"
-    />
   </div></main>
 </template>

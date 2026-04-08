@@ -388,10 +388,12 @@ export async function fetchTrashData(params: {
   const { ensureLoaded, getTopologyName } = useTopologyNodeMappings()
   await ensureLoaded()
 
-  const chartData: Array<{ x: string; y: number }> = graphResponse.data.items.map(item => ({
-    x: getTopologyName(item.topologyId),
-    y: item.count
-  }))
+  const chartData: Array<{ x: string; y: number }> = graphResponse.data.items
+    .filter(item => item.topologyId)
+    .map(item => ({
+      x: getTopologyName(item.topologyId) || item.topologyId || 'Unknown',
+      y: item.count
+    }))
 
   // 3. Fetch table data from metrics (per-topology/node aggregation for table)
   const sortColumn = 'count'

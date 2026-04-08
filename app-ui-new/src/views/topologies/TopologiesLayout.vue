@@ -308,6 +308,12 @@ const handleTopologyMoved = async () => {
   topologyMovedCallback?.()
 }
 
+const isSystemCategory = (categoryId: string | null): boolean => {
+  if (!categoryId) return false
+  const folder = allFolders.value.find(f => f.id === categoryId)
+  return folder?.system ?? false
+}
+
 // Provide shared context to child views (TopologyDetailView)
 const layoutContext: TopologyLayoutContext = {
   openEditTopologyModal,
@@ -318,6 +324,7 @@ const layoutContext: TopologyLayoutContext = {
   refreshSidebar: refreshAfterCrud,
   onTopologyEdited,
   onTopologyMoved,
+  isSystemCategory,
   sidebarRef,
   topologySidebarCollapsed,
 }

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
+import PasswordInput from '@/components/ui/PasswordInput.vue'
 import { registerUser } from '@/services/authService'
 import { invalidateUsersExistCache } from '@/router'
 import { useToast } from '@/composables/useToast'
@@ -13,21 +14,17 @@ const { showToast } = useToast()
 
 const email = ref('')
 const password = ref('')
-const confirmPassword = ref('')
 const isLoading = ref(false)
+
+const isPasswordStrong = computed(() => {
+  const p = password.value
+  if (p.length < 8) return false
+  const types = [/[a-z]/, /[A-Z]/, /\d/, /[^a-zA-Z0-9]/].filter(r => r.test(p)).length
+  return types >= 3
+})
 
 const handleSubmit = async () => {
   if (isLoading.value) return
-
-  if (password.value !== confirmPassword.value) {
-    showToast('Passwords do not match', 'error')
-    return
-  }
-
-  if (password.value.length < 6) {
-    showToast('Password must be at least 6 characters', 'error')
-    return
-  }
 
   isLoading.value = true
 
@@ -63,24 +60,22 @@ const handleSubmit = async () => {
         placeholder="admin@company.com"
         required
       />
-      <Input
+      <PasswordInput
         v-model="password"
-        type="password"
         label="Password"
-        placeholder="••••••••"
-        required
-      />
-      <Input
-        v-model="confirmPassword"
-        type="password"
-        label="Confirm password"
-        placeholder="••••••••"
+        placeholder="At least 8 characters"
+        :show-strength="true"
         required
       />
 
-      <Button type="submit" variant="primary" class="w-full !mt-8" :loading="isLoading">
+      <Button type="submit" variant="primary" class="w-full !mt-8" :loading="isLoading" :disabled="!isPasswordStrong">
         Create Account
       </Button>
     </form>
+
+    <p class="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
+      Already have an account?
+      <router-link to="/sign-in" class="font-medium text-primary-700 hover:underline dark:text-primary-500">Sign in</router-link>
+    </p>
   </AuthLayout>
 </template>

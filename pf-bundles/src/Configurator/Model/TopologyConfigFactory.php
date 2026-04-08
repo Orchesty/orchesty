@@ -132,9 +132,18 @@ final class TopologyConfigFactory
                     self::TYPE     => $this->getWorkerByType($node),
                 ];
             default:
-                $host   = $this->getHost($node->getType(), $node->getSystemConfigs());
-                $path   = $this->getPaths($node);
-                $sdk    = $this->sdkRepository->findByHost($host);
+                $host    = $this->getHost($node->getType(), $node->getSystemConfigs());
+                $path    = $this->getPaths($node);
+                $sdkName = $node->getSdk();
+                $sdk     = $sdkName !== ''
+                    ? $this->sdkRepository->findByName($sdkName)
+                    : $this->sdkRepository->findByHost($host);
+
+                if ($sdk->isTunnel()) {
+                    $path[self::PROCESS_PATH] = sprintf('/call/%s%s', $sdkName, $path[self::PROCESS_PATH]);
+                    $path[self::STATUS_PATH]  = sprintf('/call/%s%s', $sdkName, $path[self::STATUS_PATH]);
+                }
+
                 $parsed = explode(':', $host);
 
                 return [

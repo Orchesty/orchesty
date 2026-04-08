@@ -243,3 +243,33 @@ export async function rejectAllTrashItems(
   })
 }
 
+export interface TrashFilterParams {
+  topologyId?: string
+  nodeId?: string | string[]
+  correlationId?: string
+  resultMessage?: string
+  search?: string
+  dateFrom?: string
+  dateTo?: string
+}
+
+function buildFilterBody(params: TrashFilterParams): Record<string, unknown> {
+  const body: Record<string, unknown> = { type: 'trash' }
+  if (params.topologyId) body.topologyId = params.topologyId
+  if (params.nodeId) body.nodeId = params.nodeId
+  if (params.correlationId) body.correlationId = params.correlationId
+  if (params.resultMessage !== undefined) body.resultMessage = params.resultMessage
+  if (params.search) body.search = params.search
+  if (params.dateFrom) body.dateFrom = params.dateFrom
+  if (params.dateTo) body.dateTo = params.dateTo
+  return body
+}
+
+export async function approveByFilter(params: TrashFilterParams): Promise<void> {
+  await api.post('/api/user-task/accept', buildFilterBody(params))
+}
+
+export async function rejectByFilter(params: TrashFilterParams): Promise<void> {
+  await api.post('/api/user-task/reject', buildFilterBody(params))
+}
+

@@ -26,9 +26,11 @@ final class ResourceEnum extends AclResourceEnum
     public const string TOPOLOGY_METRICS = 'topology_metrics';
     public const string TOPOLOGY_PROCESS = 'topology_process';
     public const string TOPOLOGY_TRASH   = 'topology_trash';
+    public const string TRACE            = 'trace';
     public const string USER_TASK        = 'user_task';
 
     public const array TOPOLOGY_SCOPED_PREFIXES = [
+        self::TOPOLOGY,
         self::TOPOLOGY_LOG,
         self::TOPOLOGY_METRICS,
         self::TOPOLOGY_PROCESS,
@@ -57,6 +59,7 @@ final class ResourceEnum extends AclResourceEnum
         self::TOPOLOGY_METRICS => 'Topology metrics',
         self::TOPOLOGY_PROCESS => 'Topology process',
         self::TOPOLOGY_TRASH   => 'Topology trash',
+        self::TRACE            => 'Trace',
         self::USER             => 'User entity',
         self::USER_TASK        => 'User task',
     ];

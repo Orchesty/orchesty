@@ -26,6 +26,7 @@ use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\Database\Document\TopologyApplication;
 use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Database\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
@@ -80,6 +81,7 @@ class TopologyManager
      * @param bool                   $checkInfiniteLoop
      * @param CurlManagerInterface   $curl
      * @param string                 $startingPointHost
+     * @param string                 $tunnelProxyHost
      * @param class-string<Topology> $topologyClass
      */
     function __construct(
@@ -88,6 +90,7 @@ class TopologyManager
         private bool $checkInfiniteLoop,
         private CurlManagerInterface $curl,
         string $startingPointHost,
+        private string $tunnelProxyHost = '',
         protected string $topologyClass = Topology::class,
     )
     {
@@ -246,7 +249,7 @@ class TopologyManager
         }
 
         $topology
-            ->setApplications($newSchemaObject->getApplicationList())
+            ->setApplications($this->patchTunnelApplicationHosts($newSchemaObject->getApplicationList()))
             ->setBpmn($data)
             ->setRawBpmn($content);
         $this->dm->flush();
@@ -314,7 +317,7 @@ class TopologyManager
         }
 
         $topology
-            ->setApplications($newSchemaObject->getApplicationList())
+            ->setApplications($this->patchTunnelApplicationHosts($newSchemaObject->getApplicationList()))
             ->setJson($data);
         $this->dm->flush();
 
@@ -406,7 +409,9 @@ class TopologyManager
                 ->setHandler($topologyNode->getHandler())
                 ->setEnabled($topologyNode->isEnabled())
                 ->setCron($topologyNode->getCron())
-                ->setCronParams($topologyNode->getCronParams());
+                ->setCronParams($topologyNode->getCronParams())
+                ->setSdk($topologyNode->getSdk())
+                ->setApplication($topologyNode->getApplication() ?? '');
             $this->dm->persist($nodeCopy);
 
             $settings = $topologyNode->getSystemConfigs();
@@ -620,18 +625,70 @@ class TopologyManager
     }
 
     /**
+     * @return string
+     */
+    private function getTunnelProxyHostWithoutScheme(): string
+    {
+        return (string) preg_replace('#^https?://#', '', $this->tunnelProxyHost);
+    }
+
+    /**
+     * @return array<string, bool> worker name => TRUE for tunnel SDKs
+     */
+    private function getTunnelSdkNames(): array
+    {
+        $tunnelSdks = [];
+        foreach ($this->dm->getRepository(Sdk::class)->findAll() as $sdk) {
+            if ($sdk->isTunnel()) {
+                $tunnelSdks[$sdk->getName()] = TRUE;
+            }
+        }
+
+        return $tunnelSdks;
+    }
+
+    /**
      * @return mixed[] worker name => SDK URL
      */
     private function getSdkUrlMap(): array
     {
-        $map  = [];
-        $sdks = $this->dm->getRepository(Sdk::class)->findAll();
+        $map       = [];
+        $proxyHost = $this->getTunnelProxyHostWithoutScheme();
 
-        foreach ($sdks as $sdk) {
-            $map[$sdk->getName()] = $sdk->getUrl();
+        foreach ($this->dm->getRepository(Sdk::class)->findAll() as $sdk) {
+            $map[$sdk->getName()] = $sdk->isTunnel() ? $proxyHost : $sdk->getUrl();
         }
 
         return $map;
+    }
+
+    /**
+     * @param TopologyApplication[] $apps
+     *
+     * @return TopologyApplication[]
+     */
+    private function patchTunnelApplicationHosts(array $apps): array
+    {
+        $tunnelSdks = $this->getTunnelSdkNames();
+        if ($tunnelSdks === []) {
+            return $apps;
+        }
+
+        $proxyHost = rtrim($this->getTunnelProxyHostWithoutScheme(), '/');
+        $patched   = [];
+        foreach ($apps as $app) {
+            if (isset($tunnelSdks[$app->getSdk()])) {
+                $patched[] = new TopologyApplication(
+                    $app->getKey(),
+                    sprintf('%s/call/%s', $proxyHost, $app->getSdk()),
+                    $app->getSdk(),
+                );
+            } else {
+                $patched[] = $app;
+            }
+        }
+
+        return $patched;
     }
 
     /**

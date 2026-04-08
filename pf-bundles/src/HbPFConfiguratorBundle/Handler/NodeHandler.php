@@ -135,6 +135,28 @@ final class NodeHandler
     }
 
     /**
+     * @return mixed[]
+     */
+    public function getConnectorNodes(): array
+    {
+        $repo  = $this->dm->getRepository(Node::class);
+        $nodes = $repo->getConnectorNodes();
+
+        $items = [];
+        foreach ($nodes as $node) {
+            $items[] = [
+                'application' => $node->getApplication(),
+                'name'        => $node->getName(),
+                'topology_id' => $node->getTopology(),
+                'type'        => $node->getType(),
+                '_id'         => $node->getId(),
+            ];
+        }
+
+        return ['items' => $items];
+    }
+
+    /**
      * @param string $topologyId
      *
      * @return mixed[]

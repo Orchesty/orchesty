@@ -35,6 +35,8 @@ interface Props {
   rowIdKey?: string
   // Refresh button
   showRefresh?: boolean
+  // Row class function
+  rowClass?: (row: Record<string, any>) => string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -42,7 +44,7 @@ const props = withDefaults(defineProps<Props>(), {
   currentPage: 1,
   totalPages: 1,
   totalItems: 0,
-  itemsPerPage: 10,
+  itemsPerPage: 25,
   perPageOptions: () => [5, 10, 25, 50, 100],
   hidePagination: false,
   sortField: '',
@@ -424,7 +426,7 @@ const pageNumbers = () => {
           <tr
             v-for="(row, index) in data"
             :key="index"
-            class="bg-white dark:bg-gray-800"
+            :class="rowClass ? rowClass(row) : 'bg-white dark:bg-gray-800'"
           >
             <td
               v-for="column in columnsWithActions"

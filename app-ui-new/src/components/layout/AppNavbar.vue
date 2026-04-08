@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { RouterLink, useRouter } from 'vue-router'
 import { onMounted, computed } from 'vue'
-import { Moon, Sun } from 'lucide-vue-next'
+import { Moon, Sun, CircleHelp } from 'lucide-vue-next'
 import { useDarkMode } from '@/composables/useDarkMode'
 import { useAuthStore } from '@/stores/auth'
+import { useAuthorization } from '@/composables/useAuthorization'
+import { useHelp } from '@/composables/useHelp'
 import DropdownMenu, { type DropdownMenuSection } from '@/components/ui/DropdownMenu.vue'
+import HelpDrawer from '@/components/help/HelpDrawer.vue'
 
 interface Props {
   extraMenuItems?: { type: 'link'; label: string; to: string }[]
@@ -19,6 +22,8 @@ const props = withDefaults(defineProps<Props>(), {
 const { isDark, toggleDarkMode } = useDarkMode()
 
 const authStore = useAuthStore()
+const { can } = useAuthorization()
+const { isOpen: helpOpen, contextHelpId, toggle: toggleHelp } = useHelp()
 const router = useRouter()
 
 const handleLogout = async () => {
@@ -26,24 +31,34 @@ const handleLogout = async () => {
   router.push('/sign-in')
 }
 
-const accountMenuSections = computed<DropdownMenuSection[]>(() => [
-  {
-    header: {
-      title: authStore.user?.email.split('@')[0] || 'User',
-      subtitle: authStore.user?.email || '',
+const accountMenuSections = computed<DropdownMenuSection[]>(() => {
+  const menuItems: { type: 'link'; label: string; to: string }[] = [
+    { type: 'link', label: 'Account settings', to: '/orchesty/account' },
+  ]
+
+  if (can('user:read')) {
+    menuItems.push({ type: 'link', label: 'Users', to: '/users' })
+  }
+
+  menuItems.push(
+    ...props.extraMenuItems.map((item) => ({ type: 'link' as const, label: item.label, to: item.to })),
+  )
+
+  return [
+    {
+      header: {
+        title: authStore.user?.email.split('@')[0] || 'User',
+        subtitle: authStore.user?.email || '',
+      },
+      items: menuItems,
     },
-    items: [
-      { type: 'link', label: 'Account settings', to: '/orchesty/account' },
-      { type: 'link', label: 'Users', to: '/users' },
-      ...props.extraMenuItems.map(item => ({ type: 'link' as const, label: item.label, to: item.to })),
-    ],
-  },
-  {
-    items: [
-      { type: 'custom', slotName: 'sign-out' },
-    ],
-  },
-])
+    {
+      items: [
+        { type: 'custom', slotName: 'sign-out' },
+      ],
+    },
+  ]
+})
 
 onMounted(async () => {
   const { initDropdowns, initTabs, initCollapses } = await import('flowbite')
@@ -67,6 +82,16 @@ onMounted(async () => {
 
         <div class="flex shrink-0 items-center justify-end">
           <slot name="extra-nav-buttons" />
+
+          <!-- Help toggle -->
+          <button
+            type="button"
+            class="rounded-lg p-2 text-gray-500 hover:bg-gray-100 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700"
+            @click="toggleHelp(contextHelpId)"
+          >
+            <CircleHelp class="h-6 w-6" />
+            <span class="sr-only">Toggle help</span>
+          </button>
 
           <!-- Dark mode toggle -->
           <button
@@ -126,4 +151,6 @@ onMounted(async () => {
       </div>
     </nav>
   </header>
+
+  <HelpDrawer v-model="helpOpen" :help-id="contextHelpId" />
 </template>

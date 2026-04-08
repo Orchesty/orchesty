@@ -6,11 +6,11 @@ export interface Process {
   topologyId: string
   startTime: string
   duration: number // in milliseconds
-  status: 'running' | 'completed' | 'failed'
+  status: 'running' | 'completed' | 'failed' | 'terminated'
   errorMessage?: string
 }
 
-export type ProcessStatus = 'all' | 'completed' | 'running' | 'failed'
+export type ProcessStatus = 'all' | 'completed' | 'running' | 'failed' | 'terminated'
 
 export interface ProcessQueryParams extends QueryParams {
   status?: ProcessStatus
@@ -32,6 +32,9 @@ export interface ProcessConnector {
 export interface ProcessTrashItem {
   whereItFailed: string
   errorMessage: string
+  /** Present when API returns them (per-row navigation to Failed message modal) */
+  topologyId?: string
+  correlationId?: string
 }
 
 export interface ProcessAuditDetail {
@@ -40,10 +43,8 @@ export interface ProcessAuditDetail {
   corelId: string
   startTime: string
   endTime: string
-  status: 'running' | 'completed' | 'failed'
+  status: 'running' | 'completed' | 'failed' | 'terminated'
   connectors: ProcessConnector[]
-  trashCount: number
-  trashItems: ProcessTrashItem[]
 }
 
 // API Response Types for Total Counts

@@ -4,6 +4,8 @@ import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
 import { searchAccountUsers, addUserFromAccount, type CloudAccountUser } from '@/services/cloudUsersService'
 import { inviteUsers, type InviteResult } from '@/services/usersService'
+import { fetchGroups } from '@/services/groupsService'
+import type { Group } from '@/types/users'
 import { useToast } from '@/composables/useToast'
 
 const { showToast } = useToast()
@@ -39,6 +41,10 @@ const addedDirectly = ref(false)
 const copied = ref(false)
 const errorMessage = ref('')
 
+const availableGroups = ref<Group[]>([])
+const selectedGroupIds = ref<string[]>([])
+const groupsLoading = ref(false)
+
 const showInviteResult = computed(() => inviteResult.value !== null || addedDirectly.value)
 const displayInviteLink = computed(() => {
   if (!inviteResult.value) return ''
@@ -65,6 +71,7 @@ watch(() => props.modelValue, (open) => {
     activeTab.value = props.cloudMode ? 'account' : 'invite'
     resetAll()
     if (props.cloudMode) loadCloudUsers()
+    loadAvailableGroups()
   }
 })
 
@@ -78,6 +85,28 @@ function resetAll() {
   addedDirectly.value = false
   copied.value = false
   errorMessage.value = ''
+  selectedGroupIds.value = []
+}
+
+async function loadAvailableGroups() {
+  groupsLoading.value = true
+  try {
+    const response = await fetchGroups()
+    availableGroups.value = response.items
+  } catch {
+    availableGroups.value = []
+  } finally {
+    groupsLoading.value = false
+  }
+}
+
+function toggleGroup(id: string) {
+  const idx = selectedGroupIds.value.indexOf(id)
+  if (idx === -1) {
+    selectedGroupIds.value.push(id)
+  } else {
+    selectedGroupIds.value.splice(idx, 1)
+  }
 }
 
 function switchTab(tab: TabId) {
@@ -136,7 +165,7 @@ async function handleInviteSubmit() {
   submitting.value = true
   errorMessage.value = ''
   try {
-    const results = await inviteUsers([email])
+    const results = await inviteUsers([email], selectedGroupIds.value)
     const r = results[0]
     if (!r) {
       errorMessage.value = 'No response from server'
@@ -269,6 +298,46 @@ function handleClose() {
             <p v-if="errorMessage" class="mt-2 text-xs text-red-600 dark:text-red-400">
               {{ errorMessage }}
             </p>
+          </div>
+
+          <!-- Group selection -->
+          <div class="w-full mb-4">
+            <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Assign to groups
+            </label>
+            <div v-if="groupsLoading" class="text-sm text-gray-500 dark:text-gray-400">
+              Loading groups...
+            </div>
+            <div v-else-if="availableGroups.length === 0" class="text-sm text-gray-500 dark:text-gray-400">
+              No groups available
+            </div>
+            <div v-else class="flex flex-wrap gap-2">
+              <button
+                v-for="group in availableGroups"
+                :key="group.id"
+                type="button"
+                @click="toggleGroup(group.id)"
+                class="inline-flex items-center rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors"
+                :class="selectedGroupIds.includes(group.id)
+                  ? 'border-primary-500 bg-primary-50 text-primary-700 dark:border-primary-400 dark:bg-primary-900/30 dark:text-primary-300'
+                  : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'"
+              >
+                <svg
+                  v-if="selectedGroupIds.includes(group.id)"
+                  class="mr-1.5 h-3 w-3"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                {{ group.name }}
+              </button>
+            </div>
           </div>
         </form>
       </template>

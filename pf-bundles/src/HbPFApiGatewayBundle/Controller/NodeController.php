@@ -55,6 +55,17 @@ final class NodeController extends AbstractController
     }
 
     /**
+     * @return Response
+     */
+    #[Route('/nodes/connectors', methods: ['GET'], priority: 10)]
+    public function getConnectorNodesAction(): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getConnectorNodesAction',
+        );
+    }
+
+    /**
      * @param string $id
      *
      * @return Response

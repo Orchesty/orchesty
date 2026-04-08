@@ -1,10 +1,13 @@
 import type { QueryParams } from './api'
 
 // Worker Types
+export type WorkerType = 'http' | 'tunnel'
+
 export interface Worker {
   id: string
   name: string
   url: string
+  type: WorkerType
   headers: Record<string, string>
 }
 
@@ -22,6 +25,7 @@ export interface WorkerApiResponse {
   id: string
   name: string
   url: string
+  type: WorkerType
   headers: WorkerHeaderItem[]
 }
 

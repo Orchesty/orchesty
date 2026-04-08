@@ -6,7 +6,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useCloudMode } from '@/composables/useCloudMode'
 import { useFeatures } from '@/composables/useFeatures'
 import { STORAGE_KEYS } from '@/config'
-import { activateUser, setNewPassword } from '@/services/authService'
+import { activateUser, setNewPassword, checkUsersExist } from '@/services/authService'
 import api from '@/services/api'
 
 import EnterpriseDashboardLayout from '@/layouts/DashboardLayout.vue'
@@ -23,13 +23,25 @@ const enterpriseOnlyChildren: RouteRecordRaw[] = [
     path: 'audit-logs',
     name: 'audit-logs',
     component: () => import('@/views/audit-logs/AuditLogsView.vue'),
-    meta: { feature: 'auditLogs' },
+    meta: { feature: 'auditLogs', permission: 'settings:read' },
   },
   {
     path: 'trace',
     name: 'trace',
     component: () => import('@/views/trace/TraceView.vue'),
-    meta: { feature: 'traceAuditing' },
+    meta: { feature: 'traceAuditing', permission: 'trace:read' },
+  },
+  {
+    path: 'resources',
+    name: 'resources',
+    component: () => import('@/views/resources/ResourcesView.vue'),
+    meta: { role: 'system_manager' },
+  },
+  {
+    path: 'limiter',
+    name: 'limiter',
+    component: () => import('@/views/limiter/LimiterView.vue'),
+    meta: { role: 'system_manager' },
   },
 ]
 
@@ -98,6 +110,11 @@ const enterpriseOverrides: Record<string, RouteRecordRaw> = {
     component: () => import('@/views/topologies/EnterpriseTopologyDetailView.vue'),
     props: true,
   },
+  trash: {
+    path: 'trash',
+    name: 'trash',
+    component: () => import('@/views/trash/EnterpriseFailedMessagesView.vue'),
+  },
 }
 
 function mergeRoutes(routes: RouteRecordRaw[]): RouteRecordRaw[] {
@@ -105,6 +122,7 @@ function mergeRoutes(routes: RouteRecordRaw[]): RouteRecordRaw[] {
     const name = route.name as string | undefined
     if (name && enterpriseOverrides[name]) {
       const override = enterpriseOverrides[name]
+      const mergedMeta = { ...route.meta, ...override.meta }
       const mergedChildren = route.children
         ? [...mergeRoutes(route.children)]
         : []
@@ -114,8 +132,8 @@ function mergeRoutes(routes: RouteRecordRaw[]): RouteRecordRaw[] {
       }
 
       return mergedChildren.length > 0
-        ? { ...override, children: mergedChildren }
-        : override
+        ? { ...override, meta: mergedMeta, children: mergedChildren }
+        : { ...override, meta: mergedMeta }
     }
     if (route.children) {
       return { ...route, children: mergeRoutes(route.children) }
@@ -124,7 +142,14 @@ function mergeRoutes(routes: RouteRecordRaw[]): RouteRecordRaw[] {
   })
 }
 
-export { invalidateUsersExistCache } from '@orchesty/ui-core'
+import { invalidateUsersExistCache as invalidateCoreCache } from '@orchesty/ui-core'
+
+let _auth0UsersExistCache: { value: boolean | null } = { value: null }
+
+export function invalidateUsersExistCache() {
+  invalidateCoreCache()
+  _auth0UsersExistCache.value = null
+}
 
 export function createEnterpriseRouter() {
   if (!isAuth0Enabled) {
@@ -191,6 +216,24 @@ export function createEnterpriseRouter() {
         next('/dashboard')
         return
       }
+    }
+
+    if (_auth0UsersExistCache.value === null) {
+      try {
+        _auth0UsersExistCache.value = await checkUsersExist()
+      } catch {
+        _auth0UsersExistCache.value = true
+      }
+    }
+
+    if (!_auth0UsersExistCache.value && to.path !== '/setup') {
+      next('/setup')
+      return
+    }
+
+    if (to.path === '/setup' && _auth0UsersExistCache.value) {
+      next('/sign-in')
+      return
     }
 
     const loginFailed = sessionStorage.getItem(STORAGE_KEYS.AUTH0_LOGIN_FAILED) === 'true'
@@ -268,7 +311,7 @@ export function createEnterpriseRouter() {
         return
       }
       sessionStorage.removeItem(STORAGE_KEYS.CLOUD_HANDOFF_FAILED)
-      next('/sign-in')
+      next(_auth0UsersExistCache.value ? '/sign-in' : '/setup')
       return
     }
 

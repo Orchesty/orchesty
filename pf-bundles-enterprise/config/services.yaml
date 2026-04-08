@@ -11,9 +11,19 @@ parameters:
   startingPointHost: "%env(string:STARTING_POINT_URL)%"
   notifierHost: "%env(string:NOTIFIER_DSN)%"
   lokiHost: "%env(string:LOKI_DSN)%"
+  tunnelProxyHost: "%env(string:TUNNEL_PROXY_HOST)%"
+  tunnelProxyGrpcUrl: "%env(string:TUNNEL_PROXY_GRPC_URL)%"
+  tunnelExtBackendUrl: "%env(string:TUNNEL_EXT_BACKEND_URL)%"
+  tunnelExtStartingPointUrl: "%env(string:TUNNEL_EXT_STARTING_POINT_URL)%"
+  tunnelExtWorkerApiHost: "%env(string:TUNNEL_EXT_WORKER_API_HOST)%"
   activateLink: '%backendHost%/user/%s/activate'
   passwordLink: 'reset-password/%s'
 
+  env(TUNNEL_PROXY_HOST): ''
+  env(TUNNEL_PROXY_GRPC_URL): ''
+  env(TUNNEL_EXT_BACKEND_URL): ''
+  env(TUNNEL_EXT_STARTING_POINT_URL): ''
+  env(TUNNEL_EXT_WORKER_API_HOST): ''
   env(NOTIFIER_DSN): ''
   env(LOKI_DSN): ''
   env(ORCHESTY_CLOUD_URL): ''
@@ -51,6 +61,8 @@ services:
             $dml: '@hbpf.database_manager_locator'
             $resourceProvider: '@hbpf.user.provider.resource'
             $curlManager: '@hbpf.transport.curl_manager'
+            $passwordHasherFactory: '@Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface'
+            $groupManager: '@hbpf.manager.group'
 
     Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\ApiKey\EnterpriseApiKeyAuthenticator:
         arguments:

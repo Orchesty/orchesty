@@ -2,12 +2,15 @@
 
 namespace Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\AclBundle\Manager\GroupManager;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\UserBundle\Document\TmpUser;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\UserBundle\Enum\ResourceEnum;
 use Hanaboso\UserBundle\Model\Security\JWTAuthenticator;
@@ -21,6 +24,7 @@ use Jose\Component\Signature\Serializer\CompactSerializer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
@@ -44,16 +48,20 @@ final class Auth0Authenticator extends AbstractAuthenticator
      */
     private DocumentRepository $userRepository;
 
+    private DocumentManager $dm;
+
     /**
      * Auth0Authenticator constructor.
      *
-     * @param string                 $auth0Domain
-     * @param string                 $auth0Audience
-     * @param JwksCacheService       $jwksCacheService
-     * @param JWTAuthenticator       $jwtAuthenticator
-     * @param DatabaseManagerLocator $dml
-     * @param ResourceProvider       $resourceProvider
-     * @param CurlManager            $curlManager
+     * @param string                         $auth0Domain
+     * @param string                         $auth0Audience
+     * @param JwksCacheService               $jwksCacheService
+     * @param JWTAuthenticator               $jwtAuthenticator
+     * @param DatabaseManagerLocator         $dml
+     * @param ResourceProvider               $resourceProvider
+     * @param CurlManager                    $curlManager
+     * @param PasswordHasherFactoryInterface $passwordHasherFactory
+     * @param GroupManager                   $groupManager
      */
     public function __construct(
         private readonly string $auth0Domain,
@@ -63,11 +71,16 @@ final class Auth0Authenticator extends AbstractAuthenticator
         DatabaseManagerLocator $dml,
         ResourceProvider $resourceProvider,
         private readonly CurlManager $curlManager,
+        private readonly PasswordHasherFactoryInterface $passwordHasherFactory,
+        private readonly GroupManager $groupManager,
     )
     {
+        /** @var DocumentManager $dm */
+        $dm       = $dml->get();
+        $this->dm = $dm;
         /** @phpstan-var class-string<User> $userClass */
         $userClass            = $resourceProvider->getResource(ResourceEnum::USER);
-        $this->userRepository = $dml->get()->getRepository($userClass);
+        $this->userRepository = $this->dm->getRepository($userClass);
     }
 
     /**
@@ -184,9 +197,7 @@ final class Auth0Authenticator extends AbstractAuthenticator
                         ]);
 
                         if (!$user) {
-                            throw new AuthenticationException(
-                                sprintf('User [%s] not found', $email),
-                            );
+                            $user = $this->provisionAuth0User($email);
                         }
 
                         return clone $user;
@@ -198,6 +209,49 @@ final class Auth0Authenticator extends AbstractAuthenticator
         } catch (Throwable $t) {
             throw new AuthenticationException('Auth0 authentication failed', $t->getCode(), $t);
         }
+    }
+
+    /**
+     * Auto-creates a User when Auth0 JWT is valid but the user doesn't exist
+     * in the instance DB yet (e.g. webhook hasn't arrived from cloud).
+     * Also cleans up any matching TmpUser from a pending invite.
+     *
+     * @param string $email
+     *
+     * @return User
+     */
+    private function provisionAuth0User(string $email): User
+    {
+        /** @var User|null $deleted */
+        $deleted = $this->userRepository->findOneBy(['deleted' => TRUE, 'email' => $email]);
+        if ($deleted) {
+            $deleted->setDeleted(FALSE);
+            $this->dm->flush();
+
+            return $deleted;
+        }
+
+        $user = new User();
+        $user->setEmail($email);
+
+        $hasher = $this->passwordHasherFactory->getPasswordHasher(User::class);
+        $user->setPassword($hasher->hash(bin2hex(random_bytes(32))));
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        try {
+            $this->groupManager->addUserIntoGroup($user, groupName: 'user');
+        } catch (Throwable) {
+        }
+
+        $tmpUser = $this->dm->getRepository(TmpUser::class)->findOneBy(['email' => $email]);
+        if ($tmpUser) {
+            $this->dm->remove($tmpUser);
+            $this->dm->flush();
+        }
+
+        return $user;
     }
 
     /**

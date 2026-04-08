@@ -9,5 +9,15 @@ parameters:
   backendHost: "%env(string:BACKEND_URL)%"
   cronHost: "%env(string:CRON_DSN)%"
   startingPointHost: "%env(string:STARTING_POINT_URL)%"
+  env(TUNNEL_PROXY_HOST): ''
+  env(TUNNEL_PROXY_GRPC_URL): ''
+  env(TUNNEL_EXT_BACKEND_URL): ''
+  env(TUNNEL_EXT_STARTING_POINT_URL): ''
+  env(TUNNEL_EXT_WORKER_API_HOST): ''
+  tunnelProxyHost: "%env(string:TUNNEL_PROXY_HOST)%"
+  tunnelProxyGrpcUrl: "%env(string:TUNNEL_PROXY_GRPC_URL)%"
+  tunnelExtBackendUrl: "%env(string:TUNNEL_EXT_BACKEND_URL)%"
+  tunnelExtStartingPointUrl: "%env(string:TUNNEL_EXT_STARTING_POINT_URL)%"
+  tunnelExtWorkerApiHost: "%env(string:TUNNEL_EXT_WORKER_API_HOST)%"
   activateLink: '%backendHost%/user/%s/activate'
   passwordLink: 'reset-password/%s'

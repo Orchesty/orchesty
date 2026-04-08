@@ -2,10 +2,13 @@
 
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Model\SdkManager;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\System\ControllerUtils;
 
@@ -20,9 +23,21 @@ final class SdkHandler
     /**
      * SdkHandler constructor.
      *
-     * @param SdkManager $manager
+     * @param SdkManager      $manager
+     * @param DocumentManager $dm
+     * @param string          $tunnelProxyGrpcUrl
+     * @param string          $tunnelExtBackendUrl
+     * @param string          $tunnelExtStartingPointUrl
+     * @param string          $tunnelExtWorkerApiHost
      */
-    public function __construct(private SdkManager $manager)
+    public function __construct(
+        private SdkManager $manager,
+        private DocumentManager $dm,
+        private string $tunnelProxyGrpcUrl = '',
+        private string $tunnelExtBackendUrl = '',
+        private string $tunnelExtStartingPointUrl = '',
+        private string $tunnelExtWorkerApiHost = '',
+    )
     {
     }
 
@@ -67,7 +82,9 @@ final class SdkHandler
      */
     public function create(array $data): array
     {
-        ControllerUtils::checkParameters([Sdk::NAME, Sdk::URL], $data);
+        $isTunnel = ($data[Sdk::TYPE] ?? Sdk::TYPE_HTTP) === Sdk::TYPE_TUNNEL;
+        $required = $isTunnel ? [Sdk::NAME] : [Sdk::NAME, Sdk::URL];
+        ControllerUtils::checkParameters($required, $data);
 
         return $this->manager->create($data)->toArray();
     }
@@ -95,6 +112,54 @@ final class SdkHandler
     public function delete(string $id): array
     {
         return $this->manager->delete($this->get($id))->toArray();
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return mixed[]
+     * @throws DocumentNotFoundException
+     */
+    public function getTunnelEnv(string $id): array
+    {
+        $sdk = $this->get($id);
+
+        if ($sdk->getType() !== Sdk::TYPE_TUNNEL) {
+            throw new DocumentNotFoundException(sprintf('SDK "%s" is not a tunnel worker.', $id));
+        }
+
+        return $this->getEnv($id);
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return mixed[]
+     * @throws DocumentNotFoundException
+     */
+    public function getEnv(string $id): array
+    {
+        $sdk    = $this->get($id);
+        $apiKey = $this->dm->getRepository(ApiToken::class)
+            ->findOneBy(['user' => ApplicationController::SYSTEM_USER])?->getKey() ?? '';
+
+        $lines = [];
+
+        if ($sdk->getType() === Sdk::TYPE_TUNNEL) {
+            $lines[] = '# --- Orchesty Tunnel Configuration ---';
+            $lines[] = 'TUNNEL_ENABLED=true';
+            $lines[] = sprintf('TUNNEL_PROXY_URL=%s', $this->tunnelProxyGrpcUrl);
+            $lines[] = sprintf('TUNNEL_WORKER_ID=%s', $sdk->getName());
+            $lines[] = '';
+        }
+
+        $lines[] = '# --- Orchesty Platform Connection ---';
+        $lines[] = sprintf('ORCHESTY_API_KEY=%s', $apiKey);
+        $lines[] = sprintf('BACKEND_URL=%s', rtrim($this->tunnelExtBackendUrl, '/'));
+        $lines[] = sprintf('STARTING_POINT_URL=%s', rtrim($this->tunnelExtStartingPointUrl, '/'));
+        $lines[] = sprintf('WORKER_API_HOST=%s', rtrim($this->tunnelExtWorkerApiHost, '/'));
+
+        return ['env' => implode("\n", $lines)];
     }
 
     /**

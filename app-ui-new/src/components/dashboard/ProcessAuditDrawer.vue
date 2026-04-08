@@ -8,15 +8,12 @@ import DataGrid from '@/components/ui/DataGrid.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import MoreActions from '@/components/ui/MoreActions.vue'
 import type { MoreActionsSection } from '@/components/ui/MoreActions.vue'
-import FailedMessageModal from '@/components/topologies/FailedMessageModal.vue'
-import ConnectorMetricDetailModal from '@/components/dashboard/ConnectorMetricDetailModal.vue'
 import StatusBadge from '@/components/ui/StatusBadge.vue'
+import AuditErrorRecordsFailedMessagesTabs from '@/components/dashboard/AuditErrorRecordsFailedMessagesTabs.vue'
 import type { Process, ProcessAuditDetail, ProcessConnector } from '@/types/processes'
-import type { ConnectorErrorRecord } from '@/types/connectors'
 import type { TableColumn } from '@/types/dashboard'
-import type { ActionConfig } from '@/types/datagrid'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
-import { fetchProcessAuditConnectors, fetchProcessAuditTrash, fetchProcessAuditErrorRecords } from '@/services/processesService'
+import { fetchProcessAuditConnectors } from '@/services/processesService'
 import { useDateFormat } from '@/composables/useDateFormat'
 
 interface Props {
@@ -35,14 +32,12 @@ const emit = defineEmits<{
   'update:modelValue': [value: boolean]
   'back': []
   'hidden': []
+  'open-connector-detail': [connector: ProcessConnector]
 }>()
 
 const router = useRouter()
 const { getTopologyName, getNodeName, getApplicationNameByNodeId } = useTopologyNodeMappings()
 const { formatDateTime } = useDateFormat()
-
-// Tab state
-const activeTab = ref<'errorRecords' | 'failedMessages'>('errorRecords')
 
 // Data state
 const processDetail = ref<ProcessAuditDetail | null>(null)
@@ -50,21 +45,10 @@ const connectors = ref<ProcessConnector[]>([])
 const loading = ref(false)
 const connectorsLoading = ref(false)
 const connectorsError = ref(false)
-const trashError = ref(false)
 
 // Connector sort state
 const connectorSortField = ref('called')
 const connectorSortDirection = ref<'asc' | 'desc'>('desc')
-
-// Error records state
-const errorRecords = ref<ConnectorErrorRecord[]>([])
-const errorRecordsLoading = ref(false)
-const errorRecordsPage = ref(1)
-const errorRecordsTotalPages = ref(1)
-const errorRecordsTotalItems = ref(0)
-const errorRecordsPerPage = ref(10)
-const errorRecordsSortField = ref('created')
-const errorRecordsSortDirection = ref<'asc' | 'desc'>('desc')
 
 // Connector table columns
 const connectorColumns: TableColumn[] = [
@@ -72,13 +56,7 @@ const connectorColumns: TableColumn[] = [
   { key: 'called', label: 'Called', sortable: true },
   { key: 'errors400', label: '400', sortable: true },
   { key: 'errors500', label: '500', sortable: true },
-]
-
-// Error records table columns
-const errorRecordsColumns: TableColumn[] = [
-  { key: 'connector', label: 'Connector' },
-  { key: 'code', label: 'Code' },
-  { key: 'message', label: 'Error Message' },
+  { key: 'actions', label: '', sortable: false, className: 'text-right w-12' },
 ]
 
 // Map UI sort field to API column name
@@ -117,62 +95,6 @@ const handleConnectorSort = (config: { field: string; direction: 'asc' | 'desc' 
   }
 }
 
-// Load error records
-const loadErrorRecords = async (correlationId: string) => {
-  errorRecordsLoading.value = true
-  try {
-    const result = await fetchProcessAuditErrorRecords(
-      correlationId,
-      errorRecordsPage.value,
-      errorRecordsPerPage.value,
-      errorRecordsSortField.value,
-      errorRecordsSortDirection.value
-    )
-    errorRecords.value = result.data
-    errorRecordsTotalPages.value = result.meta.totalPages
-    errorRecordsTotalItems.value = result.meta.totalItems
-  } catch (error) {
-    console.error('Error loading error records:', error)
-  } finally {
-    errorRecordsLoading.value = false
-  }
-}
-
-const handleErrorRecordsPageChange = (page: number) => {
-  errorRecordsPage.value = page
-  if (props.process) loadErrorRecords(props.process.id)
-}
-
-const handleErrorRecordsPerPageChange = (perPage: number) => {
-  errorRecordsPerPage.value = perPage
-  errorRecordsPage.value = 1
-  if (props.process) loadErrorRecords(props.process.id)
-}
-
-const handleErrorRecordsSort = (config: { field: string; direction: 'asc' | 'desc' }) => {
-  errorRecordsSortField.value = config.field
-  errorRecordsSortDirection.value = config.direction
-  errorRecordsPage.value = 1
-  if (props.process) loadErrorRecords(props.process.id)
-}
-
-// Metric detail modal state
-const metricDetailOpen = ref(false)
-const selectedErrorRecord = ref<ConnectorErrorRecord | null>(null)
-
-const openMetricDetail = (record: ConnectorErrorRecord) => {
-  selectedErrorRecord.value = record
-  metricDetailOpen.value = true
-}
-
-const errorRecordActions: ActionConfig[] = [
-  {
-    icon: 'search',
-    title: 'View detail',
-    onClick: (row) => openMetricDetail(row as ConnectorErrorRecord),
-  },
-]
-
 // Load process audit detail when process changes
 watch(
   () => props.process,
@@ -184,47 +106,22 @@ watch(
 
     loading.value = true
     connectorsError.value = false
-    trashError.value = false
-    activeTab.value = 'errorRecords'
     connectorSortField.value = 'called'
     connectorSortDirection.value = 'desc'
-    errorRecordsPage.value = 1
-    errorRecordsSortField.value = 'created'
-    errorRecordsSortDirection.value = 'desc'
 
     let connectorsData: ProcessConnector[] = []
-    let trashTotal = 0
-    let trashItems: { whereItFailed: string; errorMessage: string }[] = []
 
     const apiSortField = mapSortFieldToApi(connectorSortField.value)
 
-    const [connectorsResult, trashResult, errorRecordsResult] = await Promise.allSettled([
-      fetchProcessAuditConnectors(newProcess.id, apiSortField, connectorSortDirection.value),
-      fetchProcessAuditTrash(newProcess.id),
-      fetchProcessAuditErrorRecords(newProcess.id, 1, errorRecordsPerPage.value, 'created', 'desc')
-    ])
-
-    if (connectorsResult.status === 'fulfilled') {
-      connectorsData = connectorsResult.value
-    } else {
-      console.error('Error loading connectors:', connectorsResult.reason)
+    try {
+      connectorsData = await fetchProcessAuditConnectors(
+        newProcess.id,
+        apiSortField,
+        connectorSortDirection.value,
+      )
+    } catch (e) {
+      console.error('Error loading connectors:', e)
       connectorsError.value = true
-    }
-
-    if (trashResult.status === 'fulfilled') {
-      trashTotal = trashResult.value.total
-      trashItems = trashResult.value.items
-    } else {
-      console.error('Error loading trash data:', trashResult.reason)
-      trashError.value = true
-    }
-
-    if (errorRecordsResult.status === 'fulfilled') {
-      errorRecords.value = errorRecordsResult.value.data
-      errorRecordsTotalPages.value = errorRecordsResult.value.meta.totalPages
-      errorRecordsTotalItems.value = errorRecordsResult.value.meta.totalItems
-    } else {
-      console.error('Error loading error records:', errorRecordsResult.reason)
     }
 
     connectors.value = connectorsData
@@ -236,8 +133,6 @@ watch(
       endTime: calculateEndTime(newProcess.startTime, newProcess.duration).toISOString(),
       status: newProcess.status,
       connectors: connectorsData,
-      trashCount: trashTotal,
-      trashItems: trashItems,
     }
 
     loading.value = false
@@ -283,15 +178,6 @@ const moreActionsSections = computed<MoreActionsSection[]>(() => {
   ]
   return sections
 })
-
-// Failed message modal state
-const failedModalOpen = ref(false)
-const failedModalNodeId = ref('')
-
-const handleOpenFailedMessage = (nodeId: string) => {
-  failedModalNodeId.value = nodeId
-  failedModalOpen.value = true
-}
 
 const handleClose = () => {
   emit('update:modelValue', false)
@@ -362,7 +248,7 @@ const handleClose = () => {
           <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
             >Status</label
           >
-          <StatusBadge :variant="processDetail.status === 'completed' ? 'green' : processDetail.status === 'running' ? 'blue' : 'red'">
+          <StatusBadge :variant="processDetail.status === 'completed' ? 'green' : processDetail.status === 'running' ? 'blue' : processDetail.status === 'terminated' ? 'yellow' : 'red'">
             {{ processDetail.status.charAt(0).toUpperCase() + processDetail.status.slice(1) }}
           </StatusBadge>
         </div>
@@ -401,144 +287,31 @@ const handleClose = () => {
             <StatusBadge v-if="value > 0" variant="red">{{ value }}</StatusBadge>
             <span v-else>-</span>
           </template>
+
+          <template #cell-actions="{ row }">
+            <div class="flex items-center justify-end">
+              <button
+                type="button"
+                title="Connector details"
+                class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                @click="emit('open-connector-detail', row as ProcessConnector)"
+              >
+                <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
+                <span class="sr-only">Connector details</span>
+              </button>
+            </div>
+          </template>
         </DataGrid>
       </div>
 
-      <!-- Tabs: Error Records / Failed Messages -->
-      <div>
-        <div class="border-b border-gray-200 dark:border-gray-700">
-          <ul class="-mb-px flex text-sm font-medium">
-            <li>
-              <button
-                type="button"
-                :class="[
-                  'inline-flex items-center gap-2 border-b-2 px-4 py-3',
-                  activeTab === 'errorRecords'
-                    ? 'border-primary-600 text-primary-600 dark:border-primary-500 dark:text-primary-500'
-                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-600 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:text-gray-300'
-                ]"
-                @click="activeTab = 'errorRecords'"
-              >
-                Error Records
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                :class="[
-                  'inline-flex items-center gap-2 border-b-2 px-4 py-3',
-                  activeTab === 'failedMessages'
-                    ? 'border-primary-600 text-primary-600 dark:border-primary-500 dark:text-primary-500'
-                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-600 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:text-gray-300'
-                ]"
-                @click="activeTab = 'failedMessages'"
-              >
-                Failed Messages
-                <span
-                  v-if="processDetail.trashCount > 0"
-                  class="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-800 dark:text-red-300"
-                >
-                  {{ processDetail.trashCount }}
-                </span>
-              </button>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Error Records Tab -->
-        <div v-if="activeTab === 'errorRecords'" class="mt-4">
-          <DataGrid
-            :columns="errorRecordsColumns"
-            :data="errorRecords"
-            :loading="errorRecordsLoading"
-            :current-page="errorRecordsPage"
-            :total-pages="errorRecordsTotalPages"
-            :total-items="errorRecordsTotalItems"
-            :items-per-page="errorRecordsPerPage"
-            :sort-field="errorRecordsSortField"
-            :sort-direction="errorRecordsSortDirection"
-            :actions="errorRecordActions"
-            @page-change="handleErrorRecordsPageChange"
-            @per-page-change="handleErrorRecordsPerPageChange"
-            @sort="handleErrorRecordsSort"
-          >
-            <template #cell-connector="{ row }">
-              <span class="font-medium text-gray-900 dark:text-white">{{ getNodeName(row.nodeId) }}</span>
-              <span class="ml-1 text-gray-500 dark:text-gray-400">({{ getApplicationNameByNodeId(row.nodeId) }})</span>
-            </template>
-
-            <template #cell-code="{ value }">
-              <StatusBadge :variant="value >= 400 && value < 500 ? 'yellow' : 'red'">
-                {{ value }}
-              </StatusBadge>
-            </template>
-
-            <template #cell-message="{ value }">
-              <span class="break-words text-xs">
-                {{ value }}
-              </span>
-            </template>
-          </DataGrid>
-        </div>
-
-        <!-- Failed Messages Tab -->
-        <div v-if="activeTab === 'failedMessages'" class="mt-4">
-          <div v-if="trashError">
-            <p class="text-sm text-yellow-600 dark:text-yellow-400">
-              Failed to load trash data. The server may be temporarily unavailable.
-            </p>
-          </div>
-          <div v-else-if="processDetail.trashCount > 0">
-            <div class="mb-4">
-              <router-link
-                :to="{ name: 'trash', query: { correlationId: processDetail.corelId } }"
-                class="flex items-center text-sm font-medium text-gray-700 hover:underline dark:text-gray-300"
-              >
-                Go to Failed Messages
-                <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                </svg>
-              </router-link>
-            </div>
-
-            <div class="overflow-hidden">
-              <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
-                <thead
-                  class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400"
-                >
-                  <tr>
-                    <th scope="col" class="px-4 py-3">Where it failed</th>
-                    <th scope="col" class="px-4 py-3">Error message</th>
-                    <th scope="col" class="w-12 px-4 py-3"><span class="sr-only">Actions</span></th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y bg-white dark:divide-gray-700 dark:bg-gray-800">
-                  <tr v-for="(item, index) in processDetail.trashItems" :key="index">
-                    <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
-                      {{ getNodeName(item.whereItFailed) }}
-                    </td>
-                    <td class="px-4 py-3 break-words">{{ item.errorMessage }}</td>
-                    <td class="px-4 py-3">
-                      <button
-                        type="button"
-                        class="inline-flex items-center rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                        title="View detail"
-                        @click="handleOpenFailedMessage(item.whereItFailed)"
-                      >
-                        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <p v-else class="text-sm text-gray-500 dark:text-gray-400">No failed messages</p>
-        </div>
-      </div>
+      <AuditErrorRecordsFailedMessagesTabs
+        v-if="process"
+        filter-mode="process"
+        :correlation-id="process.id"
+        :topology-id="process.topologyId"
+      />
     </div>
 
     <!-- Footer -->
@@ -548,19 +321,4 @@ const handleClose = () => {
       </Button>
     </template>
   </Drawer>
-
-  <FailedMessageModal
-    v-if="processDetail && process"
-    v-model="failedModalOpen"
-    :topology-id="process.topologyId"
-    :node-id="failedModalNodeId"
-    :correlation-id="processDetail.corelId"
-    node-name=""
-    hide-bulk-actions
-  />
-
-  <ConnectorMetricDetailModal
-    v-model="metricDetailOpen"
-    :record="selectedErrorRecord"
-  />
 </template>

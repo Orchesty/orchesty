@@ -86,9 +86,46 @@ services:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\EnterpriseGroupController
         arguments:
             - '@hbpf.group.handler'
+            - '@security.token_storage'
+
+    Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Subscriber\UserActivateSubscriber:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Subscriber\UserActivateSubscriber
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.manager.group'
+        tags:
+            - { name: kernel.event_subscriber }
 
     Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\NotificationController:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\NotificationController
+
+    hbpf.audit_log.handler:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\AuditLogHandler
+        arguments:
+            - '@Hanaboso\PipesFrameworkEnterprise\AuditLog\Repository\AuditLogRepository'
+
+    Hanaboso\PipesFrameworkEnterprise\AuditLog\Repository\AuditLogRepository:
+        class: Hanaboso\PipesFrameworkEnterprise\AuditLog\Repository\AuditLogRepository
+        factory: ['@doctrine_mongodb.odm.default_document_manager', 'getRepository']
+        arguments:
+            - 'Hanaboso\PipesFrameworkEnterprise\AuditLog\Document\AuditLog'
+
+    Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\AuditLogController:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\AuditLogController
+        arguments:
+            - '@hbpf.audit_log.handler'
+
+    Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\ResourceController:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\ResourceController
+        arguments:
+            - '@hbpf.configurator.handler.topology'
+
+    Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\CloudMetricsController:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\CloudMetricsController
+        arguments:
+            - '@hbpf.cloud.metrics_handler'
+            - '%orchesty_cloud_instance_id%'
+            - '%orchesty_cloud_instance_secret%'
 
     hbpf.auth0.jwks_cache:
         class: Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0\JwksCacheService

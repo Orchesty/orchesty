@@ -6,6 +6,8 @@ import { useDateFormat } from '@/composables/useDateFormat'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 import { fetchLimiterData, fetchApplicationLimiterSettings } from '@/services/dashboardService'
+import { fetchLimiterSnapshot } from '@/services/resourcesService'
+import type { LimiterSnapshotItem } from '@/services/resourcesService'
 import type { LimiterData, TableColumn, TimeFilter, AppLimiterSetting } from '@/types/dashboard'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
@@ -134,15 +136,25 @@ const loadData = async () => {
   loading.value = true
 
   try {
-    const response = await fetchLimiterData({
-      page: currentPage.value,
-      limit: itemsPerPage.value,
-      sortBy: sortField.value,
-      sortOrder: sortDirection.value,
-      timeFilter: props.timeFilter,
-      appSettings: appSettings.value,
-      buckets: 40,
-    })
+    const [response, snapshot] = await Promise.all([
+      fetchLimiterData({
+        page: currentPage.value,
+        limit: itemsPerPage.value,
+        sortBy: sortField.value,
+        sortOrder: sortDirection.value,
+        timeFilter: props.timeFilter,
+        appSettings: appSettings.value,
+        buckets: 40,
+      }),
+      fetchLimiterSnapshot().catch((err) => {
+        console.error('Limiter snapshot failed:', err)
+        return null
+      }),
+    ])
+
+    if (snapshot) {
+      applySnapshot(response, snapshot.totalMessages, snapshot.items)
+    }
 
     limiterData.value = response
     totalPages.value = response.meta.totalPages
@@ -157,6 +169,24 @@ const loadData = async () => {
     console.error('Error loading limiter data:', error)
   } finally {
     loading.value = false
+  }
+}
+
+function applySnapshot(data: LimiterData, totalMessages: number, items: LimiterSnapshotItem[]): void {
+  data.totalMessages = totalMessages
+
+  const snapshotByNode = new Map<string, number>()
+  for (const item of items) {
+    snapshotByNode.set(item.nodeId, item.messages)
+  }
+
+  for (const row of data.tableData) {
+    row.messages = snapshotByNode.get(row.nodeId) ?? 0
+  }
+
+  const chart = data.chartData
+  if (chart.series.length > 0) {
+    chart.series[chart.series.length - 1] = totalMessages
   }
 }
 
@@ -208,8 +238,11 @@ onMounted(async () => {
   try {
     const settings = await fetchApplicationLimiterSettings()
     appSettings.value = settings
+  } catch {
+    // application:read not available for this role — limiter data still works
+  }
 
-    // Load data
+  try {
     await loadData()
     await nextTick()
 

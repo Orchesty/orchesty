@@ -21,6 +21,7 @@ export const coreRoutes: RouteRecordRaw[] = [
         path: 'dashboard',
         name: 'dashboard',
         component: DashboardView,
+        meta: { permission: 'overview:read', helpId: 'control-center/overview' },
       },
       {
         path: 'home',
@@ -31,30 +32,36 @@ export const coreRoutes: RouteRecordRaw[] = [
         path: 'scheduled-tasks',
         name: 'scheduled-tasks',
         component: () => import('@/views/scheduled-tasks/ScheduledTasksView.vue'),
+        meta: { permission: 'scheduled_task:read', helpId: 'scheduled-tasks/overview' },
       },
       {
         path: 'trash',
         name: 'trash',
         component: () => import('@/views/trash/FailedMessagesView.vue'),
+        meta: { permission: 'user_task:read', helpId: 'failed-messages/overview' },
       },
       {
         path: 'logs',
         name: 'logs',
         component: () => import('@/views/logs/LogsView.vue'),
+        meta: { permission: 'logs:read', helpId: 'logs/overview' },
       },
       {
         path: 'applications',
         name: 'applications',
         component: () => import('@/views/applications/ApplicationsView.vue'),
+        meta: { permission: 'application:read', helpId: 'applications/overview' },
       },
       {
         path: 'settings',
         name: 'settings',
         component: () => import('@/views/settings/SettingsView.vue'),
+        meta: { permission: 'settings:read', helpId: 'settings/overview' },
       },
       {
         path: 'topologies',
         component: () => import('@/views/topologies/TopologiesLayout.vue'),
+        meta: { permission: 'topology:read', helpId: 'topologies/overview' },
         children: [
           {
             path: '',
@@ -73,6 +80,7 @@ export const coreRoutes: RouteRecordRaw[] = [
         path: 'users',
         name: 'users',
         component: () => import('@/views/users/UsersView.vue'),
+        meta: { permission: 'user:read', helpId: 'users/overview' },
       },
       {
         path: 'orchesty/account',

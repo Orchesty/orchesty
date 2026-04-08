@@ -110,6 +110,12 @@ class TopologyProgress
     private ?string $user = NULL;
 
     /**
+     * @var bool
+     */
+    #[ODM\Field(type: 'bool')]
+    private bool $terminated = FALSE;
+
+    /**
      * @var string
      */
     #[ODM\Field(type: 'string')]
@@ -284,6 +290,26 @@ class TopologyProgress
     }
 
     /**
+     * @return bool
+     */
+    public function isTerminated(): bool
+    {
+        return $this->terminated;
+    }
+
+    /**
+     * @param bool $terminated
+     *
+     * @return TopologyProgress
+     */
+    public function setTerminated(bool $terminated): self
+    {
+        $this->terminated = $terminated;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getSource(): string
@@ -323,7 +349,7 @@ class TopologyProgress
             'nodesTotal'     => $this->total,
             'source'         => $this->source,
             'started'        => $this->startedAt->format(DateTimeUtils::DATE_TIME_UTC),
-            'status'         => $count < $this->total ? 'IN PROGRESS' : ($this->nok > 0 ? 'FAILED' : 'SUCCESS'),
+            'status'         => $this->terminated ? 'TERMINATED' : ($count < $this->total ? 'IN PROGRESS' : ($this->nok > 0 ? 'FAILED' : 'SUCCESS')),
             'user'           => $this->user ?? '',
         ];
     }

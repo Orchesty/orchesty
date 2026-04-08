@@ -67,6 +67,7 @@ export interface Group {
   id: string
   name: string
   level: number
+  preset: string | null
   usersCount: number
   rules: GroupRule[]
   users?: GroupUser[]

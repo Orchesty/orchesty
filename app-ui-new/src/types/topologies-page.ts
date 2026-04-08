@@ -16,6 +16,7 @@ export interface FolderItem {
   name: string
   parentFolderId?: string | null
   isExpanded?: boolean
+  system?: boolean
   children: TopologiesTreeNode[]
 }
 
@@ -56,6 +57,7 @@ export interface TopologyLayoutContext {
   refreshSidebar: () => Promise<void>
   onTopologyEdited: (callback: () => void) => void
   onTopologyMoved: (callback: () => void) => void
+  isSystemCategory: (categoryId: string | null) => boolean
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sidebarRef: Ref<any>
   topologySidebarCollapsed: Ref<boolean>

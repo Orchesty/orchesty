@@ -24,6 +24,9 @@ security:
         unsecured_cloud_handoff:
             pattern: ^/api/cloud/session-handoff
             security: false
+        unsecured_cloud_metrics:
+            pattern: ^/api/orchesty/metrics
+            security: false
 
         secured_usage_stats_events:
             pattern: ^/api/usage-stats/.*

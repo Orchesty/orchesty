@@ -2,6 +2,9 @@
 import { RouterView } from 'vue-router'
 import AppNavbar from '@/components/layout/AppNavbar.vue'
 import AppSidebar from '@/components/layout/AppSidebar.vue'
+import { provideHelp } from '@/composables/useHelp'
+
+provideHelp()
 </script>
 
 <template>

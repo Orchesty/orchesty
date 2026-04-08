@@ -1,6 +1,6 @@
 services:
     app:
-        image: hanabosocom/go-base:1.24
+        image: hanabosocom/go-base:1.26
         user: ${DEV_UID}:${DEV_GID}
         environment:
             DEV_UID: ${DEV_UID}

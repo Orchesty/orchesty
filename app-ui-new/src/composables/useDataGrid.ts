@@ -15,7 +15,7 @@ export interface UseDataGridOptions {
 export function useDataGrid(options: UseDataGridOptions) {
   // Pagination state
   const currentPage = ref(1)
-  const itemsPerPage = ref(options.defaultPerPage ?? 10)
+  const itemsPerPage = ref(options.defaultPerPage ?? 25)
   const totalPages = ref(1)
   const totalItems = ref(0)
 

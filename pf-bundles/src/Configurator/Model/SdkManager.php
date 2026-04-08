@@ -72,7 +72,8 @@ final class SdkManager
         $sdk = (new Sdk())
             ->setName($data[Sdk::NAME])
             ->setHeaders($data[Sdk::HEADERS] ?? [])
-            ->setUrl($data[Sdk::URL]);
+            ->setUrl($data[Sdk::URL] ?? '')
+            ->setType($data[Sdk::TYPE] ?? Sdk::TYPE_HTTP);
 
         $this->dm->persist($sdk);
         $this->dm->flush();
@@ -95,6 +96,10 @@ final class SdkManager
 
         if (isset($data[Sdk::URL])) {
             $sdk->setUrl($data[Sdk::URL]);
+        }
+
+        if (isset($data[Sdk::TYPE])) {
+            $sdk->setType($data[Sdk::TYPE]);
         }
 
         $sdk->setHeaders($data[Sdk::HEADERS] ?? []);

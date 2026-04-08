@@ -1,8 +1,6 @@
 module trace
 
-go 1.24.0
-
-toolchain go1.24.3
+go 1.26
 
 require (
 	github.com/gorilla/websocket v1.5.3
@@ -11,8 +9,8 @@ require (
 )
 
 require (
-	github.com/BurntSushi/toml v1.2.0 // indirect
+	github.com/BurntSushi/toml v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/zap v1.27.0 // indirect
+	go.uber.org/zap v1.27.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

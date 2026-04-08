@@ -8,6 +8,7 @@ use Hanaboso\AclBundle\Document\Group;
 use Hanaboso\AclBundle\Manager\GroupManager;
 use Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler;
 use Hanaboso\PipesFramework\User\Manager\UserManager as UsersManager;
+use Hanaboso\PipesFrameworkEnterprise\Acl\PermissionPresets;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\UserBundle\Model\Token\TokenManager;
 use Hanaboso\UserBundle\Model\User\UserManager;
@@ -66,17 +67,13 @@ final class EnterpriseUserHandler extends UserHandler
     {
         $result = parent::setupUser($data);
 
+        $this->ensurePresetGroups();
+
         /** @var User|null $user */
         $user = $this->dm->getRepository(User::class)->findOneBy(['email' => $data['email']]);
 
         if ($user instanceof User) {
-            $group = new Group(NULL);
-            $group->setName('superadmin');
-            $group->setLevel(0);
-            $group->addUser($user);
-
-            $this->dm->persist($group);
-            $this->dm->flush();
+            $this->groupManager->addUserIntoGroup($user, groupName: PermissionPresets::SUPER_ADMIN);
         }
 
         return $result;
@@ -165,12 +162,17 @@ final class EnterpriseUserHandler extends UserHandler
      * - existing cloud account users are added directly
      * - truly new users get a regular invite link
      *
-     * @param string $email
+     * When $groupIds are provided, the groups are either assigned immediately
+     * (for direct-add / restore paths) or stored as pending for assignment
+     * on activation (for the invite-link path).
+     *
+     * @param string   $email
+     * @param string[] $groupIds
      *
      * @return mixed[]
      * @throws UserManagerException
      */
-    public function inviteUser(string $email): array
+    public function inviteUser(string $email, array $groupIds = []): array
     {
         /** @var User|null $existing */
         $existing = $this->dm->getRepository(User::class)->findOneBy(['email' => $email]);
@@ -179,6 +181,7 @@ final class EnterpriseUserHandler extends UserHandler
             if ($existing->isDeleted()) {
                 $existing->setDeleted(FALSE);
                 $this->dm->flush();
+                $this->assignGroupsToUser($existing, $groupIds);
                 $this->cloudMemberSyncService->syncMemberAdd($email);
                 $this->systemTopologyService->sendRestoreAccessEmail($email);
 
@@ -195,11 +198,20 @@ final class EnterpriseUserHandler extends UserHandler
             $cloudUsers = $this->cloudMemberSyncService->searchAccountUsers($email);
             foreach ($cloudUsers as $cu) {
                 if (strcasecmp($cu['email'] ?? '', $email) === 0) {
-                    return $this->addUserFromAccount($email, $cu['name'] ?? NULL);
+                    $result = $this->addUserFromAccount($email, $cu['name'] ?? NULL);
+
+                    /** @var User|null $user */
+                    $user = $this->dm->getRepository(User::class)->findOneBy(['email' => $email]);
+                    if ($user) {
+                        $this->assignGroupsToUser($user, $groupIds);
+                    }
+
+                    return $result;
                 }
             }
 
             $localResult = parent::inviteUser($email);
+            $this->storePendingGroups($email, $groupIds);
 
             $cloudResult = $this->cloudMemberSyncService->createCloudInvite($email);
             if ($cloudResult !== NULL) {
@@ -215,6 +227,7 @@ final class EnterpriseUserHandler extends UserHandler
         }
 
         $result = parent::inviteUser($email);
+        $this->storePendingGroups($email, $groupIds);
         $this->systemTopologyService->sendInviteEmail($email, $result['hash'] ?? '');
 
         return $result;
@@ -277,6 +290,73 @@ final class EnterpriseUserHandler extends UserHandler
         $this->dm->flush();
 
         return $user->toArray();
+    }
+
+    /**
+     * Creates all preset groups in the database if they don't exist yet.
+     */
+    private function ensurePresetGroups(): void
+    {
+        $repo          = $this->dm->getRepository(Group::class);
+        $existingNames = [];
+
+        /** @var Group $g */
+        foreach ($repo->findAll() as $g) {
+            $existingNames[] = $g->getName();
+        }
+
+        foreach (PermissionPresets::all() as $name => $preset) {
+            if (in_array($name, $existingNames, TRUE)) {
+                continue;
+            }
+
+            $group = new Group(NULL);
+            $group->setName($name);
+            $group->setLevel($preset['level']);
+            $this->dm->persist($group);
+        }
+
+        $this->dm->flush();
+    }
+
+    /**
+     * @param User     $user
+     * @param string[] $groupIds
+     */
+    private function assignGroupsToUser(User $user, array $groupIds): void
+    {
+        if ($groupIds === []) {
+            return;
+        }
+
+        foreach ($groupIds as $groupId) {
+            try {
+                /** @var Group|null $group */
+                $group = $this->dm->getRepository(Group::class)->find($groupId);
+                $group?->addUser($user);
+            } catch (Throwable) {
+            }
+        }
+
+        $this->dm->flush();
+    }
+
+    /**
+     * @param string   $email
+     * @param string[] $groupIds
+     */
+    private function storePendingGroups(string $email, array $groupIds): void
+    {
+        if ($groupIds === []) {
+            return;
+        }
+
+        $db = $this->dm->getDocumentDatabase(User::class);
+        $db->selectCollection('PendingGroupAssignment')->updateOne(
+            ['email' => $email],
+            ['$set' => ['email' => $email, 'groupIds' => array_values($groupIds)]],
+            ['upsert' => TRUE],
+        );
     }
 
 }

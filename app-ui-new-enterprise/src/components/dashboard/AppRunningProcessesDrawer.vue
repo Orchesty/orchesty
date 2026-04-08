@@ -3,14 +3,20 @@ import { ref, watch, computed } from 'vue'
 import Drawer from '@/components/ui/Drawer.vue'
 import Button from '@/components/ui/Button.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
+import StatusBadge from '@/components/ui/StatusBadge.vue'
+import MoreActions from '@/components/ui/MoreActions.vue'
+import type { MoreActionsSection } from '@/components/ui/MoreActions.vue'
+import Confirm from '@/components/ui/Confirm.vue'
 import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
 import GridLink from '@/components/ui/datagrid/GridLink.vue'
 import type { Process } from '@/types/processes'
 import type { TableColumn } from '@/types/dashboard'
 import { fetchProcesses } from '@/services/processesService'
+import { terminateProcesses } from '@/services/resourcesService'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useDateFormat } from '@/composables/useDateFormat'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { useToast } from '@/composables/useToast'
 
 interface Props {
   modelValue: boolean
@@ -22,10 +28,12 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
+  'terminated': []
 }>()
 
 const { getTopologyName, getApplicationName } = useTopologyNodeMappings()
 const { formatDateTime, formatDurationMs } = useDateFormat()
+const { showToast } = useToast()
 
 const appLabel = computed(() => {
   if (!props.applicationId || props.applicationId === '-') return '-'
@@ -68,6 +76,8 @@ const processColumns: TableColumn[] = [
   { key: 'topology', label: 'Topology', sortable: false },
   { key: 'startTime', label: 'Start time', sortable: true },
   { key: 'duration', label: 'Duration', sortable: true },
+  { key: 'status', label: 'Status', sortable: false },
+  { key: 'actions', label: '', className: 'text-right w-16' },
 ]
 
 const processes = ref<Process[]>([])
@@ -149,6 +159,85 @@ watch(
 const handleClose = () => {
   emit('update:modelValue', false)
 }
+
+// --- Terminate actions ---
+
+const terminateConfirmOpen = ref(false)
+const terminateTarget = ref<{ topologyId: string; correlationId?: string } | null>(null)
+const terminating = ref(false)
+
+function getTopologyActions(topologyId: string): MoreActionsSection[] {
+  return [
+    {
+      items: [
+        { type: 'link', label: 'Topology detail', to: `/topologies/${topologyId}` },
+      ],
+    },
+    {
+      items: [
+        {
+          type: 'button',
+          label: 'Terminate processes',
+          onClick: () => {
+            terminateTarget.value = { topologyId }
+            terminateConfirmOpen.value = true
+          },
+        },
+      ],
+    },
+  ]
+}
+
+function getProcessActions(topologyId: string, correlationId: string): MoreActionsSection[] {
+  return [
+    {
+      items: [
+        {
+          type: 'button',
+          label: 'Terminate process',
+          onClick: () => {
+            terminateTarget.value = { topologyId, correlationId }
+            terminateConfirmOpen.value = true
+          },
+        },
+      ],
+    },
+  ]
+}
+
+const handleTerminateConfirm = async () => {
+  if (!terminateTarget.value) return
+  terminating.value = true
+  try {
+    const result = await terminateProcesses(
+      terminateTarget.value.topologyId,
+      terminateTarget.value.correlationId,
+    )
+
+    if (result.limiterError) {
+      console.error('Limiter delete failed:', result.limiterError)
+      showToast('Processes terminated, but limiter messages could not be deleted: ' + result.limiterError, 'warning')
+    } else {
+      showToast(
+        terminateTarget.value.correlationId
+          ? 'Process terminated successfully'
+          : 'All processes terminated successfully',
+        'success',
+      )
+    }
+
+    emit('terminated')
+    loadRunning()
+    loadProcesses()
+  } catch (error) {
+    console.error('Error terminating processes:', error)
+    showToast('Failed to terminate processes', 'error')
+  } finally {
+    terminating.value = false
+    terminateConfirmOpen.value = false
+    terminateTarget.value = null
+  }
+}
 </script>
 
 <template>
@@ -192,28 +281,10 @@ const handleClose = () => {
 
         <template #cell-actions="{ row }">
           <div class="flex items-center justify-end">
-            <router-link
-              :to="{ name: 'topology-detail', params: { id: row.topologyId } }"
-              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              title="View topology"
-            >
-              <svg
-                class="h-5 w-5"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-                />
-              </svg>
-              <span class="sr-only">View topology</span>
-            </router-link>
+            <MoreActions
+              :id="`topology-actions-${row.topologyId}`"
+              :sections="getTopologyActions(row.topologyId)"
+            />
           </div>
         </template>
       </DataGrid>
@@ -261,6 +332,21 @@ const handleClose = () => {
           <span class="whitespace-nowrap">{{ formatDurationMs(value) }}</span>
         </template>
 
+        <template #cell-status="{ value }">
+          <StatusBadge :variant="value === 'completed' ? 'green' : value === 'running' ? 'blue' : value === 'terminated' ? 'yellow' : 'red'">
+            {{ value.charAt(0).toUpperCase() + value.slice(1) }}
+          </StatusBadge>
+        </template>
+
+        <template #cell-actions="{ row }">
+          <div class="flex items-center justify-end">
+            <MoreActions
+              :id="`process-actions-${row.id}`"
+              :sections="getProcessActions(row.topologyId, row.id)"
+            />
+          </div>
+        </template>
+
       </DataGrid>
     </div>
 
@@ -270,4 +356,25 @@ const handleClose = () => {
       </Button>
     </template>
   </Drawer>
+
+  <!-- Terminate Confirmation -->
+  <Confirm
+    v-model="terminateConfirmOpen"
+    id="terminate-confirm"
+    confirm-text="Yes, terminate"
+    confirm-variant="danger"
+    @confirm="handleTerminateConfirm"
+  >
+    <template #icon>
+      <svg class="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+      </svg>
+    </template>
+    <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+      {{ terminateTarget?.correlationId
+        ? 'Are you sure you want to terminate this process? Messages in limiter and repeater will be deleted.'
+        : 'Are you sure you want to terminate all processes for this topology? Messages in limiter and repeater will be deleted.'
+      }}
+    </h3>
+  </Confirm>
 </template>

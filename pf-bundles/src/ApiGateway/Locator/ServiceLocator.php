@@ -60,12 +60,14 @@ final class ServiceLocator implements LoggerAwareInterface
      * @param CurlManager       $curlManager
      * @param RedirectInterface $redirect
      * @param string            $backendHost
+     * @param string            $tunnelProxyHost
      */
     public function __construct(
         DocumentManager $dm,
         private readonly CurlManager $curlManager,
         private readonly RedirectInterface $redirect,
         private readonly string $backendHost,
+        private readonly string $tunnelProxyHost = '',
     )
     {
         $this->sdkRepository = $dm->getRepository(Sdk::class);
@@ -467,43 +469,27 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function getNodes(): array
     {
+        $nodeTypes = [
+            NodeImplementationEnum::BATCH->value     => 'batch/list',
+            NodeImplementationEnum::CONNECTOR->value => 'connector/list',
+            NodeImplementationEnum::CUSTOM->value    => 'custom-node/list',
+        ];
+
         $n = [];
         foreach ($this->getSdks() as $sdk) {
             try {
-                $ip   = $sdk->getUrl();
                 $name = $sdk->getName();
-                $con  = new RequestDto(
-                    new Uri(sprintf('%s/connector/list', $ip)),
-                    CurlManager::METHOD_GET,
-                    new ProcessDto(),
-                );
-                $cst  = new RequestDto(
-                    new Uri(sprintf('%s/custom-node/list', $ip)),
-                    CurlManager::METHOD_GET,
-                    new ProcessDto(),
-                );
-                $btch = new RequestDto(
-                    new Uri(sprintf('%s/batch/list', $ip)),
-                    CurlManager::METHOD_GET,
-                    new ProcessDto(),
-                );
-
-                try {
-                    $n[$name][NodeImplementationEnum::CONNECTOR->value] = $this->curlManager->send($con)->getJsonBody();
-                } catch (Throwable) {
-                    $n[$name][NodeImplementationEnum::CONNECTOR->value] = [];
-                }
-
-                try {
-                    $n[$name][NodeImplementationEnum::CUSTOM->value] = $this->curlManager->send($cst)->getJsonBody();
-                } catch (Throwable) {
-                    $n[$name][NodeImplementationEnum::CUSTOM->value] = [];
-                }
-
-                try {
-                    $n[$name][NodeImplementationEnum::BATCH->value] = $this->curlManager->send($btch)->getJsonBody();
-                } catch (Throwable) {
-                    $n[$name][NodeImplementationEnum::BATCH->value] = [];
+                foreach ($nodeTypes as $type => $path) {
+                    try {
+                        $dto             = new RequestDto(
+                            new Uri($this->buildSdkUrl($sdk, $path)),
+                            CurlManager::METHOD_GET,
+                            new ProcessDto(),
+                        );
+                        $n[$name][$type] = $this->curlManager->send($dto)->getJsonBody();
+                    } catch (Throwable) {
+                        $n[$name][$type] = [];
+                    }
                 }
             } catch (Throwable $t) {
                 $this->logger->error($t->getMessage(), ['Exception' => $t, 'Sdk' => $sdk]);
@@ -608,10 +594,10 @@ final class ServiceLocator implements LoggerAwareInterface
             static fn(Sdk $sdk): bool => $sdk->getName() === $sdkName,
         ))[0];
         try {
-            $ip = $sdk->getUrl();
+            $requestUrl = $this->buildSdkUrl($sdk, $url);
 
             $dto = new RequestDto(
-                new Uri(sprintf('%s/%s', $ip, $url)),
+                new Uri($requestUrl),
                 $method,
                 new ProcessDto(),
                 '',
@@ -627,7 +613,7 @@ final class ServiceLocator implements LoggerAwareInterface
                     $out[] = $res->getBody();
                 }else if ($res->getJsonBody() !== []) {
                     if (!$multiple) {
-                        $out = array_merge($res->getJsonBody(), ['host' => $ip]);
+                        $out = array_merge($res->getJsonBody(), ['host' => $this->getSdkBaseUrl($sdk)]);
                     } else {
                         $out = array_merge($out, $res->getJsonBody());
                     }
@@ -654,6 +640,32 @@ final class ServiceLocator implements LoggerAwareInterface
         }
 
         return $out;
+    }
+
+    /**
+     * @param Sdk $sdk
+     *
+     * @return string
+     */
+    private function getSdkBaseUrl(Sdk $sdk): string
+    {
+        return $sdk->isTunnel() ? $this->tunnelProxyHost : $sdk->getUrl();
+    }
+
+    /**
+     * @param Sdk    $sdk
+     * @param string $path
+     *
+     * @return string
+     */
+    private function buildSdkUrl(Sdk $sdk, string $path): string
+    {
+        $base = $this->getSdkBaseUrl($sdk);
+        $path = ltrim($path, '/');
+
+        return $sdk->isTunnel()
+            ? sprintf('%s/call/%s/%s', $base, $sdk->getName(), $path)
+            : sprintf('%s/%s', $base, $path);
     }
 
     /**

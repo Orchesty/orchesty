@@ -49,6 +49,7 @@ const {
   handlePerPageChange,
   handleSort,
 } = useDataGrid({
+  defaultSort: { field: 'timestamp', direction: 'desc' },
   onDataLoad: async () => {
     loading.value = true
     try {

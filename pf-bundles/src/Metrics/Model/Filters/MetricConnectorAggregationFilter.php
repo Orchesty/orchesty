@@ -69,6 +69,14 @@ final class MetricConnectorAggregationFilter extends GridAggregationFilterAbstra
                 match ($values[0]) {
                     'COMPLETED' => $expr->addAnd($builder->matchExpr()->field('fields.response_code')->lte(399)),
                     'FAILED' => $expr->addAnd($builder->matchExpr()->field('fields.response_code')->gte(400)),
+                    'FAILED_400' => $expr->addAnd(
+                        $builder->matchExpr()->field('fields.response_code')->gte(400),
+                        $builder->matchExpr()->field('fields.response_code')->lte(499),
+                    ),
+                    'FAILED_500' => $expr->addAnd(
+                        $builder->matchExpr()->field('fields.response_code')->gte(500),
+                        $builder->matchExpr()->field('fields.response_code')->lte(599),
+                    ),
                     default => throw new LogicException(
                         sprintf('Unknown status value `%s`.', $values[0]),
                         Response::HTTP_BAD_REQUEST,
