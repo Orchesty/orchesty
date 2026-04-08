@@ -139,18 +139,17 @@ final class NodeHandler
      */
     public function getConnectorNodes(): array
     {
-        /** @var \Hanaboso\PipesFramework\Database\Repository\NodeRepository $repo */
         $repo  = $this->dm->getRepository(Node::class);
         $nodes = $repo->getConnectorNodes();
 
         $items = [];
         foreach ($nodes as $node) {
             $items[] = [
-                '_id'         => $node->getId(),
+                'application' => $node->getApplication(),
                 'name'        => $node->getName(),
                 'topology_id' => $node->getTopology(),
-                'application' => $node->getApplication(),
                 'type'        => $node->getType(),
+                '_id'         => $node->getId(),
             ];
         }
 

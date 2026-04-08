@@ -470,9 +470,9 @@ final class ServiceLocator implements LoggerAwareInterface
     public function getNodes(): array
     {
         $nodeTypes = [
+            NodeImplementationEnum::BATCH->value     => 'batch/list',
             NodeImplementationEnum::CONNECTOR->value => 'connector/list',
             NodeImplementationEnum::CUSTOM->value    => 'custom-node/list',
-            NodeImplementationEnum::BATCH->value     => 'batch/list',
         ];
 
         $n = [];
@@ -481,7 +481,7 @@ final class ServiceLocator implements LoggerAwareInterface
                 $name = $sdk->getName();
                 foreach ($nodeTypes as $type => $path) {
                     try {
-                        $dto          = new RequestDto(
+                        $dto             = new RequestDto(
                             new Uri($this->buildSdkUrl($sdk, $path)),
                             CurlManager::METHOD_GET,
                             new ProcessDto(),

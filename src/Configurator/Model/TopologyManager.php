@@ -411,7 +411,7 @@ class TopologyManager
                 ->setCron($topologyNode->getCron())
                 ->setCronParams($topologyNode->getCronParams())
                 ->setSdk($topologyNode->getSdk())
-                ->setApplication($topologyNode->getApplication());
+                ->setApplication($topologyNode->getApplication() ?? '');
             $this->dm->persist($nodeCopy);
 
             $settings = $topologyNode->getSystemConfigs();
@@ -629,7 +629,7 @@ class TopologyManager
      */
     private function getTunnelProxyHostWithoutScheme(): string
     {
-        return preg_replace('#^https?://#', '', $this->tunnelProxyHost);
+        return (string) preg_replace('#^https?://#', '', $this->tunnelProxyHost);
     }
 
     /**

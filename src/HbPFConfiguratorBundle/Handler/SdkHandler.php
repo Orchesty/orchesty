@@ -128,21 +128,36 @@ final class SdkHandler
             throw new DocumentNotFoundException(sprintf('SDK "%s" is not a tunnel worker.', $id));
         }
 
+        return $this->getEnv($id);
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return mixed[]
+     * @throws DocumentNotFoundException
+     */
+    public function getEnv(string $id): array
+    {
+        $sdk    = $this->get($id);
         $apiKey = $this->dm->getRepository(ApiToken::class)
             ->findOneBy(['user' => ApplicationController::SYSTEM_USER])?->getKey() ?? '';
 
-        $lines = [
-            '# --- Orchesty Tunnel Configuration ---',
-            'TUNNEL_ENABLED=true',
-            sprintf('TUNNEL_PROXY_URL=%s', $this->tunnelProxyGrpcUrl),
-            sprintf('TUNNEL_WORKER_ID=%s', $sdk->getName()),
-            '',
-            '# --- Orchesty Platform Connection ---',
-            sprintf('ORCHESTY_API_KEY=%s', $apiKey),
-            sprintf('BACKEND_URL=%s', rtrim($this->tunnelExtBackendUrl, '/')),
-            sprintf('STARTING_POINT_URL=%s', rtrim($this->tunnelExtStartingPointUrl, '/')),
-            sprintf('WORKER_API_HOST=%s', rtrim($this->tunnelExtWorkerApiHost, '/')),
-        ];
+        $lines = [];
+
+        if ($sdk->getType() === Sdk::TYPE_TUNNEL) {
+            $lines[] = '# --- Orchesty Tunnel Configuration ---';
+            $lines[] = 'TUNNEL_ENABLED=true';
+            $lines[] = sprintf('TUNNEL_PROXY_URL=%s', $this->tunnelProxyGrpcUrl);
+            $lines[] = sprintf('TUNNEL_WORKER_ID=%s', $sdk->getName());
+            $lines[] = '';
+        }
+
+        $lines[] = '# --- Orchesty Platform Connection ---';
+        $lines[] = sprintf('ORCHESTY_API_KEY=%s', $apiKey);
+        $lines[] = sprintf('BACKEND_URL=%s', rtrim($this->tunnelExtBackendUrl, '/'));
+        $lines[] = sprintf('STARTING_POINT_URL=%s', rtrim($this->tunnelExtStartingPointUrl, '/'));
+        $lines[] = sprintf('WORKER_API_HOST=%s', rtrim($this->tunnelExtWorkerApiHost, '/'));
 
         return ['env' => implode("\n", $lines)];
     }

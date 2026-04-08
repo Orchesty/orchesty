@@ -5,12 +5,14 @@
             {
                 "id": "5e32a7a41ffeab2445696983",
                 "name": "One",
+                "type": "http",
                 "url": "One",
                 "headers": []
             },
             {
                 "id": "5e32a7a41ffeab2445696983",
                 "name": "Two",
+                "type": "http",
                 "url": "Two",
                 "headers": []
             }
