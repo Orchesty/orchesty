@@ -44,6 +44,12 @@ spec:
               value: {{ .Values.global.backend.alpha_instance_id }}
             - name: CRON_DSN
               value: cron-api:8080
+            - name: TOPOLOGY_API_DSN
+              value: "{{ include "pipes.fullname" (dict "suffix" "topology-api" "noPrefix" true "root" .) }}:8080"
+            - name: LIMITER_URL
+              value: "{{ include "pipes.fullname" (dict "suffix" "limiter" "root" .) }}:80"
+            - name: FRONTEND_URL
+              value: "{{ .Values.global.frontend_url }}/"
             - name: RABBITMQ_DSN
               valueFrom:
                 secretKeyRef:

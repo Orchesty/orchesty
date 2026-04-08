@@ -1,5 +1,11 @@
 # Release Notes
 
+## 2.1.17
+
+### Changes
+
+- Backend: Post-install: added missing ENVs
+
 ## 2.1.16
 
 ### Changes
