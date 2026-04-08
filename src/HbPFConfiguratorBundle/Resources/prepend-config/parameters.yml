@@ -6,7 +6,7 @@ parameters:
     env(CHECK_INFINITY_LOOP): true
 
     docker_pf_bridge_image: "%env(string:DOCKER_PF_BRIDGE_IMAGE)%"
-    env(DOCKER_PF_BRIDGE_IMAGE): orchesty/bridge:1.0
+    env(DOCKER_PF_BRIDGE_IMAGE): orchesty/bridge:2.1
 
     env(XML_PARSER_API_DSN): "xml-parser-api"
     xml_parser_api_host: "%env(string:XML_PARSER_API_DSN)%"
