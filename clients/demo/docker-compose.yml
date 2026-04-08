@@ -171,6 +171,7 @@ services:
             CRON_DSN: cron-api:8080
             STARTING_POINT_URL: ${STARTING_POINT_DSN}
             NOTIFIER_DSN: ${NOTIFIER_DSN}
+            LOKI_DSN: ${LOKI_DSN}
             WORKER_API: http://worker-api:8080/
             TOPOLOGY_API_DSN: topology-api:8080
             #DOCKER_PF_BRIDGE_IMAGE: orchesty/bridge:${VERSION}
@@ -269,6 +270,19 @@ services:
         volumes:
             - ./../../notifier/:/app:cached
         command: /run.sh -p cmd/notifier.go -l 2345
+        security_opt: ['seccomp:unconfined']
+
+    trace:
+        image: hanabosocom/go-base:1.26
+        user: ${DEV_UID}:${DEV_GID}
+        environment:
+            APP_DEBUG: 'true'
+            BACKEND_URL: http://backend-enterprise:80
+        volumes:
+            - ./../../trace/:/app:cached
+        ports:
+            - ${DEV_IP}:8082:8080
+        command: /run.sh -p cmd/trace.go -l 2345
         security_opt: ['seccomp:unconfined']
 
     detector:
@@ -386,6 +400,12 @@ services:
     wait-for-it:
         image: hanabosocom/wait-for-it:master
 
+    mockoon:
+        image: mockoon/cli:latest
+        command: --data /data/mockoon.json --port 3000
+        volumes:
+            - ./mockoon/mockoon.json:/data/mockoon.json
+
     mysql:
         image: mysql:latest
         ports:
@@ -395,6 +415,30 @@ services:
             MYSQL_DATABASE: ${MYSQL_DATABASE}
         volumes:
             - ./node-sdk/test/init-data/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    loki:
+        image: grafana/loki:latest
+        command: -config.file=/etc/loki/loki.yaml
+        volumes:
+            - ./loki/loki.yaml:/etc/loki/loki.yaml
+
+    alloy:
+        image: grafana/alloy:latest
+        command: run --server.http.listen-addr=0.0.0.0:12345 /etc/alloy/config.alloy
+        volumes:
+            - ./alloy/config.alloy:/etc/alloy/config.alloy
+            - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
+
+    grafana:
+        image: grafana/grafana:latest
+        ports:
+            - ${DEV_IP}:3000:3000
+        environment:
+            GF_SECURITY_ADMIN_USER: root
+            GF_SECURITY_ADMIN_PASSWORD: root
+            GF_SECURITY_DISABLE_INITIAL_ADMIN_PASSWORD_CHANGE: "true"
+        volumes:
+            - ./grafana/provisioning:/etc/grafana/provisioning
 
 volumes:
     mongodb:

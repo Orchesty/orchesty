@@ -70,43 +70,13 @@ applinth-link:
 	echo "http://$(shell grep 'DEV_IP' .env | cut -d "=" -f2):81/?u=$$($(DE) applinth-marketplace-ui /bin/bash -c 'node JWEGen.js')"
 
 init-more: init
+	$(DC) cp mockoon/AuditEntity.json mongo:/tmp
+	$(DCM) mongoimport --db "$(shell grep 'MAIN_DB' .env | cut -d "=" -f2)" --collection AuditEntity --file /tmp/AuditEntity.json --jsonArray
 	$(DCBE) sh -c '\
 		curl -s -X POST "http://localhost/api/user/setup" \
 			-H "Content-Type: application/json" \
 			-d "{\"email\":\"$(shell grep ORCHESTY_USER .env | cut -d= -f2)\",\"password\":\"$(shell grep ORCHESTY_PASSWORD .env | cut -d= -f2)\"}" > /dev/null && \
 		printf "\033[32mUser was successfully created.\033[0m\n"'
-	$(DCBE) sh -c '\
-		TOKEN=$$(curl -s -X POST http://localhost/api/user/login \
-			-H "Content-Type: application/json" \
-			-H "Accept: application/json" \
-			-d "{\"email\":\"$(shell grep ORCHESTY_USER .env | cut -d= -f2)\",\"password\":\"$(shell grep ORCHESTY_PASSWORD .env | cut -d= -f2)\"}" \
-			| grep -o "\"token\":\"[^\"]*\"" | sed "s/\"token\":\"//;s/\"//") && \
-		curl -s -X POST "http://localhost/api/applications/http-status?sdk=node-sdk" \
-			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
-			-d "{}" > /dev/null && \
-		curl -s -X PUT "http://localhost/api/applications/http-status?sdk=node-sdk" \
-			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
-			-d "{\"limiter_form\":{\"useLimit\":true,\"value\":\"200\",\"time\":\"60\"}}" > /dev/null && \
-		curl -s -X PUT "http://localhost/api/applications/http-status/changeState?sdk=node-sdk" \
-			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
-			-d "{\"enabled\":true}" > /dev/null && \
-		printf "\033[32mApplication http-status (node-sdk) was successfully installed.\033[0m\n"'
-	$(DCBE) sh -c '\
-		TOKEN=$$(curl -s -X POST http://localhost/api/user/login \
-			-H "Content-Type: application/json" \
-			-H "Accept: application/json" \
-			-d "{\"email\":\"$(shell grep ORCHESTY_USER .env | cut -d= -f2)\",\"password\":\"$(shell grep ORCHESTY_PASSWORD .env | cut -d= -f2)\"}" \
-			| grep -o "\"token\":\"[^\"]*\"" | sed "s/\"token\":\"//;s/\"//") && \
-		curl -s -X POST "http://localhost/api/applications/http-status?sdk=php-sdk" \
-			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
-			-d "{}" > /dev/null && \
-		curl -s -X PUT "http://localhost/api/applications/http-status?sdk=php-sdk" \
-			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
-			-d "{\"limiter_form\":{\"useLimit\":true,\"value\":\"100\",\"time\":\"60\"}}" > /dev/null && \
-		curl -s -X PUT "http://localhost/api/applications/http-status/changeState?sdk=php-sdk" \
-			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
-			-d "{\"enabled\":true}" > /dev/null && \
-		printf "\033[32mApplication http-status (php-sdk) was successfully installed.\033[0m\n"'
 	$(DCBE) sh -c '\
 		TOKEN=$$(curl -s -X POST http://localhost/api/user/login \
 			-H "Content-Type: application/json" \
@@ -122,7 +92,57 @@ init-more: init
 		curl -s -X PUT "http://localhost/api/applications/smtp/changeState?sdk=enterprise-system-worker" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
 			-d "{\"enabled\":true}" > /dev/null && \
-		printf "\033[32mApplication smtp (enterprise-system-worker) was successfully installed.\033[0m\n"'
+		printf "\033[32mApplication smtp (enterprise-system-worker) was successfully installed.\033[0m\n" && \
+		curl -s -X POST "http://localhost/api/applications/open-ai?sdk=enterprise-system-worker" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/applications/open-ai?sdk=enterprise-system-worker" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{\"authorization_form\":{\"api_key\":\"$(shell grep OPENAI_API_KEY .env | cut -d= -f2)\",\"organization_id\":\"\",\"project_id\":\"\"}}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/applications/open-ai/changeState?sdk=enterprise-system-worker" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{\"enabled\":true}" > /dev/null && \
+		printf "\033[32mApplication open-ai (enterprise-system-worker) was successfully installed.\033[0m\n" && \
+		curl -s -X POST "http://localhost/api/applications/http-status?sdk=node-sdk" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/applications/http-status?sdk=node-sdk" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{\"limiter_form\":{\"useLimit\":true,\"value\":\"200\",\"time\":\"60\"}}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/applications/http-status/changeState?sdk=node-sdk" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{\"enabled\":true}" > /dev/null && \
+		printf "\033[32mApplication http-status (node-sdk) was successfully installed.\033[0m\n" && \
+		curl -s -X POST "http://localhost/api/applications/http-status?sdk=php-sdk" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/applications/http-status?sdk=php-sdk" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{\"limiter_form\":{\"useLimit\":true,\"value\":\"100\",\"time\":\"60\"}}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/applications/http-status/changeState?sdk=php-sdk" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{\"enabled\":true}" > /dev/null && \
+		printf "\033[32mApplication http-status (php-sdk) was successfully installed.\033[0m\n" && \
+		curl -s -X POST "http://localhost/api/applications/mysql?sdk=node-sdk" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/applications/mysql?sdk=node-sdk" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{\"authorization_form\":{\"host\":\"mysql\",\"port\":\"3306\",\"user\":\"root\",\"password\":\"$(shell grep MYSQL_ROOT_PASSWORD .env | cut -d= -f2)\",\"database\":\"$(shell grep MYSQL_DATABASE .env | cut -d= -f2)\"}}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/applications/mysql/changeState?sdk=node-sdk" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{\"enabled\":true}" > /dev/null && \
+		printf "\033[32mApplication mysql (node-sdk) was successfully installed.\033[0m\n" && \
+		curl -s -X POST "http://localhost/api/applications/beeceptor?sdk=node-sdk" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/applications/beeceptor?sdk=node-sdk" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{\"authorization_form\":{\"url\":\"http://mockoon:3000\"}}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/applications/beeceptor/changeState?sdk=node-sdk" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{\"enabled\":true}" > /dev/null && \
+		printf "\033[32mApplication beeceptor (node-sdk) was successfully installed.\033[0m\n"'
 	$(DCBE) sh -c '\
 		TOKEN=$$(curl -s -X POST http://localhost/api/user/login \
 			-H "Content-Type: application/json" \
@@ -142,10 +162,17 @@ init-more: init
 	$(DCBE) sh -c '\
 		curl -s -X POST "http://starting-point:8080/topologies/http-status/nodes/start/run-by-name" > /dev/null && \
 		printf "\033[32mTopology http-status was successfully triggered.\033[0m\n"'
-
-mongo-import:
-	$(DC) cp AuditEntity.json mongo:/tmp
-	$(DE) mongo mongoimport --db "$(shell grep 'MAIN_DB' .env | cut -d "=" -f2)" --collection AuditEntity --file /tmp/AuditEntity.json --jsonArray
+	$(DCBE) sh -c '\
+		curl -s -X POST "http://starting-point:8080/topologies/json-placeholder-to-beeceptor-posts/nodes/start/run-by-name" > /dev/null && \
+		printf "\033[32mTopology json-placeholder-to-beeceptor-posts was successfully triggered.\033[0m\n" && \
+		sleep 5 && \
+		curl -s -X POST "http://starting-point:8080/topologies/mysql-to-beeceptor-categories/nodes/start/run-by-name" > /dev/null && \
+		printf "\033[32mTopology mysql-to-beeceptor-categories was successfully triggered.\033[0m\n" && \
+		curl -s -X POST "http://starting-point:8080/topologies/mysql-to-beeceptor-products/nodes/product/run-by-name" > /dev/null && \
+		printf "\033[32mTopology mysql-to-beeceptor-products (product) was successfully triggered.\033[0m\n" && \
+		sleep 30 && \
+		curl -s -X POST "http://starting-point:8080/topologies/mysql-to-beeceptor-products/nodes/product-category/run-by-name" > /dev/null && \
+		printf "\033[32mTopology mysql-to-beeceptor-products (product-category) was successfully triggered.\033[0m\n"'
 
 run-topology:
 	/bin/bash -c 'for i in {1..$(RUNS)}; do echo "Run #$$i: HTTP $$(curl -s -o /dev/null -w "%{http_code}" -X POST http://127.0.0.66:82/topologies/$(TOPOLOGY_NAME)/nodes/$(NODE_NAME)/run-by-name)"; done'
