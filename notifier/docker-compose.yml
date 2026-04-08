@@ -1,0 +1,39 @@
+services:
+    app:
+        image: hanabosocom/go-base:1.24
+        user: ${DEV_UID}:${DEV_GID}
+        environment:
+            DEV_UID: ${DEV_UID}
+            DEV_GID: ${DEV_GID}
+            APP_DEBUG: 'true'
+            MONGO_DSN: mongodb://mongo/notifications
+            REDIS_DSN: redis://redis:6379
+        volumes:
+            - .:/app:cached
+            - ${GOPATH}/pkg:/go/pkg
+        ports:
+            - ${DEV_IP}:80:8080
+            - ${DEV_IP}:2345:2345
+        command: /run.sh -p cmd/notifier.go -l 2345
+        security_opt: ['seccomp:unconfined']
+
+    mongo:
+        image: mongo
+        ports:
+            - ${DEV_IP}:27020:27017
+
+    rabbitmq:
+        image: rabbitmq:management-alpine
+        ports:
+            - ${DEV_IP}:15672:15672
+
+    redis:
+        image: redis:alpine
+        ports:
+            - ${DEV_IP}:6379:6379
+
+    bruno:
+        image: ghcr.io/rbnis/bruno-cli
+        entrypoint: ["tail", "-f", "/dev/null"]
+        volumes:
+            - ./bruno:/bruno

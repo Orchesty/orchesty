@@ -20,6 +20,7 @@ import (
 
 type MultiCounter struct {
 	rabbitmq          *rabbitmq.Client
+	events            *rabbitmq.Publisher
 	mongo             mongo.MongoDb
 	metrics           metrics.Interface
 	toCommit          bool
@@ -33,9 +34,10 @@ type MultiCounter struct {
 
 var relieve = 10
 
-func NewMultiCounter(rabbitmq *rabbitmq.Client, mongo mongo.MongoDb) MultiCounter {
+func NewMultiCounter(rabbitmq *rabbitmq.Client, events *rabbitmq.Publisher, mongo mongo.MongoDb) MultiCounter {
 	return MultiCounter{
 		rabbitmq:          rabbitmq,
+		events:            events,
 		mongo:             mongo,
 		metrics:           metrics.Connect(config.Metrics.Dsn),
 		toCommit:          false,
@@ -134,6 +136,7 @@ func (c *MultiCounter) finishProcess(process model.Process, headers amqp.Table) 
 	if topology.Name != "" {
 		sendFinishedProcess(process, errs, apiKey, headers, topology)
 		c.sendMetrics(process)
+		sendEvents(c.events, process, topology)
 	}
 }
 

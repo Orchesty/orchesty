@@ -87,6 +87,9 @@ services:
         arguments:
             - '@hbpf.group.handler'
 
+    Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\NotificationController:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\NotificationController
+
     hbpf.auth0.jwks_cache:
         class: Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0\JwksCacheService
         arguments:

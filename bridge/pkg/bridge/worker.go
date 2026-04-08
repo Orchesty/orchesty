@@ -50,6 +50,7 @@ type node struct {
 	mongodb       *mongo.MongoDb
 	metrics       metrics.Interface
 	counter       counter
+	events        events
 }
 
 func (n *node) Followers() types.Publishers {
@@ -165,6 +166,7 @@ func (n *node) process(dto *model.ProcessMessage) bool {
 			} else {
 				trashId := trashId.Hex()
 				sendFinishedProcess(result.Message(), enum.StatusType_TrashMessage, &trashId, n.topologyName)
+				n.events.send(result.Message(), trashId, n.topologyName)
 			}
 		}
 
@@ -280,7 +282,7 @@ func (n *node) sendMetrics(dto model.ProcessResult) {
 	}
 }
 
-func newNode(n model.Node, topologyId, topologyName string, rabbitContainer rabbit.Container, wg *sync.WaitGroup, limiter limiter, repeater repeater, mongodb *mongo.MongoDb, metrics metrics.Interface, counter counter) *node {
+func newNode(n model.Node, topologyId, topologyName string, rabbitContainer rabbit.Container, wg *sync.WaitGroup, limiter limiter, repeater repeater, mongodb *mongo.MongoDb, metrics metrics.Interface, counter counter, events events) *node {
 	w, err := worker.Get(n.Worker)
 	if err != nil {
 		log.Fatal().Err(err).Send()
@@ -308,6 +310,7 @@ func newNode(n model.Node, topologyId, topologyName string, rabbitContainer rabb
 		mongodb:       mongodb,
 		metrics:       metrics,
 		counter:       counter,
+		events:        events,
 	}
 
 	if n.Worker == enum.WorkerType_Batch {
