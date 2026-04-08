@@ -96,6 +96,25 @@ global:
       limits:
         memory: 96Mi
         cpu: 500m
+    postInstall:
+      enabled: true
+      backoffLimit: 3
+      ttlSecondsAfterFinished: 600
+      commands:
+        - echo "Running post-install setup..."
+        - php bin/console doctrine:mongodb:schema:update --dm default
+        - php bin/console doctrine:mongodb:schema:update --dm metrics
+        - php bin/console mongodb:index:update
+        - php bin/console api-token:create --key ${ORCHESTY_API_KEY}
+        - php bin/console user:create ${ORCHESTY_USR} ${ORCHESTY_PWD}
+        - echo "Post-install done."
+      resources:
+        requests:
+          memory: 128Mi
+          cpu: 200m
+        limits:
+          memory: 128Mi
+          cpu: 500m
 
   cronApi:
     resources:

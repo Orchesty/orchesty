@@ -1,0 +1,8 @@
+apiVersion: v2
+name: cloud-controller
+description: Orchesty SaaS Cloud Controller
+
+type: application
+
+version: 0.1.0
+appVersion: "1.0.0"

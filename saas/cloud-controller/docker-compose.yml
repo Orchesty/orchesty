@@ -1,0 +1,33 @@
+services:
+    app:
+        image: hanabosocom/go-base:1.24
+        user: ${DEV_UID}:${DEV_GID}
+        environment:
+            APP_DEBUG: ${APP_DEBUG}
+            APP_PORT: ${APP_PORT}
+            MONGODB_DSN: ${MONGODB_DSN}
+            MONGODB_HOSTNAME: ${MONGODB_HOSTNAME}
+            RABBIT_HOSTNAME: ${RABBIT_HOSTNAME}
+            RABBIT_ADMIN_USER: ${RABBIT_ADMIN_USER}
+            RABBIT_ADMIN_PASS: ${RABBIT_ADMIN_PASS}
+            K8S_CLUSTER_CONFIG: ${K8S_CLUSTER_CONFIG}
+            HELM_ROOT_DIR_FOR_FILES: ${HELM_ROOT_DIR_FOR_FILES}
+            HELM_ORCHESTY_VERSION: ${HELM_ORCHESTY_VERSION}
+            HELM_BRIDGEPOOL_KEY: ${HELM_BRIDGEPOOL_KEY}
+        volumes:
+            - ./:/app
+            - ${GOPATH}/pkg:/go/pkg
+    #    command: /run.sh -p main.go -c start -l 6666
+        command: tail -f /dev/null
+        security_opt:
+            - 'seccomp:unconfined'
+    
+    rabbitmq:
+        image: rabbitmq:3-management-alpine
+        ports:
+            - "15672:15672"
+    
+    mongodb:
+        image: mongo:latest
+        ports:
+            - "27017:27017"

@@ -1,0 +1,400 @@
+package kubernetes
+
+import (
+	"context"
+	"fmt"
+	"net/url"
+	"strings"
+	"sync"
+	"time"
+
+	"cloud-controller/pkg/config"
+	"cloud-controller/pkg/models"
+
+	corev1 "k8s.io/api/core/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
+)
+
+const requestTimeout = 20 * time.Second
+
+const (
+	orchestySecretsName       = "orchesty-secrets"
+	defaultSecretDisplayLabel = "oc-instance-displayname"
+)
+
+type Client struct {
+	clientSet kubernetes.Interface
+	initMu    sync.Mutex
+	helm      helmInstaller
+}
+
+type helmInstaller interface {
+	Install(dto *models.InstanceDTO) error
+}
+
+func NewClient() *Client {
+	return &Client{
+		helm: NewHelm(),
+	}
+}
+
+func (c *Client) CreateNamespace(dto *models.InstanceDTO) (bool, error) {
+	clientSet, err := c.getClientSet()
+	if err != nil {
+		return false, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+	defer cancel()
+
+	_, err = clientSet.CoreV1().Namespaces().Create(ctx, &corev1.Namespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: dto.Instance,
+			Labels: map[string]string{
+				"oc-instance-displayname": dto.InstanceDisplayName,
+			},
+		},
+	}, metav1.CreateOptions{})
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (c *Client) IsNamespaceAvailable(dto *models.InstanceDTO) (bool, error) {
+	clientSet, err := c.getClientSet()
+	if err != nil {
+		return false, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+	defer cancel()
+
+	_, err = clientSet.CoreV1().Namespaces().Get(ctx, dto.Instance, metav1.GetOptions{})
+	if err != nil {
+		if apierrors.IsNotFound(err) {
+			return true, nil
+		}
+
+		return false, err
+	}
+
+	return false, nil
+}
+
+func (c *Client) ApplyDefaultSecret(dto *models.InstanceDTO) (bool, error) {
+	clientSet, err := c.getClientSet()
+	if err != nil {
+		return false, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+	defer cancel()
+
+	secret, err := clientSet.CoreV1().Secrets("cloud-control").Get(ctx, "hanaboso", metav1.GetOptions{})
+	if err != nil {
+		return false, err
+	}
+
+	secret = secret.DeepCopy()
+	secret.ObjectMeta = metav1.ObjectMeta{
+		Name: secret.Name,
+	}
+
+	_, err = clientSet.CoreV1().Secrets(dto.Instance).Create(ctx, secret, metav1.CreateOptions{})
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (c *Client) ApplyInstanceSecret(dto *models.InstanceDTO) (bool, error) {
+	clientSet, err := c.getClientSet()
+	if err != nil {
+		return false, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+	defer cancel()
+
+	stringData := map[string]string{
+		// Basic app configs
+		"backend_jwt_key":  dto.BackendJwtKey,
+		"crypt_secret":     dto.CryptSecret,
+		"orchesty_api_key": dto.OrchestyApiKey,
+
+		// Database credentials
+		"mongodb_dsn": fmt.Sprintf(
+			"mongodb://%s:%s@%s/%s?authSource=admin",
+			dto.Instance,
+			dto.MongoPassword,
+			config.MongoDB.Hostname,
+			dto.Instance,
+		),
+		"mongodb_db": dto.Instance,
+		"metrics_dsn": fmt.Sprintf(
+			"mongodb://%s:%s@%s/%s-metrics?authSource=admin",
+			dto.Instance,
+			dto.MongoPassword,
+			config.MongoDB.Hostname,
+			dto.Instance,
+		),
+		"metrics_db": dto.Instance + "-metrics",
+
+		// RabbitMQ credentials
+		"rabbitmq_dsn": fmt.Sprintf(
+			"amqp://%s:%s@%s:5672/%s",
+			dto.Instance,
+			dto.RabbitPassword,
+			config.RabbitMQ.Hostname,
+			dto.Instance,
+		),
+		"rabbitmq_url":      fmt.Sprintf("http://%s:%s", config.RabbitMQ.Hostname, config.RabbitMQ.ManagementPort),
+		"rabbitmq_user":     dto.Instance,
+		"rabbitmq_password": dto.RabbitPassword,
+
+		// Instance info
+		"oc_instance_display_name": dto.InstanceDisplayName,
+		"oc_instance_url_prefix":   dto.InstanceUrlPrefix,
+		"oc_user_name":             dto.UserName,
+		"oc_user_password":         dto.UserPassword,
+
+		// TODO: Applinth section
+		// "applinth_jwe_private_key": "-----BEGIN EC PRIVATE KEY-----\n-----END EC PRIVATE KEY-----", // TODO: generate certificate for Applinth
+
+		// Grafana admin user // only if grafana is enabled
+		"admin-user":     "admin",
+		"admin-password": "password", // TODO: generate random password
+
+		// S3 Storage for Loki // only if logs is enabled
+		"s3-endpoint":   "storage.googleapis.com",
+		"s3-bucket":     dto.Instance,
+		"s3-access-key": "", // TODO: generate random password
+		"s3-secret-key": "", // TODO: generate random password
+	}
+
+	secret := &corev1.Secret{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "v1",
+			Kind:       "Secret",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name: orchestySecretsName,
+		},
+		StringData: stringData,
+	}
+
+	_, err = clientSet.CoreV1().Secrets(dto.Instance).Create(ctx, secret, metav1.CreateOptions{})
+	if err != nil {
+		if !apierrors.IsAlreadyExists(err) {
+			return false, err
+		}
+
+		existing, getErr := clientSet.CoreV1().Secrets(dto.Instance).Get(ctx, orchestySecretsName, metav1.GetOptions{})
+		if getErr != nil {
+			return false, getErr
+		}
+
+		if existing.Data == nil {
+			existing.Data = map[string][]byte{}
+		}
+
+		for key, value := range stringData {
+			existing.Data[key] = []byte(value)
+		}
+
+		if _, updateErr := clientSet.CoreV1().Secrets(dto.Instance).Update(ctx, existing, metav1.UpdateOptions{}); updateErr != nil {
+			return false, updateErr
+		}
+	}
+
+	return true, nil
+}
+
+func (c *Client) UpdateNamespaceDisplayName(instance, displayName string) error {
+	clientSet, err := c.getClientSet()
+	if err != nil {
+		return err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+	defer cancel()
+
+	namespace, err := clientSet.CoreV1().Namespaces().Get(ctx, instance, metav1.GetOptions{})
+	if err != nil {
+		return err
+	}
+
+	if namespace.Labels == nil {
+		namespace.Labels = map[string]string{}
+	}
+	namespace.Labels[defaultSecretDisplayLabel] = displayName
+
+	_, err = clientSet.CoreV1().Namespaces().Update(ctx, namespace, metav1.UpdateOptions{})
+	return err
+}
+
+func (c *Client) LoadInstanceDTO(instance string) (*models.InstanceDTO, error) {
+	instance = strings.TrimSpace(instance)
+	if instance == "" {
+		return nil, fmt.Errorf("instance is required")
+	}
+
+	clientSet, err := c.getClientSet()
+	if err != nil {
+		return nil, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+	defer cancel()
+
+	secret, err := clientSet.CoreV1().Secrets(instance).Get(ctx, orchestySecretsName, metav1.GetOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("get secret %s/%s: %w", instance, orchestySecretsName, err)
+	}
+
+	mongoPassword, err := extractMongoPassword(getSecretValue(secret, "mongodb_dsn"))
+	if err != nil {
+		return nil, fmt.Errorf("extract mongo password: %w", err)
+	}
+
+	rabbitPassword, err := extractRabbitPassword(getSecretValue(secret, "rabbitmq_dsn"))
+	if err != nil {
+		return nil, fmt.Errorf("extract rabbit password: %w", err)
+	}
+
+	return models.NewInstanceDTOFromExistingData(models.ExistingInstanceData{
+		Instance:            instance,
+		MongoPassword:       mongoPassword,
+		RabbitPassword:      rabbitPassword,
+		InstanceDisplayName: getSecretValue(secret, "oc_instance_display_name"),
+		UserName:            getSecretValue(secret, "oc_user_name"),
+		UserPassword:        getSecretValue(secret, "oc_user_password"),
+		InstanceUrlPrefix:   getSecretValue(secret, "oc_instance_url_prefix"),
+		BackendJwtKey:       getSecretValue(secret, "backend_jwt_key"),
+		CryptSecret:         getSecretValue(secret, "crypt_secret"),
+		OrchestyApiKey:      getSecretValue(secret, "orchesty_api_key"),
+	})
+}
+
+func (c *Client) DeleteNamespace(instance string) (bool, error) {
+	clientSet, err := c.getClientSet()
+	if err != nil {
+		return false, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+	defer cancel()
+
+	err = clientSet.CoreV1().Namespaces().Delete(ctx, instance, metav1.DeleteOptions{})
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (c *Client) Install(dto *models.InstanceDTO) error {
+	return c.helm.Install(dto)
+}
+
+func (c *Client) Health() error {
+	clientSet, err := c.getClientSet()
+	if err != nil {
+		return err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+	defer cancel()
+
+	_, err = clientSet.CoreV1().Namespaces().List(ctx, metav1.ListOptions{Limit: 1})
+	return err
+}
+
+func getSecretValue(secret *corev1.Secret, key string) string {
+	if secret == nil || secret.Data == nil {
+		return ""
+	}
+
+	return strings.TrimSpace(string(secret.Data[key]))
+}
+
+func extractMongoPassword(mongoDSN string) (string, error) {
+	parsed, err := url.Parse(strings.TrimSpace(mongoDSN))
+	if err != nil {
+		return "", fmt.Errorf("parse mongodb dsn: %w", err)
+	}
+
+	if parsed.User == nil {
+		return "", fmt.Errorf("mongodb dsn missing user info")
+	}
+
+	password, ok := parsed.User.Password()
+	if !ok || strings.TrimSpace(password) == "" {
+		return "", fmt.Errorf("mongodb dsn missing password")
+	}
+
+	return password, nil
+}
+
+func extractRabbitPassword(rabbitDSN string) (string, error) {
+	parsed, err := url.Parse(strings.TrimSpace(rabbitDSN))
+	if err != nil {
+		return "", fmt.Errorf("parse rabbitmq dsn: %w", err)
+	}
+
+	if parsed.User == nil {
+		return "", fmt.Errorf("rabbitmq dsn missing user info")
+	}
+
+	password, ok := parsed.User.Password()
+	if !ok || strings.TrimSpace(password) == "" {
+		return "", fmt.Errorf("rabbitmq dsn missing password")
+	}
+
+	return password, nil
+}
+
+func (c *Client) getClientSet() (kubernetes.Interface, error) {
+	if c.clientSet != nil {
+		return c.clientSet, nil
+	}
+
+	c.initMu.Lock()
+	defer c.initMu.Unlock()
+
+	if c.clientSet != nil {
+		return c.clientSet, nil
+	}
+
+	var (
+		cfg *rest.Config
+		err error
+	)
+
+	if config.K8s.ClusterConfig != "" {
+		cfg, err = clientcmd.BuildConfigFromFlags("", config.K8s.ClusterConfig)
+		if err != nil {
+			return nil, fmt.Errorf("error building kubernetes config from flags: %w", err)
+		}
+	} else {
+		cfg, err = rest.InClusterConfig()
+		if err != nil {
+			return nil, fmt.Errorf("error getting config from cluster: %w", err)
+		}
+	}
+
+	clientSet, err := kubernetes.NewForConfig(cfg)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create clientSet: %w", err)
+	}
+
+	c.clientSet = clientSet
+	return c.clientSet, nil
+}

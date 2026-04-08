@@ -1,29 +1,38 @@
-{{- $componentName := "backend" -}}
+{{- if .Values.global.backend.postInstall.enabled }}
+{{- $componentName := "backend-post-install" -}}
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
   name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
   labels:
 {{ include "pipes.labels" . | indent 4 }}
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation
 spec:
-  selector:
-    matchLabels:
-{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 6 }}
+  backoffLimit: {{ .Values.global.backend.postInstall.backoffLimit | default 3 }}
+  ttlSecondsAfterFinished: {{ .Values.global.backend.postInstall.ttlSecondsAfterFinished | default 600 }}
   template:
     metadata:
       labels:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 8 }}
     spec:
 {{ include "pipes.imagePullSecrets" . | indent 6 }}
+      restartPolicy: Never
       containers:
-        - name: php-w-nginx
+        - name: post-install
           image: {{ include "pipes.imageFullname" (dict "image" "backend" "root" .) }}
           imagePullPolicy: Always
-          ports:
-            - name: http
-              containerPort: 80
+          command:
+            - /bin/sh
+            - -c
+            - |
+              {{- range .Values.global.backend.postInstall.commands }}
+              {{ . }}
+              {{- end }}
           env:
             - name: TZ
               value: "{{ .Values.global.timezone }}"
@@ -35,19 +44,6 @@ spec:
               value: {{ .Values.global.backend.alpha_instance_id }}
             - name: CRON_DSN
               value: cron-api:8080
-            - name: PHP_FPM_MAX_REQUESTS
-              value: "5000"
-            - name: PHP_FPM_MAX_CHILDREN
-              value: "20"
-{{- if (index .Values.global.imageOverrides "applinth-marketplace-ui") }}
-            - name: JWE_PRIVATE_KEY
-              valueFrom:
-                secretKeyRef:
-                  key: applinth_jwe_private_key
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-{{- end }}
-            - name: CHECK_INFINITY_LOOP
-              value: "{{ .Values.global.backend.checkInfinityLoop }}"
             - name: RABBITMQ_DSN
               valueFrom:
                 secretKeyRef:
@@ -78,23 +74,23 @@ spec:
                 secretKeyRef:
                   key: metrics_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: TOPOLOGY_API_DSN
-              value: "{{ include "pipes.fullname" (dict "suffix" "topology-api" "noPrefix" true "root" .) }}:8080"
-            - name: LIMITER_URL
-              value: "{{ include "pipes.fullname" (dict "suffix" "limiter" "root" .) }}:80"
-            - name: FRONTEND_URL
-              value: "{{ .Values.global.frontend_url }}/"
-
-{{- if not .Values.global.imageOverrides.bridge }}
-            - name: DOCKER_PF_BRIDGE_IMAGE
-              value: {{ .Values.global.orchestyImageRegistry.server }}/{{ .Values.global.orchestyImageRegistry.path }}/{{ .Values.global.images.bridge }}:{{ .Values.global.orchestyVersion }}
-{{- else }}
-            - name: DOCKER_PF_BRIDGE_IMAGE
-              value: {{ .Values.global.imageOverrides.bridge }}
-{{- end }}
+            - name: ORCHESTY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: orchesty_api_key
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: ORCHESTY_USR
+              valueFrom:
+                secretKeyRef:
+                  key: oc_user_name
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: ORCHESTY_PWD
+              valueFrom:
+                secretKeyRef:
+                  key: oc_user_password
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
           resources:
-{{ toYaml .Values.global.backend.resources | indent 12 }}
-
+{{ toYaml .Values.global.backend.postInstall.resources | indent 12 }}
 {{- with .Values.global.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
@@ -102,4 +98,5 @@ spec:
 {{- with .Values.global.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
+{{- end }}
 {{- end }}

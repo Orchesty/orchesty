@@ -1,0 +1,34 @@
+# Default values for cloud-controller.
+# This is a YAML-formatted file.
+
+replicaCount: 1
+
+image:
+  repository: dkr.hanaboso.net/pipes/pipes/saas-cloud-controller
+  pullPolicy: Always
+  tag: test
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+secret:
+  name: cloud-controller
+  keys:
+    mongodbDsn: mongodb_dsn
+    mongodbHostname: mongodb_hostname
+    rabbitHostname: rabbit_hostname
+    rabbitManagementPort: rabbit_management_port
+    rabbitAdminUser: rabbit_admin_user
+    rabbitAdminPass: rabbit_admin_pass
+
+env:
+  appDebug: true
+  appOrchestyVersion: "2.1"
+  helmOrchestyVersion: "2.1.16"
+  helmBridgePoolKey: bridgepool
+
+resources: {}

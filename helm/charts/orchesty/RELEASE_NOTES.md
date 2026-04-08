@@ -8,7 +8,7 @@
 - Backend: ENV: removed UDP_LOGGER_URL and WORKER_DEFAULT_PORT
 - Limiter: ENV: removed UDP_LOGGER_URL
 - Multi-Counter: ENV: removed UDP_LOGGER_URL
-
+- Backend: added post install job
 
 ## 2.1.15
 
