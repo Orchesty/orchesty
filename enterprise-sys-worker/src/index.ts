@@ -5,6 +5,9 @@ import { container, initiateContainer, listen } from '@orchesty/nodejs-sdk';
 import { OAuth2Provider } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Provider/OAuth2/OAuth2Provider';
 import SmtpSendEmail from '@orchesty/connector-smtp/dist/Connector/SmtpSendEmail';
 import SlackSendMessageConnector from '@orchesty/connector-slack/dist/Connectors/SlackSendMessageConnector';
+import OpenAIApplication from '@orchesty/connector-open-ai/dist/OpenAIApplication';
+import OpenAIPostResponseConnector from '@orchesty/connector-open-ai/dist/Connector/OpenAIPostResponseConnector';
+import OpenAITrace from './Connector/OpenAITrace';
 import SmtpApplicationWithInfo from './Application/SmtpApplicationWithInfo';
 import SlackApplicationWithInfo from './Application/SlackApplicationWithInfo';
 import InviteEmailMapper from './CustomNode/InviteEmailMapper';
@@ -34,9 +37,14 @@ function prepare(): void {
     const slackApp = new SlackApplicationWithInfo(oauth2Provider);
     container.setApplication(slackApp);
 
+    const openAIApp = new OpenAIApplication();
+    container.setApplication(openAIApp);
+
     // ── Connectors & Batches ──
     container.setNode(new SmtpSendEmail(), smtpApp);
     container.setNode(new SlackSendMessageConnector(), slackApp);
+    container.setNode(new OpenAIPostResponseConnector(), openAIApp);
+    container.setNode(new OpenAITrace(), openAIApp);
 
     // ── Custom Nodes (enterprise instance) ──
     container.setNode(new InviteEmailMapper());
