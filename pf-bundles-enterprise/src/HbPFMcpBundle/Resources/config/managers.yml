@@ -2,10 +2,17 @@ services:
     _defaults:
         public: '%public.services%'
 
+    hbpf.mcp.manager.loki:
+        class: Hanaboso\PipesFrameworkEnterprise\Mcp\Model\LokiManager
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '%lokiHost%'
+
     hbpf.mcp.manager.mcp:
         class: Hanaboso\PipesFrameworkEnterprise\Mcp\Model\McpManager
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.mcp.manager.loki'
 
     hbpf.mcp.manager.audit_entity:
         class: Hanaboso\PipesFrameworkEnterprise\Mcp\Model\AuditEntityManager

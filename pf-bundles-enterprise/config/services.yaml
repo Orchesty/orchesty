@@ -10,10 +10,12 @@ parameters:
   cronHost: "%env(string:CRON_DSN)%"
   startingPointHost: "%env(string:STARTING_POINT_URL)%"
   notifierHost: "%env(string:NOTIFIER_DSN)%"
+  lokiHost: "%env(string:LOKI_DSN)%"
   activateLink: '%backendHost%/user/%s/activate'
   passwordLink: 'reset-password/%s'
 
   env(NOTIFIER_DSN): ''
+  env(LOKI_DSN): ''
   env(ORCHESTY_CLOUD_URL): ''
   env(ORCHESTY_CLOUD_FRONTEND_URL): ''
   env(ORCHESTY_CLOUD_INSTANCE_ID): ''
