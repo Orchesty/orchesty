@@ -5,9 +5,10 @@ import { container, initiateContainer, listen } from '@orchesty/nodejs-sdk';
 import { OAuth2Provider } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Provider/OAuth2/OAuth2Provider';
 import SmtpSendEmail from '@orchesty/connector-smtp/dist/Connector/SmtpSendEmail';
 import SlackSendMessageConnector from '@orchesty/connector-slack/dist/Connectors/SlackSendMessageConnector';
-import OpenAIApplication from '@orchesty/connector-open-ai/dist/OpenAIApplication';
-import OpenAIPostResponseConnector from '@orchesty/connector-open-ai/dist/Connector/OpenAIPostResponseConnector';
 import OpenAITrace from './Connector/OpenAITrace';
+import ZaiTrace from './Connector/ZaiTrace';
+import EnterpriseOpenAIApplication from './Application/EnterpriseOpenAIApplication';
+import ZaiApplication from './Application/ZaiApplication';
 import SmtpApplicationWithInfo from './Application/SmtpApplicationWithInfo';
 import SlackApplicationWithInfo from './Application/SlackApplicationWithInfo';
 import InviteEmailMapper from './CustomNode/InviteEmailMapper';
@@ -37,14 +38,21 @@ function prepare(): void {
     const slackApp = new SlackApplicationWithInfo(oauth2Provider);
     container.setApplication(slackApp);
 
-    const openAIApp = new OpenAIApplication();
+    const openAITrace = new OpenAITrace();
+    const openAIApp = new EnterpriseOpenAIApplication(openAITrace);
+    openAITrace.setApplication(openAIApp);
     container.setApplication(openAIApp);
+
+    const zaiTrace = new ZaiTrace();
+    const zaiApp = new ZaiApplication(zaiTrace);
+    zaiTrace.setApplication(zaiApp);
+    container.setApplication(zaiApp);
 
     // ── Connectors & Batches ──
     container.setNode(new SmtpSendEmail(), smtpApp);
     container.setNode(new SlackSendMessageConnector(), slackApp);
-    container.setNode(new OpenAIPostResponseConnector(), openAIApp);
-    container.setNode(new OpenAITrace(), openAIApp);
+    container.setNode(openAITrace, openAIApp);
+    container.setNode(zaiTrace, zaiApp);
 
     // ── Custom Nodes (enterprise instance) ──
     container.setNode(new InviteEmailMapper());
