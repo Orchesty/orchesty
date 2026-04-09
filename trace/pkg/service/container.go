@@ -26,7 +26,7 @@ func Load() error {
 	}, config.Logger)
 
 	manifestService := NewManifestService(httpSender, config.Backend.URL, config.Logger)
-	aiService := NewAIService(httpSender, config.Logger)
+	aiService := NewAIService(httpSender, config.Backend.URL, config.Logger)
 
 	Container = container{
 		StatusService:   NewStatusService(httpSender, config.Backend.URL),

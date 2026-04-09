@@ -29,5 +29,12 @@ func HandleTrace(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	service.Container.TraceService.HandleConnection(writer, request, authHeader)
+	userID := request.URL.Query().Get("user")
+	if userID == "" {
+		writeErrorResponse(writer, &utils.Error{Code: http.StatusBadRequest, Message: "Missing 'user' query parameter"})
+
+		return
+	}
+
+	service.Container.TraceService.HandleConnection(writer, request, authHeader, userID)
 }

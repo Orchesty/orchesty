@@ -109,6 +109,6 @@ func NewMcpRunURL(backendURL string) string {
 	return fmt.Sprintf("%s/mcp/run", strings.TrimRight(backendURL, "/"))
 }
 
-func NewSdksURL(backendURL string) string {
-	return fmt.Sprintf("%s/api/sdks", strings.TrimRight(backendURL, "/"))
+func NewPlatformServiceCallURL(backendURL, serviceType, method string) string {
+	return fmt.Sprintf("%s/api/platform-services/%s/call/%s", strings.TrimRight(backendURL, "/"), serviceType, method)
 }

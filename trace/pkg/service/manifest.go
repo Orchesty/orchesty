@@ -19,18 +19,8 @@ type (
 		InputSchema map[string]interface{} `json:"input_schema"`
 	}
 
-	SDK struct {
-		Name string `json:"name"`
-		URL  string `json:"url"`
-	}
-
-	sdkListResponse struct {
-		Items []SDK `json:"items"`
-	}
-
 	ManifestService interface {
 		FetchManifest(token string) ([]ManifestAction, error)
-		FetchSDKs(token string) ([]SDK, error)
 		RunAction(token string, payload []byte) ([]byte, error)
 	}
 
@@ -71,34 +61,6 @@ func (svc manifestService) FetchManifest(token string) ([]ManifestAction, error)
 	}
 
 	return actions, nil
-}
-
-func (svc manifestService) FetchSDKs(token string) ([]SDK, error) {
-	url := sender.NewSdksURL(svc.backendURL)
-
-	headers := map[string]string{
-		"Authorization": fmt.Sprintf("Bearer %s", token),
-	}
-
-	response, body, err := svc.sender.SendRaw(http.MethodGet, url, headers)
-	if err != nil {
-		svc.logContext().Error(err)
-
-		return nil, fmt.Errorf("backend unreachable: %w", err)
-	}
-
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("sdks request failed with status %d", response.StatusCode)
-	}
-
-	var result sdkListResponse
-	if err := json.Unmarshal(body, &result); err != nil {
-		svc.logContext().Error(err)
-
-		return nil, fmt.Errorf("failed to parse sdks response: %w", err)
-	}
-
-	return result.Items, nil
 }
 
 func (svc manifestService) RunAction(token string, payload []byte) ([]byte, error) {

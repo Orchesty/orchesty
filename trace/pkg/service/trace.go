@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strings"
 	"sync"
 	"time"
@@ -23,7 +22,7 @@ const (
 
 type (
 	TraceService interface {
-		HandleConnection(writer http.ResponseWriter, request *http.Request, authHeader string)
+		HandleConnection(writer http.ResponseWriter, request *http.Request, authHeader, userID string)
 	}
 
 	traceService struct {
@@ -34,12 +33,10 @@ type (
 	}
 
 	session struct {
-		conn              *websocket.Conn
-		token             string
-		userID            string
-		workerSDK         string
-		workerProviderURL string
-		mu                sync.RWMutex
+		conn   *websocket.Conn
+		token  string
+		userID string
+		mu     sync.RWMutex
 	}
 )
 
@@ -58,7 +55,7 @@ func NewTraceService(manifestService ManifestService, aiService AIService, logge
 	}
 }
 
-func (svc traceService) HandleConnection(writer http.ResponseWriter, request *http.Request, authHeader string) {
+func (svc traceService) HandleConnection(writer http.ResponseWriter, request *http.Request, authHeader, userID string) {
 	conn, err := svc.upgrader.Upgrade(writer, request, nil)
 	if err != nil {
 		svc.logContext().Error(err)
@@ -67,7 +64,7 @@ func (svc traceService) HandleConnection(writer http.ResponseWriter, request *ht
 	}
 
 	token := strings.TrimPrefix(authHeader, "Bearer ")
-	sess := &session{conn: conn, token: token}
+	sess := &session{conn: conn, token: token, userID: userID}
 
 	svc.logContext().Info("WebSocket connection established")
 
@@ -116,8 +113,6 @@ func (svc traceService) readPump(sess *session, done chan struct{}, wg *sync.Wai
 		switch msg.Type {
 		case TypeToken:
 			svc.handleToken(sess, msg.Data)
-		case TypeProvider:
-			svc.handleProvider(sess, msg.Data)
 		case TypeRequest:
 			svc.handleRequest(sess, msg.Data)
 		default:
@@ -141,56 +136,6 @@ func (svc traceService) handleToken(sess *session, data json.RawMessage) {
 	svc.logContext().Info("Token updated")
 }
 
-func (svc traceService) handleProvider(sess *session, data json.RawMessage) {
-	var pd ProviderData
-	if err := json.Unmarshal(data, &pd); err != nil || pd.Worker == "" || pd.WorkerProviderURL == "" || pd.User == "" {
-		svc.sendError(sess, 400, "invalid provider data: worker, workerProviderUrl and user are required")
-
-		return
-	}
-
-	sdks, err := svc.manifestService.FetchSDKs(sess.token)
-	if err != nil {
-		svc.sendError(sess, 502, fmt.Sprintf("Failed to fetch SDKs: %s", err.Error()))
-
-		return
-	}
-
-	var matched bool
-	var sdkURL string
-	for _, sdk := range sdks {
-		if sdk.Name == pd.Worker {
-			sdkURL = "http://" + sdk.URL
-			matched = true
-
-			break
-		}
-	}
-
-	if !matched {
-		svc.sendError(sess, 400, fmt.Sprintf("unknown worker SDK: %s", pd.Worker))
-
-		return
-	}
-
-	parsed, err := url.Parse(pd.WorkerProviderURL)
-	if err != nil || parsed.Path == "" {
-		svc.sendError(sess, 400, "invalid workerProviderUrl")
-
-		return
-	}
-
-	constructedURL := sdkURL + parsed.Path
-
-	sess.mu.Lock()
-	sess.workerSDK = pd.Worker
-	sess.workerProviderURL = constructedURL
-	sess.userID = pd.User
-	sess.mu.Unlock()
-
-	svc.logContext().Info("Provider set: sdk=%s url=%s", pd.Worker, constructedURL)
-}
-
 func (svc traceService) handleRequest(sess *session, data json.RawMessage) {
 	var rd RequestData
 	if err := json.Unmarshal(data, &rd); err != nil || rd.Content == "" {
@@ -202,15 +147,7 @@ func (svc traceService) handleRequest(sess *session, data json.RawMessage) {
 	sess.mu.RLock()
 	token := sess.token
 	userID := sess.userID
-	workerSDK := sess.workerSDK
-	workerProviderURL := sess.workerProviderURL
 	sess.mu.RUnlock()
-
-	if workerProviderURL == "" {
-		svc.sendError(sess, 400, "provider not set: send a provider message first")
-
-		return
-	}
 
 	actions, err := svc.manifestService.FetchManifest(token)
 	if err != nil {
@@ -221,7 +158,7 @@ func (svc traceService) handleRequest(sess *session, data json.RawMessage) {
 
 	prompt := BuildPrompt(rd.Content, actions)
 
-	aiResponse, err := svc.aiService.SendPrompt(workerProviderURL, userID, workerSDK, prompt)
+	aiResponse, err := svc.aiService.SendPrompt(token, userID, prompt)
 	if err != nil {
 		svc.sendError(sess, 502, fmt.Sprintf("AI request failed: %s", err.Error()))
 
