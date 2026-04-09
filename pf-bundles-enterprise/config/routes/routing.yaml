@@ -39,3 +39,8 @@ hb_pf_enterprise_api_gateway:
 hb_pf_mcp:
     resource: "@HbPFMcpBundle"
     type: attribute
+
+hb_pf_platform_services:
+    resource: "@HbPFPlatformServicesBundle"
+    type: attribute
+    prefix: /api

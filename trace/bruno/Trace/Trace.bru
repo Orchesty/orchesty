@@ -8,7 +8,7 @@ meta {
 }
 
 ws {
-  url: ws://{{baseUrl}}/trace
+  url: ws://{{baseUrl}}/trace?user=orchesty
   body: ws
   auth: none
 }
@@ -18,15 +18,13 @@ headers {
 }
 
 body:ws {
-  name: token
+  name: message 1
   type: json
   content: '''
     {
-      "type": "provider",
+      "type": "request",
       "data": {
-        "user": "orchesty",
-        "worker": "enterprise-system-worker",
-        "workerProviderUrl": "http://enterprise-system-worker:8080/connector/open-ai-trace-connector/action"
+        "content": "Můžeš mi najít produkt s externím ID <XYZ> prosím?"
       }
     }
   '''
@@ -34,9 +32,9 @@ body:ws {
 
 docs {
   # Messages
-  
+
   ## Client
-  
+
   ### Token
   ```json
   {
@@ -46,31 +44,19 @@ docs {
     }
   }
   ```
-  
-  ### Provider
-  ```json
-  {
-    "type": "provider",
-    "data": {
-      "user": "orchesty",
-      "worker": "enterprise-system-worker",
-      "workerProviderUrl": "http://enterprise-system-worker:8080/connector/open-ai-trace-connector/action"
-    }
-  }
-  ```
-  
+
   ### Request
   ```json
   {
     "type": "request",
     "data": {
-      "content": "Můžeš mi najít produkt s externím ID X prosím?"
+      "content": "Můžeš mi najít produkt s externím ID <XYZ> prosím?"
     }
   }
   ```
-  
+
   ## Server
-  
+
   ### Response
   ```json
   {
@@ -80,7 +66,7 @@ docs {
     }
   }
   ```
-  
+
   ### Error
   ```json
   {

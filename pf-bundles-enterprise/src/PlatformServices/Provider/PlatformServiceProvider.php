@@ -48,9 +48,10 @@ final class PlatformServiceProvider
         $appKey  = $binding->getApplicationKey();
 
         try {
-            $sdk      = $this->serviceLocator->getSdkNameByInstalledApplication($appKey);
-            $request  = new Request([], $data, [], [], [], ['REQUEST_METHOD' => 'POST']);
-            $response = $this->serviceLocator->runSyncActions($request, $appKey, $sdk, $method);
+            $sdk         = $this->serviceLocator->getSdkNameByInstalledApplication($appKey);
+            $data['sdk'] = $sdk;
+            $request     = new Request([], $data, [], [], [], ['REQUEST_METHOD' => 'POST']);
+            $response    = $this->serviceLocator->runSyncActions($request, $appKey, $sdk, $method);
 
             return Json::decode($response);
         } catch (Throwable $e) {

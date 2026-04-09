@@ -8,3 +8,5 @@ services:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFPlatformServicesBundle\Controller\PlatformServicesController
         arguments:
             - '@hbpf.platform_services.handler'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]

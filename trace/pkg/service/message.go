@@ -4,7 +4,6 @@ import "encoding/json"
 
 const (
 	TypeToken    = "token"
-	TypeProvider = "provider"
 	TypeRequest  = "request"
 	TypeResponse = "response"
 	TypeError    = "error"
@@ -18,12 +17,6 @@ type (
 
 	TokenData struct {
 		Token string `json:"token"`
-	}
-
-	ProviderData struct {
-		Worker            string `json:"worker"`
-		WorkerProviderURL string `json:"workerProviderUrl"`
-		User              string `json:"user"`
 	}
 
 	RequestData struct {
