@@ -12,6 +12,8 @@ import (
 
 var errClientNotInitialized = errors.New("mongodb client is not initialized")
 
+const MetricsDbSuffix = "-metrics"
+
 type Client struct {
 	connection *mongodb.Connection
 }
@@ -55,7 +57,7 @@ func (m *Client) CreateUser(dto *models.InstanceDTO) (bson.M, error) {
 		{Key: "pwd", Value: dto.MongoPassword},
 		{Key: "roles", Value: bson.A{
 			bson.D{{Key: "role", Value: "dbOwner"}, {Key: "db", Value: dto.Instance}},
-			bson.D{{Key: "role", Value: "dbOwner"}, {Key: "db", Value: dto.Instance + "-metrics"}},
+			bson.D{{Key: "role", Value: "dbOwner"}, {Key: "db", Value: dto.Instance + MetricsDbSuffix}},
 		}},
 		{Key: "customData", Value: bson.D{{Key: "ocInstanceDisplayName", Value: dto.InstanceDisplayName}}},
 	}
@@ -98,6 +100,17 @@ func (m *Client) DeleteUser(userName string) (bson.M, error) {
 	}
 
 	return result, nil
+}
+
+func (m *Client) DropDatabase(dbName string) error {
+	if m.connection == nil {
+		return errClientNotInitialized
+	}
+
+	ctx, cancel := m.connection.Context()
+	defer cancel()
+
+	return m.connection.Database.Client().Database(dbName).Drop(ctx)
 }
 
 func (m *Client) Ping() error {

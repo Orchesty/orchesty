@@ -28,7 +28,18 @@ secret:
 env:
   appDebug: true
   appOrchestyVersion: "2.1"
-  helmOrchestyVersion: "2.1.16"
+  helmOrchestyVersion: "2.1.17"
   helmBridgePoolKey: bridgepool
+
+kong:
+  enabled: false
+  adminUrl: "http://kong-kong-admin.kong.svc.cluster.local:8001"
+  domainSuffix: "eu1.cloud.orchesty.io"
+
+gcs:
+  enabled: false
+  projectId: "orchesty-cloud-prod"
+  credentialsSecretName: "gcs-credentials"
+  serviceAccountEmail: "cloud-control@orchesty-cloud-prod.iam.gserviceaccount.com"
 
 resources: {}

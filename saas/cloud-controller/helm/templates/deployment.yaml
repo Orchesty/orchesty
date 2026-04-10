@@ -36,6 +36,8 @@ spec:
               value: {{ .Values.env.helmOrchestyVersion | quote }}
             - name: HELM_BRIDGEPOOL_KEY
               value: {{ .Values.env.helmBridgePoolKey | quote }}
+
+            # MongoDB
             - name: MONGODB_DSN
               valueFrom:
                 secretKeyRef:
@@ -46,6 +48,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secret.name }}
                   key: {{ .Values.secret.keys.mongodbHostname }}
+
+            # RabbitMQ
             - name: RABBIT_HOSTNAME
               valueFrom:
                 secretKeyRef:
@@ -66,6 +70,26 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secret.name }}
                   key: {{ .Values.secret.keys.rabbitAdminPass }}
+
+            # Kong
+            - name: KONG_ENABLED
+              value: {{ .Values.kong.enabled | quote }}
+            - name: KONG_ADMIN_URL
+              value: {{ .Values.kong.adminUrl | quote }}
+            - name: KONG_DOMAIN_SUFFIX
+              value: {{ .Values.kong.domainSuffix | quote }}
+
+            # GCS
+            - name: GCS_ENABLED
+              value: {{ .Values.gcs.enabled | quote }}
+            - name: GCS_PROJECT_ID
+              value: {{ .Values.gcs.projectId | quote }}
+            {{- if .Values.gcs.credentialsSecretName }}
+            - name: GCS_CREDENTIALS_FILE
+              value: "/var/secrets/gcs/key.json"
+            {{- end }}
+            - name: GCS_SERVICE_ACCOUNT_EMAIL
+              value: {{ .Values.gcs.serviceAccountEmail | quote }}
           livenessProbe:
             httpGet:
               path: /status
@@ -76,7 +100,19 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.gcs.credentialsSecretName }}
+          volumeMounts:
+            - name: gcs-credentials
+              mountPath: /var/secrets/gcs
+              readOnly: true
+          {{- end }}
 
+      {{- if .Values.gcs.credentialsSecretName }}
+      volumes:
+        - name: gcs-credentials
+          secret:
+            secretName: {{ .Values.gcs.credentialsSecretName }}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

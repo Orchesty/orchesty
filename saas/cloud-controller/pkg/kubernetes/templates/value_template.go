@@ -24,6 +24,8 @@ global:
           key: {{bridgePoolKey}}
           operator: Equal
           value: "true"
+{{imageOverridesBlock}}
+{{resourceLimitsBlock}}
 {{logsBlockGlobal}}
 {{workersBlock}}
 `
@@ -54,9 +56,13 @@ global:
       existingSecret: orchesty-secrets
   loki:
     enabled: true
+    loki:
+      limits_config:
+        retention_period: {{retentionPeriod}}h
     singleBinary:
       persistence:
         storageClass: standard
+        size: {{storageSize}}Gi
       extraEnv:
         - name: S3_ENDPOINT
           valueFrom:
@@ -107,5 +113,19 @@ global:
           cpu: {{cpuLimit}}m
           memory: {{memoryLimit}}Gi
           ephemeral-storage: {{ephemeralStorageLimit}}Gi
+`
+	ResourceLimitsBlockTemplate = `
+    useQuota: {{limitsEnabled}}
+    namespaceQuota:
+      resources:
+        requests.cpu: {{cpuLimit}}m
+        requests.memory: {{memoryLimit}}Mi
+        limits.cpu: {{cpuLimit}}m
+        limits.memory: {{memoryLimit}}Gi
+`
+	ImageOverridesBlock = `
+    imageOverrides:
+      applinth-marketplace-ui: {{hanabosoDockerRegistry}}/{{applinthMarketplaceUiImage}}:{{appOrchestyVersion}}
+      backend: {{hanabosoDockerRegistry}}/{{applinthBackendImage}}:{{appOrchestyVersion}}
 `
 )

@@ -27,6 +27,14 @@ type kubernetesHealthChecker interface {
 	Health() error
 }
 
+type kongHealthChecker interface {
+	Health() error
+}
+
+type gcsHealthChecker interface {
+	Health() error
+}
+
 type instanceService interface {
 	CreateInstance(request service.CreateInstanceRequest) (models.InstanceInfo, error)
 	UpdateInstance(request service.UpdateInstanceRequest) (models.InstanceInfo, error)
@@ -38,6 +46,8 @@ type Server struct {
 	mongo           mongoHealthChecker
 	rabbit          rabbitHealthChecker
 	kubernetes      kubernetesHealthChecker
+	kong            kongHealthChecker
+	gcs             gcsHealthChecker
 }
 
 func New(
@@ -45,12 +55,16 @@ func New(
 	mongo mongoHealthChecker,
 	rabbit rabbitHealthChecker,
 	kubernetes kubernetesHealthChecker,
+	kong kongHealthChecker,
+	gcs gcsHealthChecker,
 ) http.Handler {
 	server := &Server{
 		instanceService: instanceService,
 		mongo:           mongo,
 		rabbit:          rabbit,
 		kubernetes:      kubernetes,
+		kong:            kong,
+		gcs:             gcs,
 	}
 
 	mux := http.NewServeMux()
@@ -158,6 +172,70 @@ func (s *Server) statusHandler(writer http.ResponseWriter, _ *http.Request) {
 			mu.Unlock()
 		}
 	}()
+
+	// Kong health check
+	if config.Kong.Enabled {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			ctx, cancel := context.WithTimeout(context.Background(), checkTimeout)
+			defer cancel()
+
+			done := make(chan error, 1)
+			go func() {
+				done <- s.kong.Health()
+			}()
+
+			select {
+			case err := <-done:
+				mu.Lock()
+				if err != nil {
+					checks["kong"] = "error"
+					errs = append(errs, fmt.Sprintf("kong: %s", err.Error()))
+				} else {
+					checks["kong"] = "ok"
+				}
+				mu.Unlock()
+			case <-ctx.Done():
+				mu.Lock()
+				checks["kong"] = "timeout"
+				errs = append(errs, "kong: health check timed out")
+				mu.Unlock()
+			}
+		}()
+	}
+
+	// GCS health check
+	if config.GCS.Enabled {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			ctx, cancel := context.WithTimeout(context.Background(), checkTimeout)
+			defer cancel()
+
+			done := make(chan error, 1)
+			go func() {
+				done <- s.gcs.Health()
+			}()
+
+			select {
+			case err := <-done:
+				mu.Lock()
+				if err != nil {
+					checks["gcs"] = "error"
+					errs = append(errs, fmt.Sprintf("gcs: %s", err.Error()))
+				} else {
+					checks["gcs"] = "ok"
+				}
+				mu.Unlock()
+			case <-ctx.Done():
+				mu.Lock()
+				checks["gcs"] = "timeout"
+				errs = append(errs, "gcs: health check timed out")
+				mu.Unlock()
+			}
+		}()
+	}
 
 	wg.Wait()
 

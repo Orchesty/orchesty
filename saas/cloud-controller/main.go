@@ -11,8 +11,10 @@ import (
 	"time"
 
 	"cloud-controller/pkg/config"
+	"cloud-controller/pkg/ingressGW"
 	"cloud-controller/pkg/kubernetes"
 	"cloud-controller/pkg/mongodb"
+	"cloud-controller/pkg/objectStorage"
 	"cloud-controller/pkg/rabbitmq"
 	"cloud-controller/pkg/server"
 	"cloud-controller/pkg/service"
@@ -28,12 +30,14 @@ func main() {
 
 	rabbitClient := rabbitmq.NewClient()
 	kubernetesClient := kubernetes.NewClient()
-	instanceService := service.NewInstanceService(mongoClient, rabbitClient, kubernetesClient)
+	kongClient := ingressGW.NewClient()
+	gcsClient := objectStorage.NewClient()
+	instanceService := service.NewInstanceService(mongoClient, rabbitClient, kubernetesClient, kongClient, gcsClient)
 	defer instanceService.Shutdown()
 
 	httpServer := &http.Server{
 		Addr:              fmt.Sprintf(":%d", config.App.Port),
-		Handler:           server.New(instanceService, mongoClient, rabbitClient, kubernetesClient),
+		Handler:           server.New(instanceService, mongoClient, rabbitClient, kubernetesClient, kongClient, gcsClient),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 

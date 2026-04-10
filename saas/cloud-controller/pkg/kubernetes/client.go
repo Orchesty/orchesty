@@ -131,7 +131,7 @@ func (c *Client) ApplyInstanceSecret(dto *models.InstanceDTO) (bool, error) {
 
 		// Database credentials
 		"mongodb_dsn": fmt.Sprintf(
-			"mongodb://%s:%s@%s/%s?authSource=admin",
+			"mongodb://%s:%s@%s/%s?authSource=admin&readPreference=primary&replicaSet=rs0",
 			dto.Instance,
 			dto.MongoPassword,
 			config.MongoDB.Hostname,
@@ -139,7 +139,7 @@ func (c *Client) ApplyInstanceSecret(dto *models.InstanceDTO) (bool, error) {
 		),
 		"mongodb_db": dto.Instance,
 		"metrics_dsn": fmt.Sprintf(
-			"mongodb://%s:%s@%s/%s-metrics?authSource=admin",
+			"mongodb://%s:%s@%s/%s-metrics?authSource=admin&readPreference=primary&replicaSet=rs0",
 			dto.Instance,
 			dto.MongoPassword,
 			config.MongoDB.Hostname,
@@ -164,19 +164,25 @@ func (c *Client) ApplyInstanceSecret(dto *models.InstanceDTO) (bool, error) {
 		"oc_instance_url_prefix":   dto.InstanceUrlPrefix,
 		"oc_user_name":             dto.UserName,
 		"oc_user_password":         dto.UserPassword,
+	}
 
-		// TODO: Applinth section
-		// "applinth_jwe_private_key": "-----BEGIN EC PRIVATE KEY-----\n-----END EC PRIVATE KEY-----", // TODO: generate certificate for Applinth
+	if dto.Customizations.Applinth.Enabled {
+		stringData["applinth_jwe_private_key"] = dto.ApplinthPrivateKey
+		stringData["applinth_jwe_public_key"] = dto.ApplinthPublicKey
+	}
 
-		// Grafana admin user // only if grafana is enabled
-		"admin-user":     "admin",
-		"admin-password": "password", // TODO: generate random password
+	// Grafana admin user
+	if dto.Customizations.Logs.GrafanaEnabled {
+		stringData["admin-user"] = "admin"
+		stringData["admin-password"] = dto.GrafanaPassword
+	}
 
-		// S3 Storage for Loki // only if logs is enabled
-		"s3-endpoint":   "storage.googleapis.com",
-		"s3-bucket":     dto.Instance,
-		"s3-access-key": "", // TODO: generate random password
-		"s3-secret-key": "", // TODO: generate random password
+	// S3 Storage for Loki
+	if dto.Customizations.Logs.Enabled {
+		stringData["s3-endpoint"] = config.GCS.S3Endpoint()
+		stringData["s3-bucket"] = "logs-" + dto.Instance
+		stringData["s3-access-key"] = dto.S3AccessKey
+		stringData["s3-secret-key"] = dto.S3SecretKey
 	}
 
 	secret := &corev1.Secret{
@@ -280,6 +286,11 @@ func (c *Client) LoadInstanceDTO(instance string) (*models.InstanceDTO, error) {
 		BackendJwtKey:       getSecretValue(secret, "backend_jwt_key"),
 		CryptSecret:         getSecretValue(secret, "crypt_secret"),
 		OrchestyApiKey:      getSecretValue(secret, "orchesty_api_key"),
+		S3AccessKey:         getSecretValue(secret, "s3-access-key"),
+		S3SecretKey:         getSecretValue(secret, "s3-secret-key"),
+		GrafanaPassword:     getSecretValue(secret, "admin-password"),
+		ApplinthPrivateKey:  getSecretValue(secret, "applinth_jwe_private_key"),
+		ApplinthPublicKey:   getSecretValue(secret, "applinth_jwe_public_key"),
 	})
 }
 

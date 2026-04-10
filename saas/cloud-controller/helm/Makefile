@@ -7,6 +7,7 @@ deps:
 
 apply-secret:
 	$(KUBECTL) apply -f secret.prod.yaml $(NAMESPACE)
+	$(KUBECTL) apply -f secret.gcs.yaml $(NAMESPACE)
 
 diff:
 	$(HELM) diff -C4 -f values.yaml $(PROJECT) ./ $(NAMESPACE)

@@ -1,6 +1,9 @@
 package config
 
 import (
+	"net/url"
+	"strings"
+
 	"github.com/hanaboso/go-log/pkg/zap"
 	"github.com/jinzhu/configor"
 
@@ -14,6 +17,9 @@ type config struct {
 	K8s      *k8s
 	Helm     *helm
 	Orchesty *orchesty
+	Applinth *applinth
+	Kong     *kong
+	GCS      *gcs
 }
 
 type app struct {
@@ -41,10 +47,37 @@ type orchesty struct {
 	Version string `env:"APP_ORCHESTY_VERSION" default:"2.1"`
 }
 
+type applinth struct {
+	DockerRegistry     string `env:"APPLINTH_DOCKER_REGISTRY" default:"dkr.hanaboso.net"`
+	MarketplaceUiImage string `env:"APPLINTH_MARKETPLACE_UI_IMAGE" default:"pipes/pipes/applinth-marketplace-ui"`
+	BackendImage       string `env:"APPLINTH_BACKEND_IMAGE" default:"pipes/pipes/applinth"`
+}
+
 type helm struct {
 	RootDirForFiles string `env:"HELM_ROOT_DIR_FOR_FILES" default:"/tmp/helm"`
 	OrchestyVersion string `env:"HELM_ORCHESTY_VERSION" default:"~2.1.15"`
 	BridgePoolKey   string `env:"HELM_BRIDGEPOOL_KEY" default:"bridgepool"`
+}
+
+type kong struct {
+	Enabled      bool   `env:"KONG_ENABLED" default:"false"`
+	AdminURL     string `env:"KONG_ADMIN_URL" default:"http://kong:8001"`
+	DomainSuffix string `env:"KONG_DOMAIN_SUFFIX" default:"eu1.cloud.orchesty.io"`
+}
+
+type gcs struct {
+	Enabled             bool   `env:"GCS_ENABLED" default:"false"`
+	Location            string `env:"GCS_LOCATION" default:"eu"`
+	Endpoint            string `env:"GCS_ENDPOINT" default:"storage.googleapis.com"`
+	ProjectID           string `env:"GCS_PROJECT_ID" default:""`
+	CredentialsFile     string `env:"GCS_CREDENTIALS_FILE" default:""`
+	ServiceAccountEmail string `env:"GCS_SERVICE_ACCOUNT_EMAIL" default:""`
+}
+
+func (g *gcs) S3Endpoint() string {
+	parsed, _ := url.Parse(strings.TrimRight(g.Endpoint, "/"))
+
+	return parsed.Host
 }
 
 var (
@@ -54,6 +87,9 @@ var (
 	K8s      k8s
 	Helm     helm
 	Orchesty orchesty
+	Applinth applinth
+	Kong     kong
+	GCS      gcs
 	Logger   log.Logger
 
 	c = config{
@@ -63,6 +99,8 @@ var (
 		K8s:      &K8s,
 		Helm:     &Helm,
 		Orchesty: &Orchesty,
+		Kong:     &Kong,
+		GCS:      &GCS,
 	}
 )
 

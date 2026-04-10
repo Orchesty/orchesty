@@ -14,6 +14,15 @@ services:
             HELM_ROOT_DIR_FOR_FILES: ${HELM_ROOT_DIR_FOR_FILES}
             HELM_ORCHESTY_VERSION: ${HELM_ORCHESTY_VERSION}
             HELM_BRIDGEPOOL_KEY: ${HELM_BRIDGEPOOL_KEY}
+            KONG_ENABLED: ${KONG_ENABLED}
+            KONG_ADMIN_URL: ${KONG_ADMIN_URL}
+            KONG_DOMAIN_SUFFIX: ${KONG_DOMAIN_SUFFIX}
+            GCS_ENABLED: ${GCS_ENABLED}
+            GCS_PROJECT_ID: ${GCS_PROJECT_ID}
+            GCS_CREDENTIALS_FILE: ${GCS_CREDENTIALS_FILE}
+            GCS_LOCATION: ${GCS_LOCATION}
+            GCS_ENDPOINT: ${GCS_ENDPOINT}
+            GCS_SERVICE_ACCOUNT_EMAIL: ${GCS_SERVICE_ACCOUNT_EMAIL}
         volumes:
             - ./:/app
             - ${GOPATH}/pkg:/go/pkg
@@ -31,3 +40,45 @@ services:
         image: mongo:latest
         ports:
             - "27017:27017"
+
+    kong-database:
+        image: postgres:15-alpine
+        environment:
+            POSTGRES_USER: kong
+            POSTGRES_PASSWORD: kong
+            POSTGRES_DB: kong
+        ports:
+            - "5432:5432"
+
+    kong-migration:
+        image: kong/kong:3.9
+        depends_on:
+            - kong-database
+        environment:
+            KONG_DATABASE: postgres
+            KONG_PG_HOST: kong-database
+            KONG_PG_USER: kong
+            KONG_PG_PASSWORD: kong
+        command: kong migrations bootstrap
+        restart: on-failure
+
+    kong:
+        image: kong/kong:3.9
+        depends_on:
+            - kong-migration
+        environment:
+            KONG_DATABASE: postgres
+            KONG_PG_HOST: kong-database
+            KONG_PG_USER: kong
+            KONG_PG_PASSWORD: kong
+            KONG_ADMIN_LISTEN: 0.0.0.0:8001
+            KONG_PROXY_LISTEN: 0.0.0.0:8000
+        ports:
+            - "8000:8000"
+            - "8001:8001"
+
+    fake-gcs:
+        image: fsouza/fake-gcs-server
+        command: ["-scheme", "http", "-port", "4443"]
+        ports:
+            - "4443:4443"

@@ -57,7 +57,7 @@ func (s *instanceServiceStub) UpdateInstance(request service.UpdateInstanceReque
 }
 
 func TestStatusAllDependenciesHealthy(t *testing.T) {
-	handler := New(nil, healthStub{}, healthStub{}, healthStub{})
+	handler := New(nil, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
 	request := httptest.NewRequest(http.MethodGet, "/status", nil)
 	response := httptest.NewRecorder()
@@ -88,7 +88,7 @@ func TestStatusAllDependenciesHealthy(t *testing.T) {
 }
 
 func TestStatusDependencyFailure(t *testing.T) {
-	handler := New(nil, healthStub{}, healthStub{err: errors.New("rabbit unavailable")}, healthStub{})
+	handler := New(nil, healthStub{}, healthStub{err: errors.New("rabbit unavailable")}, healthStub{}, healthStub{}, healthStub{})
 
 	request := httptest.NewRequest(http.MethodGet, "/status", nil)
 	response := httptest.NewRecorder()
@@ -125,7 +125,7 @@ func TestCreateInstanceSuccess(t *testing.T) {
 		UserName:            "orchesty@hanaboso.com",
 		UserPassword:        "secret",
 	}}
-	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{})
+	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
 	request := httptest.NewRequest(http.MethodPost, "/instance", bytes.NewBufferString(`{"instanceDisplayName":"Test Instance","userName":"user@test.local","customizations":{"workers":[{"name":"default","image":"img","sdkType":"nodejs"}]}}`))
 	request.Header.Set("Content-Type", "application/json")
@@ -159,7 +159,7 @@ func TestCreateInstanceSuccess(t *testing.T) {
 }
 
 func TestCreateInstanceBadRequest(t *testing.T) {
-	handler := New(&instanceServiceStub{}, healthStub{}, healthStub{}, healthStub{})
+	handler := New(&instanceServiceStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
 	request := httptest.NewRequest(http.MethodPost, "/instance", bytes.NewBufferString(`{"instanceDisplayName":`))
 	response := httptest.NewRecorder()
@@ -172,7 +172,7 @@ func TestCreateInstanceBadRequest(t *testing.T) {
 }
 
 func TestCreateInstanceUnknownFieldBadRequest(t *testing.T) {
-	handler := New(&instanceServiceStub{}, healthStub{}, healthStub{}, healthStub{})
+	handler := New(&instanceServiceStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
 	request := httptest.NewRequest(http.MethodPost, "/instance", bytes.NewBufferString(`{"instanceDisplayName":"Test Instance","unexpected":true}`))
 	response := httptest.NewRecorder()
@@ -186,7 +186,7 @@ func TestCreateInstanceUnknownFieldBadRequest(t *testing.T) {
 
 func TestCreateInstanceConflict(t *testing.T) {
 	serviceStub := &instanceServiceStub{createErr: service.ErrInstanceUnavailable}
-	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{})
+	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
 	request := httptest.NewRequest(http.MethodPost, "/instance", bytes.NewBufferString(`{"instanceDisplayName":"Test Instance"}`))
 	response := httptest.NewRecorder()
@@ -200,7 +200,7 @@ func TestCreateInstanceConflict(t *testing.T) {
 
 func TestCreateInstanceInternalError(t *testing.T) {
 	serviceStub := &instanceServiceStub{createErr: errors.New("create failed")}
-	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{})
+	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
 	request := httptest.NewRequest(http.MethodPost, "/instance", bytes.NewBufferString(`{"instanceDisplayName":"Test Instance"}`))
 	response := httptest.NewRecorder()
@@ -214,7 +214,7 @@ func TestCreateInstanceInternalError(t *testing.T) {
 
 func TestDeleteInstanceSuccess(t *testing.T) {
 	serviceStub := &instanceServiceStub{}
-	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{})
+	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
 	request := httptest.NewRequest(http.MethodDelete, "/instance?instance=instance-test", nil)
 	response := httptest.NewRecorder()
@@ -234,7 +234,7 @@ func TestDeleteInstanceSuccess(t *testing.T) {
 
 func TestDeleteInstanceBadRequest(t *testing.T) {
 	serviceStub := &instanceServiceStub{deleteErr: service.ErrInstanceRequired}
-	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{})
+	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
 	request := httptest.NewRequest(http.MethodDelete, "/instance", nil)
 	response := httptest.NewRecorder()
@@ -248,7 +248,7 @@ func TestDeleteInstanceBadRequest(t *testing.T) {
 
 func TestDeleteInstanceInternalError(t *testing.T) {
 	serviceStub := &instanceServiceStub{deleteErr: errors.New("delete failed")}
-	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{})
+	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
 	request := httptest.NewRequest(http.MethodDelete, "/instance?instance=instance-test", nil)
 	response := httptest.NewRecorder()
@@ -267,7 +267,7 @@ func TestUpdateInstanceSuccess(t *testing.T) {
 		UserName:            "admin@example.com",
 		UserPassword:        "secret",
 	}}
-	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{})
+	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
 	request := httptest.NewRequest(http.MethodPatch, "/instance", bytes.NewBufferString(`{"instance":"instance-test","instanceDisplayName":"New Name","customizations":{"workers":[{"name":"default","image":"img:v2","sdkType":"nodejs"}]}}`))
 	request.Header.Set("Content-Type", "application/json")
@@ -293,7 +293,7 @@ func TestUpdateInstanceSuccess(t *testing.T) {
 }
 
 func TestUpdateInstanceBadRequest(t *testing.T) {
-	handler := New(&instanceServiceStub{}, healthStub{}, healthStub{}, healthStub{})
+	handler := New(&instanceServiceStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
 	request := httptest.NewRequest(http.MethodPatch, "/instance", bytes.NewBufferString(`{"instance":`))
 	response := httptest.NewRecorder()
@@ -307,7 +307,7 @@ func TestUpdateInstanceBadRequest(t *testing.T) {
 
 func TestUpdateInstanceValidationError(t *testing.T) {
 	serviceStub := &instanceServiceStub{updateErr: service.ErrInstanceRequired}
-	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{})
+	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
 	request := httptest.NewRequest(http.MethodPatch, "/instance", bytes.NewBufferString(`{"instance":""}`))
 	response := httptest.NewRecorder()
@@ -321,7 +321,7 @@ func TestUpdateInstanceValidationError(t *testing.T) {
 
 func TestUpdateInstanceInternalError(t *testing.T) {
 	serviceStub := &instanceServiceStub{updateErr: errors.New("update failed")}
-	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{})
+	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
 	request := httptest.NewRequest(http.MethodPatch, "/instance", bytes.NewBufferString(`{"instance":"instance-test"}`))
 	response := httptest.NewRecorder()

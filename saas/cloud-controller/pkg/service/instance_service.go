@@ -6,7 +6,10 @@ import (
 	"regexp"
 	"strings"
 
+	"cloud-controller/pkg/config"
 	"cloud-controller/pkg/models"
+	"cloud-controller/pkg/mongodb"
+	"cloud-controller/pkg/objectStorage"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
@@ -26,6 +29,7 @@ var (
 type MongoClient interface {
 	CreateUser(dto *models.InstanceDTO) (bson.M, error)
 	DeleteUser(userName string) (bson.M, error)
+	DropDatabase(dbName string) error
 	Disconnect()
 }
 
@@ -48,6 +52,19 @@ type KubernetesClient interface {
 	Install(dto *models.InstanceDTO) error
 }
 
+type IngressClient interface {
+	RegisterServices(dto *models.InstanceDTO) error
+	UpdateServices(dto *models.InstanceDTO) error
+	DeleteServices(instance string) error
+}
+
+type ObjectStorageClient interface {
+	CreateBucket(dto *models.InstanceDTO) (*objectStorage.HMACCredentials, error)
+	UpdateBucket(dto *models.InstanceDTO) (*objectStorage.HMACCredentials, error)
+	DeleteBucket(instance string) error
+	DeleteHMACKey(accessKeyId string) error
+}
+
 type CreateInstanceRequest struct {
 	InstanceDisplayName string                `json:"instanceDisplayName"`
 	UserName            string                `json:"userName"`
@@ -62,9 +79,11 @@ type UpdateInstanceRequest struct {
 }
 
 type InstanceService struct {
-	mongo      MongoClient
-	rabbit     RabbitClient
-	kubernetes KubernetesClient
+	mongo         MongoClient
+	rabbit        RabbitClient
+	kubernetes    KubernetesClient
+	ingress       IngressClient
+	objectStorage ObjectStorageClient
 }
 
 type createState struct {
@@ -72,13 +91,17 @@ type createState struct {
 	rabbitVHostCreated bool
 	rabbitUserCreated  bool
 	namespaceCreated   bool
+	ingressCreated     bool
+	bucketCreated      bool
 }
 
-func NewInstanceService(mongo MongoClient, rabbit RabbitClient, kubernetes KubernetesClient) *InstanceService {
+func NewInstanceService(mongo MongoClient, rabbit RabbitClient, kubernetes KubernetesClient, ingress IngressClient, objectStorage ObjectStorageClient) *InstanceService {
 	return &InstanceService{
-		mongo:      mongo,
-		rabbit:     rabbit,
-		kubernetes: kubernetes,
+		mongo:         mongo,
+		rabbit:        rabbit,
+		kubernetes:    kubernetes,
+		ingress:       ingress,
+		objectStorage: objectStorage,
 	}
 }
 
@@ -128,6 +151,16 @@ func (s *InstanceService) DeleteInstance(instance string) error {
 	}
 
 	var errs []error
+	var s3AccessKey string
+
+	if config.GCS.Enabled {
+		dto, err := s.kubernetes.LoadInstanceDTO(instance)
+		if err != nil {
+			errs = append(errs, fmt.Errorf("load instance dto for hmac key: %w", err))
+		} else {
+			s3AccessKey = dto.S3AccessKey
+		}
+	}
 
 	if _, err := s.kubernetes.DeleteNamespace(instance); err != nil {
 		errs = append(errs, fmt.Errorf("delete kubernetes namespace: %w", err))
@@ -143,6 +176,29 @@ func (s *InstanceService) DeleteInstance(instance string) error {
 
 	if _, err := s.mongo.DeleteUser(instance); err != nil {
 		errs = append(errs, fmt.Errorf("delete mongodb user: %w", err))
+	}
+
+	if err := s.mongo.DropDatabase(instance); err != nil {
+		errs = append(errs, fmt.Errorf("drop mongodb database: %w", err))
+	}
+
+	if err := s.mongo.DropDatabase(instance + mongodb.MetricsDbSuffix); err != nil {
+		errs = append(errs, fmt.Errorf("drop mongodb metrics database: %w", err))
+	}
+
+	if config.Kong.Enabled {
+		if err := s.ingress.DeleteServices(instance); err != nil {
+			errs = append(errs, fmt.Errorf("delete kong services: %w", err))
+		}
+	}
+
+	if config.GCS.Enabled {
+		if err := s.objectStorage.DeleteHMACKey(s3AccessKey); err != nil {
+			errs = append(errs, fmt.Errorf("delete hmac key: %w", err))
+		}
+		if err := s.objectStorage.DeleteBucket(instance); err != nil {
+			errs = append(errs, fmt.Errorf("delete gcs bucket: %w", err))
+		}
 	}
 
 	return errors.Join(errs...)
@@ -176,6 +232,17 @@ func (s *InstanceService) UpdateInstance(request UpdateInstanceRequest) (models.
 		return models.InstanceInfo{}, fmt.Errorf("update namespace display name: %w", err)
 	}
 
+	if config.GCS.Enabled && request.Customizations != nil {
+		creds, err := s.objectStorage.UpdateBucket(dto)
+		if err != nil {
+			return models.InstanceInfo{}, fmt.Errorf("update gcs bucket: %w", err)
+		}
+		if creds != nil {
+			dto.S3AccessKey = creds.AccessKey
+			dto.S3SecretKey = creds.SecretKey
+		}
+	}
+
 	if _, err := s.kubernetes.ApplyInstanceSecret(dto); err != nil {
 		return models.InstanceInfo{}, fmt.Errorf("apply instance secret: %w", err)
 	}
@@ -183,6 +250,12 @@ func (s *InstanceService) UpdateInstance(request UpdateInstanceRequest) (models.
 	if request.Customizations != nil {
 		if err := s.kubernetes.Install(dto); err != nil {
 			return models.InstanceInfo{}, fmt.Errorf("install helm release: %w", err)
+		}
+	}
+
+	if config.Kong.Enabled {
+		if err := s.ingress.UpdateServices(dto); err != nil {
+			return models.InstanceInfo{}, fmt.Errorf("update kong services: %w", err)
 		}
 	}
 
@@ -222,6 +295,18 @@ func (s *InstanceService) provision(dto *models.InstanceDTO, state *createState)
 		return fmt.Errorf("apply default secret: %w", err)
 	}
 
+	if config.GCS.Enabled && dto.Customizations.Logs.Enabled {
+		creds, err := s.objectStorage.CreateBucket(dto)
+		if err != nil {
+			return fmt.Errorf("create gcs bucket: %w", err)
+		}
+		if creds != nil {
+			dto.S3AccessKey = creds.AccessKey
+			dto.S3SecretKey = creds.SecretKey
+		}
+		state.bucketCreated = true
+	}
+
 	if _, err := s.kubernetes.ApplyInstanceSecret(dto); err != nil {
 		return fmt.Errorf("apply instance secret: %w", err)
 	}
@@ -230,11 +315,33 @@ func (s *InstanceService) provision(dto *models.InstanceDTO, state *createState)
 		return fmt.Errorf("install helm release: %w", err)
 	}
 
+	if config.Kong.Enabled {
+		if err := s.ingress.RegisterServices(dto); err != nil {
+			return fmt.Errorf("register kong services: %w", err)
+		}
+		state.ingressCreated = true
+	}
+
 	return nil
 }
 
 func (s *InstanceService) rollbackCreate(dto *models.InstanceDTO, state createState) error {
 	var errs []error
+
+	if state.bucketCreated {
+		if err := s.objectStorage.DeleteHMACKey(dto.S3AccessKey); err != nil {
+			errs = append(errs, fmt.Errorf("rollback hmac key: %w", err))
+		}
+		if err := s.objectStorage.DeleteBucket(dto.Instance); err != nil {
+			errs = append(errs, fmt.Errorf("rollback gcs bucket: %w", err))
+		}
+	}
+
+	if state.ingressCreated {
+		if err := s.ingress.DeleteServices(dto.Instance); err != nil {
+			errs = append(errs, fmt.Errorf("rollback kong services: %w", err))
+		}
+	}
 
 	if state.namespaceCreated {
 		if _, err := s.kubernetes.DeleteNamespace(dto.Instance); err != nil {
@@ -257,6 +364,12 @@ func (s *InstanceService) rollbackCreate(dto *models.InstanceDTO, state createSt
 	if state.mongoUserCreated {
 		if _, err := s.mongo.DeleteUser(dto.Instance); err != nil {
 			errs = append(errs, fmt.Errorf("rollback mongodb user: %w", err))
+		}
+		if err := s.mongo.DropDatabase(dto.Instance); err != nil {
+			errs = append(errs, fmt.Errorf("rollback mongodb database: %w", err))
+		}
+		if err := s.mongo.DropDatabase(dto.Instance + mongodb.MetricsDbSuffix); err != nil {
+			errs = append(errs, fmt.Errorf("rollback mongodb metrics database: %w", err))
 		}
 	}
 

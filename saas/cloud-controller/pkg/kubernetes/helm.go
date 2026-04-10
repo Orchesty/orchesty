@@ -104,6 +104,8 @@ func (h *Helm) createFiles(path string, dto *models.InstanceDTO) error {
 
 	values := strings.ReplaceAll(templates.ValuesTemplate, "{{valkeyBlock}}", h.buildValkey(dto))
 	values = strings.ReplaceAll(values, "{{logsBlockOrchesty}}", h.buildLogs(dto, false))
+	values = strings.ReplaceAll(values, "{{imageOverridesBlock}}", h.buildImageOverrides(dto))
+	values = strings.ReplaceAll(values, "{{resourceLimitsBlock}}", h.buildResourceLimits(dto))
 	values = strings.ReplaceAll(values, "{{logsBlockGlobal}}", h.buildLogs(dto, true))
 	values = strings.ReplaceAll(values, "{{workersBlock}}", h.buildWorkers(dto))
 
@@ -147,6 +149,18 @@ func (h *Helm) buildLogs(dto *models.InstanceDTO, global bool) string {
 
 	orchestyLogs := strings.ReplaceAll(templates.LogsBlockOrchestyTemplate, "{{grafanaEnabled}}", strconv.FormatBool(dto.Customizations.Logs.GrafanaEnabled))
 
+	retentionPeriod := dto.Customizations.Logs.RetentionPeriod
+	if retentionPeriod == 0 {
+		retentionPeriod = 178 // default ~7 days
+	}
+	orchestyLogs = strings.ReplaceAll(orchestyLogs, "{{retentionPeriod}}", strconv.Itoa(retentionPeriod))
+
+	storageSize := dto.Customizations.Logs.LogsStorageSize
+	if storageSize == 0 {
+		storageSize = 1 // default 1Gi
+	}
+	orchestyLogs = strings.ReplaceAll(orchestyLogs, "{{storageSize}}", strconv.Itoa(storageSize))
+
 	return orchestyLogs
 }
 
@@ -175,6 +189,31 @@ func (h *Helm) buildWorkers(dto *models.InstanceDTO) string {
 	}
 
 	return workersBlock
+}
+
+func (h *Helm) buildResourceLimits(dto *models.InstanceDTO) string {
+	if !dto.Customizations.ResourceLimits.Enabled {
+		return ""
+	}
+
+	resourceLimitsBlock := strings.ReplaceAll(templates.ResourceLimitsBlockTemplate, "{{cpuLimit}}", dto.Customizations.ResourceLimits.Cpu)
+	resourceLimitsBlock = strings.ReplaceAll(resourceLimitsBlock, "{{memoryLimit}}", dto.Customizations.ResourceLimits.Memory)
+	resourceLimitsBlock = strings.ReplaceAll(resourceLimitsBlock, "{{limitsEnabled}}", strconv.FormatBool(dto.Customizations.ResourceLimits.Enabled))
+
+	return resourceLimitsBlock
+}
+
+func (h *Helm) buildImageOverrides(dto *models.InstanceDTO) string {
+	if dto.Customizations.Applinth.Enabled {
+		imageOverridesBlock := strings.ReplaceAll(templates.ImageOverridesBlock, "{{hanabosoDockerRegistry}}", config.Applinth.DockerRegistry)
+		imageOverridesBlock = strings.ReplaceAll(imageOverridesBlock, "{{applinthMarketplaceUiImage}}", config.Applinth.MarketplaceUiImage)
+		imageOverridesBlock = strings.ReplaceAll(imageOverridesBlock, "{{applinthBackendImage}}", config.Applinth.BackendImage)
+		imageOverridesBlock = strings.ReplaceAll(imageOverridesBlock, "{{appOrchestyVersion}}", config.Orchesty.Version)
+
+		return imageOverridesBlock
+	}
+
+	return ""
 }
 
 func (h *Helm) getKubeConfigArgs() []string {

@@ -1,7 +1,11 @@
 package models
 
 import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/rand"
+	"crypto/x509"
+	"encoding/pem"
 	"errors"
 	"fmt"
 	"math/big"
@@ -26,33 +30,47 @@ type Worker struct {
 }
 
 type ValkeyLimit struct {
-	CPU     int `json:"cpu"`
-	Memory  int `json:"memory"`
-	Storage int `json:"storage"`
+	CPU     int `json:"cpu"`     // in millicores, e.g. "500"
+	Memory  int `json:"memory"`  // in Gi
+	Storage int `json:"storage"` // in Gi
 }
 
 type Valkey struct {
 	Enabled           bool `json:"enabled"`
 	PersistentStorage struct {
 		Enabled bool `json:"enabled"`
-		Size    int  `json:"size,omitempty"`
+		Size    int  `json:"size,omitempty"` // in Gi
 	} `json:"persistentStorage"`
 	Limit ValkeyLimit `json:"limit,omitempty"`
 }
 
 type Logs struct {
-	Enabled        bool `json:"enabled"`
-	GrafanaEnabled bool `json:"grafanaEnabled"`
+	Enabled         bool `json:"enabled"`
+	GrafanaEnabled  bool `json:"grafanaEnabled"`
+	RetentionPeriod int  `json:"retentionPeriod,omitempty"` // in hours
+	LogsStorageSize int  `json:"logsStorageSize,omitempty"` // in Gi
+}
+
+type Applinth struct {
+	Enabled bool `json:"enabled"`
+}
+
+type ResourceLimits struct {
+	Enabled bool   `json:"enabled"`
+	Cpu     string `json:"cpu"`    // in millicores, e.g. "500"
+	Memory  string `json:"memory"` // in Gi
 }
 
 type Customizations struct {
-	Workers              []Worker `json:"workers,omitempty"`
-	Valkey               Valkey   `json:"valkey,omitempty"`
-	Logs                 Logs     `json:"logs,omitempty"`
-	TraceAuditing        bool     `json:"traceAuditing,omitempty"`
-	EnterpriseDashboards bool     `json:"enterpriseDashboards,omitempty"`
-	AuditLogs            bool     `json:"auditLogs,omitempty"`
-	UseBundle            bool     `json:"useBundle,omitempty"`
+	Workers              []Worker       `json:"workers,omitempty"`
+	Valkey               Valkey         `json:"valkey,omitempty"`
+	Logs                 Logs           `json:"logs,omitempty"`
+	Applinth             Applinth       `json:"applinth,omitempty"`
+	ResourceLimits       ResourceLimits `json:"resourceLimits,omitempty"`
+	TraceAuditing        bool           `json:"traceAuditing,omitempty"`
+	EnterpriseDashboards bool           `json:"enterpriseDashboards,omitempty"`
+	AuditLogs            bool           `json:"auditLogs,omitempty"`
+	UseBundle            bool           `json:"useBundle,omitempty"`
 }
 
 type ExistingInstanceData struct {
@@ -66,6 +84,11 @@ type ExistingInstanceData struct {
 	BackendJwtKey       string
 	CryptSecret         string
 	OrchestyApiKey      string
+	S3AccessKey         string
+	S3SecretKey         string
+	GrafanaPassword     string
+	ApplinthPrivateKey  string
+	ApplinthPublicKey   string
 	Customizations      Customizations
 }
 
@@ -82,6 +105,11 @@ type InstanceDTO struct {
 	BackendJwtKey       string
 	CryptSecret         string
 	OrchestyApiKey      string
+	S3AccessKey         string
+	S3SecretKey         string
+	GrafanaPassword     string
+	ApplinthPrivateKey  string
+	ApplinthPublicKey   string
 	Customizations      Customizations
 }
 
@@ -92,6 +120,8 @@ type InstanceInfo struct {
 	InstanceUrlPrefix   string `json:"instanceUrlPrefix"`
 	UserName            string `json:"userName"`
 	UserPassword        string `json:"userPassword"`
+	GrafanaPassword     string `json:"grafanaPassword"`
+	ApplinthPublicKey   string `json:"applinthPublicKey"`
 }
 
 // NewInstanceDTO creates a new InstanceDTO with generated credentials.
@@ -131,6 +161,22 @@ func NewInstanceDTO(instanceDisplayName, instanceUrlPrefix, userName string, cus
 		return nil, fmt.Errorf("failed to generate API key: %w", err)
 	}
 
+	var grafanaPwd string
+	if customizations.Logs.GrafanaEnabled {
+		grafanaPwd, err = generatePassword(16, false)
+		if err != nil {
+			return nil, fmt.Errorf("failed to generate grafana password: %w", err)
+		}
+	}
+
+	var applinthPrivKey, applinthPubKey string
+	if customizations.Applinth.Enabled {
+		applinthPrivKey, applinthPubKey, err = generateECKeyPair()
+		if err != nil {
+			return nil, fmt.Errorf("failed to generate applinth EC key pair: %w", err)
+		}
+	}
+
 	return &InstanceDTO{
 		Instance:            InstancePrefix + instanceId,
 		InstanceId:          instanceId,
@@ -143,6 +189,9 @@ func NewInstanceDTO(instanceDisplayName, instanceUrlPrefix, userName string, cus
 		BackendJwtKey:       backendKey,
 		CryptSecret:         cryptSec,
 		OrchestyApiKey:      apiKey,
+		GrafanaPassword:     grafanaPwd,
+		ApplinthPrivateKey:  applinthPrivKey,
+		ApplinthPublicKey:   applinthPubKey,
 		Customizations:      customizations,
 	}, nil
 }
@@ -195,6 +244,11 @@ func NewInstanceDTOFromExistingData(data ExistingInstanceData) (*InstanceDTO, er
 		BackendJwtKey:       backendJwtKey,
 		CryptSecret:         cryptSecret,
 		OrchestyApiKey:      orchestyApiKey,
+		S3AccessKey:         data.S3AccessKey,
+		S3SecretKey:         data.S3SecretKey,
+		GrafanaPassword:     data.GrafanaPassword,
+		ApplinthPrivateKey:  data.ApplinthPrivateKey,
+		ApplinthPublicKey:   data.ApplinthPublicKey,
 		Customizations:      data.Customizations,
 	}, nil
 }
@@ -209,8 +263,8 @@ func (d *InstanceDTO) ToInstanceInfo(withCredentials bool) InstanceInfo {
 	if withCredentials {
 		info.UserName = d.UserName
 		info.UserPassword = d.UserPassword
-
-		// Todo asi přidat i grafanu
+		info.GrafanaPassword = d.GrafanaPassword
+		info.ApplinthPublicKey = d.ApplinthPublicKey
 	}
 
 	return info
@@ -232,4 +286,26 @@ func generatePassword(length int, lowCase bool) (string, error) {
 	}
 
 	return string(result), nil
+}
+
+func generateECKeyPair() (privateKeyPEM, publicKeyPEM string, err error) {
+	privateKey, err := ecdsa.GenerateKey(elliptic.P521(), rand.Reader)
+	if err != nil {
+		return "", "", fmt.Errorf("generate EC key: %w", err)
+	}
+
+	privKeyBytes, err := x509.MarshalECPrivateKey(privateKey)
+	if err != nil {
+		return "", "", fmt.Errorf("marshal EC private key: %w", err)
+	}
+
+	pubKeyBytes, err := x509.MarshalPKIXPublicKey(&privateKey.PublicKey)
+	if err != nil {
+		return "", "", fmt.Errorf("marshal EC public key: %w", err)
+	}
+
+	privPEM := pem.EncodeToMemory(&pem.Block{Type: "EC PRIVATE KEY", Bytes: privKeyBytes})
+	pubPEM := pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: pubKeyBytes})
+
+	return string(privPEM), string(pubPEM), nil
 }
