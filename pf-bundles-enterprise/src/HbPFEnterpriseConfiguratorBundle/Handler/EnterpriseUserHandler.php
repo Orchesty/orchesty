@@ -293,6 +293,73 @@ final class EnterpriseUserHandler extends UserHandler
     }
 
     /**
+     * Replaces the user's current preset-based role with a new one.
+     *
+     * @param string $userId
+     * @param string $newPreset
+     *
+     * @return mixed[]
+     */
+    public function setUserRole(string $userId, string $newPreset): array
+    {
+        $presetNames = PermissionPresets::names();
+
+        if (!in_array($newPreset, $presetNames, TRUE)) {
+            throw new \InvalidArgumentException(sprintf('Unknown preset [%s].', $newPreset));
+        }
+
+        /** @var User|null $user */
+        $user = $this->dm->getRepository(User::class)->find($userId);
+
+        if (!$user) {
+            throw new \InvalidArgumentException(sprintf('User [%s] not found.', $userId));
+        }
+
+        /** @var Group[] $allGroups */
+        $allGroups    = $this->dm->getRepository(Group::class)->findAll();
+        $presetGroups = [];
+
+        foreach ($allGroups as $g) {
+            if (in_array($g->getName(), $presetNames, TRUE)) {
+                $presetGroups[$g->getName()] = $g;
+            }
+        }
+
+        foreach ($presetGroups as $pg) {
+            $users = $pg->getUsers();
+            $found = FALSE;
+            foreach ($users as $u) {
+                if ($u->getId() === $user->getId()) {
+                    $found = TRUE;
+
+                    break;
+                }
+            }
+
+            if ($found) {
+                /** @var \Doctrine\Common\Collections\Collection<int|string, \Hanaboso\UserBundle\Document\User> $collection */
+                $collection = $users;
+                $arr        = $collection->toArray();
+                $collection->clear();
+                $this->dm->flush();
+
+                $filtered = array_values(array_filter($arr, static fn($item) => $item->getId() !== $user->getId()));
+                $pg->setUsers($filtered);
+                $this->dm->flush();
+            }
+        }
+
+        if (isset($presetGroups[$newPreset])) {
+            $presetGroups[$newPreset]->addUser($user);
+            $this->dm->flush();
+        } else {
+            $this->groupManager->addUserIntoGroup($user, groupName: $newPreset);
+        }
+
+        return ['userId' => $userId, 'role' => $newPreset];
+    }
+
+    /**
      * Creates all preset groups in the database if they don't exist yet.
      */
     private function ensurePresetGroups(): void

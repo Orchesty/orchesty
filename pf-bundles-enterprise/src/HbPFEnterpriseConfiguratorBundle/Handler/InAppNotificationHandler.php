@@ -42,16 +42,16 @@ final class InAppNotificationHandler
     {
         $filter = [];
 
-        if (!empty($filters['severity'])) {
+        if (isset($filters['severity']) && $filters['severity'] !== '') {
             $filter['severity'] = $filters['severity'];
         }
 
-        if (!empty($filters['from']) || !empty($filters['to'])) {
+        if ((isset($filters['from']) && $filters['from'] !== '') || (isset($filters['to']) && $filters['to'] !== '')) {
             $filter['createdAt'] = [];
-            if (!empty($filters['from'])) {
+            if (isset($filters['from']) && $filters['from'] !== '') {
                 $filter['createdAt']['$gte'] = new UTCDateTime(new DateTime($filters['from']));
             }
-            if (!empty($filters['to'])) {
+            if (isset($filters['to']) && $filters['to'] !== '') {
                 $filter['createdAt']['$lte'] = new UTCDateTime(new DateTime($filters['to']));
             }
         }
@@ -70,7 +70,7 @@ final class InAppNotificationHandler
 
         $data = [];
         foreach ($cursor as $doc) {
-            $data[] = $this->normalizeDocument($doc);
+            $data[] = $this->normalizeDocument((array) $doc);
         }
 
         return [

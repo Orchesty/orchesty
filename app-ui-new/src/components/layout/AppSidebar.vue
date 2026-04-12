@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { ChartPie, Clock, OctagonAlert, List, Workflow, Grip, Settings } from 'lucide-vue-next'
+import { PieChart, Clock, OctagonAlert, List, Workflow, Grip, Settings } from 'lucide-vue-next'
 import { useSidebar } from '@/composables/useSidebar'
 import { useCronAlerts } from '@/composables/useCronAlerts'
 import { useAuthorization } from '@/composables/useAuthorization'
@@ -37,7 +37,7 @@ onMounted(() => {
 })
 
 const coreItems: SidebarItem[] = [
-  { id: 'dashboard', label: 'Control Center', path: '/dashboard', icon: ChartPie, permission: 'overview:read' },
+  { id: 'dashboard', label: 'Control Center', path: '/dashboard', icon: PieChart, permission: 'overview:read' },
   { id: 'logs', label: 'Logs', path: '/logs', icon: List, permission: 'logs:read' },
   { id: 'trash', label: 'Failed Messages', path: '/trash', icon: OctagonAlert, permission: 'user_task:read' },
   { id: 'scheduled-tasks', label: 'Scheduled Tasks', path: '/scheduled-tasks', icon: Clock, badge: 'cron-alerts', permission: 'scheduled_task:read' },

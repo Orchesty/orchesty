@@ -136,7 +136,7 @@ async function handleRestartAllEnabled() {
   let succeeded = 0
   let failed = 0
   for (let i = 0; i < enabledBridges.length; i++) {
-    const bridge = enabledBridges[i]
+    const bridge = enabledBridges[i]!
     restartProgress.value = { current: i + 1, total: enabledBridges.length, name: bridge.name }
     restartingIds.value.add(bridge._id)
     try {

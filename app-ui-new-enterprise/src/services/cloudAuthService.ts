@@ -35,7 +35,7 @@ export async function handleCloudAuthHandoff(): Promise<boolean> {
       localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, data.token)
       localStorage.setItem(
         STORAGE_KEYS.AUTH_USER,
-        JSON.stringify({ id: data.id, email: data.email, settings: data.settings || {} }),
+        JSON.stringify({ id: data.id, email: data.email, picture: data.picture || undefined, isOrgMember: data.isOrgMember === true, settings: data.settings || {} }),
       )
       localStorage.setItem(STORAGE_KEYS.LAST_TOKEN_REFRESH, String(Date.now()))
       localStorage.setItem(STORAGE_KEYS.CLOUD_HANDOFF_SESSION, 'true')

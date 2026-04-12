@@ -293,7 +293,7 @@ const getBarChartOptions = () => {
           <div class="flex items-center justify-end">
             <MoreActions
               :id="`trash-row-${row.topologyId}-${row.nodeId}`"
-              :sections="getRowActions(row)"
+              :sections="getRowActions(row as TrashTableRow)"
             />
           </div>
         </template>

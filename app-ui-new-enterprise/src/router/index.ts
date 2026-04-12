@@ -25,6 +25,11 @@ const enterpriseOnlyChildren: RouteRecordRaw[] = [
     component: () => import('@/views/notifications/NotificationsView.vue'),
   },
   {
+    path: 'notification-settings',
+    name: 'notification-settings',
+    component: () => import('@/views/notifications/NotificationSettingsView.vue'),
+  },
+  {
     path: 'audit-logs',
     name: 'audit-logs',
     component: () => import('@/views/audit-logs/AuditLogsView.vue'),
@@ -46,7 +51,7 @@ const enterpriseOnlyChildren: RouteRecordRaw[] = [
     path: 'limiter',
     name: 'limiter',
     component: () => import('@/views/limiter/LimiterView.vue'),
-    meta: { role: 'system_manager' },
+    meta: { role: 'developer' },
   },
 ]
 

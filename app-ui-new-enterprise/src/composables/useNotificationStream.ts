@@ -6,9 +6,9 @@ export interface InAppNotification {
   event_type: string
   severity: string
   message: string
-  topology_id?: string
-  topology_name?: string
-  node_name?: string
+  topology_id?: string | null
+  topology_name?: string | null
+  node_name?: string | null
   created_at: string
 }
 

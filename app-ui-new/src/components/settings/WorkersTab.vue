@@ -145,7 +145,7 @@ onMounted(() => {
         :columns="[
           { key: 'name', label: 'Name', sortable: false },
           { key: 'type', label: 'Type', sortable: false },
-          { key: 'url', label: 'URL', sortable: false },
+          { key: 'url', label: 'Hostname', sortable: false },
           { key: 'headers', label: 'Headers', sortable: false },
           { key: 'actions', label: '', sortable: false },
         ]"
