@@ -1,5 +1,5 @@
 services:
-    enterprise-system-worker:
+    sys-worker:
         image: node-sdk:tag
         build: node-sdk/docker
         user: ${DEV_UID}:${DEV_GID}
@@ -10,11 +10,14 @@ services:
             # Envs for tests are load from node-sdk/.jest/testEnvs.js
             JEST_DOCKER: 1
             APP_ENV: debug
+            APP_PORT: 8080
             CRYPT_SECRET: ThisIsNotSoSecret
             BACKEND_URL: ${BACKEND_URL}
             STARTING_POINT_DSN: ${STARTING_POINT_DSN}
             WORKER_API_HOST: http://worker-api:8080
             ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
+            ORCHESTY_CLOUD_INSTANCE_ID: ${ORCHESTY_CLOUD_INSTANCE_ID:-5d3e1061-5863-4292-8d95-9a238db8b48a}
+            ORCHESTY_CLOUD_INSTANCE_SECRET: ${ORCHESTY_CLOUD_INSTANCE_SECRET:-0027c895-2aa1-11f1-872c-0e85bfc47da4}
         command: sh -c 'pnpm install && pnpm run start'
 
     node-sdk:
@@ -276,9 +279,15 @@ services:
             MONGO_DSN: ${MONGO_DSN}
             RABBITMQ_DSN: ${RABBITMQ_DSN}
             REDIS_DSN: ${REDIS_DSN}
-            STARTING_POINT_URL_EMAIL: 'http://starting-point:8080/topologies/smtp/nodes/start/run-by-name'
+            STARTING_POINT_URL_EMAIL: 'http://starting-point:8080/topologies/system-email-notifications/nodes/%s/run-by-name'
+            STARTING_POINT_URL_INAPP: 'http://starting-point:8080/topologies/system-cloud-notifications/nodes/cloud-notification-event/run-by-name'
+            THROTTLE_WINDOW_MS: '7200000'
+            BUFFER_WINDOW_MS: '60000'
+            INAPP_THROTTLE_WINDOW_MS: '60000'
         volumes:
             - ./../../notifier/:/app:cached
+        ports:
+            - ${DEV_IP}:8086:8080
         command: /run.sh -p cmd/notifier.go -l 2345
         security_opt: ['seccomp:unconfined']
 
@@ -357,6 +366,7 @@ services:
         environment:
             CI: 'true'
             VITE_BACKEND_URL: ${BACKEND_ENTERPRISE_URL}
+            VITE_NOTIFIER_URL: http://${DEV_IP}:8086
             VITE_STARTINGPONT_URL: ${DEV_IP}:82
             VITE_AUTH0_DOMAIN: dev-qsa0lopaqbhr0vmj.eu.auth0.com
             VITE_AUTH0_CLIENT_ID: 1XIsyOq2kpTDt4qOlop2rEAQzPcE2Q5p

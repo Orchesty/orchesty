@@ -12,6 +12,7 @@ const cloudMode = ref(false)
 const cloudUrl = ref('')
 const instanceName = ref('')
 const loaded = ref(false)
+const systemWorkerNames = ref<string[]>([])
 
 const features = ref<Features>({
   enterpriseDashboards: true,
@@ -49,6 +50,8 @@ export function useCloudMode() {
             pulse: true,
           }
         }
+
+        systemWorkerNames.value = Array.isArray(data.systemWorkerNames) ? data.systemWorkerNames : []
       }
     } catch {
       cloudMode.value = false
@@ -70,6 +73,7 @@ export function useCloudMode() {
     cloudUrl: readonly(cloudUrl),
     instanceName: readonly(instanceName),
     features: readonly(features),
+    systemWorkerNames: readonly(systemWorkerNames),
     loaded: readonly(loaded),
     loadCloudMode,
   }

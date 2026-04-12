@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	log "github.com/hanaboso/go-log/pkg"
 
@@ -13,6 +14,7 @@ import (
 type (
 	DispatcherService interface {
 		Dispatch(presetID string, e model.EventEnvelope, channelRecipients []model.ChannelRecipients) error
+		DispatchBuffered(presetID string, firstEvent model.EventEnvelope, events []model.BufferedEvent, channelRecipients []model.ChannelRecipients) error
 	}
 
 	dispatcherService struct {
@@ -29,13 +31,17 @@ func NewDispatcherService(httpSender sender.HttpSender, urls map[string]string, 
 func (service dispatcherService) Dispatch(presetID string, e model.EventEnvelope, channelRecipients []model.ChannelRecipients) error {
 	var lastErr error
 
+	nodeName := strings.ReplaceAll(presetID, "_", "-")
+
 	for _, cr := range channelRecipients {
-		url, ok := service.urls[cr.Channel]
-		if !ok || url == "" {
+		urlTemplate, ok := service.urls[cr.Channel]
+		if !ok || urlTemplate == "" {
 			service.logContext().Warn("No dispatch URL configured for channel %s, skipping", cr.Channel)
 
 			continue
 		}
+
+		url := resolveURL(urlTemplate, nodeName)
 
 		payload := model.DispatchPayload{
 			PresetID:   presetID,
@@ -54,6 +60,49 @@ func (service dispatcherService) Dispatch(presetID string, e model.EventEnvelope
 	}
 
 	return lastErr
+}
+
+func (service dispatcherService) DispatchBuffered(presetID string, firstEvent model.EventEnvelope, events []model.BufferedEvent, channelRecipients []model.ChannelRecipients) error {
+	var lastErr error
+
+	nodeName := strings.ReplaceAll(presetID, "_", "-")
+
+	for _, cr := range channelRecipients {
+		urlTemplate, ok := service.urls[cr.Channel]
+		if !ok || urlTemplate == "" {
+			service.logContext().Warn("No dispatch URL configured for channel %s, skipping", cr.Channel)
+
+			continue
+		}
+
+		url := resolveURL(urlTemplate, nodeName)
+
+		payload := model.DispatchPayload{
+			PresetID:   presetID,
+			TenantID:   firstEvent.TenantID,
+			Channel:    cr.Channel,
+			Event:      firstEvent,
+			Events:     events,
+			Recipients: cr.Recipients,
+		}
+
+		if _, err := service.sender.Send(http.MethodPost, url, payload); err != nil {
+			service.logContext().Error(fmt.Errorf("dispatch to %s failed: %v", cr.Channel, err))
+			lastErr = err
+		} else {
+			service.logContext().Debug("Dispatched buffered to %s: %d recipients, %d events", cr.Channel, len(cr.Recipients), len(events))
+		}
+	}
+
+	return lastErr
+}
+
+func resolveURL(urlTemplate, nodeName string) string {
+	if strings.Contains(urlTemplate, "%s") {
+		return fmt.Sprintf(urlTemplate, nodeName)
+	}
+
+	return urlTemplate
 }
 
 func (service dispatcherService) logContext() log.Logger {

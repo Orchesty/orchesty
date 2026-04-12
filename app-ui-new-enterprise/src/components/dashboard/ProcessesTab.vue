@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, computed, nextTick, onMounted, onActivated, onDeactivated } from 'vue'
 import ProcessAuditDrawer from '@/components/dashboard/ProcessAuditDrawer.vue'
+import ConnectorDetailDrawer from '@/components/dashboard/ConnectorDetailDrawer.vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
@@ -8,7 +9,8 @@ import SearchableDropdownFilter from '@/components/ui/datagrid/SearchableDropdow
 import GridLink from '@/components/ui/datagrid/GridLink.vue'
 import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
 import StatusBadge from '@/components/ui/StatusBadge.vue'
-import type { Process, ProcessStatus } from '@/types/processes'
+import type { Process, ProcessStatus, ProcessConnector } from '@/types/processes'
+import type { Connector } from '@/types/connectors'
 import type { TimeFilter, TableColumn, ProcessesExternalFilters } from '@/types/dashboard'
 import type { QuickFilterOption, DropdownFilterOption } from '@/types/datagrid'
 import { fetchProcesses } from '@/services/processesService'
@@ -34,6 +36,48 @@ const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 // Drawer state
 const drawerOpen = ref(false)
 const selectedProcess = ref<Process | null>(null)
+
+// Connector detail drawer state
+const connectorDrawerOpen = ref(false)
+const selectedConnector = ref<Connector | null>(null)
+const pendingConnectorOpen = ref(false)
+const pendingAuditReopen = ref(false)
+
+const handleAuditOpenConnector = (processConnector: ProcessConnector) => {
+  selectedConnector.value = {
+    nodeIds: [processConnector.connector],
+    name: processConnector.connector,
+    application: processConnector.application,
+    topologyIds: [],
+    avgRequestTime: 0,
+    requests: processConnector.called,
+    errors400: processConnector.errors400,
+    errors500: processConnector.errors500,
+    lastRequestStatus: 0,
+    status: processConnector.errors400 + processConnector.errors500 > 0 ? 'errors' : 'ok',
+  }
+  pendingConnectorOpen.value = true
+  drawerOpen.value = false
+}
+
+const onAuditDrawerHidden = () => {
+  if (pendingConnectorOpen.value) {
+    pendingConnectorOpen.value = false
+    connectorDrawerOpen.value = true
+  }
+}
+
+const handleConnectorBackToAudit = () => {
+  pendingAuditReopen.value = true
+  connectorDrawerOpen.value = false
+}
+
+const onConnectorDrawerHidden = () => {
+  if (pendingAuditReopen.value) {
+    pendingAuditReopen.value = false
+    drawerOpen.value = true
+  }
+}
 
 // Grid filters
 const processes = ref<Process[]>([])
@@ -335,8 +379,22 @@ onDeactivated(() => {
       </DataGrid>
     </Card>
 
-    <!-- Process Audit Drawer - Always render to ensure Flowbite initialization -->
-    <ProcessAuditDrawer v-model="drawerOpen" :process="selectedProcess" />
+    <ProcessAuditDrawer
+      v-model="drawerOpen"
+      :process="selectedProcess"
+      @open-connector-detail="handleAuditOpenConnector"
+      @hidden="onAuditDrawerHidden"
+    />
+
+    <ConnectorDetailDrawer
+      v-model="connectorDrawerOpen"
+      :connector="selectedConnector"
+      :time-filter="timeFilter"
+      show-back-button
+      back-label="Back to Process Audit"
+      @back="handleConnectorBackToAudit"
+      @hidden="onConnectorDrawerHidden"
+    />
   </div>
 </template>
 

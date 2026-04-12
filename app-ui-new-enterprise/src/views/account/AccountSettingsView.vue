@@ -1,15 +1,26 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import Tabs from '@/components/ui/Tabs.vue'
 import TextInput from '@/components/ui/TextInput.vue'
 import PasswordInput from '@/components/ui/PasswordInput.vue'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
+import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import type { Tab } from '@/components/ui/Tabs.vue'
+import type { NotificationPreset, NotificationSubscription } from '@/types/account'
 import { useToast } from '@/composables/useToast'
 import { useAuthStore } from '@/stores/auth'
 import { STORAGE_KEYS } from '@/config'
-import { updateProfile, updatePassword, updateNotifications } from '@/services/accountService'
+import { updateProfile, updatePassword } from '@/services/accountService'
+import { fetchSubscriptions, upsertSubscription } from '@/services/notificationService'
+
+const PRESETS: NotificationPreset[] = [
+  {
+    id: 'topology_failed_message',
+    label: 'Failed Message (Trash)',
+    description: 'Notify when a message is moved to trash',
+  },
+]
 
 const tabs: Tab[] = [
   {
@@ -33,7 +44,8 @@ const authStore = useAuthStore()
 
 const savingProfile = ref(false)
 const savingPassword = ref(false)
-const savingNotifications = ref(false)
+const loadingNotifications = ref(false)
+const savingPreset = ref<string | null>(null)
 
 const username = ref('')
 const email = ref('')
@@ -45,26 +57,63 @@ const isPasswordFormValid = computed(() =>
   currentPassword.value.length > 0 && newPassword.value.length >= 8,
 )
 
-const notifications = ref([
-  {
-    id: 'account-activity',
-    label: 'Account Activity',
-    description: "Get important notifications about you or activity you've missed",
-    enabled: true,
-  },
-  {
-    id: 'email-notification',
-    label: 'Email notification',
-    description: 'Receive email notifications whenever your company requires your attention',
-    enabled: false,
-  },
-])
+const subscriptionState = reactive<Record<string, boolean>>({})
+const subscriptionsLoaded = ref(false)
 
-onMounted(() => {
+function mergeSubscriptions(subs: NotificationSubscription[]) {
+  for (const preset of PRESETS) {
+    const existing = subs.find(
+      (s) => (s.event_type || s.subject_id) === preset.id && (s.channel || 'email') === 'email',
+    )
+    subscriptionState[preset.id] = existing?.enabled ?? false
+  }
+}
+
+async function loadSubscriptions() {
+  loadingNotifications.value = true
+  try {
+    const subs = await fetchSubscriptions()
+    mergeSubscriptions(subs)
+    subscriptionsLoaded.value = true
+  } catch (error) {
+    console.error('Failed to load notification subscriptions:', error)
+    for (const preset of PRESETS) {
+      subscriptionState[preset.id] = false
+    }
+    subscriptionsLoaded.value = true
+  } finally {
+    loadingNotifications.value = false
+  }
+}
+
+async function handleTogglePreset(presetId: string) {
+  const newEnabled = !subscriptionState[presetId]
+  savingPreset.value = presetId
+  try {
+    const subs = await upsertSubscription({
+      event_type: presetId,
+      channel: 'email',
+      enabled: newEnabled,
+    })
+    mergeSubscriptions(subs)
+    showToast(
+      newEnabled ? 'Notification enabled' : 'Notification disabled',
+      'success',
+    )
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to update notification'
+    showToast(message, 'error')
+  } finally {
+    savingPreset.value = null
+  }
+}
+
+onMounted(async () => {
   if (authStore.user) {
     email.value = authStore.user.email
     username.value = authStore.user.settings?.username || ''
   }
+  await loadSubscriptions()
 })
 
 const handleSaveProfile = async () => {
@@ -103,28 +152,6 @@ const handleSavePassword = async () => {
   } finally {
     savingPassword.value = false
   }
-}
-
-const handleSaveNotifications = async () => {
-  if (savingNotifications.value) return
-  
-  savingNotifications.value = true
-  try {
-    await updateNotifications(notifications.value)
-    showToast('Notification preferences saved', 'success')
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to save preferences'
-    showToast(message, 'error')
-  } finally {
-    savingNotifications.value = false
-  }
-}
-
-const handleSelectAll = () => {
-  const allEnabled = notifications.value.every((n) => n.enabled)
-  notifications.value.forEach((n) => {
-    n.enabled = !allEnabled
-  })
 }
 </script>
 
@@ -238,46 +265,42 @@ const handleSelectAll = () => {
       <div id="notifications-content" role="tabpanel" aria-labelledby="notifications-tab" class="hidden">
         <Card>
           <div
-            class="flex items-center justify-between mb-4 md:mb-6 border-b border-gray-200 dark:border-gray-700 pb-4"
+            class="mb-4 md:mb-6 border-b border-gray-200 dark:border-gray-700 pb-4"
           >
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Notifications</h2>
-            <button
-              type="button"
-              @click="handleSelectAll"
-              class="text-sm font-medium text-primary-700 hover:underline dark:text-primary-500"
-            >
-              Select all
-            </button>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Email Notifications</h2>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              Choose which events trigger an email notification. Changes are saved immediately.
+            </p>
           </div>
 
-          <div class="mb-4 sm:mb-6">
-            <label
-              v-for="notification in notifications"
-              :key="notification.id"
-              class="relative mb-4 flex cursor-pointer"
-            >
-              <input
-                v-model="notification.enabled"
-                type="checkbox"
-                class="peer sr-only"
-              />
-              <div
-                class="peer h-6 w-11 shrink-0 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-primary-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-hidden peer-focus:ring-4 peer-focus:ring-primary-300 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-primary-800 rtl:peer-checked:after:-translate-x-full"
-              ></div>
-              <div class="ms-3">
-                <span class="font-medium text-gray-900 dark:text-gray-300">{{
-                  notification.label
-                }}</span>
-                <p class="text-sm font-normal text-gray-500 dark:text-gray-300">
-                  {{ notification.description }}
-                </p>
-              </div>
-            </label>
-          </div>
+          <LoadingSpinner v-if="loadingNotifications" message="Loading notification preferences…" />
 
-          <Button @click="handleSaveNotifications" :disabled="savingNotifications">
-            {{ savingNotifications ? 'Saving...' : 'Save changes' }}
-          </Button>
+          <div v-else-if="subscriptionsLoaded" class="space-y-6">
+            <div
+              v-for="preset in PRESETS"
+              :key="preset.id"
+              class="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+            >
+              <label class="relative flex cursor-pointer items-start">
+                <input
+                  type="checkbox"
+                  class="peer sr-only"
+                  :checked="subscriptionState[preset.id]"
+                  :disabled="savingPreset === preset.id"
+                  @change="handleTogglePreset(preset.id)"
+                />
+                <div
+                  class="peer h-6 w-11 shrink-0 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-primary-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-hidden peer-focus:ring-4 peer-focus:ring-primary-300 peer-disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-primary-800 rtl:peer-checked:after:-translate-x-full"
+                ></div>
+                <div class="ms-3">
+                  <span class="font-medium text-gray-900 dark:text-gray-300">{{ preset.label }}</span>
+                  <p class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                    {{ preset.description }}
+                  </p>
+                </div>
+              </label>
+            </div>
+          </div>
         </Card>
       </div>
     </div>

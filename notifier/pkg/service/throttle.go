@@ -12,6 +12,8 @@ import (
 
 type ThrottleStore interface {
 	ThrottleOnce(ctx context.Context, key string, windowMs int) (bool, error)
+	IsThrottled(ctx context.Context, key string) (bool, error)
+	SetThrottle(ctx context.Context, key string, windowMs int) error
 	Increment(ctx context.Context, key string, windowMs int) (int64, error)
 	Ping(ctx context.Context) error
 }
@@ -43,6 +45,19 @@ func (s *RedisStore) ThrottleOnce(ctx context.Context, key string, windowMs int)
 	return !ok, nil
 }
 
+func (s *RedisStore) IsThrottled(ctx context.Context, key string) (bool, error) {
+	val, err := s.client.Exists(ctx, key).Result()
+	if err != nil {
+		return false, err
+	}
+
+	return val > 0, nil
+}
+
+func (s *RedisStore) SetThrottle(ctx context.Context, key string, windowMs int) error {
+	return s.client.Set(ctx, key, "1", time.Duration(windowMs)*time.Millisecond).Err()
+}
+
 func (s *RedisStore) Increment(ctx context.Context, key string, windowMs int) (int64, error) {
 	count, err := s.client.Incr(ctx, key).Result()
 	if err != nil {
@@ -64,6 +79,10 @@ func (s *RedisStore) Close() error {
 	return s.client.Close()
 }
 
+func (s *RedisStore) Client() *redis.Client {
+	return s.client
+}
+
 type MemoryStore struct {
 	throttleMap sync.Map
 	counterMap  sync.Map
@@ -83,6 +102,21 @@ func (s *MemoryStore) ThrottleOnce(_ context.Context, key string, windowMs int) 
 	})
 
 	return false, nil
+}
+
+func (s *MemoryStore) IsThrottled(_ context.Context, key string) (bool, error) {
+	_, exists := s.throttleMap.Load(key)
+
+	return exists, nil
+}
+
+func (s *MemoryStore) SetThrottle(_ context.Context, key string, windowMs int) error {
+	s.throttleMap.Store(key, true)
+	time.AfterFunc(time.Duration(windowMs)*time.Millisecond, func() {
+		s.throttleMap.Delete(key)
+	})
+
+	return nil
 }
 
 func (s *MemoryStore) Ping(_ context.Context) error {

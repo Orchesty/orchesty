@@ -34,6 +34,7 @@ export {
   type AuthorizationProvider,
 } from './composables/useAuthorization'
 export { useHelp, provideHelp } from './composables/useHelp'
+export { useSystemWorkers, SYSTEM_WORKERS_KEY } from './composables/useSystemWorkers'
 
 // Services
 export { default as api } from './services/api'

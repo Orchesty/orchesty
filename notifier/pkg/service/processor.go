@@ -4,11 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	log "github.com/hanaboso/go-log/pkg"
 
 	"notifier/pkg/config"
 	"notifier/pkg/model"
+	"notifier/pkg/storage"
 )
 
 type (
@@ -17,12 +19,15 @@ type (
 	}
 
 	processorService struct {
-		presets    []model.Preset
-		helpers    model.EvaluatorHelpers
-		throttle   ThrottleStore
-		recipient  RecipientService
-		dispatcher DispatcherService
-		logger     log.Logger
+		presets        []model.Preset
+		helpers        model.EvaluatorHelpers
+		throttle       ThrottleStore
+		buffer         BufferService
+		recipient      RecipientService
+		dispatcher     DispatcherService
+		storage        storage.MongoStorage
+		sseBroadcaster *SSEBroadcaster
+		logger         log.Logger
 	}
 )
 
@@ -30,11 +35,14 @@ func NewProcessorService(
 	presets []model.Preset,
 	helpers model.EvaluatorHelpers,
 	throttle ThrottleStore,
+	buffer BufferService,
 	recipient RecipientService,
 	dispatcher DispatcherService,
+	mongoStorage storage.MongoStorage,
+	sseBroadcaster *SSEBroadcaster,
 	logger log.Logger,
 ) ProcessorService {
-	return processorService{presets, helpers, throttle, recipient, dispatcher, logger}
+	return processorService{presets, helpers, throttle, buffer, recipient, dispatcher, mongoStorage, sseBroadcaster, logger}
 }
 
 func (service processorService) Process(ctx context.Context, body []byte) error {
@@ -55,9 +63,11 @@ func (service processorService) Process(ctx context.Context, body []byte) error 
 
 	service.logContext().Debug("Matched %d presets", len(notifs))
 
+	service.processInApp(ctx, e, notifs)
+
 	for _, n := range notifs {
-		key := throttleKey(n.PresetID, e)
-		blocked, err := service.throttle.ThrottleOnce(ctx, key, config.Throttle.WindowMs)
+		tKey := throttleKey(n.PresetID, e)
+		blocked, err := service.throttle.IsThrottled(ctx, tKey)
 
 		if err != nil {
 			service.logContext().Error(fmt.Errorf("throttle error: %v", err))
@@ -66,28 +76,86 @@ func (service processorService) Process(ctx context.Context, body []byte) error 
 		}
 
 		if blocked {
-			service.logContext().Debug("Throttled preset=%s key=%s", n.PresetID, key)
+			service.logContext().Debug("Throttled preset=%s key=%s", n.PresetID, tKey)
 
 			continue
 		}
 
-		channelRecipients, err := service.recipient.ResolveForEvent(e)
+		nodeName := ""
+		if e.Node != nil {
+			nodeName = e.Node.Name
+		}
+
+		entry := BufferEntry{
+			NodeName:     nodeName,
+			ErrorMessage: e.Message,
+		}
+
+		bKey := bufferKey(n.PresetID, e)
+		isNew, err := service.buffer.Add(ctx, bKey, entry, e)
+
 		if err != nil {
-			service.logContext().Error(fmt.Errorf("recipient resolution error: %v", err))
-		}
-
-		if len(channelRecipients) == 0 {
-			service.logContext().Debug("No recipients for preset=%s, skipping dispatch", n.PresetID)
+			service.logContext().Error(fmt.Errorf("buffer error: %v", err))
 
 			continue
 		}
 
-		if err := service.dispatcher.Dispatch(n.PresetID, e, channelRecipients); err != nil {
-			service.logContext().Error(fmt.Errorf("dispatch error for preset=%s: %v", n.PresetID, err))
+		service.logContext().Debug("Buffered preset=%s node=%s isNew=%v", n.PresetID, nodeName, isNew)
+
+		if isNew {
+			go service.scheduleFlush(bKey, n.PresetID, tKey)
 		}
 	}
 
 	return nil
+}
+
+func (service processorService) scheduleFlush(bKey, presetID, tKey string) {
+	time.Sleep(time.Duration(config.Throttle.BufferWindowMs) * time.Millisecond)
+
+	service.logContext().Debug("Flushing buffer key=%s preset=%s", bKey, presetID)
+
+	data, err := service.buffer.Flush(bKey)
+	if err != nil {
+		service.logContext().Error(fmt.Errorf("buffer flush error: %v", err))
+
+		return
+	}
+
+	if data == nil || len(data.Entries) == 0 {
+		service.logContext().Debug("Buffer empty after flush key=%s", bKey)
+
+		return
+	}
+
+	channelRecipients, err := service.recipient.ResolveForEvent(data.FirstEvent)
+	if err != nil {
+		service.logContext().Error(fmt.Errorf("recipient resolution error: %v", err))
+	}
+
+	if len(channelRecipients) == 0 {
+		service.logContext().Debug("No recipients for preset=%s after flush, skipping", presetID)
+
+		return
+	}
+
+	events := make([]model.BufferedEvent, len(data.Entries))
+	for i, entry := range data.Entries {
+		events[i] = model.BufferedEvent{
+			NodeName:     entry.NodeName,
+			ErrorMessage: entry.ErrorMessage,
+		}
+	}
+
+	if err := service.dispatcher.DispatchBuffered(presetID, data.FirstEvent, events, channelRecipients); err != nil {
+		service.logContext().Error(fmt.Errorf("dispatch error for preset=%s: %v", presetID, err))
+	}
+
+	if err := service.throttle.SetThrottle(context.Background(), tKey, config.Throttle.WindowMs); err != nil {
+		service.logContext().Error(fmt.Errorf("failed to set throttle after flush: %v", err))
+	}
+
+	service.logContext().Debug("Throttle set for %dms key=%s", config.Throttle.WindowMs, tKey)
 }
 
 func (service processorService) evaluatePresets(ctx context.Context, e model.EventEnvelope) []model.NotificationMessage {
@@ -118,6 +186,52 @@ func (service processorService) evaluatePresets(ctx context.Context, e model.Eve
 	return results
 }
 
+func (service processorService) processInApp(ctx context.Context, e model.EventEnvelope, notifs []model.NotificationMessage) {
+	for _, n := range notifs {
+		tKey := inAppThrottleKey(n.PresetID, e)
+		blocked, err := service.throttle.IsThrottled(ctx, tKey)
+
+		if err != nil {
+			service.logContext().Error(fmt.Errorf("in_app throttle error: %v", err))
+			continue
+		}
+
+		if blocked {
+			service.logContext().Debug("In-app throttled preset=%s key=%s", n.PresetID, tKey)
+			continue
+		}
+
+		notification := model.NewInAppNotification(e)
+
+		if err := service.storage.SaveNotification(notification); err != nil {
+			service.logContext().Error(fmt.Errorf("in_app save error: %v", err))
+			continue
+		}
+
+		service.sseBroadcaster.Broadcast(notification)
+
+		inAppRecipients := []model.ChannelRecipients{
+			{Channel: "in_app", Recipients: nil},
+		}
+		if err := service.dispatcher.Dispatch(n.PresetID, e, inAppRecipients); err != nil {
+			service.logContext().Error(fmt.Errorf("in_app dispatch error: %v", err))
+		}
+
+		if err := service.throttle.SetThrottle(ctx, tKey, config.Throttle.InAppThrottleWindowMs); err != nil {
+			service.logContext().Error(fmt.Errorf("in_app throttle set error: %v", err))
+		}
+	}
+}
+
+func inAppThrottleKey(presetID string, e model.EventEnvelope) string {
+	topoID := "no-topo"
+	if e.Topology != nil {
+		topoID = e.Topology.ID
+	}
+
+	return fmt.Sprintf("inapp:throttle:%s:%s:%s", e.TenantID, presetID, topoID)
+}
+
 func throttleKey(presetID string, e model.EventEnvelope) string {
 	if config.Throttle.Mode == "global_per_preset" {
 		return fmt.Sprintf("throttle:%s:%s", e.TenantID, presetID)
@@ -129,6 +243,15 @@ func throttleKey(presetID string, e model.EventEnvelope) string {
 	}
 
 	return fmt.Sprintf("throttle:%s:%s:%s", e.TenantID, presetID, topoID)
+}
+
+func bufferKey(presetID string, e model.EventEnvelope) string {
+	topoID := "no-topo"
+	if e.Topology != nil {
+		topoID = e.Topology.ID
+	}
+
+	return fmt.Sprintf("%s:%s:%s", e.TenantID, presetID, topoID)
 }
 
 func (service processorService) logContext() log.Logger {

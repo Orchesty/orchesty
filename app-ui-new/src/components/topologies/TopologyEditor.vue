@@ -814,6 +814,7 @@ watch(() => props.refreshKey, () => {
       :node-id="failedMessageNodeId"
       :correlation-id="failedMessageCorrelationId"
       :node-name="failedMessageNodeName"
+      modal-id="failed-message-modal-editor"
       @update="handleFailedMessageUpdate"
     />
   </div>

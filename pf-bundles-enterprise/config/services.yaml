@@ -50,6 +50,7 @@ parameters:
   feature_trace_auditing: '%env(bool:ORCHESTY_FEATURE_TRACE_AUDITING)%'
   feature_audit_logs: '%env(bool:ORCHESTY_FEATURE_AUDIT_LOGS)%'
   feature_pulse: '%env(bool:ORCHESTY_FEATURE_PULSE)%'
+  system_worker_names: ['sys-worker']
 
 services:
     Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0\Auth0Authenticator:

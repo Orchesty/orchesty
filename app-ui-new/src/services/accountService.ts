@@ -1,5 +1,5 @@
 import api from './api'
-import type { PasswordUpdateData, NotificationSettings } from '@/types/account'
+import type { PasswordUpdateData } from '@/types/account'
 import type { UserSettings } from '@/types/auth'
 
 /**
@@ -17,11 +17,4 @@ export async function updatePassword(data: PasswordUpdateData): Promise<void> {
     password: data.newPassword,
     old_password: data.currentPassword,
   })
-}
-
-/**
- * Update notification preferences (not yet connected to backend)
- */
-export async function updateNotifications(_settings: NotificationSettings[]): Promise<void> {
-  // TODO: Connect to backend when notification API is available
 }

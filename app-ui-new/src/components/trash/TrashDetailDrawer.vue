@@ -39,6 +39,11 @@ const formattedTimestamp = computed(() => {
   return formatDateTime(props.item.timestamp)
 })
 
+const resultMessage = computed(() => {
+  if (!props.item) return ''
+  return (props.item.headers['result-message'] as string) || ''
+})
+
 const handleApprove = () => {
   emit('approve')
 }
@@ -116,6 +121,14 @@ const handleConfirmReject = () => {
             Timestamp
           </label>
           <p class="text-sm text-gray-900 dark:text-white">{{ formattedTimestamp }}</p>
+        </div>
+      </div>
+
+      <!-- Result Message -->
+      <div v-if="resultMessage">
+        <h4 class="mb-2 text-sm font-medium text-gray-900 dark:text-white">Result Message</h4>
+        <div class="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+          {{ resultMessage }}
         </div>
       </div>
 

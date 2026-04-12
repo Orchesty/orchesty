@@ -3,6 +3,7 @@ import { ref, computed, nextTick, onMounted, provide } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import TopologiesSidebar from '@/components/topologies/TopologiesSidebar.vue'
 import NewTopologyModal from '@/components/topologies/NewTopologyModal.vue'
+import ImportTopologyModal from '@/components/topologies/ImportTopologyModal.vue'
 import NewFolderModal from '@/components/topologies/NewFolderModal.vue'
 import RenameFolderModal from '@/components/topologies/RenameFolderModal.vue'
 import SelectVersionModal from '@/components/topologies/SelectVersionModal.vue'
@@ -32,6 +33,7 @@ const topologySidebarCollapsed = ref(getSidebarCollapsedFromStorage())
 
 // Modal state
 const newTopologyModalOpen = ref(false)
+const importTopologyModalOpen = ref(false)
 const newFolderModalOpen = ref(false)
 const renameFolderModalOpen = ref(false)
 const deleteFolderConfirmOpen = ref(false)
@@ -133,6 +135,11 @@ const refreshAfterCrud = async () => {
 const handleFolderNewTopology = (folderId: string) => {
   activeFolderId.value = folderId
   newTopologyModalOpen.value = true
+}
+
+const handleFolderImportTopology = (folderId: string) => {
+  activeFolderId.value = folderId
+  importTopologyModalOpen.value = true
 }
 
 const handleFolderNewSubfolder = (folderId: string) => {
@@ -365,6 +372,7 @@ onMounted(async () => {
         ref="sidebarRef"
         v-model="topologySidebarCollapsed"
         @open-new-topology-modal="activeFolderId = ''; newTopologyModalOpen = true"
+        @open-import-topology-modal="activeFolderId = ''; importTopologyModalOpen = true"
         @open-new-folder-modal="handleOpenNewFolderModal"
         @select-topology="handleSelectTopology"
         @topology-action="handleSidebarTopologyAction"
@@ -379,6 +387,7 @@ onMounted(async () => {
 
   <!-- Modals -->
   <NewTopologyModal v-model="newTopologyModalOpen" :category-id="activeFolderId" @created="handleTopologyCreated" />
+  <ImportTopologyModal v-model="importTopologyModalOpen" :category-id="activeFolderId" @created="handleTopologyCreated" />
   <NewFolderModal
     v-model="newFolderModalOpen"
     :parent-id="activeFolderParentId"
@@ -469,6 +478,11 @@ onMounted(async () => {
       <li>
         <button type="button" @click="handleFolderNewTopology(folder.id)" class="inline-flex w-full items-center rounded-md px-3 py-2 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white">
           New Topology
+        </button>
+      </li>
+      <li>
+        <button type="button" @click="handleFolderImportTopology(folder.id)" class="inline-flex w-full items-center rounded-md px-3 py-2 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white">
+          Import Topology
         </button>
       </li>
       <li>

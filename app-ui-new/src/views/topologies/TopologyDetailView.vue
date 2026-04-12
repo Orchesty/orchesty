@@ -11,6 +11,7 @@ import TopologyEditor from '@/components/topologies/TopologyEditor.vue'
 import StatusBadge from '@/components/ui/StatusBadge.vue'
 import type { BadgeVariant } from '@/components/ui/StatusBadge.vue'
 import DeleteTopologyModal from '@/components/topologies/DeleteTopologyModal.vue'
+import InsertSchemaModal from '@/components/topologies/InsertSchemaModal.vue'
 import Modal from '@/components/ui/Modal.vue'
 import Confirm from '@/components/ui/Confirm.vue'
 import Button from '@/components/ui/Button.vue'
@@ -80,6 +81,7 @@ const error = ref<string | null>(null)
 const categoryPath = ref<string[]>([])
 const versionDrawerOpen = ref(false)
 const designerDrawerOpen = ref(false)
+const insertSchemaModalOpen = ref(false)
 
 const isSystemTopology = computed(() =>
   layout.isSystemCategory(topology.value?.category ?? null),
@@ -285,6 +287,15 @@ const handleExportTopology = () => {
   layout.handleExportTopologyAction(topology.value._id, topology.value.name)
 }
 
+const handleInsertSchema = () => {
+  insertSchemaModalOpen.value = true
+}
+
+const handleSchemaInserted = () => {
+  topologyEditorRef.value?.reloadSchema()
+  showToast('Schema replaced successfully', 'success')
+}
+
 const moreActionsSections = computed<MoreActionsSection[]>(() => {
   const coreItems: MoreActionsSection['items'] = []
   if (canWrite.value) {
@@ -297,6 +308,11 @@ const moreActionsSections = computed<MoreActionsSection[]>(() => {
     { type: 'button', label: 'Clone', onClick: handleCloneTopology },
     { type: 'button', label: 'Export', onClick: handleExportTopology },
   )
+  if (canWrite.value) {
+    coreItems.push(
+      { type: 'button', label: 'Insert Schema', onClick: handleInsertSchema },
+    )
+  }
 
   const sections: MoreActionsSection[] = [{ items: coreItems }]
   sections.push(...props.extraMoreActions.filter(s => s.items.length > 0))
@@ -892,6 +908,15 @@ onMounted(async () => {
     :topology-name="topology.name"
     :current-version-id="topology._id"
     @deleted="handleTopologyDeleted"
+  />
+
+  <!-- Insert Schema Modal -->
+  <InsertSchemaModal
+    v-if="topology"
+    v-model="insertSchemaModalOpen"
+    :topology-id="topology._id"
+    :topology-name="topology.name"
+    @inserted="handleSchemaInserted"
   />
 
   <!-- Enable/Disable Confirm -->

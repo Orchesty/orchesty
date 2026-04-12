@@ -20,6 +20,11 @@ import AuthErrorView from '@/views/auth/AuthErrorView.vue'
 
 const enterpriseOnlyChildren: RouteRecordRaw[] = [
   {
+    path: 'notifications',
+    name: 'notifications',
+    component: () => import('@/views/notifications/NotificationsView.vue'),
+  },
+  {
     path: 'audit-logs',
     name: 'audit-logs',
     component: () => import('@/views/audit-logs/AuditLogsView.vue'),

@@ -26,6 +26,16 @@ final class StatusController extends AbstractController
      * @param bool   $featureAuditLogs
      * @param bool   $featurePulse
      */
+    /**
+     * @param string  $orchesryCloudUrl
+     * @param string  $orchesryCloudFrontendUrl
+     * @param string  $orchesryCloudInstanceName
+     * @param bool    $featureEnterpriseDashboards
+     * @param bool    $featureTraceAuditing
+     * @param bool    $featureAuditLogs
+     * @param bool    $featurePulse
+     * @param mixed[] $systemWorkerNames
+     */
     public function __construct(
         private readonly string $orchesryCloudUrl = '',
         private readonly string $orchesryCloudFrontendUrl = '',
@@ -34,6 +44,7 @@ final class StatusController extends AbstractController
         private readonly bool $featureTraceAuditing = FALSE,
         private readonly bool $featureAuditLogs = FALSE,
         private readonly bool $featurePulse = FALSE,
+        private readonly array $systemWorkerNames = [],
     )
     {
     }
@@ -63,6 +74,10 @@ final class StatusController extends AbstractController
                 : $this->orchesryCloudUrl;
             $data['cloudUrl']     = rtrim($frontendUrl, '/');
             $data['instanceName'] = $this->orchesryCloudInstanceName;
+        }
+
+        if ($this->systemWorkerNames !== []) {
+            $data['systemWorkerNames'] = $this->systemWorkerNames;
         }
 
         return new JsonResponse($data);
