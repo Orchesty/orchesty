@@ -1,32 +1,32 @@
-import { config } from 'dotenv';
-config();
-
-import { container, initiateContainer, listen } from '@orchesty/nodejs-sdk';
-import { OAuth2Provider } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Provider/OAuth2/OAuth2Provider';
-import SmtpSendEmail from '@orchesty/connector-smtp/dist/Connector/SmtpSendEmail';
 import SlackSendMessageConnector from '@orchesty/connector-slack/dist/Connectors/SlackSendMessageConnector';
+import SmtpSendEmail from '@orchesty/connector-smtp/dist/Connector/SmtpSendEmail';
+import { container, initiateContainer } from '@orchesty/nodejs-sdk';
+import { OAuth2Provider } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Provider/OAuth2/OAuth2Provider';
+import { config } from 'dotenv';
+import EnterpriseOpenAIApplication from './Application/EnterpriseOpenAIApplication';
+import SlackApplicationWithInfo from './Application/SlackApplicationWithInfo';
+import SmtpApplicationWithInfo from './Application/SmtpApplicationWithInfo';
+import ZaiApplication from './Application/ZaiApplication';
 import OpenAITrace from './Connector/OpenAITrace';
 import ZaiTrace from './Connector/ZaiTrace';
-import EnterpriseOpenAIApplication from './Application/EnterpriseOpenAIApplication';
-import ZaiApplication from './Application/ZaiApplication';
-import SmtpApplicationWithInfo from './Application/SmtpApplicationWithInfo';
-import SlackApplicationWithInfo from './Application/SlackApplicationWithInfo';
-import InviteEmailMapper from './CustomNode/InviteEmailMapper';
-import RestoreAccessEmailMapper from './CustomNode/RestoreAccessEmailMapper';
-import CloudInviteEmailMapper from './CustomNode/CloudInviteEmailMapper';
-import CloudRestoreAccessEmailMapper from './CustomNode/CloudRestoreAccessEmailMapper';
-import ForgotPasswordEmailMapper from './CustomNode/ForgotPasswordEmailMapper';
-import CloudForgotPasswordEmailMapper from './CustomNode/CloudForgotPasswordEmailMapper';
 import AdminForgotPasswordEmailMapper from './CustomNode/AdminForgotPasswordEmailMapper';
 import AdminInviteEmailMapper from './CustomNode/AdminInviteEmailMapper';
 import AdminRestoreAccessEmailMapper from './CustomNode/AdminRestoreAccessEmailMapper';
+import CloudForgotPasswordEmailMapper from './CustomNode/CloudForgotPasswordEmailMapper';
+import CloudInviteEmailMapper from './CustomNode/CloudInviteEmailMapper';
+import CloudNotificationMapper from './CustomNode/CloudNotificationMapper';
+import CloudRestoreAccessEmailMapper from './CustomNode/CloudRestoreAccessEmailMapper';
+import ForgotPasswordEmailMapper from './CustomNode/ForgotPasswordEmailMapper';
+import InviteEmailMapper from './CustomNode/InviteEmailMapper';
+import RestoreAccessEmailMapper from './CustomNode/RestoreAccessEmailMapper';
 import TopologyFailedEmailMapper from './CustomNode/TopologyFailedEmailMapper';
 import TopologyFailedMessageEmailMapper from './CustomNode/TopologyFailedMessageEmailMapper';
 import TopologyFailedRepeatedlyEmailMapper from './CustomNode/TopologyFailedRepeatedlyEmailMapper';
 import TopologySlowEmailMapper from './CustomNode/TopologySlowEmailMapper';
-import CloudNotificationMapper from './CustomNode/CloudNotificationMapper';
 
-function prepare(): void {
+config();
+
+export function prepare(): void {
     initiateContainer();
 
     const oauth2Provider = container.get(OAuth2Provider);
@@ -80,6 +80,3 @@ function prepare(): void {
     // ── Custom Nodes (cloud notifications) ──
     container.setNode(new CloudNotificationMapper());
 }
-
-prepare();
-listen();

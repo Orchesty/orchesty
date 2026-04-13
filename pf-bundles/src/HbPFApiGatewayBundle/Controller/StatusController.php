@@ -18,9 +18,8 @@ final class StatusController extends AbstractController
     /**
      * StatusController constructor.
      *
-     * @param string  $orchesryCloudUrl
-     * @param string  $orchesryCloudFrontendUrl
-     * @param string  $orchesryCloudInstanceName
+     * @param string  $orchestyCloudUrl
+     * @param string  $orchestyCloudFrontendUrl
      * @param bool    $featureEnterpriseDashboards
      * @param bool    $featureTraceAuditing
      * @param bool    $featureAuditLogs
@@ -31,9 +30,8 @@ final class StatusController extends AbstractController
      * @param int     $limitStorageGb
      */
     public function __construct(
-        private readonly string $orchesryCloudUrl = '',
-        private readonly string $orchesryCloudFrontendUrl = '',
-        private readonly string $orchesryCloudInstanceName = '',
+        private readonly string $orchestyCloudUrl = '',
+        private readonly string $orchestyCloudFrontendUrl = '',
         private readonly bool $featureEnterpriseDashboards = FALSE,
         private readonly bool $featureTraceAuditing = FALSE,
         private readonly bool $featureAuditLogs = FALSE,
@@ -52,7 +50,7 @@ final class StatusController extends AbstractController
     #[Route('/status', methods: ['GET'])]
     public function getStatusAction(): Response
     {
-        $isCloud = $this->orchesryCloudUrl !== '';
+        $isCloud = $this->orchestyCloudUrl !== '';
 
         $data = [
             'cloudMode' => $isCloud,
@@ -66,12 +64,11 @@ final class StatusController extends AbstractController
         ];
 
         if ($isCloud) {
-            $frontendUrl          = $this->orchesryCloudFrontendUrl !== ''
-                ? $this->orchesryCloudFrontendUrl
-                : $this->orchesryCloudUrl;
-            $data['cloudUrl']     = rtrim($frontendUrl, '/');
-            $data['instanceName'] = $this->orchesryCloudInstanceName;
-            $data['limits']       = [
+            $frontendUrl      = $this->orchestyCloudFrontendUrl !== ''
+                ? $this->orchestyCloudFrontendUrl
+                : $this->orchestyCloudUrl;
+            $data['cloudUrl'] = rtrim($frontendUrl, '/');
+            $data['limits']   = [
                 'messages'      => $this->limitMessages,
                 'storageGb'     => $this->limitStorageGb,
                 'topologySlots' => $this->limitTopologySlots,

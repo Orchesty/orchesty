@@ -29,13 +29,12 @@ services:
             RABBITMQ_DSN: amqp://rabbitmq:5672
             WORKER_DEFAULT_PORT: 8008
             JWT_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
-            ORCHESTY_CLOUD_URL: ''
+            ORCHESTY_CLOUD_BACKEND_URL: ''
             ORCHESTY_CLOUD_INSTANCE_ID: ''
             ORCHESTY_CLOUD_INSTANCE_SECRET: ''
-            ORCHESTY_CLOUD_INSTANCE_NAME: ''
             AUTH0_DOMAIN: ''
             AUTH0_AUDIENCE: ''
-            SYSTEM_ORCHESTY_URL: ''
+            ORCHESTY_CLOUD_STARTING_POINT_URL: ''
             ORCHESTY_FEATURE_ENTERPRISE_DASHBOARDS: 'false'
             ORCHESTY_FEATURE_TRACE_AUDITING: 'false'
             ORCHESTY_FEATURE_AUDIT_LOGS: 'false'

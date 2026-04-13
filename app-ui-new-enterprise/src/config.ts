@@ -1,4 +1,5 @@
 export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.66:8085'
+export const TITLE = import.meta.env.VITE_TITLE || ''
 
 export const STORAGE_KEYS = {
   AUTH_TOKEN: 'auth_token',

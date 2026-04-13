@@ -9,6 +9,7 @@ import { useAuthStore } from '@/stores/auth'
 import { auth0Plugin, isAuth0Enabled } from '@/auth/auth0-plugin'
 import { useCloudMode } from '@/composables/useCloudMode'
 import { handleCloudAuthHandoff } from '@/services/cloudAuthService'
+import { TITLE } from '@/config'
 import './assets/css/main.css'
 
 async function bootstrap() {
@@ -17,11 +18,11 @@ async function bootstrap() {
   const pinia = createPinia()
   app.use(pinia)
 
-  const { loadCloudMode, cloudMode, instanceName } = useCloudMode()
+  const { loadCloudMode } = useCloudMode()
   await loadCloudMode()
 
-  if (cloudMode.value && instanceName.value) {
-    document.title = `${instanceName.value} - Orchesty`
+  if (TITLE) {
+    document.title = `${TITLE} - Orchesty`
   }
 
   await handleCloudAuthHandoff()

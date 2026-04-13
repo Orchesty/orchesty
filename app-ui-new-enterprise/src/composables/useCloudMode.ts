@@ -16,7 +16,6 @@ export interface Limits {
 
 const cloudMode = ref(false)
 const cloudUrl = ref('')
-const instanceName = ref('')
 const loaded = ref(false)
 const systemWorkerNames = ref<string[]>([])
 
@@ -45,7 +44,6 @@ export function useCloudMode() {
         const data = await res.json()
         cloudMode.value = data.cloudMode === true
         cloudUrl.value = data.cloudUrl || ''
-        instanceName.value = data.instanceName || ''
 
         if (data.features) {
           features.value = {
@@ -76,7 +74,6 @@ export function useCloudMode() {
     } catch {
       cloudMode.value = false
       cloudUrl.value = ''
-      instanceName.value = ''
       features.value = {
         enterpriseDashboards: true,
         traceAuditing: true,
@@ -91,7 +88,6 @@ export function useCloudMode() {
   return {
     cloudMode: readonly(cloudMode),
     cloudUrl: readonly(cloudUrl),
-    instanceName: readonly(instanceName),
     features: readonly(features),
     limits: readonly(limits),
     systemWorkerNames: readonly(systemWorkerNames),

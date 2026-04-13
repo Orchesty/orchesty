@@ -12,7 +12,7 @@ export default class ZaiTrace extends AConnector {
     }
 
     public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto<IOutput>> {
-        const { request } = dto.getJsonData() as IInput;
+        const { request } = dto.getJsonData();
 
         const requestDto = await this.getApplication().getRequestDto(
             dto,

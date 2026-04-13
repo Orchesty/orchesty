@@ -3,6 +3,7 @@ import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 
 export const NAME = 'topology-failed-message-email-mapper';
 
+/* eslint-disable @typescript-eslint/naming-convention */
 interface IBufferedEvent {
     node_name: string;
     error_message: string;
@@ -26,9 +27,10 @@ interface IInput {
         };
         message?: string;
     };
-    events?: IBufferedEvent[];
     recipients: string[];
+    events?: IBufferedEvent[];
 }
+/* eslint-enable @typescript-eslint/naming-convention */
 
 interface IOutput {
     from: string;
@@ -41,7 +43,14 @@ function esc(str: string): string {
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-function buildSingleEventHtml(topologyName: string, nodeName: string, errorMessage: string, occurredAt: string, correlationId: string, trashId: string): string {
+function buildSingleEventHtml(
+    topologyName: string,
+    nodeName: string,
+    errorMessage: string,
+    occurredAt: string,
+    correlationId: string,
+    trashId: string,
+): string {
     return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"></head>
