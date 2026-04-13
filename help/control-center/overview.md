@@ -6,9 +6,7 @@ order: 1
 
 # Control Center
 
-The Control Center is the main monitoring dashboard. It provides an overview of system activity across six tabs: **Overview**, **Applications**, **Connectors**, **Topologies**, **Processes**, and **Limiter**.
-
-All tabs share a **time filter** and **refresh** button in the top-right corner.
+The Control Center gives you a quick overview of the state of running processes and the flow of data through the system.
 
 ## Key concept: Process
 
@@ -16,24 +14,41 @@ A **process** is a single end-to-end execution of a topology. Each time a topolo
 
 ## Overview
 
-The Overview tab gives you a quick picture of what is happening across the system.
+Answers two questions at a glance: **are processes running successfully?** and **is the data throughput within limits?**
 
 ### Processes heatmap
 
-The heatmap shows process activity over time. Each **row** represents a topology, each **column** is a time bucket.
+The heatmap visualizes process activity over time. Each **row** is a topology, each **column** is a time bucket.
 
-- **Green cells** indicate successful processes. Darker green means more processes in that time slot.
-- **Red cells** indicate at least one failed process in that slot.
-- **Empty cells** (no color) mean no activity.
+- **Green cells** -- successful processes. Darker green means higher volume.
+- **Red cells** -- at least one failure in that slot. Click to drill down into the affected processes.
 
-Hover over a cell to see exact success and failure counts. **Click a cell** to open a processes drawer filtered to that topology and time range.
-
-Use the **All / Failed** toggle above the chart to switch between showing all activity or only time slots that contain failures -- useful for quickly spotting problems.
+The **All / Failed** toggle filters the view to only show time slots with failures -- useful for quickly spotting problems across many topologies.
 
 ### Limiter card
 
-Shows the current message throughput vs the configured limit. Green/red arrows indicate whether the actual count is below or above the maximum. Click **View all** to open the Limiter tab.
+Shows current message throughput vs. the configured limit. Indicates whether the system is operating within capacity or approaching the ceiling.
 
 ### Trash card
 
-Displays the total number of failed messages with a breakdown by topology. Click **View all** to navigate to the Failed Messages page.
+Total count of failed messages with a breakdown by topology. This is where unprocessed data accumulates and needs attention.
+
+## Applications
+
+Heatmaps grouped by application. Each application has its own heatmap with connectors as rows. This is the fastest way to spot a complete outage of an external service -- if an entire application's heatmap turns red, the service is likely down.
+
+## Connectors
+
+Performance statistics for individual connectors. Shows which endpoints of integrated services are failing, how long their responses take, and what errors they return (4xx, 5xx). Use this tab to diagnose slow or unreliable API endpoints.
+
+## Topologies
+
+Aggregated run statistics for all topologies. Similar to the Overview heatmap but in tabular form with filtering by last activity, run count, and status. Useful for finding inactive or consistently failing topologies.
+
+## Processes
+
+List of all process executions. The **Process Audit** drawer (audit icon on each row) shows a node-by-node execution timeline -- which nodes the data passed through, how long each step took, and where it failed. This is the primary tool for diagnosing individual process failures.
+
+## Limiter
+
+Controls message throughput to prevent overloading external services. When an application has rate limits configured, the limiter queues excess messages and delivers them within the allowed rate. The throughput chart shows actual volume vs. the configured maximum.
