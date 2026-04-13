@@ -10,14 +10,10 @@ parameters:
   cronHost: "%env(string:CRON_DSN)%"
   startingPointHost: "%env(string:STARTING_POINT_URL)%"
   env(TUNNEL_PROXY_HOST): ''
-  env(TUNNEL_PROXY_GRPC_URL): ''
-  env(TUNNEL_EXT_BACKEND_URL): ''
-  env(TUNNEL_EXT_STARTING_POINT_URL): ''
-  env(TUNNEL_EXT_WORKER_API_HOST): ''
+  env(WORKER_API_HOST): ''
+  env(ORCHESTY_CLOUD_INSTANCE_ID): ''
   tunnelProxyHost: "%env(string:TUNNEL_PROXY_HOST)%"
-  tunnelProxyGrpcUrl: "%env(string:TUNNEL_PROXY_GRPC_URL)%"
-  tunnelExtBackendUrl: "%env(string:TUNNEL_EXT_BACKEND_URL)%"
-  tunnelExtStartingPointUrl: "%env(string:TUNNEL_EXT_STARTING_POINT_URL)%"
-  tunnelExtWorkerApiHost: "%env(string:TUNNEL_EXT_WORKER_API_HOST)%"
+  workerApiHost: "%env(string:WORKER_API_HOST)%"
+  orchesty_cloud_instance_id: "%env(string:ORCHESTY_CLOUD_INSTANCE_ID)%"
   activateLink: '%backendHost%/user/%s/activate'
   passwordLink: 'reset-password/%s'

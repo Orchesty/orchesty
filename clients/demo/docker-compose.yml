@@ -138,10 +138,7 @@ services:
             ALPHA_INSTANCE_ID: 'demo'
             INSTALLER_DIRS: '["/var/www/pipes/clients/demo/node-sdk/src/topology","/var/www/pipes/enterprise-sys-worker/src/topology"]'
             TUNNEL_PROXY_HOST: 'http://tunnel-proxy:8080'
-            TUNNEL_PROXY_GRPC_URL: ${DEV_IP}:50051
-            TUNNEL_EXT_BACKEND_URL: ${BACKEND_URL}
-            TUNNEL_EXT_STARTING_POINT_URL: http://${DEV_IP}:82
-            TUNNEL_EXT_WORKER_API_HOST: http://${DEV_IP}:8081
+            WORKER_API_HOST: http://worker-api:8080
             JWE_PRIVATE_KEY: |
                 -----BEGIN EC PRIVATE KEY-----
                 MIHcAgEBBEIAGmQ//yMnyMlFAN/E2yfZjzFL1ziTrAbDwa08KEPBq+NUWHvrxrs7
@@ -203,10 +200,7 @@ services:
             ALPHA_INSTANCE_ID: 'demo'
             INSTALLER_DIRS: '["/var/www/pipes/clients/demo/node-sdk/src/topology","/var/www/pipes/enterprise-sys-worker/src/topology"]'
             TUNNEL_PROXY_HOST: 'http://tunnel-proxy:8080'
-            TUNNEL_PROXY_GRPC_URL: ${DEV_IP}:50051
-            TUNNEL_EXT_BACKEND_URL: ${BACKEND_ENTERPRISE_URL}
-            TUNNEL_EXT_STARTING_POINT_URL: http://${DEV_IP}:82
-            TUNNEL_EXT_WORKER_API_HOST: http://${DEV_IP}:8081
+            WORKER_API_HOST: http://worker-api:8080
             JWE_PRIVATE_KEY: |
                 -----BEGIN EC PRIVATE KEY-----
                 MIHcAgEBBEIAGmQ//yMnyMlFAN/E2yfZjzFL1ziTrAbDwa08KEPBq+NUWHvrxrs7
