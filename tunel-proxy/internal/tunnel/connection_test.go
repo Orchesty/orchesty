@@ -37,10 +37,10 @@ func (m *mockStream) Context() context.Context {
 }
 
 func (m *mockStream) SetHeader(metadata.MD) error  { return nil }
-func (m *mockStream) SendHeader(metadata.MD) error  { return nil }
-func (m *mockStream) SetTrailer(metadata.MD)         {}
-func (m *mockStream) SendMsg(interface{}) error      { return nil }
-func (m *mockStream) RecvMsg(interface{}) error      { return nil }
+func (m *mockStream) SendHeader(metadata.MD) error { return nil }
+func (m *mockStream) SetTrailer(metadata.MD)       {}
+func (m *mockStream) SendMsg(interface{}) error    { return nil }
+func (m *mockStream) RecvMsg(interface{}) error    { return nil }
 
 func TestConnectionManager_RegisterAndGet(t *testing.T) {
 	cm := NewConnectionManager()

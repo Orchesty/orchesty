@@ -7,6 +7,7 @@ import ApplicationDetailDrawer from '@/components/applications/ApplicationDetail
 import SearchInput from '@/components/ui/SearchInput.vue';
 import { useToast } from '@/composables/useToast';
 import { useAuthorization } from '@/composables/useAuthorization';
+import { useSystemWorkers } from '@/composables/useSystemWorkers';
 
 const FILTER_KEY = 'orchesty_apps_filter';
 const DRAWER_KEY = 'orchesty_apps_drawer';
@@ -19,10 +20,11 @@ const loading = ref(false);
 const searchQuery = ref('');
 const { showToast } = useToast();
 const { hasRole } = useAuthorization();
+const systemWorkerNames = useSystemWorkers();
 
 const visibleWorkers = computed(() => {
   if (hasRole('system_manager')) return workers.value
-  return workers.value.filter(w => w.name !== 'sys-worker')
+  return workers.value.filter(w => !systemWorkerNames.value.includes(w.name))
 })
 
 const filteredWorkers = computed(() => {

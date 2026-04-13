@@ -70,7 +70,7 @@ const navTree = computed(() => {
 
   for (const [key, section] of grouped) {
     if (section.items.length === 1) {
-      singleItems.push(section.items[0])
+      singleItems.push(section.items[0]!)
     } else {
       multiSections.set(key, section)
     }
@@ -142,7 +142,7 @@ function handleSearch() {
 
   ensureSearchIndex().then(() => {
     if (!miniSearch) return
-    searchResults.value = miniSearch.search(searchQuery.value.trim()) as {
+    searchResults.value = miniSearch.search(searchQuery.value.trim()) as unknown as {
       slug: string
       title: string
       helpId: string

@@ -52,7 +52,7 @@ init: up
 	$(DCR) rabbitmq-plugins enable rabbitmq_consistent_hash_exchange
 	$(DCR) rabbitmq-plugins enable rabbitmq_management
 	$(DCW) topology-api:8080 -t 600
-	$(DCB) bin/console service:install enterprise-system-worker enterprise-system-worker:8080
+	$(DCB) bin/console service:install sys-worker sys-worker:8080
 	$(DCB) bin/console service:install node-sdk node-sdk:8080
 	$(DCB) bin/console service:install php-sdk php-sdk:80
 	$(DCB) bin/console topology:install -c -u --force ''
@@ -83,26 +83,26 @@ init-more: init
 			-H "Accept: application/json" \
 			-d "{\"email\":\"$(shell grep ORCHESTY_USER .env | cut -d= -f2)\",\"password\":\"$(shell grep ORCHESTY_PASSWORD .env | cut -d= -f2)\"}" \
 			| grep -o "\"token\":\"[^\"]*\"" | sed "s/\"token\":\"//;s/\"//") && \
-		curl -s -X POST "http://localhost/api/applications/smtp?sdk=enterprise-system-worker" \
+		curl -s -X POST "http://localhost/api/applications/smtp?sdk=sys-worker" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
 			-d "{}" > /dev/null && \
-		curl -s -X PUT "http://localhost/api/applications/smtp?sdk=enterprise-system-worker" \
+		curl -s -X PUT "http://localhost/api/applications/smtp?sdk=sys-worker" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
 			-d "{\"authorization_form\":{\"connectionUrl\":\"smtp://mailhog:1025\"}}" > /dev/null && \
-		curl -s -X PUT "http://localhost/api/applications/smtp/changeState?sdk=enterprise-system-worker" \
+		curl -s -X PUT "http://localhost/api/applications/smtp/changeState?sdk=sys-worker" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
 			-d "{\"enabled\":true}" > /dev/null && \
-		printf "\033[32mApplication smtp (enterprise-system-worker) was successfully installed.\033[0m\n" && \
-		curl -s -X POST "http://localhost/api/applications/open-ai?sdk=enterprise-system-worker" \
+		printf "\033[32mApplication smtp (sys-worker) was successfully installed.\033[0m\n" && \
+		curl -s -X POST "http://localhost/api/applications/open-ai?sdk=sys-worker" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
 			-d "{}" > /dev/null && \
-		curl -s -X PUT "http://localhost/api/applications/open-ai?sdk=enterprise-system-worker" \
+		curl -s -X PUT "http://localhost/api/applications/open-ai?sdk=sys-worker" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
 			-d "{\"authorization_form\":{\"api_key\":\"$(shell grep OPENAI_API_KEY .env | cut -d= -f2)\",\"organization_id\":\"\",\"project_id\":\"\"}}" > /dev/null && \
-		curl -s -X PUT "http://localhost/api/applications/open-ai/changeState?sdk=enterprise-system-worker" \
+		curl -s -X PUT "http://localhost/api/applications/open-ai/changeState?sdk=sys-worker" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
 			-d "{\"enabled\":true}" > /dev/null && \
-		printf "\033[32mApplication open-ai (enterprise-system-worker) was successfully installed.\033[0m\n" && \
+		printf "\033[32mApplication open-ai (sys-worker) was successfully installed.\033[0m\n" && \
 		curl -s -X POST "http://localhost/api/applications/http-status?sdk=node-sdk" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
 			-d "{}" > /dev/null && \

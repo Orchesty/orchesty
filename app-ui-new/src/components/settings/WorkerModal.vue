@@ -67,7 +67,7 @@ const validate = (): boolean => {
   }
 
   if (!isTunnel.value && !formData.value.url.trim()) {
-    urlError.value = 'URL is required'
+    urlError.value = 'Hostname is required'
     isValid = false
   } else {
     urlError.value = ''
@@ -144,13 +144,13 @@ const handleClose = () => {
 
       <div v-if="!isTunnel">
         <label for="worker-url" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
-          URL
+          Hostname
           <span class="text-red-600 dark:text-red-400">*</span>
         </label>
         <FormInput
           id="worker-url"
           v-model="formData.url"
-          placeholder="https://worker.example.com"
+          placeholder="worker.example.com:3000"
         />
         <p v-if="urlError" class="mt-1 text-sm text-red-600 dark:text-red-400">
           {{ urlError }}

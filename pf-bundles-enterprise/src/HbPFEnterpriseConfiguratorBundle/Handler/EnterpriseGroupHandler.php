@@ -199,6 +199,13 @@ final class EnterpriseGroupHandler
      */
     public function getPresets(): array
     {
+        /** @var Group[] $allGroups */
+        $allGroups   = $this->dm->getRepository(Group::class)->findAll();
+        $groupByName = [];
+        foreach ($allGroups as $g) {
+            $groupByName[$g->getName()] = $g->getId();
+        }
+
         $presets = [];
 
         foreach (PermissionPresets::all() as $name => $preset) {
@@ -209,6 +216,7 @@ final class EnterpriseGroupHandler
 
             $presets[] = [
                 'description' => $preset['description'],
+                'groupId'     => $groupByName[$name] ?? NULL,
                 'label'       => $preset['label'],
                 'level'       => $preset['level'],
                 'name'        => $name,
@@ -562,11 +570,14 @@ final class EnterpriseGroupHandler
         } else {
             /** @var Rule $rule */
             foreach ($group->getRules() as $rule) {
-                $rules[] = [
-                    'actions'      => $this->maskFactory->getActionsFromMask($rule->getActionMask()),
-                    'propertyMask' => $rule->getPropertyMask(),
-                    'resource'     => $rule->getResource(),
-                ];
+                try {
+                    $rules[] = [
+                        'actions'      => $this->maskFactory->getActionsFromMask($rule->getActionMask()),
+                        'propertyMask' => $rule->getPropertyMask(),
+                        'resource'     => $rule->getResource(),
+                    ];
+                } catch (Throwable) {
+                }
             }
         }
 

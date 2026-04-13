@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed, onMounted } from 'vue'
+import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue'
 import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
 import Confirm from '@/components/ui/Confirm.vue'
@@ -11,6 +11,7 @@ import {
   ensurePresetGroups,
   addUserToGroup,
   removeUserFromGroup,
+  setUserRole,
 } from '@/services/groupsService'
 import type { PresetDefinition } from '@/services/groupsService'
 import type { User, Group } from '@/types/users'
@@ -51,6 +52,27 @@ const groupsLoading = ref(false)
 
 const savedRole = ref<string>('')
 const savedGroupIds = ref<string[]>([])
+
+const roleDropdownOpen = ref(false)
+
+const selectedPreset = computed(() =>
+  presets.value.find((p) => p.name === selectedRole.value),
+)
+
+function selectRole(name: string) {
+  selectedRole.value = name
+  roleDropdownOpen.value = false
+}
+
+function handleClickOutside(e: MouseEvent) {
+  const target = e.target as HTMLElement
+  if (!target.closest('#role-dropdown-wrapper')) {
+    roleDropdownOpen.value = false
+  }
+}
+
+onMounted(() => document.addEventListener('click', handleClickOutside))
+onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 
 const accessGroups = computed(() =>
   allGroups.value.filter((g) => g.preset == null),
@@ -95,18 +117,24 @@ function resetState() {
   selectedGroupIds.value = []
   savedRole.value = ''
   savedGroupIds.value = []
+  roleDropdownOpen.value = false
 }
 
 async function loadData() {
   groupsLoading.value = true
   try {
-    await ensurePresetGroups()
-    const [groupsResp, presetsResp] = await Promise.all([
+    try {
+      await ensurePresetGroups()
+    } catch {
+      // Non-critical — preset groups likely already exist
+    }
+
+    const [groupsResult, presetsResult] = await Promise.allSettled([
       fetchGroups(),
       fetchPresets(),
     ])
-    allGroups.value = groupsResp.items
-    presets.value = presetsResp
+    allGroups.value = groupsResult.status === 'fulfilled' ? groupsResult.value.items : []
+    presets.value = presetsResult.status === 'fulfilled' ? presetsResult.value : []
 
     if (isEditMode.value && props.user) {
       await loadUserState(props.user.id)
@@ -142,6 +170,8 @@ async function loadUserState(userId: string) {
 }
 
 function findRoleGroupId(presetName: string): string | undefined {
+  const fromPreset = presets.value.find((p) => p.name === presetName)?.groupId
+  if (fromPreset) return fromPreset
   return allGroups.value.find((g) => g.preset === presetName)?.id
 }
 
@@ -219,15 +249,8 @@ const handleEditSave = async () => {
   try {
     const userId = props.user.id
 
-    if (selectedRole.value !== savedRole.value) {
-      const oldRoleGroupId = savedRole.value ? findRoleGroupId(savedRole.value) : undefined
-      const newRoleGroupId = selectedRole.value ? findRoleGroupId(selectedRole.value) : undefined
-      if (oldRoleGroupId) {
-        await removeUserFromGroup(oldRoleGroupId, userId)
-      }
-      if (newRoleGroupId) {
-        await addUserToGroup(newRoleGroupId, userId)
-      }
+    if (selectedRole.value !== savedRole.value && selectedRole.value) {
+      await setUserRole(userId, selectedRole.value)
     }
 
     const toAdd = selectedGroupIds.value.filter((id) => !savedGroupIds.value.includes(id))
@@ -308,22 +331,40 @@ const handleClose = () => {
 
         <!-- Role selection -->
         <div class="w-full mb-4">
-          <label for="role-select" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             Role
           </label>
           <div v-if="groupsLoading" class="text-sm text-gray-500 dark:text-gray-400">
             Loading...
           </div>
-          <select
-            v-else
-            id="role-select"
-            v-model="selectedRole"
-            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary-500 dark:focus:ring-primary-500"
-          >
-            <option v-for="preset in presets" :key="preset.name" :value="preset.name">
-              {{ preset.label }}
-            </option>
-          </select>
+          <div v-else id="role-dropdown-wrapper" class="relative">
+            <button
+              type="button"
+              class="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-left text-sm text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary-500 dark:focus:ring-primary-500"
+              @click="roleDropdownOpen = !roleDropdownOpen"
+            >
+              <span>{{ selectedPreset?.label ?? 'Select role' }}</span>
+              <svg class="h-4 w-4 shrink-0 text-gray-500 transition-transform dark:text-gray-400" :class="{ 'rotate-180': roleDropdownOpen }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+            </button>
+            <div
+              v-show="roleDropdownOpen"
+              class="absolute z-50 mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-600 dark:bg-gray-700"
+            >
+              <ul class="max-h-60 overflow-y-auto py-1">
+                <li v-for="preset in presets" :key="preset.name">
+                  <button
+                    type="button"
+                    class="flex w-full flex-col px-4 py-2.5 text-left hover:bg-gray-100 dark:hover:bg-gray-600"
+                    :class="selectedRole === preset.name ? 'bg-primary-50 dark:bg-primary-900/20' : ''"
+                    @click="selectRole(preset.name)"
+                  >
+                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ preset.label }}</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ preset.description }}</span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
 
         <!-- Access group selection -->

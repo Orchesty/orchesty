@@ -7,7 +7,6 @@ services:
             DEV_GID: ${DEV_GID}
             APP_DEBUG: 'true'
             MONGO_DSN: mongodb://mongo/notifications
-            REDIS_DSN: redis://redis:6379
         volumes:
             - .:/app:cached
             - ${GOPATH}/pkg:/go/pkg

@@ -38,6 +38,9 @@ parameters:
   env(ORCHESTY_FEATURE_TRACE_AUDITING): 'false'
   env(ORCHESTY_FEATURE_AUDIT_LOGS): 'false'
   env(ORCHESTY_FEATURE_PULSE): 'false'
+  env(ORCHESTY_LIMIT_TOPOLOGY_SLOTS): '0'
+  env(ORCHESTY_LIMIT_MESSAGES): '0'
+  env(ORCHESTY_LIMIT_STORAGE_GB): '0'
   orchesty_cloud_url: '%env(string:ORCHESTY_CLOUD_URL)%'
   system_orchesty_url: '%env(string:SYSTEM_ORCHESTY_URL)%'
   orchesty_cloud_frontend_url: '%env(string:ORCHESTY_CLOUD_FRONTEND_URL)%'
@@ -50,6 +53,10 @@ parameters:
   feature_trace_auditing: '%env(bool:ORCHESTY_FEATURE_TRACE_AUDITING)%'
   feature_audit_logs: '%env(bool:ORCHESTY_FEATURE_AUDIT_LOGS)%'
   feature_pulse: '%env(bool:ORCHESTY_FEATURE_PULSE)%'
+  limit_topology_slots: '%env(int:ORCHESTY_LIMIT_TOPOLOGY_SLOTS)%'
+  limit_messages: '%env(int:ORCHESTY_LIMIT_MESSAGES)%'
+  limit_storage_gb: '%env(int:ORCHESTY_LIMIT_STORAGE_GB)%'
+  system_worker_names: ['sys-worker']
 
 services:
     Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0\Auth0Authenticator:

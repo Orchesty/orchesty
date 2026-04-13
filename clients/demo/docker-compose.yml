@@ -1,5 +1,5 @@
 services:
-    enterprise-system-worker:
+    sys-worker:
         image: node-sdk:tag
         build: node-sdk/docker
         user: ${DEV_UID}:${DEV_GID}
@@ -10,11 +10,14 @@ services:
             # Envs for tests are load from node-sdk/.jest/testEnvs.js
             JEST_DOCKER: 1
             APP_ENV: debug
+            APP_PORT: 8080
             CRYPT_SECRET: ThisIsNotSoSecret
             BACKEND_URL: ${BACKEND_URL}
             STARTING_POINT_DSN: ${STARTING_POINT_DSN}
             WORKER_API_HOST: http://worker-api:8080
             ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
+            ORCHESTY_CLOUD_INSTANCE_ID: ${ORCHESTY_CLOUD_INSTANCE_ID:-5d3e1061-5863-4292-8d95-9a238db8b48a}
+            ORCHESTY_CLOUD_INSTANCE_SECRET: ${ORCHESTY_CLOUD_INSTANCE_SECRET:-0027c895-2aa1-11f1-872c-0e85bfc47da4}
         command: sh -c 'pnpm install && pnpm run start'
 
     node-sdk:
@@ -184,8 +187,8 @@ services:
             JWT_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
             AUTH0_DOMAIN: dev-qsa0lopaqbhr0vmj.eu.auth0.com
             AUTH0_AUDIENCE: https://api.orchesty.cloud
-            #ORCHESTY_CLOUD_URL: http://host.docker.internal:3000
-            #ORCHESTY_CLOUD_FRONTEND_URL: http://localhost:5173
+            ORCHESTY_CLOUD_URL: http://host.docker.internal:3000
+            ORCHESTY_CLOUD_FRONTEND_URL: http://localhost:5173
             ORCHESTY_CLOUD_INSTANCE_ID: ${ORCHESTY_CLOUD_INSTANCE_ID:-5d3e1061-5863-4292-8d95-9a238db8b48a}
             ORCHESTY_CLOUD_INSTANCE_SECRET: ${ORCHESTY_CLOUD_INSTANCE_SECRET:-0027c895-2aa1-11f1-872c-0e85bfc47da4}
             ORCHESTY_CLOUD_INSTANCE_NAME: 'Demo Instance'
@@ -194,6 +197,9 @@ services:
             ORCHESTY_FEATURE_TRACE_AUDITING: 'true'
             ORCHESTY_FEATURE_AUDIT_LOGS: 'true'
             ORCHESTY_FEATURE_PULSE: 'false'
+            ORCHESTY_LIMIT_TOPOLOGY_SLOTS: '0'
+            ORCHESTY_LIMIT_MESSAGES: '0'
+            ORCHESTY_LIMIT_STORAGE_GB: '0'
             EMAIL_DSN: smtp://mailhog:1025
             ALPHA_INSTANCE_ID: 'demo'
             INSTALLER_DIRS: '["/var/www/pipes/clients/demo/node-sdk/src/topology","/var/www/pipes/enterprise-sys-worker/src/topology"]'
@@ -275,10 +281,14 @@ services:
             APP_DEBUG: 'true'
             MONGO_DSN: ${MONGO_DSN}
             RABBITMQ_DSN: ${RABBITMQ_DSN}
-            REDIS_DSN: ${REDIS_DSN}
-            STARTING_POINT_URL_EMAIL: 'http://starting-point:8080/topologies/smtp/nodes/start/run-by-name'
+            STARTING_POINT_URL: ${STARTING_POINT_DSN}
+            THROTTLE_WINDOW: '7200'
+            BUFFER_WINDOW: '60'
+            INAPP_THROTTLE_WINDOW: '60'
         volumes:
             - ./../../notifier/:/app:cached
+        ports:
+            - ${DEV_IP}:8086:8080
         command: /run.sh -p cmd/notifier.go -l 2345
         security_opt: ['seccomp:unconfined']
 
@@ -303,7 +313,7 @@ services:
         environment:
             GRPC_ADDR: ":50051"
             HTTP_ADDR: ":8080"
-            REQUEST_TIMEOUT: "30s"
+            REQUEST_TIMEOUT: "30"
         command: go run cmd/server/main.go
         volumes:
             - ./../../tunel-proxy/:/app:cached
@@ -357,6 +367,7 @@ services:
         environment:
             CI: 'true'
             VITE_BACKEND_URL: ${BACKEND_ENTERPRISE_URL}
+            VITE_NOTIFIER_URL: http://${DEV_IP}:8086
             VITE_STARTINGPONT_URL: ${DEV_IP}:82
             VITE_AUTH0_DOMAIN: dev-qsa0lopaqbhr0vmj.eu.auth0.com
             VITE_AUTH0_CLIENT_ID: 1XIsyOq2kpTDt4qOlop2rEAQzPcE2Q5p

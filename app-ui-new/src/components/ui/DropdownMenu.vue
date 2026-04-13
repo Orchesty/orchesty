@@ -98,9 +98,22 @@ onMounted(async () => {
           :class="{ 'py-1': !section.header, 'py-2': section.header }"
         >
           <li v-for="(item, itemIndex) in section.items" :key="itemIndex">
-            <!-- Link Item -->
+            <!-- External Link Item -->
+            <a
+              v-if="item.type === 'link' && item.to && (item.to.startsWith('http://') || item.to.startsWith('https://'))"
+              :href="item.to"
+              :class="[
+                'block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white',
+                item.class
+              ]"
+            >
+              <span v-if="item.icon" v-html="item.icon" class="mr-2 inline-block h-4 w-4"></span>
+              {{ item.label }}
+            </a>
+
+            <!-- Internal Link Item -->
             <RouterLink
-              v-if="item.type === 'link' && item.to"
+              v-else-if="item.type === 'link' && item.to"
               :to="item.to"
               :class="[
                 'block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white',

@@ -58,6 +58,7 @@ export interface PresetDefinition {
   label: string
   description: string
   level: number
+  groupId: string | null
   rules: RulePayload[]
 }
 
@@ -73,6 +74,10 @@ export async function fetchPresets(): Promise<PresetDefinition[]> {
 
 export async function ensurePresetGroups(): Promise<void> {
   await api.post('/api/permissions/ensure-presets')
+}
+
+export async function setUserRole(userId: string, role: string): Promise<void> {
+  await api.put(`/api/user/${userId}/role`, { role })
 }
 
 export async function updateGroupRules(groupId: string, rules: RulePayload[]): Promise<Group> {

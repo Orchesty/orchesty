@@ -19,5 +19,10 @@ func Routes() []Route {
 			Pattern: http.MethodPut + " /api/subscriptions",
 			Handler: HandleUpsertSubscription,
 		},
+		{
+			Name:    "Notification Stream",
+			Pattern: http.MethodGet + " /api/notifications/stream",
+			Handler: HandleNotificationStream,
+		},
 	}
 }

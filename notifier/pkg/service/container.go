@@ -8,6 +8,7 @@ import (
 
 	"github.com/hanaboso/go-mongodb"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"github.com/redis/go-redis/v9"
 
 	"notifier/pkg/config"
 	"notifier/pkg/model"
@@ -23,6 +24,7 @@ var shutdown func()
 type container struct {
 	StatusService       StatusService
 	SubscriptionService SubscriptionService
+	SSEBroadcaster      *SSEBroadcaster
 }
 
 func Load() error {
@@ -46,9 +48,17 @@ func Load() error {
 		Timeout: time.Duration(config.Dispatch.Timeout) * time.Second,
 	}, config.Logger)
 
+	var redisClient *redis.Client
+	if rs, ok := store.(*RedisStore); ok {
+		redisClient = rs.Client()
+	}
+
+	sseBroadcaster := NewSSEBroadcaster()
+
+	bufferService := NewBufferService(redisClient)
 	recipientService := NewRecipientService(mongoStorage, config.Logger)
-	dispatcherService := NewDispatcherService(httpSender, config.DispatchURLs(), config.Logger)
-	processorService := NewProcessorService(presets, helpers, store, recipientService, dispatcherService, config.Logger)
+	dispatcherService := NewDispatcherService(httpSender, config.Dispatch.URL, config.Logger)
+	processorService := NewProcessorService(presets, helpers, store, bufferService, recipientService, dispatcherService, mongoStorage, sseBroadcaster, config.Logger)
 
 	msgs := rmq.Consume()
 
@@ -59,6 +69,7 @@ func Load() error {
 	Container = container{
 		StatusService:       NewStatusService(connection, rmq, store),
 		SubscriptionService: NewSubscriptionService(mongoStorage, config.Logger),
+		SSEBroadcaster:      sseBroadcaster,
 	}
 
 	shutdown = func() {

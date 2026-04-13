@@ -3,8 +3,6 @@ import { ref, watch, computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
-import FailedMessageModal from '@/components/topologies/FailedMessageModal.vue'
-import ConnectorMetricDetailModal from '@/components/dashboard/ConnectorMetricDetailModal.vue'
 import StatusBadge from '@/components/ui/StatusBadge.vue'
 import GridLink from '@/components/ui/datagrid/GridLink.vue'
 import type { ConnectorErrorRecord } from '@/types/connectors'
@@ -22,6 +20,8 @@ import {
   fetchConnectorErrorRecords,
   type ConnectorErrorRecordsCodeFilter,
 } from '@/services/connectorsService'
+import { useConnectorMetricDetail } from '@/composables/useConnectorMetricDetail'
+import { useFailedMessageModal } from '@/composables/useFailedMessageModal'
 
 const props = defineProps<{
   /** 'process' = filter by correlation id; 'connector' = filter by node id(s) + time */
@@ -73,13 +73,7 @@ const errorRecordsColumns = computed(() =>
   props.filterMode === 'connector' ? errorRecordsColumnsConnector : errorRecordsColumnsProcess,
 )
 
-const metricDetailOpen = ref(false)
-const selectedErrorRecord = ref<ConnectorErrorRecord | null>(null)
-
-const openMetricDetail = (record: ConnectorErrorRecord) => {
-  selectedErrorRecord.value = record
-  metricDetailOpen.value = true
-}
+const { openMetricDetail } = useConnectorMetricDetail()
 
 const errorRecordActions: ActionConfig[] = [
   {
@@ -200,18 +194,15 @@ const onCodeQuickFilterChange = (value: string) => {
   void loadErrorRecords()
 }
 
-// Failed message modal
-const failedModalOpen = ref(false)
-const failedModalNodeId = ref('')
-const failedModalTopologyId = ref('')
-const failedModalCorrelationId = ref('')
+const { openFailedMessage } = useFailedMessageModal()
 
 const handleOpenFailedMessage = (item: ProcessTrashItem) => {
-  failedModalNodeId.value = item.whereItFailed
-  failedModalTopologyId.value = item.topologyId ?? props.topologyId ?? ''
-  failedModalCorrelationId.value =
-    item.correlationId ?? (props.filterMode === 'process' ? props.correlationId ?? '' : '')
-  failedModalOpen.value = true
+  openFailedMessage({
+    nodeId: item.whereItFailed,
+    topologyId: item.topologyId ?? props.topologyId ?? '',
+    correlationId: item.correlationId ?? (props.filterMode === 'process' ? props.correlationId ?? '' : ''),
+    hideBulkActions: true,
+  })
 }
 
 const trashLinkQuery = computed(() => {
@@ -363,12 +354,12 @@ const trashLinkQuery = computed(() => {
                 <td class="px-4 py-3">
                   <button
                     type="button"
-                    class="inline-flex items-center rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                    class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                     title="View detail"
                     @click="handleOpenFailedMessage(item)"
                   >
-                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                     </svg>
                   </button>
                 </td>
@@ -382,15 +373,5 @@ const trashLinkQuery = computed(() => {
     </div>
   </div>
 
-  <FailedMessageModal
-    v-if="failedModalTopologyId && failedModalCorrelationId"
-    v-model="failedModalOpen"
-    :topology-id="failedModalTopologyId"
-    :node-id="failedModalNodeId"
-    :correlation-id="failedModalCorrelationId"
-    node-name=""
-    hide-bulk-actions
-  />
 
-  <ConnectorMetricDetailModal v-model="metricDetailOpen" :record="selectedErrorRecord" />
 </template>

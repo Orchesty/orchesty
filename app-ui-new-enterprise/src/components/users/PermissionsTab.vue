@@ -130,7 +130,7 @@ async function loadData() {
     topologies.value = topoResp
 
     if (groupsResp.items.length > 0 && !selectedGroupId.value) {
-      selectedGroupId.value = groupsResp.items[0].id
+      selectedGroupId.value = groupsResp.items[0]!.id
     }
     syncState()
   } catch (error) {

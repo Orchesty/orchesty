@@ -26,9 +26,12 @@ interface Props {
   correlationId: string
   nodeName: string
   hideBulkActions?: boolean
+  modalId?: string
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  modalId: 'failed-message-modal',
+})
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
@@ -53,6 +56,7 @@ const resultMessage = computed(() => {
 })
 
 const loadFirstItem = async () => {
+  if (!props.topologyId || !props.correlationId) return
   loading.value = true
   try {
     const result = await fetchTrashItems({
@@ -222,7 +226,7 @@ const handleClose = () => {
 <template>
   <Modal
     :model-value="modelValue"
-    id="failed-message-modal"
+    :id="modalId"
     title="Failed Message"
     size="xl"
     @update:model-value="$emit('update:modelValue', $event)"

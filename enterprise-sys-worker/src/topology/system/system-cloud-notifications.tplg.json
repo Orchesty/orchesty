@@ -1,0 +1,69 @@
+{
+    "nodes": [
+        {
+            "type": "flow",
+            "id": "f0a1b2c3d4000001",
+            "label": "Event",
+            "shape": "circle",
+            "property": null,
+            "action": null,
+            "name": "cloud-notification-event",
+            "position": {
+                "x": 75,
+                "y": 195
+            }
+        },
+        {
+            "type": "flow",
+            "id": "f1b2c3d4e5f60001",
+            "label": "Custom Action",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "cloud-notification-mapper",
+                "worker": "sys-worker",
+                "type": "custom",
+                "app": null
+            },
+            "name": null,
+            "position": {
+                "x": 315,
+                "y": 195
+            }
+        },
+        {
+            "type": "flow",
+            "id": "f2c3d4e5f6700001",
+            "label": "Custom Action",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "receive-instance-notification",
+                "worker": "cloud-backend",
+                "type": "custom",
+                "app": null
+            },
+            "name": null,
+            "position": {
+                "x": 555,
+                "y": 195
+            }
+        }
+    ],
+    "connections": [
+        {
+            "id": "f3d4e5f670000001",
+            "from": "f0a1b2c3d4000001",
+            "to": "f1b2c3d4e5f60001",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "f4e5f67000000001",
+            "from": "f1b2c3d4e5f60001",
+            "to": "f2c3d4e5f6700001",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        }
+    ]
+}

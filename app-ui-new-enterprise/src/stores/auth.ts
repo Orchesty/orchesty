@@ -4,7 +4,7 @@ import type { Auth0VueClient } from '@auth0/auth0-vue'
 import type { User } from '@/types/auth'
 import * as authService from '@/services/authService'
 import { useActivityTracker } from '@/composables/useActivityTracker'
-import { isAuth0Enabled } from '@/auth/auth0-plugin'
+import { isAuth0Enabled, auth0Plugin } from '@/auth/auth0-plugin'
 import { useCloudMode } from '@/composables/useCloudMode'
 import { STORAGE_KEYS } from '@/config'
 
@@ -108,6 +108,7 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = {
         id: auth0.user.value.sub || '',
         email: auth0.user.value.email || '',
+        picture: auth0.user.value.picture || undefined,
         settings: {},
       }
       localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(user.value))
@@ -156,6 +157,9 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     if (cloudMode.value && cloudUrl.value) {
+      if (auth0Plugin) {
+        await auth0Plugin.logout({ openUrl: false })
+      }
       window.location.href = `${cloudUrl.value}/sign-out`
       return
     }
@@ -166,6 +170,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     await authService.logout()
+    window.location.href = '/sign-in'
   }
 
   function initializeAuth(): void {

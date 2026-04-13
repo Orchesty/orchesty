@@ -16,6 +16,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   'open-new-topology-modal': []
   'open-new-folder-modal': []
+  'open-import-topology-modal': []
   'select-topology': [topologyId: string, topologyName: string, versionCount: number]
   'topology-action': [topologyId: string, topologyName: string, action: string]
   'update:modelValue': [value: boolean]
@@ -247,6 +248,27 @@ watch(() => props.modelValue, (newValue) => {
           />
         </svg>
         <span class="sr-only">New Topology</span>
+      </button>
+
+      <!-- Import Topology Button -->
+      <button
+        type="button"
+        title="Import Topology"
+        @click="emit('open-import-topology-modal')"
+        class="inline-flex items-center justify-center rounded-lg p-1 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+      >
+        <svg
+          class="w-5 h-5"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+        </svg>
+        <span class="sr-only">Import Topology</span>
       </button>
     </div>
 

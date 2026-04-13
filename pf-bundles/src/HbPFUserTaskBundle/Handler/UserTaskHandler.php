@@ -240,9 +240,14 @@ final readonly class UserTaskHandler
                     $operator = 'IN';
                     $value    = $data[$field];
                 } elseif ($field === self::RESULT_MESSAGE) {
-                    $column   = 'resultMessage';
-                    $operator = 'EQ';
-                    $value    = [$data[$field]];
+                    $column = 'resultMessage';
+                    if ($data[$field] === '' || $data[$field] === NULL) {
+                        $operator = 'EMPTY';
+                        $value    = [''];
+                    } else {
+                        $operator = 'EQ';
+                        $value    = [$data[$field]];
+                    }
                 } else {
                     $column   = $field;
                     $operator = 'EQ';

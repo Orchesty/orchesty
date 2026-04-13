@@ -317,7 +317,7 @@ onDeactivated(() => {
             <button
               type="button"
               title="Audit"
-              @click="handleAuditClick(row)"
+              @click="handleAuditClick(row as Process)"
               class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
             >
               <svg

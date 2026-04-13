@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RouterLink, useRouter } from 'vue-router'
+import { RouterLink } from 'vue-router'
 import { onMounted, computed } from 'vue'
 import { Moon, Sun, CircleHelp } from 'lucide-vue-next'
 import { useDarkMode } from '@/composables/useDarkMode'
@@ -12,6 +12,7 @@ import HelpDrawer from '@/components/help/HelpDrawer.vue'
 interface Props {
   extraMenuItems?: { type: 'link'; label: string; to: string }[]
   extraNavSlots?: string[]
+  accountMenuSectionsOverride?: DropdownMenuSection[]
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -24,14 +25,11 @@ const { isDark, toggleDarkMode } = useDarkMode()
 const authStore = useAuthStore()
 const { can } = useAuthorization()
 const { isOpen: helpOpen, contextHelpId, toggle: toggleHelp } = useHelp()
-const router = useRouter()
-
 const handleLogout = async () => {
   await authStore.logout()
-  router.push('/sign-in')
 }
 
-const accountMenuSections = computed<DropdownMenuSection[]>(() => {
+const defaultAccountMenuSections = computed<DropdownMenuSection[]>(() => {
   const menuItems: { type: 'link'; label: string; to: string }[] = [
     { type: 'link', label: 'Account settings', to: '/orchesty/account' },
   ]
@@ -60,6 +58,10 @@ const accountMenuSections = computed<DropdownMenuSection[]>(() => {
   ]
 })
 
+const accountMenuSections = computed(() =>
+  props.accountMenuSectionsOverride ?? defaultAccountMenuSections.value
+)
+
 onMounted(async () => {
   const { initDropdowns, initTabs, initCollapses } = await import('flowbite')
   initDropdowns()
@@ -71,7 +73,7 @@ onMounted(async () => {
 <template>
   <header class="flex flex-col antialiased">
     <nav
-      class="relative z-50 border-b border-gray-200 bg-white py-2.5 pr-4 dark:border-gray-700 dark:bg-gray-800 lg:pr-6"
+      class="relative z-50 border-b border-gray-200 bg-white py-1.5 pr-4 dark:border-gray-700 dark:bg-gray-800 lg:pr-6"
     >
       <div class="flex w-full items-center justify-between">
         <div class="flex w-16 shrink-0 items-center justify-center">
@@ -110,7 +112,15 @@ onMounted(async () => {
             <template #trigger>
               <button class="mx-3 inline-flex items-center focus:outline-hidden md:mr-0">
                 <span class="sr-only">Open user menu</span>
+                <img
+                  v-if="authStore.user?.picture"
+                  :src="authStore.user.picture"
+                  alt="User avatar"
+                  class="h-8 w-8 cursor-pointer rounded-full object-cover ring-2 ring-gray-300 hover:ring-gray-400 dark:ring-gray-600 dark:hover:ring-gray-500 transition-all"
+                  referrerpolicy="no-referrer"
+                />
                 <svg
+                  v-else
                   class="h-8 w-8 cursor-pointer text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"

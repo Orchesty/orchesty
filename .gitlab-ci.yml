@@ -27,4 +27,5 @@ include:
   - local: "/starting-point/.gitlab-ci.yml"
   - local: "/topology-generator/.gitlab-ci.yml"
   - local: "/trace/.gitlab-ci.yml"
+  - local: "/tunel-proxy/.gitlab-ci.yml"
   - local: "/worker-api/.gitlab-ci.yml"

@@ -132,6 +132,29 @@ final class EnterpriseUserController
     }
 
     /**
+     * @param string  $userId
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/user/{userId}/role', methods: ['PUT'], priority: 10)]
+    public function setRoleAction(string $userId, Request $request): Response
+    {
+        try {
+            $role = $request->request->getString('role');
+            if ($role === '') {
+                return $this->getErrorResponse(new InvalidArgumentException('Missing parameter "role"'), 400);
+            }
+
+            return $this->getResponse($this->userHandler->setUserRole($userId, $role));
+        } catch (InvalidArgumentException $e) {
+            return $this->getErrorResponse($e, 400);
+        } catch (Exception $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
      * @param string $id
      *
      * @return Response

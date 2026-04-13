@@ -123,6 +123,7 @@ final class AclSubscriber implements EventSubscriberInterface
             'DELETE' => [ActionEnum::DELETE, ResourceEnum::USER],
             'GET'    => [ActionEnum::READ, ResourceEnum::USER],
             'POST'   => [ActionEnum::WRITE, ResourceEnum::USER],
+            'PUT'    => [ActionEnum::WRITE, ResourceEnum::USER],
         ],
         '/api/user/add-from-account' => ['DEFAULT' => [ActionEnum::WRITE, ResourceEnum::USER]],
         '/api/user/change_password'  => [],

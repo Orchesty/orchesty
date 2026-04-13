@@ -6,10 +6,11 @@ import PasswordInput from '@/components/ui/PasswordInput.vue'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import type { Tab } from '@/components/ui/Tabs.vue'
+import NotificationSettings from '@/components/account/NotificationSettings.vue'
 import { useToast } from '@/composables/useToast'
 import { useAuthStore } from '@/stores/auth'
 import { STORAGE_KEYS } from '@/config'
-import { updateProfile, updatePassword, updateNotifications } from '@/services/accountService'
+import { updateProfile, updatePassword } from '@/services/accountService'
 
 const tabs: Tab[] = [
   {
@@ -33,7 +34,6 @@ const authStore = useAuthStore()
 
 const savingProfile = ref(false)
 const savingPassword = ref(false)
-const savingNotifications = ref(false)
 
 const username = ref('')
 const email = ref('')
@@ -44,21 +44,6 @@ const newPassword = ref('')
 const isPasswordFormValid = computed(() =>
   currentPassword.value.length > 0 && newPassword.value.length >= 8,
 )
-
-const notifications = ref([
-  {
-    id: 'account-activity',
-    label: 'Account Activity',
-    description: "Get important notifications about you or activity you've missed",
-    enabled: true,
-  },
-  {
-    id: 'email-notification',
-    label: 'Email notification',
-    description: 'Receive email notifications whenever your company requires your attention',
-    enabled: false,
-  },
-])
 
 onMounted(() => {
   if (authStore.user) {
@@ -103,28 +88,6 @@ const handleSavePassword = async () => {
   } finally {
     savingPassword.value = false
   }
-}
-
-const handleSaveNotifications = async () => {
-  if (savingNotifications.value) return
-  
-  savingNotifications.value = true
-  try {
-    await updateNotifications(notifications.value)
-    showToast('Notification preferences saved', 'success')
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to save preferences'
-    showToast(message, 'error')
-  } finally {
-    savingNotifications.value = false
-  }
-}
-
-const handleSelectAll = () => {
-  const allEnabled = notifications.value.every((n) => n.enabled)
-  notifications.value.forEach((n) => {
-    n.enabled = !allEnabled
-  })
 }
 </script>
 
@@ -236,49 +199,7 @@ const handleSelectAll = () => {
 
       <!-- Notifications Tab -->
       <div id="notifications-content" role="tabpanel" aria-labelledby="notifications-tab" class="hidden">
-        <Card>
-          <div
-            class="flex items-center justify-between mb-4 md:mb-6 border-b border-gray-200 dark:border-gray-700 pb-4"
-          >
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Notifications</h2>
-            <button
-              type="button"
-              @click="handleSelectAll"
-              class="text-sm font-medium text-primary-700 hover:underline dark:text-primary-500"
-            >
-              Select all
-            </button>
-          </div>
-
-          <div class="mb-4 sm:mb-6">
-            <label
-              v-for="notification in notifications"
-              :key="notification.id"
-              class="relative mb-4 flex cursor-pointer"
-            >
-              <input
-                v-model="notification.enabled"
-                type="checkbox"
-                class="peer sr-only"
-              />
-              <div
-                class="peer h-6 w-11 shrink-0 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-primary-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-hidden peer-focus:ring-4 peer-focus:ring-primary-300 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-primary-800 rtl:peer-checked:after:-translate-x-full"
-              ></div>
-              <div class="ms-3">
-                <span class="font-medium text-gray-900 dark:text-gray-300">{{
-                  notification.label
-                }}</span>
-                <p class="text-sm font-normal text-gray-500 dark:text-gray-300">
-                  {{ notification.description }}
-                </p>
-              </div>
-            </label>
-          </div>
-
-          <Button @click="handleSaveNotifications" :disabled="savingNotifications">
-            {{ savingNotifications ? 'Saving...' : 'Save changes' }}
-          </Button>
-        </Card>
+        <NotificationSettings />
       </div>
     </div>
   </div></main>

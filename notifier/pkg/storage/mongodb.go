@@ -18,6 +18,7 @@ type MongoStorage struct {
 	connection    *mongodb.Connection
 	subscriptions *mongoDriver.Collection
 	users         *mongoDriver.Collection
+	notifications *mongoDriver.Collection
 	logger        log.Logger
 }
 
@@ -26,12 +27,26 @@ func NewStorage(connection *mongodb.Connection, logger log.Logger) MongoStorage 
 		connection:    connection,
 		subscriptions: connection.Database.Collection("subscriptions"),
 		users:         connection.Database.Collection("User"),
+		notifications: connection.Database.Collection("notifications"),
 		logger:        logger,
 	}
 
 	service.ensureIndexes()
 
 	return service
+}
+
+func (s MongoStorage) SaveNotification(n model.InAppNotification) error {
+	ctx, cancel := s.Context()
+	defer cancel()
+
+	if _, err := s.notifications.InsertOne(ctx, n); err != nil {
+		s.logContext().Error(err)
+
+		return fmt.Errorf("failed to save notification: %w", err)
+	}
+
+	return nil
 }
 
 func (s MongoStorage) IsConnected() bool {
@@ -212,6 +227,23 @@ func (s MongoStorage) ensureIndexes() {
 
 	if _, err := s.users.Indexes().CreateMany(ctx, userIndexes); err != nil {
 		s.logContext().Error(fmt.Errorf("failed to create user indexes: %v", err))
+	}
+
+	notifIndexes := []mongoDriver.IndexModel{
+		{
+			Keys:    bson.D{{Key: "createdAt", Value: 1}},
+			Options: options.Index().SetExpireAfterSeconds(432000), // 5 days
+		},
+		{
+			Keys: bson.D{
+				{Key: "tenantId", Value: 1},
+				{Key: "createdAt", Value: -1},
+			},
+		},
+	}
+
+	if _, err := s.notifications.Indexes().CreateMany(ctx, notifIndexes); err != nil {
+		s.logContext().Error(fmt.Errorf("failed to create notification indexes: %v", err))
 	}
 }
 

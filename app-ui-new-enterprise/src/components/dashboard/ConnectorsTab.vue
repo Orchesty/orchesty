@@ -45,7 +45,7 @@ function formatApplicationName(appKey: string): string {
 
 function formatNodeName(connector: Connector): string {
   if (connector.nodeIds.length > 0) {
-    const resolved = getNodeName(connector.nodeIds[0])
+    const resolved = getNodeName(connector.nodeIds[0]!)
     if (resolved !== connector.nodeIds[0]) return resolved
   }
   return formatName(connector.name)

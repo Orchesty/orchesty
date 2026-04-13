@@ -13,11 +13,11 @@ import (
 
 type HTTPHandler struct {
 	cm           *ConnectionManager
-	timeout      time.Duration
+	timeout      int64
 	maxBodyBytes int64
 }
 
-func NewHTTPHandler(cm *ConnectionManager, timeout time.Duration, maxBodyBytes int64) *HTTPHandler {
+func NewHTTPHandler(cm *ConnectionManager, timeout int64, maxBodyBytes int64) *HTTPHandler {
 	return &HTTPHandler{cm: cm, timeout: timeout, maxBodyBytes: maxBodyBytes}
 }
 
@@ -86,7 +86,7 @@ func (h *HTTPHandler) handleCall(w http.ResponseWriter, r *http.Request) {
 			slog.Debug("failed to write response", "worker_id", workerID, "request_id", requestID, "error", err)
 		}
 
-	case <-time.After(h.timeout):
+	case <-time.After(time.Duration(h.timeout) * time.Second):
 		slog.Warn("request timed out", "worker_id", workerID, "request_id", requestID, "timeout", h.timeout)
 		http.Error(w, "gateway timeout", http.StatusGatewayTimeout)
 

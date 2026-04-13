@@ -215,8 +215,8 @@ watch(localTimeFilter, () => {
       </button>
       <div v-if="connector" class="flex items-center justify-between">
         <div>
-          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{{ connector.name || (connector.nodeIds.length > 0 ? getNodeName(connector.nodeIds[0]) : '') }}</h3>
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ connector.application || (connector.nodeIds.length > 0 ? getApplicationNameByNodeId(connector.nodeIds[0]) : '') }}</p>
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{{ connector.name || (connector.nodeIds.length > 0 ? getNodeName(connector.nodeIds[0]!) : '') }}</h3>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ connector.application || (connector.nodeIds.length > 0 ? getApplicationNameByNodeId(connector.nodeIds[0]!) : '') }}</p>
         </div>
 
         <!-- Local Time Filter -->

@@ -1,9 +1,47 @@
 package model
 
-import "context"
+import (
+	"context"
+	"time"
+
+	"go.mongodb.org/mongo-driver/v2/bson"
+)
+
+type InAppNotification struct {
+	ID           bson.ObjectID `bson:"_id,omitempty" json:"id"`
+	TenantID     string        `bson:"tenantId" json:"tenant_id"`
+	EventType    string        `bson:"eventType" json:"event_type"`
+	Severity     string        `bson:"severity" json:"severity"`
+	Message      string        `bson:"message" json:"message"`
+	TopologyID   string        `bson:"topologyId,omitempty" json:"topology_id,omitempty"`
+	TopologyName string        `bson:"topologyName,omitempty" json:"topology_name,omitempty"`
+	NodeName     string        `bson:"nodeName,omitempty" json:"node_name,omitempty"`
+	CreatedAt    time.Time     `bson:"createdAt" json:"created_at"`
+}
+
+func NewInAppNotification(e EventEnvelope) InAppNotification {
+	n := InAppNotification{
+		TenantID:  e.TenantID,
+		EventType: e.EventType,
+		Severity:  e.Severity,
+		Message:   e.Message,
+		CreatedAt: time.Now(),
+	}
+
+	if e.Topology != nil {
+		n.TopologyID = e.Topology.ID
+		n.TopologyName = e.Topology.Name
+	}
+
+	if e.Node != nil {
+		n.NodeName = e.Node.Name
+	}
+
+	return n
+}
 
 type EvaluatorHelpers struct {
-	WindowCount func(ctx context.Context, key string, windowMs int) (int64, error)
+	WindowCount func(ctx context.Context, key string, windowSec int) (int64, error)
 }
 
 type Preset struct {
@@ -23,10 +61,16 @@ type ChannelRecipients struct {
 	Recipients []string
 }
 
+type BufferedEvent struct {
+	NodeName     string `json:"node_name"`
+	ErrorMessage string `json:"error_message"`
+}
+
 type DispatchPayload struct {
-	PresetID   string        `json:"preset_id"`
-	TenantID   string        `json:"tenant_id"`
-	Channel    string        `json:"channel"`
-	Event      EventEnvelope `json:"event"`
-	Recipients []string      `json:"recipients"`
+	PresetID   string          `json:"preset_id"`
+	TenantID   string          `json:"tenant_id"`
+	Channel    string          `json:"channel"`
+	Event      EventEnvelope   `json:"event"`
+	Events     []BufferedEvent `json:"events,omitempty"`
+	Recipients []string        `json:"recipients"`
 }

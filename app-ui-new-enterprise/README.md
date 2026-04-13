@@ -130,13 +130,16 @@ Topologies placed in a category with `system: true` are protected:
 - **Delete** is always blocked (even for Super Admin)
 - **Write/Edit** requires System Manager or higher
 - The system folder is **hidden from the sidebar** for users below System Manager
-- The `sys-worker` in the Applications page is similarly hidden for non-System Manager roles
 
 To mark a category as system, set the `system` field in MongoDB:
 
 ```javascript
 db.Category.updateOne({ name: "system" }, { $set: { system: true } })
 ```
+
+### System Workers
+
+Workers listed in the `system_worker_names` parameter (`pf-bundles-enterprise/config/services.yaml`) are hidden from the Applications page for users below System Manager. The parameter is exposed via `GET /api/status` as `systemWorkerNames` and injected into the frontend via `SYSTEM_WORKERS_KEY` provide/inject.
 
 ### UI Visibility Rules
 

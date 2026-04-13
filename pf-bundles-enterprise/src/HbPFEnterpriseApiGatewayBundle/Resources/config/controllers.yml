@@ -14,6 +14,10 @@ services:
             $featureTraceAuditing: '%feature_trace_auditing%'
             $featureAuditLogs: '%feature_audit_logs%'
             $featurePulse: '%feature_pulse%'
+            $systemWorkerNames: '%system_worker_names%'
+            $limitTopologySlots: '%limit_topology_slots%'
+            $limitMessages: '%limit_messages%'
+            $limitStorageGb: '%limit_storage_gb%'
 
     Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\AuditEntityController:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\AuditEntityController
@@ -98,6 +102,16 @@ services:
 
     Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\NotificationController:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\NotificationController
+
+    hbpf.handler.in_app_notification:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\InAppNotificationHandler
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\InAppNotificationController:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\InAppNotificationController
+        arguments:
+            - '@hbpf.handler.in_app_notification'
 
     hbpf.audit_log.handler:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\AuditLogHandler

@@ -185,11 +185,16 @@ final class CloudWebhookController extends AbstractController
                 420,
             );
 
+            $picture     = $payload['picture'] ?? '';
+            $isOrgMember = $payload['isOrgMember'] ?? FALSE;
+
             return new JsonResponse([
-                'email'    => $user->getEmail(),
-                'id'       => $user->getId(),
-                'settings' => [],
-                'token'    => $jwt,
+                'email'       => $user->getEmail(),
+                'id'          => $user->getId(),
+                'isOrgMember' => (bool) $isOrgMember,
+                'picture'     => $picture,
+                'settings'    => [],
+                'token'       => $jwt,
             ]);
         } catch (Throwable $t) {
             return new JsonResponse(
