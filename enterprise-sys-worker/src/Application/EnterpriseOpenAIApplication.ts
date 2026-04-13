@@ -11,9 +11,9 @@ export default class EnterpriseOpenAIApplication extends OpenAIApplication {
     public async syncTrace(req: Request): Promise<Record<string, unknown>> {
         const { request, user, sdk } = JSON.parse(String(req.body));
 
-        const processDto = ProcessDto.createForFormRequest(
-            this.getName(), user, sdk, crypto.randomUUID(),
-        ).setNewJsonData({ request });
+        const processDto = ProcessDto
+            .createForFormRequest(this.getName(), user, sdk, crypto.randomUUID())
+            .setNewJsonData({ request });
 
         return (await this.openAITrace.processAction(processDto)).getJsonData();
     }

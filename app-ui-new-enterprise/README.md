@@ -12,6 +12,7 @@ Enterprise frontend for Orchesty. Consumes `app-ui-new` (core) as a library and 
 | `VITE_AUTH0_DOMAIN` | SSO/Cloud | Auth0 tenant domain (e.g. `dev-xxx.eu.auth0.com`) |
 | `VITE_AUTH0_CLIENT_ID` | SSO/Cloud | Auth0 SPA application Client ID |
 | `VITE_AUTH0_AUDIENCE` | SSO/Cloud | Auth0 API audience identifier (e.g. `https://api.orchesty.cloud`) |
+| `VITE_TITLE` | No | Custom browser tab title prefix (e.g. `My Company`). Sets title to `[value] - Orchesty`. |
 
 ### Backend
 
@@ -24,12 +25,11 @@ Enterprise frontend for Orchesty. Consumes `app-ui-new` (core) as a library and 
 | `JWT_KEY` | Yes | Secret key for legacy HS512 JWT authentication |
 | `JWE_PRIVATE_KEY` | Yes | EC private key (PEM) for JWE token encryption |
 | `EMAIL_DSN` | Yes | SMTP transport DSN for sending emails (e.g. `smtp://mailhog:1025`) |
-| `ORCHESTY_CLOUD_URL` | Cloud | Cloud backend API URL (e.g. `http://host.docker.internal:3000`). Enables cloud mode when set. |
+| `ORCHESTY_CLOUD_BACKEND_URL` | Cloud | Cloud backend API URL (e.g. `http://host.docker.internal:3000`). Enables cloud mode when set. |
 | `ORCHESTY_CLOUD_FRONTEND_URL` | Cloud | Cloud frontend URL (e.g. `http://localhost:5173`). Used for email links in cloud mode. |
 | `ORCHESTY_CLOUD_INSTANCE_ID` | Cloud | Instance ID registered in the cloud platform |
 | `ORCHESTY_CLOUD_INSTANCE_SECRET` | Cloud | Shared secret for cloud API authentication |
-| `ORCHESTY_CLOUD_INSTANCE_NAME` | Cloud | Human-readable instance name displayed in the browser title (e.g. `My Company`). Sets the page title to `[name] - Orchesty` in cloud mode. |
-| `SYSTEM_ORCHESTY_URL` | Emails | Orchesty starting-point URL for triggering system topologies (transactional emails). If empty, uses the local starting-point. |
+| `ORCHESTY_CLOUD_STARTING_POINT_URL` | Emails | Orchesty starting-point URL for triggering system topologies (transactional emails). If empty, uses the local starting-point. |
 
 ### Feature Flags
 
@@ -50,7 +50,7 @@ The application supports three authentication modes, determined by environment v
 
 Automatic redirect to Auth0 — no login form is shown. User management and sign-in/out are handled by the cloud platform.
 
-Cloud mode is detected dynamically: the frontend calls `GET /api/status` on the backend, which returns `cloudMode: true` when `ORCHESTY_CLOUD_URL` is configured. The composable `useCloudMode()` exposes this flag to the router and components.
+Cloud mode is detected dynamically: the frontend calls `GET /api/status` on the backend, which returns `cloudMode: true` when `ORCHESTY_CLOUD_BACKEND_URL` is configured. The composable `useCloudMode()` exposes this flag to the router and components.
 
 **Required variables:** All `VITE_AUTH0_*` frontend vars + all `ORCHESTY_CLOUD_*` backend vars.
 

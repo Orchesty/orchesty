@@ -20,9 +20,11 @@ export default class OpenAITrace extends OpenAIPostResponseConnector {
         });
 
         return dto.setNewJsonData({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             response: getOutputText((await super.processAction(dto)).getJsonData() as any),
         });
     }
+
 }
 
 interface IInput {

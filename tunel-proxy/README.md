@@ -121,23 +121,35 @@ Frame {
 
 ### 1. Add a tunnel worker in the platform UI
 
-Create a new SDK with type **tunnel** (no host/URL needed). The UI generates a complete `.env` block:
+Create a new SDK with type **tunnel** (no host/URL needed). The UI generates a `.env` block that you copy into the worker's `.env` file.
+
+**Cloud instances** generate a minimal block — the SDK derives all connection URLs from `TENANT_ID`:
 
 ```env
 # --- Orchesty Tunnel Configuration ---
 TUNNEL_ENABLED=true
-TUNNEL_PROXY_URL=grpc.orchesty.example.com:50051
 TUNNEL_WORKER_ID=my-remote-worker
 
 # --- Orchesty Platform Connection ---
 ORCHESTY_API_KEY=abc123...
-BACKEND_URL=https://api.orchesty.example.com
-STARTING_POINT_URL=https://sp.orchesty.example.com
-WORKER_API_HOST=https://worker-api.orchesty.example.com
-CRYPT_SECRET=ThisIsNotSoSecret
+TENANT_ID=abc123-instance-id
 ```
 
-Copy the block into the worker's `.env` file. All values are auto-generated from the instance configuration.
+**Self-hosted / dev instances** generate explicit URLs:
+
+```env
+# --- Orchesty Tunnel Configuration ---
+TUNNEL_ENABLED=true
+TUNNEL_WORKER_ID=my-remote-worker
+
+# --- Orchesty Platform Connection ---
+ORCHESTY_API_KEY=abc123...
+BACKEND_URL=http://192.168.1.10:8080
+STARTING_POINT_URL=http://192.168.1.10:82
+WORKER_API_HOST=http://192.168.1.10:8081
+```
+
+In self-hosted mode, the worker also needs `TUNNEL_PROXY_URL` pointing to the proxy's gRPC endpoint (e.g. `192.168.1.10:50051`). Add it manually to the `.env` file.
 
 ### 2. SDK behavior
 
@@ -187,8 +199,9 @@ New `type` field added to the `Sdk` MongoDB document:
 - **`TopologyConfigFactory.getPaths()`** — prefixes action paths with `call/{sdk_name}/` for tunnel SDKs
 - **`ServiceLocator.doRequest()`** — constructs URL via `http://{TUNNEL_PROXY_HOST}/call/{sdk_name}/{path}` for tunnel SDKs
 - **`SdkRepository`** — tunnel workers sharing the proxy host are looked up by `name` instead of `host`
+- **`SdkHandler.getEnv()`** — generates the `.env` block shown above. In cloud mode it emits `TENANT_ID`; in dev mode it emits explicit URLs from existing backend parameters.
 
-New environment variable for the PHP backend:
+The only tunnel-specific environment variable for the PHP backend is:
 
 ```
 TUNNEL_PROXY_HOST=tunnel-proxy:8080

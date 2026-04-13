@@ -6,9 +6,9 @@ import Form from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Form';
 import FormStack from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FormStack';
 import { ABasicApplication } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Type/Basic/ABasicApplication';
 import RequestDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/RequestDto';
-import { CommonHeaders, JSON_TYPE } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import AProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/AProcessDto';
+import { CommonHeaders, JSON_TYPE } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import ZaiTrace, { IOutput } from '../Connector/ZaiTrace';
 
@@ -67,9 +67,9 @@ export default class ZaiApplication extends ABasicApplication {
     public async syncTrace(req: Request): Promise<IOutput> {
         const { request, user, sdk } = JSON.parse(String(req.body));
 
-        const processDto = ProcessDto.createForFormRequest(
-            this.getName(), user, sdk, crypto.randomUUID(),
-        ).setNewJsonData({ request });
+        const processDto = ProcessDto
+            .createForFormRequest(this.getName(), user, sdk, crypto.randomUUID())
+            .setNewJsonData({ request });
 
         return (await this.zaiTrace.processAction(processDto)).getJsonData();
     }

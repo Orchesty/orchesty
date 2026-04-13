@@ -3,8 +3,10 @@ import { OAuth2Provider } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Prov
 import path from 'path';
 
 export default class SlackApplicationWithInfo extends SlackApplication {
-    constructor(provider: OAuth2Provider) {
+
+    public constructor(provider: OAuth2Provider) {
         super(provider);
         this.infoFilename = path.join(__dirname, 'slack-readme.md');
     }
+
 }

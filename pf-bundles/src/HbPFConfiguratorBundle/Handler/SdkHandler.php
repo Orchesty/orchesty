@@ -25,18 +25,18 @@ final class SdkHandler
      *
      * @param SdkManager      $manager
      * @param DocumentManager $dm
-     * @param string          $tunnelProxyGrpcUrl
-     * @param string          $tunnelExtBackendUrl
-     * @param string          $tunnelExtStartingPointUrl
-     * @param string          $tunnelExtWorkerApiHost
+     * @param string          $backendHost
+     * @param string          $startingPointHost
+     * @param string          $workerApiHost
+     * @param string          $orchestyCloudInstanceId
      */
     public function __construct(
         private SdkManager $manager,
         private DocumentManager $dm,
-        private string $tunnelProxyGrpcUrl = '',
-        private string $tunnelExtBackendUrl = '',
-        private string $tunnelExtStartingPointUrl = '',
-        private string $tunnelExtWorkerApiHost = '',
+        private string $backendHost = '',
+        private string $startingPointHost = '',
+        private string $workerApiHost = '',
+        private string $orchestyCloudInstanceId = '',
     )
     {
     }
@@ -143,21 +143,26 @@ final class SdkHandler
         $apiKey = $this->dm->getRepository(ApiToken::class)
             ->findOneBy(['user' => ApplicationController::SYSTEM_USER])?->getKey() ?? '';
 
-        $lines = [];
+        $isCloud = $this->orchestyCloudInstanceId !== '';
+        $lines   = [];
 
         if ($sdk->getType() === Sdk::TYPE_TUNNEL) {
             $lines[] = '# --- Orchesty Tunnel Configuration ---';
             $lines[] = 'TUNNEL_ENABLED=true';
-            $lines[] = sprintf('TUNNEL_PROXY_URL=%s', $this->tunnelProxyGrpcUrl);
             $lines[] = sprintf('TUNNEL_WORKER_ID=%s', $sdk->getName());
             $lines[] = '';
         }
 
         $lines[] = '# --- Orchesty Platform Connection ---';
         $lines[] = sprintf('ORCHESTY_API_KEY=%s', $apiKey);
-        $lines[] = sprintf('BACKEND_URL=%s', rtrim($this->tunnelExtBackendUrl, '/'));
-        $lines[] = sprintf('STARTING_POINT_URL=%s', rtrim($this->tunnelExtStartingPointUrl, '/'));
-        $lines[] = sprintf('WORKER_API_HOST=%s', rtrim($this->tunnelExtWorkerApiHost, '/'));
+
+        if ($isCloud) {
+            $lines[] = sprintf('TENANT_ID=%s', $this->orchestyCloudInstanceId);
+        } else {
+            $lines[] = sprintf('BACKEND_URL=%s', rtrim($this->backendHost, '/'));
+            $lines[] = sprintf('STARTING_POINT_URL=%s', rtrim($this->startingPointHost, '/'));
+            $lines[] = sprintf('WORKER_API_HOST=%s', rtrim($this->workerApiHost, '/'));
+        }
 
         return ['env' => implode("\n", $lines)];
     }

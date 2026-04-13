@@ -7,9 +7,8 @@ services:
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StatusController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StatusController
         arguments:
-            $orchesryCloudUrl: '%orchesty_cloud_url%'
-            $orchesryCloudFrontendUrl: '%orchesty_cloud_frontend_url%'
-            $orchesryCloudInstanceName: '%orchesty_cloud_instance_name%'
+            $orchestyCloudUrl: '%orchesty_cloud_backend_url%'
+            $orchestyCloudFrontendUrl: '%orchesty_cloud_frontend_url%'
             $featureEnterpriseDashboards: '%feature_enterprise_dashboards%'
             $featureTraceAuditing: '%feature_trace_auditing%'
             $featureAuditLogs: '%feature_audit_logs%'
@@ -44,13 +43,13 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@security.password_hasher_factory'
             - '@hbpf.manager.group'
-            - '%orchesty_cloud_url%'
+            - '%orchesty_cloud_backend_url%'
 
     hbpf.cloud.member_sync:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\CloudMemberSyncService
         arguments:
             - '@hbpf.transport.curl_manager'
-            - '%orchesty_cloud_url%'
+            - '%orchesty_cloud_backend_url%'
             - '%orchesty_cloud_instance_id%'
             - '%orchesty_cloud_instance_secret%'
 
@@ -59,7 +58,7 @@ services:
         arguments:
             $curlManager: '@hbpf.transport.curl_manager'
             $dml: '@hbpf.database_manager_locator'
-            $systemOrchestyUrl: '%system_orchesty_url%'
+            $systemOrchestyUrl: '%orchesty_cloud_starting_point_url%'
             $startingPointHost: '%startingPointHost%'
             $frontendHost: '%frontendHost%'
             $cloudFrontendUrl: '%orchesty_cloud_frontend_url%'

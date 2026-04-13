@@ -3,6 +3,7 @@ import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 
 export const NAME = 'topology-failed-repeatedly-email-mapper';
 
+/* eslint-disable @typescript-eslint/naming-convention */
 interface IInput {
     preset_id: string;
     tenant_id: string;
@@ -22,6 +23,7 @@ interface IInput {
     };
     recipients: string[];
 }
+/* eslint-enable @typescript-eslint/naming-convention */
 
 interface IOutput {
     from: string;

@@ -3,6 +3,7 @@ import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 
 export const NAME = 'cloud-notification-mapper';
 
+/* eslint-disable @typescript-eslint/naming-convention */
 interface IInput {
     preset_id: string;
     tenant_id: string;
@@ -31,6 +32,7 @@ interface IOutput {
         occurred_at: string;
     };
 }
+/* eslint-enable @typescript-eslint/naming-convention */
 
 export default class CloudNotificationMapper extends ACommonNode {
 
@@ -47,6 +49,7 @@ export default class CloudNotificationMapper extends ACommonNode {
         return dto.setNewJsonData<IOutput>({
             instanceId,
             instanceSecret,
+            /* eslint-disable @typescript-eslint/naming-convention */
             notification: {
                 event_type: event.event_type,
                 severity: event.severity,
