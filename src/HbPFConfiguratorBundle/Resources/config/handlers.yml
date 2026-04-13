@@ -41,10 +41,10 @@ services:
         arguments:
             - '@hbpf.configurator.manager.sdk'
             - '@doctrine_mongodb.odm.default_document_manager'
-            - '%tunnelProxyGrpcUrl%'
-            - '%tunnelExtBackendUrl%'
-            - '%tunnelExtStartingPointUrl%'
-            - '%tunnelExtWorkerApiHost%'
+            - '%backendHost%'
+            - '%startingPointHost%'
+            - '%workerApiHost%'
+            - '%orchesty_cloud_instance_id%'
 
     hbpf.configurator.handler.topology_progress:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyProgressHandler
