@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/hanaboso/go-mongodb"
-	"github.com/redis/go-redis/v9"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"github.com/redis/go-redis/v9"
 
 	"notifier/pkg/config"
 	"notifier/pkg/model"
@@ -57,7 +57,7 @@ func Load() error {
 
 	bufferService := NewBufferService(redisClient)
 	recipientService := NewRecipientService(mongoStorage, config.Logger)
-	dispatcherService := NewDispatcherService(httpSender, config.DispatchURLs(), config.Logger)
+	dispatcherService := NewDispatcherService(httpSender, config.Dispatch.URL, config.Logger)
 	processorService := NewProcessorService(presets, helpers, store, bufferService, recipientService, dispatcherService, mongoStorage, sseBroadcaster, config.Logger)
 
 	msgs := rmq.Consume()

@@ -11,6 +11,12 @@ import (
 	"notifier/pkg/sender"
 )
 
+var channelPaths = map[string]string{
+	"email":  "/topologies/system-email-notifications/nodes/%s/run-by-name",
+	"slack":  "/topologies/system-slack-notifications/nodes/%s/run-by-name",
+	"in_app": "/topologies/system-cloud-notifications/nodes/cloud-notification-event/run-by-name",
+}
+
 type (
 	DispatcherService interface {
 		Dispatch(presetID string, e model.EventEnvelope, channelRecipients []model.ChannelRecipients) error
@@ -18,14 +24,14 @@ type (
 	}
 
 	dispatcherService struct {
-		sender sender.HttpSender
-		urls   map[string]string
-		logger log.Logger
+		sender  sender.HttpSender
+		baseURL string
+		logger  log.Logger
 	}
 )
 
-func NewDispatcherService(httpSender sender.HttpSender, urls map[string]string, logger log.Logger) DispatcherService {
-	return dispatcherService{httpSender, urls, logger}
+func NewDispatcherService(httpSender sender.HttpSender, baseURL string, logger log.Logger) DispatcherService {
+	return dispatcherService{httpSender, baseURL, logger}
 }
 
 func (service dispatcherService) Dispatch(presetID string, e model.EventEnvelope, channelRecipients []model.ChannelRecipients) error {
@@ -34,14 +40,12 @@ func (service dispatcherService) Dispatch(presetID string, e model.EventEnvelope
 	nodeName := strings.ReplaceAll(presetID, "_", "-")
 
 	for _, cr := range channelRecipients {
-		urlTemplate, ok := service.urls[cr.Channel]
-		if !ok || urlTemplate == "" {
+		url, ok := resolveURL(service.baseURL, cr.Channel, nodeName)
+		if !ok {
 			service.logContext().Warn("No dispatch URL configured for channel %s, skipping", cr.Channel)
 
 			continue
 		}
-
-		url := resolveURL(urlTemplate, nodeName)
 
 		payload := model.DispatchPayload{
 			PresetID:   presetID,
@@ -68,14 +72,12 @@ func (service dispatcherService) DispatchBuffered(presetID string, firstEvent mo
 	nodeName := strings.ReplaceAll(presetID, "_", "-")
 
 	for _, cr := range channelRecipients {
-		urlTemplate, ok := service.urls[cr.Channel]
-		if !ok || urlTemplate == "" {
+		url, ok := resolveURL(service.baseURL, cr.Channel, nodeName)
+		if !ok {
 			service.logContext().Warn("No dispatch URL configured for channel %s, skipping", cr.Channel)
 
 			continue
 		}
-
-		url := resolveURL(urlTemplate, nodeName)
 
 		payload := model.DispatchPayload{
 			PresetID:   presetID,
@@ -97,12 +99,22 @@ func (service dispatcherService) DispatchBuffered(presetID string, firstEvent mo
 	return lastErr
 }
 
-func resolveURL(urlTemplate, nodeName string) string {
-	if strings.Contains(urlTemplate, "%s") {
-		return fmt.Sprintf(urlTemplate, nodeName)
+func resolveURL(baseURL, channel, nodeName string) (string, bool) {
+	if baseURL == "" {
+		return "", false
 	}
 
-	return urlTemplate
+	pathTemplate, ok := channelPaths[channel]
+	if !ok {
+		return "", false
+	}
+
+	path := pathTemplate
+	if strings.Contains(pathTemplate, "%s") {
+		path = fmt.Sprintf(pathTemplate, nodeName)
+	}
+
+	return baseURL + path, true
 }
 
 func (service dispatcherService) logContext() log.Logger {

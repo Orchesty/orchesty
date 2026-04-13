@@ -8,6 +8,12 @@ export interface Features {
   pulse: boolean
 }
 
+export interface Limits {
+  topologySlots: number
+  messages: number
+  storageGb: number
+}
+
 const cloudMode = ref(false)
 const cloudUrl = ref('')
 const instanceName = ref('')
@@ -19,6 +25,12 @@ const features = ref<Features>({
   traceAuditing: true,
   auditLogs: true,
   pulse: true,
+})
+
+const limits = ref<Limits>({
+  topologySlots: 0,
+  messages: 0,
+  storageGb: 0,
 })
 
 export function useCloudMode() {
@@ -51,6 +63,14 @@ export function useCloudMode() {
           }
         }
 
+        if (data.limits) {
+          limits.value = {
+            topologySlots: Number(data.limits.topologySlots) || 0,
+            messages: Number(data.limits.messages) || 0,
+            storageGb: Number(data.limits.storageGb) || 0,
+          }
+        }
+
         systemWorkerNames.value = Array.isArray(data.systemWorkerNames) ? data.systemWorkerNames : []
       }
     } catch {
@@ -73,6 +93,7 @@ export function useCloudMode() {
     cloudUrl: readonly(cloudUrl),
     instanceName: readonly(instanceName),
     features: readonly(features),
+    limits: readonly(limits),
     systemWorkerNames: readonly(systemWorkerNames),
     loaded: readonly(loaded),
     loadCloudMode,

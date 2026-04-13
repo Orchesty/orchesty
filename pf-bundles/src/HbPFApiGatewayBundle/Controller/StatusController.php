@@ -18,15 +18,6 @@ final class StatusController extends AbstractController
     /**
      * StatusController constructor.
      *
-     * @param string $orchesryCloudUrl
-     * @param string $orchesryCloudFrontendUrl
-     * @param string $orchesryCloudInstanceName
-     * @param bool   $featureEnterpriseDashboards
-     * @param bool   $featureTraceAuditing
-     * @param bool   $featureAuditLogs
-     * @param bool   $featurePulse
-     */
-    /**
      * @param string  $orchesryCloudUrl
      * @param string  $orchesryCloudFrontendUrl
      * @param string  $orchesryCloudInstanceName
@@ -35,6 +26,9 @@ final class StatusController extends AbstractController
      * @param bool    $featureAuditLogs
      * @param bool    $featurePulse
      * @param mixed[] $systemWorkerNames
+     * @param int     $limitTopologySlots
+     * @param int     $limitMessages
+     * @param int     $limitStorageGb
      */
     public function __construct(
         private readonly string $orchesryCloudUrl = '',
@@ -45,6 +39,9 @@ final class StatusController extends AbstractController
         private readonly bool $featureAuditLogs = FALSE,
         private readonly bool $featurePulse = FALSE,
         private readonly array $systemWorkerNames = [],
+        private readonly int $limitTopologySlots = 0,
+        private readonly int $limitMessages = 0,
+        private readonly int $limitStorageGb = 0,
     )
     {
     }
@@ -74,6 +71,11 @@ final class StatusController extends AbstractController
                 : $this->orchesryCloudUrl;
             $data['cloudUrl']     = rtrim($frontendUrl, '/');
             $data['instanceName'] = $this->orchesryCloudInstanceName;
+            $data['limits']       = [
+                'messages'      => $this->limitMessages,
+                'storageGb'     => $this->limitStorageGb,
+                'topologySlots' => $this->limitTopologySlots,
+            ];
         }
 
         if ($this->systemWorkerNames !== []) {

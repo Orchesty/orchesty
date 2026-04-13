@@ -41,7 +41,7 @@ func NewInAppNotification(e EventEnvelope) InAppNotification {
 }
 
 type EvaluatorHelpers struct {
-	WindowCount func(ctx context.Context, key string, windowMs int) (int64, error)
+	WindowCount func(ctx context.Context, key string, windowSec int) (int64, error)
 }
 
 type Preset struct {

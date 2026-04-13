@@ -200,7 +200,7 @@ final class EnterpriseGroupHandler
     public function getPresets(): array
     {
         /** @var Group[] $allGroups */
-        $allGroups  = $this->dm->getRepository(Group::class)->findAll();
+        $allGroups   = $this->dm->getRepository(Group::class)->findAll();
         $groupByName = [];
         foreach ($allGroups as $g) {
             $groupByName[$g->getName()] = $g->getId();

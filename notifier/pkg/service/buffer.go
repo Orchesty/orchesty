@@ -78,7 +78,7 @@ func (b *RedisBuffer) Add(ctx context.Context, key string, entry BufferEntry, fi
 			return false, fmt.Errorf("buffer meta marshal failed: %w", err)
 		}
 
-		ttl := time.Duration(config.Throttle.BufferWindowMs+5000) * time.Millisecond
+		ttl := time.Duration(config.Throttle.BufferWindow+5) * time.Second
 		b.client.Set(ctx, mk, meta, ttl)
 		b.client.Expire(ctx, ek, ttl)
 	}

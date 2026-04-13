@@ -43,26 +43,26 @@ func main() {
 	httpHandler.RegisterRoutes(mux)
 
 	httpServer := &http.Server{
-		Addr:    cfg.HTTPAddr,
+		Addr:    ":8080",
 		Handler: mux,
 	}
 
 	errCh := make(chan error, 2)
 
 	go func() {
-		lis, err := net.Listen("tcp", cfg.GRPCAddr)
+		lis, err := net.Listen("tcp", ":50051")
 		if err != nil {
-			errCh <- fmt.Errorf("gRPC listen on %s: %w", cfg.GRPCAddr, err)
+			errCh <- fmt.Errorf("gRPC listen on %s: %w", ":50051", err)
 			return
 		}
-		slog.Info("gRPC server listening", "addr", cfg.GRPCAddr)
+		slog.Info("gRPC server listening", "addr", ":50051")
 		if err := grpcServer.Serve(lis); err != nil {
 			errCh <- fmt.Errorf("gRPC serve: %w", err)
 		}
 	}()
 
 	go func() {
-		slog.Info("HTTP server listening", "addr", cfg.HTTPAddr)
+		slog.Info("HTTP server listening", "addr", ":8080")
 		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			errCh <- fmt.Errorf("HTTP serve: %w", err)
 		}

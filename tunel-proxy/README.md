@@ -56,7 +56,7 @@ tunel-proxy:
   environment:
     GRPC_ADDR: ":50051"
     HTTP_ADDR: ":8080"
-    REQUEST_TIMEOUT: "30s"
+    REQUEST_TIMEOUT: "30"
 ```
 
 ## Configuration
@@ -65,7 +65,7 @@ tunel-proxy:
 |----------|-------------|---------|
 | `GRPC_ADDR` | gRPC server listen address | `:50051` |
 | `HTTP_ADDR` | HTTP server listen address | `:8080` |
-| `REQUEST_TIMEOUT` | Max time to wait for a worker response | `30s` |
+| `REQUEST_TIMEOUT` | Max time to wait for a worker response (seconds) | `30` |
 
 ## API Reference
 

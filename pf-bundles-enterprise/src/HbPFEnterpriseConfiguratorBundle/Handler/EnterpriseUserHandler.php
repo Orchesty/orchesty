@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\AclBundle\Document\Group;
@@ -15,6 +16,7 @@ use Hanaboso\UserBundle\Model\User\UserManager;
 use Hanaboso\UserBundle\Model\User\UserManagerException;
 use Hanaboso\UserBundle\Provider\ResourceProvider;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
+use InvalidArgumentException;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Throwable;
 
@@ -305,14 +307,14 @@ final class EnterpriseUserHandler extends UserHandler
         $presetNames = PermissionPresets::names();
 
         if (!in_array($newPreset, $presetNames, TRUE)) {
-            throw new \InvalidArgumentException(sprintf('Unknown preset [%s].', $newPreset));
+            throw new InvalidArgumentException(sprintf('Unknown preset [%s].', $newPreset));
         }
 
         /** @var User|null $user */
         $user = $this->dm->getRepository(User::class)->find($userId);
 
         if (!$user) {
-            throw new \InvalidArgumentException(sprintf('User [%s] not found.', $userId));
+            throw new InvalidArgumentException(sprintf('User [%s] not found.', $userId));
         }
 
         /** @var Group[] $allGroups */
@@ -337,7 +339,7 @@ final class EnterpriseUserHandler extends UserHandler
             }
 
             if ($found) {
-                /** @var \Doctrine\Common\Collections\Collection<int|string, \Hanaboso\UserBundle\Document\User> $collection */
+                /** @var Collection<int|string, User> $collection */
                 $collection = $users;
                 $arr        = $collection->toArray();
                 $collection->clear();

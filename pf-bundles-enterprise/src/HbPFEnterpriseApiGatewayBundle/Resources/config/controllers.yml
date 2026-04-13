@@ -15,6 +15,9 @@ services:
             $featureAuditLogs: '%feature_audit_logs%'
             $featurePulse: '%feature_pulse%'
             $systemWorkerNames: '%system_worker_names%'
+            $limitTopologySlots: '%limit_topology_slots%'
+            $limitMessages: '%limit_messages%'
+            $limitStorageGb: '%limit_storage_gb%'
 
     Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\AuditEntityController:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\AuditEntityController

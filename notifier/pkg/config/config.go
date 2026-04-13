@@ -33,16 +33,14 @@ type (
 	}
 
 	dispatch struct {
-		URLEmail string `env:"STARTING_POINT_URL_EMAIL" default:""`
-		URLSlack string `env:"STARTING_POINT_URL_SLACK" default:""`
-		URLInApp string `env:"STARTING_POINT_URL_INAPP" default:""`
-		Timeout  int    `env:"STARTING_POINT_TIMEOUT" default:"30"`
+		URL     string `env:"STARTING_POINT_URL" default:""`
+		Timeout int    `env:"STARTING_POINT_TIMEOUT" default:"30"`
 	}
 
 	throttle struct {
-		WindowMs            int    `env:"THROTTLE_WINDOW_MS" default:"60000"`
-		BufferWindowMs      int    `env:"BUFFER_WINDOW_MS" default:"60000"`
-		InAppThrottleWindowMs int  `env:"INAPP_THROTTLE_WINDOW_MS" default:"60000"`
+		Window              int    `env:"THROTTLE_WINDOW" default:"60"`
+		BufferWindow        int    `env:"BUFFER_WINDOW" default:"60"`
+		InAppThrottleWindow int    `env:"INAPP_THROTTLE_WINDOW" default:"60"`
 		Mode                string `env:"THROTTLE_MODE" default:"per_topology_per_preset"`
 	}
 )
@@ -77,18 +75,4 @@ func init() {
 	if App.Debug {
 		Logger.SetLevel(log.DEBUG)
 	}
-}
-
-func DispatchURLs() map[string]string {
-	urls := make(map[string]string)
-	if Dispatch.URLEmail != "" {
-		urls["email"] = Dispatch.URLEmail
-	}
-	if Dispatch.URLSlack != "" {
-		urls["slack"] = Dispatch.URLSlack
-	}
-	if Dispatch.URLInApp != "" {
-		urls["in_app"] = Dispatch.URLInApp
-	}
-	return urls
 }

@@ -23,9 +23,7 @@ final class InAppNotificationController extends AbstractController
      *
      * @param InAppNotificationHandler $handler
      */
-    public function __construct(
-        private readonly InAppNotificationHandler $handler,
-    )
+    public function __construct(private readonly InAppNotificationHandler $handler)
     {
     }
 
@@ -46,8 +44,8 @@ final class InAppNotificationController extends AbstractController
 
             $result = $this->handler->list(
                 [
-                    'severity' => $severity ?: NULL,
                     'from'     => $from ?: NULL,
+                    'severity' => $severity ?: NULL,
                     'to'       => $to ?: NULL,
                 ],
                 $page,

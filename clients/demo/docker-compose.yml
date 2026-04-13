@@ -197,6 +197,9 @@ services:
             ORCHESTY_FEATURE_TRACE_AUDITING: 'true'
             ORCHESTY_FEATURE_AUDIT_LOGS: 'true'
             ORCHESTY_FEATURE_PULSE: 'false'
+            ORCHESTY_LIMIT_TOPOLOGY_SLOTS: '0'
+            ORCHESTY_LIMIT_MESSAGES: '0'
+            ORCHESTY_LIMIT_STORAGE_GB: '0'
             EMAIL_DSN: smtp://mailhog:1025
             ALPHA_INSTANCE_ID: 'demo'
             INSTALLER_DIRS: '["/var/www/pipes/clients/demo/node-sdk/src/topology","/var/www/pipes/enterprise-sys-worker/src/topology"]'
@@ -278,12 +281,10 @@ services:
             APP_DEBUG: 'true'
             MONGO_DSN: ${MONGO_DSN}
             RABBITMQ_DSN: ${RABBITMQ_DSN}
-            REDIS_DSN: ${REDIS_DSN}
-            STARTING_POINT_URL_EMAIL: 'http://starting-point:8080/topologies/system-email-notifications/nodes/%s/run-by-name'
-            STARTING_POINT_URL_INAPP: 'http://starting-point:8080/topologies/system-cloud-notifications/nodes/cloud-notification-event/run-by-name'
-            THROTTLE_WINDOW_MS: '7200000'
-            BUFFER_WINDOW_MS: '60000'
-            INAPP_THROTTLE_WINDOW_MS: '60000'
+            STARTING_POINT_URL: ${STARTING_POINT_DSN}
+            THROTTLE_WINDOW: '7200'
+            BUFFER_WINDOW: '60'
+            INAPP_THROTTLE_WINDOW: '60'
         volumes:
             - ./../../notifier/:/app:cached
         ports:
@@ -312,7 +313,7 @@ services:
         environment:
             GRPC_ADDR: ":50051"
             HTTP_ADDR: ":8080"
-            REQUEST_TIMEOUT: "30s"
+            REQUEST_TIMEOUT: "30"
         command: go run cmd/server/main.go
         volumes:
             - ./../../tunel-proxy/:/app:cached

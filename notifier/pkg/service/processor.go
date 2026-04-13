@@ -111,7 +111,7 @@ func (service processorService) Process(ctx context.Context, body []byte) error 
 }
 
 func (service processorService) scheduleFlush(bKey, presetID, tKey string) {
-	time.Sleep(time.Duration(config.Throttle.BufferWindowMs) * time.Millisecond)
+	time.Sleep(time.Duration(config.Throttle.BufferWindow) * time.Second)
 
 	service.logContext().Debug("Flushing buffer key=%s preset=%s", bKey, presetID)
 
@@ -151,11 +151,11 @@ func (service processorService) scheduleFlush(bKey, presetID, tKey string) {
 		service.logContext().Error(fmt.Errorf("dispatch error for preset=%s: %v", presetID, err))
 	}
 
-	if err := service.throttle.SetThrottle(context.Background(), tKey, config.Throttle.WindowMs); err != nil {
+	if err := service.throttle.SetThrottle(context.Background(), tKey, config.Throttle.Window); err != nil {
 		service.logContext().Error(fmt.Errorf("failed to set throttle after flush: %v", err))
 	}
 
-	service.logContext().Debug("Throttle set for %dms key=%s", config.Throttle.WindowMs, tKey)
+	service.logContext().Debug("Throttle set for %ds key=%s", config.Throttle.Window, tKey)
 }
 
 func (service processorService) evaluatePresets(ctx context.Context, e model.EventEnvelope) []model.NotificationMessage {
@@ -217,7 +217,7 @@ func (service processorService) processInApp(ctx context.Context, e model.EventE
 			service.logContext().Error(fmt.Errorf("in_app dispatch error: %v", err))
 		}
 
-		if err := service.throttle.SetThrottle(ctx, tKey, config.Throttle.InAppThrottleWindowMs); err != nil {
+		if err := service.throttle.SetThrottle(ctx, tKey, config.Throttle.InAppThrottleWindow); err != nil {
 			service.logContext().Error(fmt.Errorf("in_app throttle set error: %v", err))
 		}
 	}

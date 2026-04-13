@@ -22,9 +22,7 @@ final class InAppNotificationHandler
      *
      * @param DocumentManager $dm
      */
-    public function __construct(
-        DocumentManager $dm,
-    )
+    public function __construct(DocumentManager $dm)
     {
         $this->collection = $dm->getClient()->selectDatabase(
             $dm->getConfiguration()->getDefaultDB() ?? 'pipes',
@@ -62,9 +60,9 @@ final class InAppNotificationHandler
         $cursor = $this->collection->find(
             $filter,
             [
-                'sort'  => ['createdAt' => -1],
-                'skip'  => $skip,
                 'limit' => $limit,
+                'skip'  => $skip,
+                'sort'  => ['createdAt' => -1],
             ],
         );
 
@@ -75,9 +73,9 @@ final class InAppNotificationHandler
 
         return [
             'data'  => $data,
-            'total' => $total,
-            'page'  => $page,
             'limit' => $limit,
+            'page'  => $page,
+            'total' => $total,
         ];
     }
 
@@ -107,15 +105,15 @@ final class InAppNotificationHandler
     private function normalizeDocument(array $doc): array
     {
         return [
-            'id'            => (string) ($doc['_id'] ?? ''),
-            'tenant_id'     => $doc['tenantId'] ?? '',
+            'created_at'    => isset($doc['createdAt']) ? $doc['createdAt']->toDateTime()->format('c') : NULL,
             'event_type'    => $doc['eventType'] ?? '',
-            'severity'      => $doc['severity'] ?? '',
+            'id'            => (string) ($doc['_id'] ?? ''),
             'message'       => $doc['message'] ?? '',
+            'node_name'     => $doc['nodeName'] ?? NULL,
+            'severity'      => $doc['severity'] ?? '',
+            'tenant_id'     => $doc['tenantId'] ?? '',
             'topology_id'   => $doc['topologyId'] ?? NULL,
             'topology_name' => $doc['topologyName'] ?? NULL,
-            'node_name'     => $doc['nodeName'] ?? NULL,
-            'created_at'    => isset($doc['createdAt']) ? $doc['createdAt']->toDateTime()->format('c') : NULL,
         ];
     }
 

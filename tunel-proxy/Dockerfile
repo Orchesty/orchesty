@@ -1,12 +1,10 @@
-FROM --platform=$BUILDPLATFORM golang:1.24 AS builder
-WORKDIR /src
-COPY go.mod go.sum ./
-RUN go mod download
+FROM --platform=$BUILDPLATFORM hanabosocom/go-base:1.26
 COPY . .
 ARG TARGETOS TARGETARCH
-RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags='-s -w' -o /tunel-proxy ./cmd/server
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags='-s -w' -o /tunnel-proxy cmd/server/main.go && upx -9 /tunnel-proxy
 
-FROM gcr.io/distroless/static-debian12
-COPY --from=builder /tunel-proxy /tunel-proxy
-EXPOSE 8080 50051
-ENTRYPOINT ["/tunel-proxy"]
+FROM alpine
+RUN apk update --no-cache && apk upgrade --no-cache && apk add tzdata --no-cache
+COPY --from=0 /tunnel-proxy /bin/tunnel-proxy
+WORKDIR /bin
+CMD [ "./tunnel-proxy" ]

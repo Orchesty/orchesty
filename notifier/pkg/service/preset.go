@@ -24,7 +24,7 @@ func BuildPresets() []model.Preset {
 					return false, nil
 				}
 
-				count, err := h.WindowCount(ctx, "fail:"+e.Topology.ID, 10*60*1000)
+				count, err := h.WindowCount(ctx, "fail:"+e.Topology.ID, 10*60)
 				if err != nil {
 					return false, err
 				}
