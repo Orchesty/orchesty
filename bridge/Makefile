@@ -55,5 +55,5 @@ ci-test: test
 
 run-demo-bridge:
 	docker build -t $(TEST_IMAGE) .
-	docker compose -f ../clients/topology/$(TOPOLOGY_ID)-$(TOPOLOGY_NAME)/docker-compose.yml up -d --force-recreate
-	docker compose -f ../clients/topology/$(TOPOLOGY_ID)-$(TOPOLOGY_NAME)/docker-compose.yml logs -f topology-$(TOPOLOGY_ID)
+	#docker compose -f ../clients/topology/$(TOPOLOGY_ID)-$(TOPOLOGY_NAME)/docker-compose.yml up -d --force-recreate
+	#docker compose -f ../clients/topology/$(TOPOLOGY_ID)-$(TOPOLOGY_NAME)/docker-compose.yml logs -f topology-$(TOPOLOGY_ID)

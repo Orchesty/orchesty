@@ -14,15 +14,15 @@ import (
 )
 
 type eventEnvelope struct {
-	EventID     string         `json:"event_id"`
-	EventType   string         `json:"event_type"`
-	OccurredAt  string         `json:"occurred_at"`
-	TenantID    string         `json:"tenant_id"`
-	Topology    *topologyRef   `json:"topology,omitempty"`
-	Node        *nodeRef       `json:"node,omitempty"`
-	Severity    string         `json:"severity"`
-	Context     map[string]any `json:"context,omitempty"`
-	Message     string         `json:"message,omitempty"`
+	EventID    string         `json:"event_id"`
+	EventType  string         `json:"event_type"`
+	OccurredAt string         `json:"occurred_at"`
+	TenantID   string         `json:"tenant_id"`
+	Topology   *topologyRef   `json:"topology,omitempty"`
+	Node       *nodeRef       `json:"node,omitempty"`
+	Severity   string         `json:"severity"`
+	Context    map[string]any `json:"context,omitempty"`
+	Message    string         `json:"message,omitempty"`
 }
 
 type topologyRef struct {
@@ -41,6 +41,66 @@ type events struct {
 
 func newEvents(rabbitContainer rabbit.Container) events {
 	return events{publisher: rabbitContainer.Events}
+}
+
+func (ev events) sendLimitOverflowEvent(limitType string, currentValue, limitValue float64, discardedCount int64, message string) {
+	envelope := eventEnvelope{
+		EventID:    fmt.Sprintf("limit-%s-%d", limitType, time.Now().UnixMilli()),
+		EventType:  "limit_overflow",
+		OccurredAt: time.Now().UTC().Format(time.RFC3339),
+		TenantID:   "orchesty",
+		Severity:   "critical",
+		Context: map[string]any{
+			"limit_type":      limitType,
+			"current_value":   currentValue,
+			"limit_value":     limitValue,
+			"discarded_count": discardedCount,
+		},
+		Message: message,
+	}
+
+	body, err := json.Marshal(envelope)
+	if err != nil {
+		log.Err(err).Msg("failed to marshal limit overflow event envelope")
+		return
+	}
+
+	if err := ev.publisher.Publish(amqp.Publishing{
+		ContentType: "application/json",
+		Body:        body,
+	}); err != nil {
+		log.Err(err).Msg("failed to publish limit overflow event to orchesty.events")
+	}
+}
+
+func (ev events) sendLimitRecoveredEvent(limitType string, currentValue, limitValue float64, discardedCount int64, message string) {
+	envelope := eventEnvelope{
+		EventID:    fmt.Sprintf("limit-%s-%d", limitType, time.Now().UnixMilli()),
+		EventType:  "limit_recovered",
+		OccurredAt: time.Now().UTC().Format(time.RFC3339),
+		TenantID:   "orchesty",
+		Severity:   "info",
+		Context: map[string]any{
+			"limit_type":      limitType,
+			"current_value":   currentValue,
+			"limit_value":     limitValue,
+			"discarded_count": discardedCount,
+		},
+		Message: message,
+	}
+
+	body, err := json.Marshal(envelope)
+	if err != nil {
+		log.Err(err).Msg("failed to marshal limit recovered event envelope")
+		return
+	}
+
+	if err := ev.publisher.Publish(amqp.Publishing{
+		ContentType: "application/json",
+		Body:        body,
+	}); err != nil {
+		log.Err(err).Msg("failed to publish limit recovered event to orchesty.events")
+	}
 }
 
 func (ev events) send(msg *model.ProcessMessage, trashID, topologyName string) {
