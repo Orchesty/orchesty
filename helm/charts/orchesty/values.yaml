@@ -229,6 +229,7 @@ global:
 
   cloud:
     enabled: false
+    pullSecret: hanaboso
     backendUrl: https://cloud-backend.orchesty.example.com
     frontendUrl: https://cloud-frontend.orchesty.example.com
     startingPointUrl: http://cloud-starting-point.orchesty.example.com

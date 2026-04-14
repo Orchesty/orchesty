@@ -76,7 +76,7 @@ func TestCreateFilesWithWorkers(t *testing.T) {
 	if !strings.Contains(chart, "name: test-instance") || !strings.Contains(chart, `version: "~2.1.15"`) {
 		t.Fatalf("unexpected chart content: %s", chart)
 	}
-	if !strings.Contains(chart, "description: Test Instance Applinth Implementation") {
+	if !strings.Contains(chart, "description: Test Instance Instance") {
 		t.Fatalf("unexpected chart description content: %s", chart)
 	}
 	if !strings.Contains(values, "sdk: nodejs") || !strings.Contains(values, "image: hanaboso/demo-worker:latest") {
@@ -148,17 +148,23 @@ func TestInstallCallsHelmCommands(t *testing.T) {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	if len(calls) != 2 {
-		t.Fatalf("expected two helm calls, got %d", len(calls))
+	if len(calls) != 4 {
+		t.Fatalf("expected four helm calls, got %d", len(calls))
 	}
-	if !reflect.DeepEqual(calls[0], []string{"dependency", "build", filepath.Join(tempDir, "instance-test")}) {
-		t.Fatalf("unexpected dependency call: %v", calls[0])
+	if !reflect.DeepEqual(calls[0], []string{"repo", "add", "orchesty", "https://orchesty.github.io/helm-charts/", "--force-update"}) {
+		t.Fatalf("unexpected repo add call: %v", calls[0])
 	}
-	if calls[1][0] != "upgrade" || calls[1][1] != "-i" || calls[1][2] != "orchesty" {
-		t.Fatalf("unexpected install call prefix: %v", calls[1])
+	if !reflect.DeepEqual(calls[1], []string{"repo", "update", "orchesty"}) {
+		t.Fatalf("unexpected repo update call: %v", calls[1])
 	}
-	if calls[1][len(calls[1])-2] != "--kubeconfig" || calls[1][len(calls[1])-1] != "/tmp/kubeconfig" {
-		t.Fatalf("expected kubeconfig args at end, got %v", calls[1])
+	if !reflect.DeepEqual(calls[2], []string{"dependency", "build", filepath.Join(tempDir, "instance-test")}) {
+		t.Fatalf("unexpected dependency call: %v", calls[2])
+	}
+	if calls[3][0] != "upgrade" || calls[3][1] != "-i" || calls[3][2] != "orchesty" {
+		t.Fatalf("unexpected install call prefix: %v", calls[3])
+	}
+	if calls[3][len(calls[3])-2] != "--kubeconfig" || calls[3][len(calls[3])-1] != "/tmp/kubeconfig" {
+		t.Fatalf("expected kubeconfig args at end, got %v", calls[3])
 	}
 }
 
@@ -192,8 +198,8 @@ func TestInstallReturnsWrappedUpgradeError(t *testing.T) {
 	helm := &Helm{
 		executeFn: func(args ...string) (string, error) {
 			callCount++
-			if callCount == 1 {
-				return "dependency ok", nil
+			if callCount <= 3 {
+				return "ok", nil
 			}
 			return "upgrade failed", errors.New("boom")
 		},
@@ -399,7 +405,7 @@ func TestCreateFilesSanitizesChartName(t *testing.T) {
 	if !strings.Contains(chart, "name: demo-instance-eu") {
 		t.Fatalf("expected sanitized chart name, got %s", chart)
 	}
-	if !strings.Contains(chart, "description: Demo Instance @ EU Applinth Implementation") {
+	if !strings.Contains(chart, "description: Demo Instance @ EU Instance") {
 		t.Fatalf("expected original display name in chart description, got %s", chart)
 	}
 }

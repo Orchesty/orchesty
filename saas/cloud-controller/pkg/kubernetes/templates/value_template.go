@@ -143,17 +143,27 @@ global:
           ephemeral-storage: {{ephemeralStorageLimit}}Gi
 `
 	ResourceLimitsBlockTemplate = `
-    useQuota: {{limitsEnabled}}
-    namespaceQuota:
-      resources:
-        requests.cpu: {{cpuLimit}}m
-        requests.memory: {{memoryLimit}}Mi
-        limits.cpu: {{cpuLimit}}m
-        limits.memory: {{memoryLimit}}Mi
+  useQuota: {{limitsEnabled}}
+  namespaceQuota:
+    resources:
+      requests.cpu: {{cpuLimit}}m
+      requests.memory: {{memoryLimit}}Mi
+      limits.cpu: {{cpuLimit}}m
+      limits.memory: {{memoryLimit}}Mi
 `
-	ImageOverridesBlock = `
-    imageOverrides:
-      applinth-marketplace-ui: {{hanabosoDockerRegistry}}/{{applinthMarketplaceUiImage}}:{{appOrchestyVersion}}
-      backend: {{hanabosoDockerRegistry}}/{{applinthBackendImage}}:{{appOrchestyVersion}}
+	ImageOverridesBlockHeaderTemplate = `
+  imageOverrides:
+  {{imageOverridesBlock}}
+`
+	ImageOverridesApplinthBlockTemplate = `
+    applinth-marketplace-ui: {{hanabosoDockerRegistry}}/{{applinthMarketplaceUiImage}}:{{appOrchestyVersion}}
+    backend: {{hanabosoDockerRegistry}}/{{applinthBackendImage}}:{{appOrchestyVersion}}
+`
+	ImageOverridesBlockTemplate = `
+    frontend: {{hanabosoDockerRegistry}}/{{enterpriseFrontendImage}}:{{appOrchestyVersion}}
+    backend: {{hanabosoDockerRegistry}}/{{enterpriseBackendImage}}:{{appOrchestyVersion}}
+    tunnel-proxy: {{hanabosoDockerRegistry}}/{{tunnelProxyImage}}:{{appOrchestyVersion}}
+    trace: {{hanabosoDockerRegistry}}/{{traceImage}}:{{appOrchestyVersion}}
+    notifier: {{hanabosoDockerRegistry}}/{{notifierImage}}:{{appOrchestyVersion}}
 `
 )

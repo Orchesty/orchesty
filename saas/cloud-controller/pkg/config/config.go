@@ -45,11 +45,16 @@ type k8s struct {
 }
 
 type orchesty struct {
-	Version string `env:"APP_ORCHESTY_VERSION" default:"2.1"`
+	Version                 string `env:"APP_ORCHESTY_VERSION" default:"2.1"`
+	DockerRegistry          string `env:"ORCHESTY_DOCKER_REGISTRY" default:"dkr.hanaboso.net"`
+	EnterpriseBackendImage  string `env:"ORCHESTY_ENTERPRISE_BACKEND_IMAGE" default:"pipes/pipes/enterprise-backend"`
+	EnterpriseFrontendImage string `env:"ORCHESTY_ENTERPRISE_FRONTEND_IMAGE" default:"pipes/pipes/enterprise-frontend"`
+	TunnelProxyImage        string `env:"ORCHESTY_TUNNEL_PROXY_IMAGE" default:"pipes/pipes/tunnel-proxy"`
+	TraceImage              string `env:"ORCHESTY_TRACE_IMAGE" default:"pipes/pipes/trace"`
+	NotifierImage           string `env:"ORCHESTY_NOTIFIER_IMAGE" default:"pipes/pipes/notifier"`
 }
 
 type applinth struct {
-	DockerRegistry     string `env:"APPLINTH_DOCKER_REGISTRY" default:"dkr.hanaboso.net"`
 	MarketplaceUiImage string `env:"APPLINTH_MARKETPLACE_UI_IMAGE" default:"pipes/pipes/applinth-marketplace-ui"`
 	BackendImage       string `env:"APPLINTH_BACKEND_IMAGE" default:"pipes/pipes/applinth"`
 }
@@ -109,6 +114,7 @@ var (
 		K8s:      &K8s,
 		Helm:     &Helm,
 		Orchesty: &Orchesty,
+		Applinth: &Applinth,
 		Kong:     &Kong,
 		Cloud:    &Cloud,
 	}

@@ -48,6 +48,11 @@ func (c *Client) CreateNamespace(dto *models.InstanceDTO) (bool, error) {
 		return false, err
 	}
 
+	labelDisplayName, err := sanitizeK8sLabelValue(dto.InstanceDisplayName)
+	if err != nil {
+		return false, fmt.Errorf("invalid instance display name for namespace label: %w", err)
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
 	defer cancel()
 
@@ -55,7 +60,7 @@ func (c *Client) CreateNamespace(dto *models.InstanceDTO) (bool, error) {
 		ObjectMeta: metav1.ObjectMeta{
 			Name: dto.Instance,
 			Labels: map[string]string{
-				"oc-instance-displayname": dto.InstanceDisplayName,
+				"oc-instance-displayname": labelDisplayName,
 			},
 		},
 	}, metav1.CreateOptions{})
@@ -229,6 +234,11 @@ func (c *Client) UpdateNamespaceDisplayName(instance, displayName string) error 
 		return err
 	}
 
+	labelDisplayName, err := sanitizeK8sLabelValue(displayName)
+	if err != nil {
+		return fmt.Errorf("invalid instance display name for namespace label: %w", err)
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
 	defer cancel()
 
@@ -240,7 +250,7 @@ func (c *Client) UpdateNamespaceDisplayName(instance, displayName string) error 
 	if namespace.Labels == nil {
 		namespace.Labels = map[string]string{}
 	}
-	namespace.Labels[defaultSecretDisplayLabel] = displayName
+	namespace.Labels[defaultSecretDisplayLabel] = labelDisplayName
 
 	_, err = clientSet.CoreV1().Namespaces().Update(ctx, namespace, metav1.UpdateOptions{})
 	return err
@@ -309,6 +319,56 @@ func (c *Client) DeleteNamespace(instance string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func sanitizeK8sLabelValue(value string) (string, error) {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return "", fmt.Errorf("instance display name is empty")
+	}
+
+	var builder strings.Builder
+	builder.Grow(len(value))
+
+	lastWasSeparator := false
+	for _, char := range value {
+		isLetter := (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z')
+		isDigit := char >= '0' && char <= '9'
+		isSeparator := char == '-' || char == '_' || char == '.'
+
+		if isLetter || isDigit {
+			builder.WriteRune(char)
+			lastWasSeparator = false
+			continue
+		}
+
+		if isSeparator {
+			if !lastWasSeparator {
+				builder.WriteRune(char)
+				lastWasSeparator = true
+			}
+			continue
+		}
+
+		if !lastWasSeparator {
+			builder.WriteByte('-')
+			lastWasSeparator = true
+		}
+	}
+
+	clean := strings.Trim(builder.String(), "-_.")
+	if clean == "" {
+		return "", fmt.Errorf("instance display name %q does not contain any valid characters", value)
+	}
+
+	if len(clean) > 63 {
+		clean = strings.TrimRight(clean[:63], "-_.")
+		if clean == "" {
+			return "", fmt.Errorf("instance display name %q produced an empty label after truncation", value)
+		}
+	}
+
+	return clean, nil
 }
 
 func (c *Client) Install(dto *models.InstanceDTO) error {

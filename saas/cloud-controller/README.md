@@ -365,8 +365,8 @@ curl -s -X POST http://localhost:8080/instance \
   -d '{
     "instanceDisplayName": "Demo Instance",
     "instanceUrlPrefix": "instance",
-    "userName": "admin@example.com",
     "customizations": {
+      "userName": "admin@example.com",
       "workers": [
         {
           "name": "default",

@@ -2,8 +2,8 @@ apiVersion: v2
 name: orchesty
 description: Orchesty is a platform + framework for systems integration and process orchestration. See https://orchesty.io
 type: application
-version: 3.0.0-rc1
-appVersion: 2.1.1
+version: 3.0.0-rc2
+appVersion: 3.0.0.rc-1
 
 # Add dependencies
 dependencies:

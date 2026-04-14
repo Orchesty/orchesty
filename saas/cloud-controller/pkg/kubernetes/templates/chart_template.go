@@ -3,7 +3,7 @@ package templates
 const (
 	ChartTemplate = `apiVersion: v2
 name: {{chartName}}
-description: {{displayName}} Applinth Implementation
+description: {{displayName}} Instance
 type: application
 version: 0.0.1
 appVersion: 0.0.1

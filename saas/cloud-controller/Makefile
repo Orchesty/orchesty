@@ -1,4 +1,5 @@
 IMAGE=dkr.hanaboso.net/pipes/pipes/saas-cloud-controller:$(TAG)
+API_URL ?= http://localhost:8080
 
 DC=docker-compose
 DE=docker-compose exec -T app

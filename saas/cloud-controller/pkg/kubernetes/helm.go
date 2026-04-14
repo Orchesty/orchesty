@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -14,8 +15,12 @@ import (
 )
 
 const (
-	helmBinary = "helm"
+	helmBinary      = "helm"
+	orchestyRepo    = "orchesty"
+	orchestyRepoURL = "https://orchesty.github.io/helm-charts/"
 )
+
+var recommendedNameRegex = regexp.MustCompile(`^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$`)
 
 type Helm struct {
 	executeFn func(args ...string) (string, error)
@@ -66,7 +71,17 @@ func (h *Helm) Install(dto *models.InstanceDTO) error {
 }
 
 func (h *Helm) dependency(path string) error {
-	output, err := h.execute("dependency", "build", path)
+	output, err := h.execute("repo", "add", orchestyRepo, orchestyRepoURL, "--force-update")
+	if err != nil {
+		return fmt.Errorf("helm repo add failed: %w, output: %s", err, output)
+	}
+
+	output, err = h.execute("repo", "update", orchestyRepo)
+	if err != nil {
+		return fmt.Errorf("helm repo update failed: %w, output: %s", err, output)
+	}
+
+	output, err = h.execute("dependency", "build", path)
 	if err != nil {
 		return fmt.Errorf("helm dependency build failed: %w, output: %s", err, output)
 	}
@@ -237,15 +252,27 @@ func (h *Helm) buildResourceLimits(dto *models.InstanceDTO) string {
 
 func (h *Helm) buildImageOverrides(dto *models.InstanceDTO) string {
 	if dto.Customizations.Applinth.Enabled {
-		imageOverridesBlock := strings.ReplaceAll(templates.ImageOverridesBlock, "{{hanabosoDockerRegistry}}", config.Applinth.DockerRegistry)
+		imageOverridesBlock := strings.ReplaceAll(templates.ImageOverridesApplinthBlockTemplate, "{{hanabosoDockerRegistry}}", config.Orchesty.DockerRegistry)
 		imageOverridesBlock = strings.ReplaceAll(imageOverridesBlock, "{{applinthMarketplaceUiImage}}", config.Applinth.MarketplaceUiImage)
 		imageOverridesBlock = strings.ReplaceAll(imageOverridesBlock, "{{applinthBackendImage}}", config.Applinth.BackendImage)
 		imageOverridesBlock = strings.ReplaceAll(imageOverridesBlock, "{{appOrchestyVersion}}", config.Orchesty.Version)
 
+		imageOverridesBlock = strings.ReplaceAll(templates.ImageOverridesBlockHeaderTemplate, "{{imageOverridesBlock}}", imageOverridesBlock)
+
 		return imageOverridesBlock
 	}
 
-	return ""
+	imageOverridesBlock := strings.ReplaceAll(templates.ImageOverridesBlockTemplate, "{{hanabosoDockerRegistry}}", config.Orchesty.DockerRegistry)
+	imageOverridesBlock = strings.ReplaceAll(imageOverridesBlock, "{{enterpriseFrontendImage}}", config.Orchesty.EnterpriseFrontendImage)
+	imageOverridesBlock = strings.ReplaceAll(imageOverridesBlock, "{{enterpriseBackendImage}}", config.Orchesty.EnterpriseBackendImage)
+	imageOverridesBlock = strings.ReplaceAll(imageOverridesBlock, "{{tunnelProxyImage}}", config.Orchesty.TunnelProxyImage)
+	imageOverridesBlock = strings.ReplaceAll(imageOverridesBlock, "{{traceImage}}", config.Orchesty.TraceImage)
+	imageOverridesBlock = strings.ReplaceAll(imageOverridesBlock, "{{notifierImage}}", config.Orchesty.NotifierImage)
+	imageOverridesBlock = strings.ReplaceAll(imageOverridesBlock, "{{appOrchestyVersion}}", config.Orchesty.Version)
+
+	imageOverridesBlock = strings.ReplaceAll(templates.ImageOverridesBlockHeaderTemplate, "{{imageOverridesBlock}}", imageOverridesBlock)
+
+	return imageOverridesBlock
 }
 
 func (h *Helm) getKubeConfigArgs() []string {
@@ -292,6 +319,10 @@ func sanitizeK8sName(value string) (string, error) {
 		if name == "" {
 			return "", fmt.Errorf("instance display name %q produced an empty chart name after truncation", value)
 		}
+	}
+
+	if !recommendedNameRegex.MatchString(name) {
+		return "", fmt.Errorf("instance display name %q produced invalid chart name %q", value, name)
 	}
 
 	return name, nil

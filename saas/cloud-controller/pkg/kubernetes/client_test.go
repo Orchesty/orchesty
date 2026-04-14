@@ -51,8 +51,22 @@ func TestCreateNamespace(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected namespace to exist, got %v", err)
 	}
-	if namespace.Labels["oc-instance-displayname"] != dto.InstanceDisplayName {
+	if namespace.Labels["oc-instance-displayname"] != "Test-Instance" {
 		t.Fatalf("unexpected label value %q", namespace.Labels["oc-instance-displayname"])
+	}
+}
+
+func TestCreateNamespaceInvalidDisplayNameLabel(t *testing.T) {
+	client := &Client{clientSet: fake.NewSimpleClientset()}
+	dto := testK8sDTO()
+	dto.InstanceDisplayName = "@@@"
+
+	ok, err := client.CreateNamespace(dto)
+	if err == nil {
+		t.Fatal("expected error for invalid display name")
+	}
+	if ok {
+		t.Fatal("expected false result")
 	}
 }
 
@@ -194,7 +208,7 @@ func TestUpdateNamespaceDisplayName(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected namespace to exist, got %v", err)
 	}
-	if namespace.Labels["oc-instance-displayname"] != "New Name" {
+	if namespace.Labels["oc-instance-displayname"] != "New-Name" {
 		t.Fatalf("expected updated label, got %q", namespace.Labels["oc-instance-displayname"])
 	}
 }
