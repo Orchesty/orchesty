@@ -11,9 +11,5 @@ parameters:
   startingPointHost: "%env(string:STARTING_POINT_URL)%"
   tunnelProxyHost: "%env(string:TUNNEL_PROXY_HOST)%"
   env(TUNNEL_PROXY_HOST): ""
-  workerApiHost: "%env(string:WORKER_API_HOST)%"
-  env(WORKER_API_HOST): ""
-  orchesty_cloud_instance_id: "%env(string:ORCHESTY_CLOUD_INSTANCE_ID)%"
-  env(ORCHESTY_CLOUD_INSTANCE_ID): ""
   activateLink: '%backendHost%/user/%s/activate'
   passwordLink: 'reset-password/%s'

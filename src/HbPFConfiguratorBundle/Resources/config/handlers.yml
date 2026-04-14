@@ -41,10 +41,7 @@ services:
         arguments:
             - '@hbpf.configurator.manager.sdk'
             - '@doctrine_mongodb.odm.default_document_manager'
-            - '%backendHost%'
-            - '%startingPointHost%'
-            - '%workerApiHost%'
-            - '%orchesty_cloud_instance_id%'
+            - '%alpha_instance_id%'
 
     hbpf.configurator.handler.topology_progress:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyProgressHandler

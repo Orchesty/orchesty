@@ -25,19 +25,9 @@ final class SdkHandler
      *
      * @param SdkManager      $manager
      * @param DocumentManager $dm
-     * @param string          $backendHost
-     * @param string          $startingPointHost
-     * @param string          $workerApiHost
-     * @param string          $orchestyCloudInstanceId
+     * @param string          $instanceId
      */
-    public function __construct(
-        private SdkManager $manager,
-        private DocumentManager $dm,
-        private string $backendHost = '',
-        private string $startingPointHost = '',
-        private string $workerApiHost = '',
-        private string $orchestyCloudInstanceId = '',
-    )
+    public function __construct(private SdkManager $manager, private DocumentManager $dm, private string $instanceId)
     {
     }
 
@@ -143,8 +133,7 @@ final class SdkHandler
         $apiKey = $this->dm->getRepository(ApiToken::class)
             ->findOneBy(['user' => ApplicationController::SYSTEM_USER])?->getKey() ?? '';
 
-        $isCloud = $this->orchestyCloudInstanceId !== '';
-        $lines   = [];
+        $lines = [];
 
         if ($sdk->getType() === Sdk::TYPE_TUNNEL) {
             $lines[] = '# --- Orchesty Tunnel Configuration ---';
@@ -155,14 +144,7 @@ final class SdkHandler
 
         $lines[] = '# --- Orchesty Platform Connection ---';
         $lines[] = sprintf('ORCHESTY_API_KEY=%s', $apiKey);
-
-        if ($isCloud) {
-            $lines[] = sprintf('TENANT_ID=%s', $this->orchestyCloudInstanceId);
-        } else {
-            $lines[] = sprintf('BACKEND_URL=%s', rtrim($this->backendHost, '/'));
-            $lines[] = sprintf('STARTING_POINT_URL=%s', rtrim($this->startingPointHost, '/'));
-            $lines[] = sprintf('WORKER_API_HOST=%s', rtrim($this->workerApiHost, '/'));
-        }
+        $lines[] = sprintf('TENANT_ID=%s', $this->instanceId);
 
         return ['env' => implode("\n", $lines)];
     }

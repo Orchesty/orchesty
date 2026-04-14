@@ -25,6 +25,7 @@ services:
             - STARTING_POINT_URL=starting-point:8080
             - CRON_DSN=http://cron-api:8080
             - RABBITMQ_DSN=amqp://rabbitmq:5672
+            - ALPHA_INSTANCE_ID=local
             - JWT_KEY=test1234test1234test1234test1234test1234test1234test1234test1234test1234
 
     starting-point:
