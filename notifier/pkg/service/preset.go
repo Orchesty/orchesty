@@ -52,5 +52,21 @@ func BuildPresets() []model.Preset {
 				return e.Run.DurationMs > 5*60*1000, nil
 			},
 		},
+		{
+			ID:          "limit_overflow",
+			Enabled:     true,
+			Description: "resource or message limit exceeded, messages are being discarded",
+			Match: func(_ context.Context, e model.EventEnvelope, _ model.EvaluatorHelpers) (bool, error) {
+				return e.EventType == "limit_overflow", nil
+			},
+		},
+		{
+			ID:          "limit_recovered",
+			Enabled:     true,
+			Description: "resource or message limit recovered",
+			Match: func(_ context.Context, e model.EventEnvelope, _ model.EvaluatorHelpers) (bool, error) {
+				return e.EventType == "limit_recovered", nil
+			},
+		},
 	}
 }
