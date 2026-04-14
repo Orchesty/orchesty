@@ -30,8 +30,9 @@ type (
 	}
 
 	app struct {
-		Debug        bool   `env:"APP_DEBUG" default:"false"`
-		TopologyJSON string `env:"TOPOLOGY_JSON" default:"/srv/app/topology/topology.json"`
+		Debug             bool   `env:"APP_DEBUG" default:"false"`
+		TopologyJSON      string `env:"TOPOLOGY_JSON" default:"/srv/app/topology/topology.json"`
+		WorkerMaxFailures int    `env:"WORKER_MAX_FAILURES" default:"10"`
 	}
 
 	startingPoint struct {

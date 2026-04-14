@@ -5,11 +5,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/hanaboso/pipes/bridge/pkg/bridge/types"
-	"github.com/hanaboso/pipes/bridge/pkg/enum"
-	"github.com/hanaboso/pipes/bridge/pkg/model"
 	"net/http"
 	"time"
+
+	"github.com/hanaboso/pipes/bridge/pkg/bridge/types"
+	"github.com/hanaboso/pipes/bridge/pkg/config"
+	"github.com/hanaboso/pipes/bridge/pkg/enum"
+	"github.com/hanaboso/pipes/bridge/pkg/model"
+	"github.com/rs/zerolog/log"
 )
 
 type httpBeforeProcess struct {
@@ -23,7 +26,14 @@ type Http struct {
 
 func (h httpBeforeProcess) BeforeProcess(node types.Node, dto *model.ProcessMessage) model.ProcessResult {
 	host := node.Settings().Url
-	if !CanSend(host) {
+	nodeId := node.Id()
+	correlationId := dto.GetHeaderOrDefault(enum.Header_CorrelationId, "")
+
+	if IsPoisoned(host, nodeId, correlationId) {
+		return dto.Trash(fmt.Errorf("worker unavailable, correlationId poisoned"))
+	}
+
+	if !CanSend(host, nodeId) {
 		time.Sleep(delaySec * time.Second)
 		return dto.Error(fmt.Errorf("sdk was unreachable, delaying message"))
 	}
@@ -50,21 +60,32 @@ func (h httpBeforeProcess) BeforeProcess(node types.Node, dto *model.ProcessMess
 		return dto.Error(err)
 	}
 
-	// TODO configurable timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 	req = req.WithContext(ctx)
 
 	response, err := h.client.Do(req)
 	if err != nil {
-		Lock(host)
+		RecordFailure(host, nodeId, correlationId)
+		if IsPoisoned(host, nodeId, correlationId) {
+			log.Warn().EmbedObject(dto).
+				Bool(enum.LogHeader_IsForUi, true).
+				Msgf("Worker %s unreachable, poisoning correlationId %s after %d failures", host, correlationId, config.App.WorkerMaxFailures)
+			return dto.Trash(fmt.Errorf("worker unreachable, correlationId poisoned after %d failures", config.App.WorkerMaxFailures))
+		}
 		return dto.Error(err)
 	}
 	defer response.Body.Close()
 
 	dto.FromHttpResponse(response)
 	if response.StatusCode > 500 {
-		Lock(host)
+		RecordFailure(host, nodeId, correlationId)
+		if IsPoisoned(host, nodeId, correlationId) {
+			log.Warn().EmbedObject(dto).
+				Bool(enum.LogHeader_IsForUi, true).
+				Msgf("Worker %s returned %d, poisoning correlationId %s after %d failures", host, response.StatusCode, correlationId, config.App.WorkerMaxFailures)
+			return dto.Trash(fmt.Errorf("result status [%d], correlationId poisoned after %d failures", response.StatusCode, config.App.WorkerMaxFailures))
+		}
 		return dto.Error(fmt.Errorf("result status [%d]", response.StatusCode))
 	} else if response.StatusCode >= 300 {
 		return dto.Trash(
@@ -76,7 +97,8 @@ func (h httpBeforeProcess) BeforeProcess(node types.Node, dto *model.ProcessMess
 		)
 	}
 
-	// Only check for result code existence -> process is outside http worker
+	RecordSuccess(host, nodeId)
+
 	if _, err := dto.GetHeader(enum.Header_ResultCode); err != nil {
 		return dto.Trash(err)
 	}
