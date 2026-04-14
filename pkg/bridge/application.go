@@ -72,6 +72,9 @@ func NewBridge(rabbitClient *rabbitmq.Client, mongodb *mongo.MongoDb, topology m
 
 func (b *Bridge) start(ctx context.Context) {
 	go worker.StartCleanup(ctx)
+	go StartLimitsChecker(ctx, b.mongodb, b.events)
+	initTrashDedup(b.events)
+	go StartTrashDedupCleanup(ctx)
 
 	workerWg := &sync.WaitGroup{}
 	for _, node := range b.topology.Shards {

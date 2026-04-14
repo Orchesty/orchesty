@@ -229,6 +229,10 @@ func (pm *ProcessMessage) Trash(err error) ProcessResult {
 	return TrashResult(pm, err)
 }
 
+func (pm *ProcessMessage) Discard(err error) ProcessResult {
+	return DiscardResult(pm, err)
+}
+
 // Adds node data -> best to use as .EmbedObject(dto)
 func (pm ProcessMessage) MarshalZerologObject(e *zerolog.Event) {
 	e.Str(enum.LogHeader_CorrelationId, pm.GetHeaderOrDefault(enum.Header_CorrelationId, ""))

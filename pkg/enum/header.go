@@ -17,8 +17,8 @@ const (
 	Header_TopologyId   = "topology-id"
 	// TODO deprecated totok by mělo být vyřešeno novým gateway workerem
 	Header_WorkerFollowers = "worker-followers"
-	Header_SystemEvent = "system-event"
-	Header_Source      = "source"
+	Header_SystemEvent     = "system-event"
+	Header_Source          = "source"
 
 	Source_UI   = "ui"
 	Source_Auto = "auto"
