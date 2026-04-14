@@ -266,8 +266,9 @@ func (s *Server) createInstance(writer http.ResponseWriter, request *http.Reques
 
 	result, err := s.instanceService.CreateInstance(body)
 	if err != nil {
+		var inputErr *service.InputError
 		switch {
-		case errors.Is(err, service.ErrInstanceDisplayNameRequired):
+		case errors.As(err, &inputErr):
 			writeError(writer, http.StatusBadRequest, err)
 		case errors.Is(err, service.ErrInstanceUnavailable):
 			writeError(writer, http.StatusConflict, err)
@@ -282,7 +283,8 @@ func (s *Server) createInstance(writer http.ResponseWriter, request *http.Reques
 
 func (s *Server) deleteInstance(writer http.ResponseWriter, request *http.Request) {
 	if err := s.instanceService.DeleteInstance(request.URL.Query().Get("instance")); err != nil {
-		if errors.Is(err, service.ErrInstanceRequired) {
+		var inputErr *service.InputError
+		if errors.As(err, &inputErr) {
 			writeError(writer, http.StatusBadRequest, err)
 			return
 		}
@@ -306,8 +308,9 @@ func (s *Server) updateInstance(writer http.ResponseWriter, request *http.Reques
 
 	result, err := s.instanceService.UpdateInstance(body)
 	if err != nil {
+		var inputErr *service.InputError
 		switch {
-		case errors.Is(err, service.ErrInstanceRequired), errors.Is(err, service.ErrInstanceDisplayNameRequired):
+		case errors.As(err, &inputErr):
 			writeError(writer, http.StatusBadRequest, err)
 		default:
 			writeError(writer, http.StatusInternalServerError, err)

@@ -37,6 +37,7 @@ func testHelmDTO() *models.InstanceDTO {
 	return &models.InstanceDTO{
 		Instance:            "instance-test",
 		InstanceDisplayName: "Test Instance",
+		InstanceUrlPrefix:   "test-prefix",
 		Customizations: models.Customizations{
 			Workers: []models.Worker{
 				{
@@ -72,14 +73,20 @@ func TestCreateFilesWithWorkers(t *testing.T) {
 	chart := string(chartBytes)
 	values := string(valuesBytes)
 
-	if !strings.Contains(chart, "name: Test Instance") || !strings.Contains(chart, `version: "~2.1.15"`) {
+	if !strings.Contains(chart, "name: test-instance") || !strings.Contains(chart, `version: "~2.1.15"`) {
 		t.Fatalf("unexpected chart content: %s", chart)
+	}
+	if !strings.Contains(chart, "description: Test Instance Applinth Implementation") {
+		t.Fatalf("unexpected chart description content: %s", chart)
 	}
 	if !strings.Contains(values, "sdk: nodejs") || !strings.Contains(values, "image: hanaboso/demo-worker:latest") {
 		t.Fatalf("expected workers block in values: %s", values)
 	}
 	if !strings.Contains(values, "bridgepool: \"true\"") {
 		t.Fatalf("expected bridgepool key in values: %s", values)
+	}
+	if !strings.Contains(values, "api-test-prefix-instance-test.") {
+		t.Fatalf("expected instanceUrlPrefix expanded in backend_url: %s", values)
 	}
 }
 
@@ -88,7 +95,7 @@ func TestCreateFilesWithoutWorkers(t *testing.T) {
 	withHelmConfig(t, tempDir, "~2.1.15", "bridgepool", "")
 
 	helm := NewHelm()
-	dto := &models.InstanceDTO{Instance: "instance-test", InstanceDisplayName: "Test Instance"}
+	dto := &models.InstanceDTO{Instance: "instance-test", InstanceDisplayName: "Test Instance", InstanceUrlPrefix: "test-prefix"}
 
 	if err := helm.createFiles(tempDir, dto); err != nil {
 		t.Fatalf("expected no error, got %v", err)
@@ -212,6 +219,7 @@ func TestCreateFilesWithValkeyLimit(t *testing.T) {
 	dto := &models.InstanceDTO{
 		Instance:            "instance-test",
 		InstanceDisplayName: "Test Instance",
+		InstanceUrlPrefix:   "test-prefix",
 		Customizations: models.Customizations{
 			Valkey: models.Valkey{
 				Enabled: true,
@@ -264,6 +272,7 @@ func TestCreateFilesWithWorkerEnvs(t *testing.T) {
 	dto := &models.InstanceDTO{
 		Instance:            "instance-test",
 		InstanceDisplayName: "Test Instance",
+		InstanceUrlPrefix:   "test-prefix",
 		Customizations: models.Customizations{
 			Workers: []models.Worker{
 				{
@@ -312,7 +321,7 @@ func TestCreateFilesReplacesAppOrchestyVersionPlaceholder(t *testing.T) {
 	})
 
 	helm := NewHelm()
-	dto := &models.InstanceDTO{Instance: "instance-test", InstanceDisplayName: "Test Instance"}
+	dto := &models.InstanceDTO{Instance: "instance-test", InstanceDisplayName: "Test Instance", InstanceUrlPrefix: "test-prefix"}
 
 	if err := helm.createFiles(tempDir, dto); err != nil {
 		t.Fatalf("expected no error, got %v", err)
@@ -330,5 +339,83 @@ func TestCreateFilesReplacesAppOrchestyVersionPlaceholder(t *testing.T) {
 	}
 	if !strings.Contains(values, "orchestyVersion: \"9.9.9-test\"") {
 		t.Fatalf("expected replaced orchesty version in values, got %s", values)
+	}
+}
+
+func TestSanitizeK8sName(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+		hasError bool
+	}{
+		{name: "spaces and uppercase", input: "Test Instance", expected: "test-instance"},
+		{name: "special characters", input: "  Demo@Prod! 2026  ", expected: "demo-prod-2026"},
+		{name: "only invalid characters", input: "@@@", hasError: true},
+		{name: "empty string", input: "   ", hasError: true},
+		{name: "trims and deduplicates dashes", input: "---A__B---", expected: "a-b"},
+		{name: "max length 63", input: strings.Repeat("a", 70), expected: strings.Repeat("a", 63)},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			result, err := sanitizeK8sName(test.input)
+			if test.hasError {
+				if err == nil {
+					t.Fatalf("expected error, got nil")
+				}
+
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("expected no error, got %v", err)
+			}
+
+			if result != test.expected {
+				t.Fatalf("expected %q, got %q", test.expected, result)
+			}
+		})
+	}
+}
+
+func TestCreateFilesSanitizesChartName(t *testing.T) {
+	tempDir := t.TempDir()
+	withHelmConfig(t, tempDir, "~2.1.15", "bridgepool", "")
+
+	helm := NewHelm()
+	dto := &models.InstanceDTO{Instance: "instance-test", InstanceDisplayName: "Demo Instance @ EU", InstanceUrlPrefix: "test-prefix"}
+
+	if err := helm.createFiles(tempDir, dto); err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	chartBytes, err := os.ReadFile(filepath.Join(tempDir, "Chart.yaml"))
+	if err != nil {
+		t.Fatalf("expected Chart.yaml, got %v", err)
+	}
+
+	chart := string(chartBytes)
+	if !strings.Contains(chart, "name: demo-instance-eu") {
+		t.Fatalf("expected sanitized chart name, got %s", chart)
+	}
+	if !strings.Contains(chart, "description: Demo Instance @ EU Applinth Implementation") {
+		t.Fatalf("expected original display name in chart description, got %s", chart)
+	}
+}
+
+func TestCreateFilesReturnsErrorForInvalidChartName(t *testing.T) {
+	tempDir := t.TempDir()
+	withHelmConfig(t, tempDir, "~2.1.15", "bridgepool", "")
+
+	helm := NewHelm()
+	dto := &models.InstanceDTO{Instance: "instance-test", InstanceDisplayName: "@@@"}
+
+	err := helm.createFiles(tempDir, dto)
+	if err == nil {
+		t.Fatal("expected error")
+	}
+	if !strings.Contains(err.Error(), "invalid instance display name") {
+		t.Fatalf("unexpected error: %v", err)
 	}
 }

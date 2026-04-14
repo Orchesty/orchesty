@@ -1,4 +1,4 @@
-{{- $componentName := "cron-api" -}}
+{{- $componentName := "trace" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -8,8 +8,6 @@ metadata:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 6 }}
@@ -20,7 +18,7 @@ spec:
     spec:
 {{ include "pipes.imagePullSecrets" . | indent 6 }}
       containers:
-        - name: cron-api
+        - name: trace
           image: {{ include "pipes.imageFullname" (dict "image" $componentName "root" .) }}
           imagePullPolicy: Always
           ports:
@@ -29,17 +27,14 @@ spec:
           env:
             - name: TZ
               value: "{{ .Values.global.timezone }}"
-            - name: MONGO_DSN
-              valueFrom:
-                secretKeyRef:
-                  key: mongodb_dsn
-                  name: {{ include "pipes.secretName" . }}
-            - name: MONGO_COLLECTION
-              value: cron
-            - name: STARTING_POINT_DSN
-              value: "{{ .Values.global.starting_point_url }}"
+            - name: APP_DEBUG
+              value: "false"
+            - name: BACKEND_URL
+              value: "http://{{ include "pipes.fullname" (dict "suffix" "backend" "root" .) }}:80"
+            - name: BACKEND_TIMEOUT
+              value: "{{ .Values.global.trace.backendTimeout }}"
           resources:
-{{ toYaml .Values.global.cronApi.resources | indent 12 }}
+{{ toYaml .Values.global.trace.resources | indent 12 }}
 
 {{- with .Values.global.nodeSelector }}
       nodeSelector:

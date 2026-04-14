@@ -127,7 +127,7 @@ func TestCreateInstanceSuccess(t *testing.T) {
 	}}
 	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
-	request := httptest.NewRequest(http.MethodPost, "/instance", bytes.NewBufferString(`{"instanceDisplayName":"Test Instance","userName":"user@test.local","customizations":{"workers":[{"name":"default","image":"img","sdkType":"nodejs"}]}}`))
+	request := httptest.NewRequest(http.MethodPost, "/instance", bytes.NewBufferString(`{"instanceDisplayName":"Test Instance","customizations":{"userName":"user@test.local","workers":[{"name":"default","image":"img","sdkType":"nodejs"}]}}`))
 	request.Header.Set("Content-Type", "application/json")
 	response := httptest.NewRecorder()
 
@@ -142,8 +142,8 @@ func TestCreateInstanceSuccess(t *testing.T) {
 	if serviceStub.createRequest.InstanceDisplayName != "Test Instance" {
 		t.Fatalf("unexpected instanceDisplayName %q", serviceStub.createRequest.InstanceDisplayName)
 	}
-	if serviceStub.createRequest.UserName != "user@test.local" {
-		t.Fatalf("unexpected userName %q", serviceStub.createRequest.UserName)
+	if serviceStub.createRequest.Customizations.UserName != "user@test.local" {
+		t.Fatalf("unexpected userName %q", serviceStub.createRequest.Customizations.UserName)
 	}
 	if len(serviceStub.createRequest.Customizations.Workers) != 1 || serviceStub.createRequest.Customizations.Workers[0].Image != "img" {
 		t.Fatalf("unexpected workerImage %+v", serviceStub.createRequest.Customizations)
@@ -233,7 +233,7 @@ func TestDeleteInstanceSuccess(t *testing.T) {
 }
 
 func TestDeleteInstanceBadRequest(t *testing.T) {
-	serviceStub := &instanceServiceStub{deleteErr: service.ErrInstanceRequired}
+	serviceStub := &instanceServiceStub{deleteErr: &service.InputError{Err: service.ErrInstanceRequired}}
 	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
 	request := httptest.NewRequest(http.MethodDelete, "/instance", nil)
@@ -306,7 +306,7 @@ func TestUpdateInstanceBadRequest(t *testing.T) {
 }
 
 func TestUpdateInstanceValidationError(t *testing.T) {
-	serviceStub := &instanceServiceStub{updateErr: service.ErrInstanceRequired}
+	serviceStub := &instanceServiceStub{updateErr: &service.InputError{Err: service.ErrInstanceRequired}}
 	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
 	request := httptest.NewRequest(http.MethodPatch, "/instance", bytes.NewBufferString(`{"instance":""}`))

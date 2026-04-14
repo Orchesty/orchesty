@@ -1,11 +1,17 @@
 global:
   nameOverride: ""
   fullnameOverride: ""
+
+  # Name of the K8s Secret with application credentials.
+  # Used by parent chart templates (auto-computed if empty) AND by subchart values (via YAML anchor).
+  # When changing release name or nameOverride, update this to match: {releaseName}-secrets
+  secretName: &secretName "orchesty-secrets"
+  alloyConfigMapName: &alloyConfigMapName "orchesty-alloy"
   
   orchestyVersion: "2.1"
-  frontend_url: https://pipes.example.com
-  backend_url: https://backend.pipes.example.com
-  starting_point_url: http://starting-point.pipes.example.com
+  frontend_url: https://orchesty.example.com
+  backend_url: https://backend.orchesty.example.com
+  starting_point_url: http://starting-point.orchesty.example.com
 
   timezone: "Europe/London"
 
@@ -46,6 +52,9 @@ global:
     detector: detector
     worker-api: worker-api
     metrics-collector: metrics-collector
+    notifier: notifier
+    trace: trace
+    tunnel-proxy: tunnel-proxy
 
   # Default global node selector
   nodeSelector: {}
@@ -77,10 +86,10 @@ global:
     serviceAnnotations: {}
     resources:
       requests:
-        memory: 8Mi
-        cpu: 1m
+        memory: 16Mi
+        cpu: 10m
       limits:
-        memory: 12Mi
+        memory: 16Mi
         cpu: 10m
 
   backend:
@@ -91,27 +100,28 @@ global:
     checkInfinityLoop: true
     resources:
       requests:
-        memory: 80Mi
-        cpu: 1m
+        memory: 128Mi
+        cpu: 20m
       limits:
-        memory: 96Mi
+        memory: 128Mi
         cpu: 500m
     postInstall:
       enabled: true
       backoffLimit: 3
       ttlSecondsAfterFinished: 600
+      createDefaultUser: true
+      createDefaultUserCommand: "php bin/console user:create ${ORCHESTY_USR} ${ORCHESTY_PWD}"
       commands:
         - echo "Running post-install setup..."
         - php bin/console doctrine:mongodb:schema:update --dm default
         - php bin/console doctrine:mongodb:schema:update --dm metrics
         - php bin/console mongodb:index:update
         - php bin/console api-token:create --key ${ORCHESTY_API_KEY}
-        - php bin/console user:create ${ORCHESTY_USR} ${ORCHESTY_PWD}
         - echo "Post-install done."
       resources:
         requests:
           memory: 128Mi
-          cpu: 200m
+          cpu: 20m
         limits:
           memory: 128Mi
           cpu: 500m
@@ -119,29 +129,30 @@ global:
   cronApi:
     resources:
       requests:
-        memory: 20Mi
-        cpu: 1m
+        memory: 32Mi
+        cpu: 20m
       limits:
         memory: 32Mi
         cpu: 50m
 
   frontend:
+    title: "Orchesty"
     service:
       type: none
       port: 80
     serviceAnnotations: {}
     resources:
       requests:
-        memory: 8Mi
-        cpu: 1m
+        memory: 16Mi
+        cpu: 10m
       limits:
-        memory: 12Mi
+        memory: 16Mi
         cpu: 10m
 
   limiter:
     resources:
       requests:
-        memory: 20Mi
+        memory: 32Mi
         cpu: 10m
       limits:
         memory: 32Mi
@@ -150,8 +161,8 @@ global:
   fluentd:
     resources:
       requests:
-        memory: 100Mi
-        cpu: 10m
+        memory: 128Mi
+        cpu: 20m
       limits:
         memory: 128Mi
         cpu: 150m
@@ -159,8 +170,8 @@ global:
   multiCounter:
     resources:
       requests:
-        memory: 20Mi
-        cpu: 5m
+        memory: 32Mi
+        cpu: 10m
       limits:
         memory: 32Mi
         cpu: 500m
@@ -172,8 +183,8 @@ global:
     serviceAnnotations: {}
     resources:
       requests:
-        memory: 20Mi
-        cpu: 10m
+        memory: 32Mi
+        cpu: 20m
       limits:
         memory: 32Mi
         cpu: 500m
@@ -183,8 +194,8 @@ global:
     manageRBAC: true
     resources:
       requests:
-        memory: 55Mi
-        cpu: 10m
+        memory: 64Mi
+        cpu: 20m
       limits:
         memory: 64Mi
         cpu: 100m
@@ -194,8 +205,8 @@ global:
     manageRBAC: true
     resources:
       requests:
-        memory: 50Mi
-        cpu: 5m
+        memory: 64Mi
+        cpu: 20m
       limits:
         memory: 64Mi
         cpu: 100m
@@ -216,6 +227,30 @@ global:
 #            operator: Equal
 #            value: "true"
 
+  cloud:
+    enabled: false
+    backendUrl: https://cloud-backend.orchesty.example.com
+    frontendUrl: https://cloud-frontend.orchesty.example.com
+    startingPointUrl: http://cloud-starting-point.orchesty.example.com
+    instance:
+      notifierUrl: http://notifier.orchesty.example.com
+      traceUrl: http://trace.orchesty.example.com
+      tunnelProxyUrl: http://cloud-tunnel-proxy.orchesty.example.com
+    features:
+      enterpriseDashboards: 'true'
+      traceAuditing: 'true'
+      auditLogs: 'true'
+      pulse: 'false'
+    limits:
+      topologySlots: '0'
+      messages: '0'
+      storageGb: '0'
+    auth0:
+      domain: example.auth0.com
+      audience: https://api.orchesty.example.com
+      clientId: exampleClientId
+      redirect: 'true'
+
   metricsCollector:
     enabled: false # Enable it, if you want use Metrics Collector
     debug: false # Enable it, if you want to see debug logs
@@ -228,7 +263,7 @@ global:
     tickLoki: 12 # in hours, how often collect metrics for Loki
     resources:
       requests:
-        memory: 64Mi
+        memory: 256Mi
         cpu: 50m
       limits:
         memory: 256Mi
@@ -266,11 +301,47 @@ global:
     serviceAnnotations: {}
     resources:
       requests:
-        memory: 50Mi
-        cpu: 5m
+        memory: 64Mi
+        cpu: 20m
       limits:
         memory: 64Mi
         cpu: 250m
+
+  notifier:
+    throttleMode: per_topology_per_preset
+    startingPointDsn: "http://starting-point:8080"
+    startingPointTimeout: "30"
+    bufferWindow: "60"
+    throttleWindow: "7200"
+    inAppThrottleWindow: "60"
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 20m
+      limits:
+        memory: 64Mi
+        cpu: 100m
+
+  trace:
+    backendTimeout: "30"
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 20m
+      limits:
+        memory: 64Mi
+        cpu: 100m
+
+  tunnelProxy:
+    requestTimeout: "30"
+    maxRequestBodyMb: "50"
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 20m
+      limits:
+        memory: 64Mi
+        cpu: 100m
   
   logs:
     lokiHostname: loki-gateway.{{ .Release.Namespace }}.svc.cluster.local
@@ -297,7 +368,7 @@ valkey:
   resources:
     requests:
       cpu: 100m
-      memory: 128Mi
+      memory: 256Mi
     limits:
       cpu: 200m
       memory: 256Mi
@@ -320,7 +391,7 @@ grafana:
   
   # Use existing secret for admin credentials
   admin:
-    existingSecret: pipes-secrets
+    existingSecret: *secretName
     userKey: "admin-user"
     passwordKey: "admin-password"
 
@@ -417,22 +488,22 @@ loki:
         - name: S3_ENDPOINT
           valueFrom:
             secretKeyRef:
-              name: pipes-secrets
+              name: *secretName
               key: s3-endpoint
         - name: S3_BUCKET
           valueFrom:
             secretKeyRef:
-              name: pipes-secrets
+              name: *secretName
               key: s3-bucket
         - name: S3_ACCESS_KEY
           valueFrom:
             secretKeyRef:
-              name: pipes-secrets
+              name: *secretName
               key: s3-access-key
         - name: S3_SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: pipes-secrets
+              name: *secretName
               key: s3-secret-key
 
   # Explicitly disable other components to avoid conflicts with SingleBinary mode
@@ -479,7 +550,7 @@ alloy:
     
     configMap:
       create: false
-      name: pipes-alloy
+      name: *alloyConfigMapName
 
   controller:
     type: daemonset

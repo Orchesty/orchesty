@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"regexp"
 	"strings"
 )
 
@@ -16,6 +17,12 @@ const InstancePrefix = "instance-"
 
 const charsetFull = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 const charsetLower = "abcdefghijklmnopqrstuvwxyz0123456789"
+
+const defaultUserName = "orchesty@hanaboso.com"
+
+var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+
+var ErrInvalidUserName = errors.New("userName must be a valid email address (3-254 characters)")
 
 type WorkerEnv struct {
 	Key   string `json:"key"`
@@ -56,21 +63,29 @@ type Applinth struct {
 }
 
 type ResourceLimits struct {
-	Enabled bool   `json:"enabled"`
-	Cpu     string `json:"cpu"`    // in millicores, e.g. "500"
-	Memory  string `json:"memory"` // in Gi
+	Enabled       bool   `json:"enabled"`
+	Cpu           string `json:"cpu"`    // in millicores, e.g. "500"
+	Memory        string `json:"memory"` // in Gi
+	TopologySlots int    `json:"topologySlots"`
+	Messages      int    `json:"messages"`
+	StorageGb     int    `json:"storageGb"`
+}
+
+type Features struct {
+	TraceAuditing        bool `json:"traceAuditing,omitempty"`
+	EnterpriseDashboards bool `json:"enterpriseDashboards,omitempty"`
+	AuditLogs            bool `json:"auditLogs,omitempty"`
+	Pulse                bool `json:"pulse,omitempty"`
 }
 
 type Customizations struct {
-	Workers              []Worker       `json:"workers,omitempty"`
-	Valkey               Valkey         `json:"valkey,omitempty"`
-	Logs                 Logs           `json:"logs,omitempty"`
-	Applinth             Applinth       `json:"applinth,omitempty"`
-	ResourceLimits       ResourceLimits `json:"resourceLimits,omitempty"`
-	TraceAuditing        bool           `json:"traceAuditing,omitempty"`
-	EnterpriseDashboards bool           `json:"enterpriseDashboards,omitempty"`
-	AuditLogs            bool           `json:"auditLogs,omitempty"`
-	UseBundle            bool           `json:"useBundle,omitempty"`
+	Workers        []Worker       `json:"workers,omitempty"`
+	Valkey         Valkey         `json:"valkey,omitempty"`
+	Logs           Logs           `json:"logs,omitempty"`
+	Applinth       Applinth       `json:"applinth,omitempty"`
+	ResourceLimits ResourceLimits `json:"resourceLimits,omitempty"`
+	Features       Features       `json:"features,omitempty"`
+	UserName       string         `json:"userName,omitempty"`
 }
 
 type ExistingInstanceData struct {
@@ -125,10 +140,16 @@ type InstanceInfo struct {
 }
 
 // NewInstanceDTO creates a new InstanceDTO with generated credentials.
-func NewInstanceDTO(instanceDisplayName, instanceUrlPrefix, userName string, customizations Customizations) (*InstanceDTO, error) {
-	instanceId, err := generatePassword(10, true)
-	if err != nil {
-		return nil, fmt.Errorf("failed to generate instance prefix: %w", err)
+func NewInstanceDTO(instanceDisplayName, instanceUrlPrefix, forceInstanceId string, customizations Customizations) (*InstanceDTO, error) {
+	var instanceId string
+	var err error
+	if forceInstanceId != "" {
+		instanceId = forceInstanceId
+	} else {
+		instanceId, err = generatePassword(10, true)
+		if err != nil {
+			return nil, fmt.Errorf("failed to generate instance prefix: %w", err)
+		}
 	}
 
 	mongoPwd, err := generatePassword(16, false)
@@ -175,6 +196,13 @@ func NewInstanceDTO(instanceDisplayName, instanceUrlPrefix, userName string, cus
 		if err != nil {
 			return nil, fmt.Errorf("failed to generate applinth EC key pair: %w", err)
 		}
+	}
+
+	userName := strings.TrimSpace(customizations.UserName)
+	if userName == "" {
+		userName = defaultUserName
+	} else if len(userName) < 3 || len(userName) > 254 || !emailRegex.MatchString(userName) {
+		return nil, ErrInvalidUserName
 	}
 
 	return &InstanceDTO{

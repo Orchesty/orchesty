@@ -89,8 +89,9 @@ func (k *kubernetesStub) CreateNamespace(*models.InstanceDTO) (bool, error) {
 	return true, k.stepErrs["create-namespace"]
 }
 
-func (k *kubernetesStub) IsNamespaceAvailable(*models.InstanceDTO) (bool, error) {
+func (k *kubernetesStub) IsNamespaceAvailable(dto *models.InstanceDTO) (bool, error) {
 	k.steps = append(k.steps, "is-namespace-available")
+	k.lastAppliedDTO = dto
 	if err := k.stepErrs["is-namespace-available"]; err != nil {
 		return false, err
 	}
@@ -371,8 +372,8 @@ func TestCreateInstanceSuccess(t *testing.T) {
 	if result.Instance == "" {
 		t.Fatal("expected generated instance")
 	}
-	if result.UserName != defaultUserName {
-		t.Fatalf("expected default username %q, got %q", defaultUserName, result.UserName)
+	if result.UserName != "orchesty@hanaboso.com" {
+		t.Fatalf("expected default username %q, got %q", "orchesty@hanaboso.com", result.UserName)
 	}
 	if mongo.createCalls != 1 {
 		t.Fatalf("expected one mongo create call, got %d", mongo.createCalls)
@@ -512,9 +513,9 @@ func TestCreateInstanceInvalidUserNameTooShort(t *testing.T) {
 	_, err := service.CreateInstance(CreateInstanceRequest{
 		InstanceDisplayName: "Test instance",
 		InstanceUrlPrefix:   "test-instance",
-		UserName:            "a@b",
+		Customizations:      models.Customizations{UserName: "a@b"},
 	})
-	if err != ErrInvalidUserName {
+	if !errors.Is(err, ErrInvalidUserName) {
 		t.Fatalf("expected ErrInvalidUserName, got %v", err)
 	}
 }
@@ -528,9 +529,9 @@ func TestCreateInstanceInvalidUserNameNotEmail(t *testing.T) {
 	_, err := service.CreateInstance(CreateInstanceRequest{
 		InstanceDisplayName: "Test instance",
 		InstanceUrlPrefix:   "test-instance",
-		UserName:            "invalid-user",
+		Customizations:      models.Customizations{UserName: "invalid-user"},
 	})
-	if err != ErrInvalidUserName {
+	if !errors.Is(err, ErrInvalidUserName) {
 		t.Fatalf("expected ErrInvalidUserName, got %v", err)
 	}
 }
@@ -585,7 +586,7 @@ func TestCreateInstanceValidCustomEmail(t *testing.T) {
 	result, err := service.CreateInstance(CreateInstanceRequest{
 		InstanceDisplayName: "Test instance",
 		InstanceUrlPrefix:   "test-instance",
-		UserName:            "admin@example.com",
+		Customizations:      models.Customizations{UserName: "admin@example.com"},
 	})
 	if err != nil {
 		t.Fatalf("expected no error for valid email, got %v", err)
@@ -787,5 +788,43 @@ func TestCreateInstanceWithApplinthEnabled(t *testing.T) {
 	}
 	if !strings.Contains(result.ApplinthPublicKey, "BEGIN PUBLIC KEY") {
 		t.Fatalf("expected PEM-encoded public key, got %q", result.ApplinthPublicKey)
+	}
+}
+
+func TestCreateInstanceWithForceInstanceId(t *testing.T) {
+	kubernetes := &kubernetesStub{namespaceAvailable: true, stepErrs: map[string]error{}}
+	service := NewInstanceService(&mongoStub{}, &rabbitStub{stepErrs: map[string]error{}}, kubernetes, &ingressStub{stepErrs: map[string]error{}}, &objectStorageStub{stepErrs: map[string]error{}})
+
+	result, err := service.CreateInstance(CreateInstanceRequest{
+		InstanceDisplayName: "Test",
+		InstanceUrlPrefix:   "test",
+		ForceInstanceId:     "customid123",
+	})
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	if result.Instance != "customid123" {
+		t.Fatalf("expected instance 'customid123', got %q", result.Instance)
+	}
+}
+
+func TestCreateInstanceTruncatesInstanceURLPrefix(t *testing.T) {
+	kubernetes := &kubernetesStub{namespaceAvailable: true, stepErrs: map[string]error{}}
+	service := NewInstanceService(&mongoStub{}, &rabbitStub{stepErrs: map[string]error{}}, kubernetes, &ingressStub{stepErrs: map[string]error{}}, &objectStorageStub{stepErrs: map[string]error{}})
+
+	_, err := service.CreateInstance(CreateInstanceRequest{
+		InstanceDisplayName: "Test",
+		InstanceUrlPrefix:   "abcdefghijklmnopqrstuvwxyz",
+	})
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	if kubernetes.lastAppliedDTO == nil {
+		t.Fatal("expected dto passed to kubernetes")
+	}
+	if kubernetes.lastAppliedDTO.InstanceUrlPrefix != "abcdefghijklmnopqrst" {
+		t.Fatalf("expected truncated prefix %q, got %q", "abcdefghijklmnopqrst", kubernetes.lastAppliedDTO.InstanceUrlPrefix)
 	}
 }

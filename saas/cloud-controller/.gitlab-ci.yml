@@ -1,0 +1,20 @@
+.base-cloud-controller:
+  variables:
+    DIR: saas/cloud-controller
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}cloud-controller
+
+cloud-controller:test:
+  stage: test
+  extends:
+    - .base-test
+    - .base-cloud-controller
+
+cloud-controller:build:
+  stage: build
+  needs:
+    - job: cloud-controller:test
+      optional: false
+  when: manual
+  extends:
+    - .base-dind-build
+    - .base-cloud-controller

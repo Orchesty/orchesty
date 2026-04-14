@@ -1,4 +1,3 @@
----
 {{- $componentName := "starting-point" -}}
 apiVersion: apps/v1
 kind: Deployment
@@ -32,19 +31,19 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: mongodb_dsn
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: METRICS_DSN
               valueFrom:
                 secretKeyRef:
                   key: metrics_dsn
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: RABBIT_DELIVERY_MODE
               value: "2"
             - name: RABBITMQ_DSN
               valueFrom:
                 secretKeyRef:
                   key: rabbitmq_dsn
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
           resources:
 {{ toYaml .Values.global.startingPoint.resources | indent 12 }}
 

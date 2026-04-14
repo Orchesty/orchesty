@@ -37,7 +37,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: mongodb_dsn
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: MONGO_COLLECTION
               value: Logs
           resources:

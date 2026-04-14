@@ -79,6 +79,18 @@ spec:
             - name: KONG_DOMAIN_SUFFIX
               value: {{ .Values.kong.domainSuffix | quote }}
 
+            # Cloud / Auth0
+            - name: CLOUD_INSTANCE_PREFIX
+              value: {{ .Values.cloud.instancePrefix | quote }}
+            - name: CLOUD_INSTANCE
+              value: {{ .Values.cloud.instance | quote }}
+            - name: CLOUD_AUTH0_DOMAIN
+              value: {{ .Values.cloud.auth0.domain | quote }}
+            - name: CLOUD_AUTH0_AUDIENCE
+              value: {{ .Values.cloud.auth0.audience | quote }}
+            - name: CLOUD_AUTH0_CLIENT_ID
+              value: {{ .Values.cloud.auth0.clientId | quote }}
+
             # GCS
             - name: GCS_ENABLED
               value: {{ .Values.gcs.enabled | quote }}

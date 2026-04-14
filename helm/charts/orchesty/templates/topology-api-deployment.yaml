@@ -41,7 +41,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: mongodb_dsn
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: BRIDGE_LIMIT_MEMORY
               value: "{{ .Values.global.topologyApi.topologiesResources.defaultLimitMemory }}"
             - name: BRIDGE_LIMIT_CPU

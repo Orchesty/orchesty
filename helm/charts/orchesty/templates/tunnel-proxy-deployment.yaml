@@ -1,4 +1,4 @@
-{{- $componentName := "cron-api" -}}
+{{- $componentName := "tunnel-proxy" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -8,8 +8,6 @@ metadata:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 6 }}
@@ -20,26 +18,23 @@ spec:
     spec:
 {{ include "pipes.imagePullSecrets" . | indent 6 }}
       containers:
-        - name: cron-api
+        - name: tunnel-proxy
           image: {{ include "pipes.imageFullname" (dict "image" $componentName "root" .) }}
           imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8080
+            - name: grpc
+              containerPort: 50051
           env:
             - name: TZ
               value: "{{ .Values.global.timezone }}"
-            - name: MONGO_DSN
-              valueFrom:
-                secretKeyRef:
-                  key: mongodb_dsn
-                  name: {{ include "pipes.secretName" . }}
-            - name: MONGO_COLLECTION
-              value: cron
-            - name: STARTING_POINT_DSN
-              value: "{{ .Values.global.starting_point_url }}"
+            - name: REQUEST_TIMEOUT
+              value: "{{ .Values.global.tunnelProxy.requestTimeout }}"
+            - name: MAX_REQUEST_BODY_MB
+              value: "{{ .Values.global.tunnelProxy.maxRequestBodyMb }}"
           resources:
-{{ toYaml .Values.global.cronApi.resources | indent 12 }}
+{{ toYaml .Values.global.tunnelProxy.resources | indent 12 }}
 
 {{- with .Values.global.nodeSelector }}
       nodeSelector:

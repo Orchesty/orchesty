@@ -1,4 +1,3 @@
----
 {{- $componentName := "topology-api" -}}
 apiVersion: v1
 kind: Service

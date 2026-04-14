@@ -30,4 +30,4 @@ roleRef:
   kind: Role
   name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
   apiGroup: ""
-{{- end -}}
+{{ end }}

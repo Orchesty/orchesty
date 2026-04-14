@@ -1,4 +1,3 @@
----
 {{- $componentName := "limiter" -}}
 apiVersion: v1
 kind: Service
@@ -7,7 +6,12 @@ metadata:
   labels:
 {{ include "pipes.labels" . | indent 4 }}
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
-{{ include "pipes.dictSection" (dict "name" "annotations" "items" .Values.global.startingPoint.serviceAnnotations) | indent 2 }}
+{{- with .Values.global.startingPoint.serviceAnnotations }}
+  annotations:
+    {{- range $key, $value := . }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+{{- end }}
 spec:
   selector:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}

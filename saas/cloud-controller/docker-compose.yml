@@ -23,6 +23,11 @@ services:
             GCS_LOCATION: ${GCS_LOCATION}
             GCS_ENDPOINT: ${GCS_ENDPOINT}
             GCS_SERVICE_ACCOUNT_EMAIL: ${GCS_SERVICE_ACCOUNT_EMAIL}
+            CLOUD_INSTANCE_PREFIX: ${CLOUD_INSTANCE_PREFIX}
+            CLOUD_INSTANCE: ${CLOUD_INSTANCE}
+            CLOUD_AUTH0_DOMAIN: ${CLOUD_AUTH0_DOMAIN}
+            CLOUD_AUTH0_AUDIENCE: ${CLOUD_AUTH0_AUDIENCE}
+            CLOUD_AUTH0_CLIENT_ID: ${CLOUD_AUTH0_CLIENT_ID}
         volumes:
             - ./:/app
             - ${GOPATH}/pkg:/go/pkg
@@ -33,13 +38,9 @@ services:
     
     rabbitmq:
         image: rabbitmq:3-management-alpine
-        ports:
-            - "15672:15672"
     
     mongodb:
         image: mongo:latest
-        ports:
-            - "27017:27017"
 
     kong-database:
         image: postgres:15-alpine
@@ -47,8 +48,6 @@ services:
             POSTGRES_USER: kong
             POSTGRES_PASSWORD: kong
             POSTGRES_DB: kong
-        ports:
-            - "5432:5432"
 
     kong-migration:
         image: kong/kong:3.9
@@ -73,12 +72,7 @@ services:
             KONG_PG_PASSWORD: kong
             KONG_ADMIN_LISTEN: 0.0.0.0:8001
             KONG_PROXY_LISTEN: 0.0.0.0:8000
-        ports:
-            - "8000:8000"
-            - "8001:8001"
 
     fake-gcs:
         image: fsouza/fake-gcs-server
         command: ["-scheme", "http", "-port", "4443"]
-        ports:
-            - "4443:4443"

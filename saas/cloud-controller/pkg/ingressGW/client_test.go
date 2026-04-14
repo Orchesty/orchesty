@@ -21,16 +21,16 @@ func withKongConfig(t *testing.T, serverURL string) {
 	t.Helper()
 
 	originalAdminURL := config.Kong.AdminURL
-	originalDomainSuffix := config.Kong.DomainSuffix
+	originalDomainSuffix := config.Cloud.DomainSuffix
 	originalEnabled := config.Kong.Enabled
 
 	config.Kong.AdminURL = serverURL
-	config.Kong.DomainSuffix = "eu1.cloud.orchesty.io"
+	config.Cloud.DomainSuffix = "eu1.cloud.orchesty.io"
 	config.Kong.Enabled = true
 
 	t.Cleanup(func() {
 		config.Kong.AdminURL = originalAdminURL
-		config.Kong.DomainSuffix = originalDomainSuffix
+		config.Cloud.DomainSuffix = originalDomainSuffix
 		config.Kong.Enabled = originalEnabled
 	})
 }
@@ -82,9 +82,8 @@ func TestRegisterServicesSuccess(t *testing.T) {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	// 3 services (PUT) + 3 routes (POST) = 6 requests
-	if len(requests) != 6 {
-		t.Fatalf("expected 6 requests, got %d", len(requests))
+	if len(requests) != 12 {
+		t.Fatalf("expected 12 requests, got %d", len(requests))
 	}
 
 	expectedRequests := []struct {
@@ -97,6 +96,12 @@ func TestRegisterServicesSuccess(t *testing.T) {
 		{http.MethodPost, "/services/instance-abc123-be/routes"},
 		{http.MethodPut, "/services/instance-abc123-sp"},
 		{http.MethodPost, "/services/instance-abc123-sp/routes"},
+		{http.MethodPut, "/services/instance-abc123-tp"},
+		{http.MethodPost, "/services/instance-abc123-tp/routes"},
+		{http.MethodPut, "/services/instance-abc123-ws"},
+		{http.MethodPost, "/services/instance-abc123-ws/routes"},
+		{http.MethodPut, "/services/instance-abc123-ses"},
+		{http.MethodPost, "/services/instance-abc123-ses/routes"},
 	}
 
 	for i, expected := range expectedRequests {
@@ -144,10 +149,13 @@ func TestRegisterServicesHostFormats(t *testing.T) {
 		"ui-myapp-abc123.eu1.cloud.orchesty.io",
 		"api-myapp-abc123.eu1.cloud.orchesty.io",
 		"start-myapp-abc123.eu1.cloud.orchesty.io",
+		"proxy-myapp-abc123.eu1.cloud.orchesty.io",
+		"ws-myapp-abc123.eu1.cloud.orchesty.io",
+		"ses-myapp-abc123.eu1.cloud.orchesty.io",
 	}
 
 	for i, expectedHost := range expectedHosts {
-		routeIdx := i*2 + 1 // routes are at indices 1, 3, 5
+		routeIdx := i*2 + 1 // routes are at indices 1, 3, 5, 7, 9
 		hosts := requests[routeIdx].Body["hosts"].([]any)
 		if hosts[0] != expectedHost {
 			t.Fatalf("route %d: expected host %s, got %v", i, expectedHost, hosts[0])
@@ -174,8 +182,8 @@ func TestUpdateServicesSuccess(t *testing.T) {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	if len(requests) != 6 {
-		t.Fatalf("expected 6 requests, got %d", len(requests))
+	if len(requests) != 12 {
+		t.Fatalf("expected 12 requests, got %d", len(requests))
 	}
 
 	expectedRequests := []struct {
@@ -188,6 +196,12 @@ func TestUpdateServicesSuccess(t *testing.T) {
 		{http.MethodPatch, "/routes/instance-abc123-be-route"},
 		{http.MethodPut, "/services/instance-abc123-sp"},
 		{http.MethodPatch, "/routes/instance-abc123-sp-route"},
+		{http.MethodPut, "/services/instance-abc123-tp"},
+		{http.MethodPatch, "/routes/instance-abc123-tp-route"},
+		{http.MethodPut, "/services/instance-abc123-ws"},
+		{http.MethodPatch, "/routes/instance-abc123-ws-route"},
+		{http.MethodPut, "/services/instance-abc123-ses"},
+		{http.MethodPatch, "/routes/instance-abc123-ses-route"},
 	}
 
 	for i, expected := range expectedRequests {
@@ -215,8 +229,8 @@ func TestDeleteServicesSuccess(t *testing.T) {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	if len(requests) != 6 {
-		t.Fatalf("expected 6 requests, got %d", len(requests))
+	if len(requests) != 16 {
+		t.Fatalf("expected 16 requests, got %d", len(requests))
 	}
 
 	expectedRequests := []struct {
@@ -229,6 +243,16 @@ func TestDeleteServicesSuccess(t *testing.T) {
 		{http.MethodDelete, "/services/instance-abc123-be"},
 		{http.MethodDelete, "/routes/instance-abc123-sp-route"},
 		{http.MethodDelete, "/services/instance-abc123-sp"},
+		{http.MethodDelete, "/routes/instance-abc123-tp-route"},
+		{http.MethodDelete, "/services/instance-abc123-tp"},
+		{http.MethodDelete, "/routes/instance-abc123-ws-route"},
+		{http.MethodDelete, "/services/instance-abc123-ws"},
+		{http.MethodDelete, "/routes/instance-abc123-ses-route"},
+		{http.MethodDelete, "/services/instance-abc123-ses"},
+		{http.MethodDelete, "/routes/instance-abc123-grafana-route"},
+		{http.MethodDelete, "/services/instance-abc123-grafana"},
+		{http.MethodDelete, "/routes/instance-abc123-applinth-marketplace-ui-route"},
+		{http.MethodDelete, "/services/instance-abc123-applinth-marketplace-ui"},
 	}
 
 	for i, expected := range expectedRequests {

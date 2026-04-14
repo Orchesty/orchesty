@@ -135,10 +135,9 @@ services:
             AUTH0_DOMAIN: dev-qsa0lopaqbhr0vmj.eu.auth0.com
             AUTH0_AUDIENCE: https://api.orchesty.cloud
             EMAIL_DSN: smtp://mailhog:1025
-            ALPHA_INSTANCE_ID: 'demo'
+            ALPHA_INSTANCE_ID: 'local'
             INSTALLER_DIRS: '["/var/www/pipes/clients/demo/node-sdk/src/topology","/var/www/pipes/enterprise-sys-worker/src/topology"]'
             TUNNEL_PROXY_HOST: 'http://tunnel-proxy:8080'
-            WORKER_API_HOST: http://worker-api:8080
             JWE_PRIVATE_KEY: |
                 -----BEGIN EC PRIVATE KEY-----
                 MIHcAgEBBEIAGmQ//yMnyMlFAN/E2yfZjzFL1ziTrAbDwa08KEPBq+NUWHvrxrs7
@@ -197,10 +196,9 @@ services:
             ORCHESTY_LIMIT_MESSAGES: '0'
             ORCHESTY_LIMIT_STORAGE_GB: '0'
             EMAIL_DSN: smtp://mailhog:1025
-            ALPHA_INSTANCE_ID: 'demo'
+            ALPHA_INSTANCE_ID: 'local'
             INSTALLER_DIRS: '["/var/www/pipes/clients/demo/node-sdk/src/topology","/var/www/pipes/enterprise-sys-worker/src/topology"]'
             TUNNEL_PROXY_HOST: 'http://tunnel-proxy:8080'
-            WORKER_API_HOST: http://worker-api:8080
             JWE_PRIVATE_KEY: |
                 -----BEGIN EC PRIVATE KEY-----
                 MIHcAgEBBEIAGmQ//yMnyMlFAN/E2yfZjzFL1ziTrAbDwa08KEPBq+NUWHvrxrs7
@@ -211,7 +209,6 @@ services:
                 -----END EC PRIVATE KEY-----
         working_dir: /var/www/pipes/pf-bundles-enterprise
         #working_dir: /var/www/pipes/pf-bundles
-        #working_dir: /var/www/pipes/applinth
         volumes:
             - ../../:/var/www/pipes:cached
             - ${HOME}/dev/.composer:${HOME}/dev/.composer:cached

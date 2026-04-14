@@ -1,4 +1,3 @@
----
 {{- $componentName := "frontend" -}}
 apiVersion: apps/v1
 kind: Deployment
@@ -25,12 +24,26 @@ spec:
             - name: http
               containerPort: 80
           env:
-            - name: BACKEND_URL
+            - name: VITE_TITLE
+              value: "{{ .Values.global.frontend.title }}"
+            - name: VITE_BACKEND_URL
               value: "{{ .Values.global.backend_url }}"
-            - name: FRONTEND_URL
-              value: "/"
-            - name: STARTINGPOINT_URL
+            - name: VITE_STARTING_POINT_URL
               value: "{{ .Values.global.starting_point_url }}"
+{{- if not .Values.global.cloud.enabled }}
+            - name: VITE_NOTIFIER_URL
+              value: "{{ .Values.global.cloud.instance.notifierUrl }}"
+            - name: VITE_TRACE_URL
+              value: "{{ .Values.global.cloud.instance.traceUrl }}"
+            - name: VITE_AUTH0_DOMAIN
+              value: "{{ .Values.global.cloud.auth0.domain }}"
+            - name: VITE_AUTH0_CLIENT_ID
+              value: "{{ .Values.global.cloud.auth0.clientId }}"
+            - name: VITE_AUTH0_AUDIENCE
+              value: "{{ .Values.global.cloud.auth0.audience }}"
+            - name: VITE_AUTH0_REDIRECT
+              value: "{{ .Values.global.cloud.auth0.redirect }}"
+{{- end }}
           resources:
 {{ toYaml .Values.global.frontend.resources | indent 12 }}
 

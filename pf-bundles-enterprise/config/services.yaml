@@ -12,12 +12,10 @@ parameters:
   notifierHost: "%env(string:NOTIFIER_DSN)%"
   lokiHost: "%env(string:LOKI_DSN)%"
   tunnelProxyHost: "%env(string:TUNNEL_PROXY_HOST)%"
-  workerApiHost: "%env(string:WORKER_API_HOST)%"
   activateLink: '%backendHost%/user/%s/activate'
   passwordLink: 'reset-password/%s'
 
   env(TUNNEL_PROXY_HOST): ''
-  env(WORKER_API_HOST): ''
   env(NOTIFIER_DSN): ''
   env(LOKI_DSN): ''
   env(ORCHESTY_CLOUD_BACKEND_URL): ''

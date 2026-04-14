@@ -1,4 +1,3 @@
----
 {{- $componentName := "quota" -}}
 {{- if ( eq .Values.global.useQuota true) }}
 apiVersion: v1

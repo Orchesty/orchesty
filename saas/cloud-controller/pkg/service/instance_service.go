@@ -3,7 +3,6 @@ package service
 import (
 	"errors"
 	"fmt"
-	"regexp"
 	"strings"
 
 	"cloud-controller/pkg/config"
@@ -14,17 +13,22 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
-const defaultUserName = "orchesty@hanaboso.com"
-
 var (
 	ErrInstanceDisplayNameRequired = errors.New("instanceDisplayName is empty")
 	ErrInstanceUrlPrefixRequired   = errors.New("instanceUrlPrefix is empty")
 	ErrInstanceRequired            = errors.New("instance is empty")
 	ErrInstanceUnavailable         = errors.New("instance namespace is not available")
-	ErrInvalidUserName             = errors.New("userName must be a valid email address (3-254 characters)")
-
-	emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	ErrInvalidUserName             = models.ErrInvalidUserName
 )
+
+const maxInstanceURLPrefixLength = 20
+
+type InputError struct {
+	Err error
+}
+
+func (e *InputError) Error() string { return e.Err.Error() }
+func (e *InputError) Unwrap() error { return e.Err }
 
 type MongoClient interface {
 	CreateUser(dto *models.InstanceDTO) (bson.M, error)
@@ -67,8 +71,8 @@ type ObjectStorageClient interface {
 
 type CreateInstanceRequest struct {
 	InstanceDisplayName string                `json:"instanceDisplayName"`
-	UserName            string                `json:"userName"`
 	InstanceUrlPrefix   string                `json:"instanceUrlPrefix"`
+	ForceInstanceId     string                `json:"forceInstanceId,omitempty"`
 	Customizations      models.Customizations `json:"customizations"`
 }
 
@@ -108,24 +112,22 @@ func NewInstanceService(mongo MongoClient, rabbit RabbitClient, kubernetes Kuber
 func (s *InstanceService) CreateInstance(request CreateInstanceRequest) (models.InstanceInfo, error) {
 	instanceDisplayName := strings.TrimSpace(request.InstanceDisplayName)
 	if instanceDisplayName == "" {
-		return models.InstanceInfo{}, ErrInstanceDisplayNameRequired
+		return models.InstanceInfo{}, &InputError{ErrInstanceDisplayNameRequired}
 	}
 
 	instanceUrlPrefix := strings.TrimSpace(request.InstanceUrlPrefix)
 	if instanceUrlPrefix == "" {
-		return models.InstanceInfo{}, ErrInstanceUrlPrefixRequired
+		return models.InstanceInfo{}, &InputError{ErrInstanceUrlPrefixRequired}
+	}
+	if len(instanceUrlPrefix) > maxInstanceURLPrefixLength {
+		instanceUrlPrefix = instanceUrlPrefix[:maxInstanceURLPrefixLength]
 	}
 
-	userName := strings.TrimSpace(request.UserName)
-	if userName == "" {
-		userName = defaultUserName
-	} else if len(userName) < 3 || len(userName) > 254 || !emailRegex.MatchString(userName) {
-		return models.InstanceInfo{}, ErrInvalidUserName
-	}
+	forceInstanceId := strings.TrimSpace(request.ForceInstanceId)
 
-	dto, err := models.NewInstanceDTO(instanceDisplayName, instanceUrlPrefix, userName, request.Customizations)
+	dto, err := models.NewInstanceDTO(instanceDisplayName, instanceUrlPrefix, forceInstanceId, request.Customizations)
 	if err != nil {
-		return models.InstanceInfo{}, fmt.Errorf("generate instance credentials: %w", err)
+		return models.InstanceInfo{}, &InputError{err}
 	}
 
 	available, err := s.kubernetes.IsNamespaceAvailable(dto)
@@ -147,7 +149,7 @@ func (s *InstanceService) CreateInstance(request CreateInstanceRequest) (models.
 func (s *InstanceService) DeleteInstance(instance string) error {
 	instance = strings.TrimSpace(instance)
 	if instance == "" {
-		return ErrInstanceRequired
+		return &InputError{ErrInstanceRequired}
 	}
 
 	var errs []error
@@ -207,7 +209,7 @@ func (s *InstanceService) DeleteInstance(instance string) error {
 func (s *InstanceService) UpdateInstance(request UpdateInstanceRequest) (models.InstanceInfo, error) {
 	instance := strings.TrimSpace(request.Instance)
 	if instance == "" {
-		return models.InstanceInfo{}, ErrInstanceRequired
+		return models.InstanceInfo{}, &InputError{ErrInstanceRequired}
 	}
 
 	dto, err := s.kubernetes.LoadInstanceDTO(instance)
@@ -218,7 +220,7 @@ func (s *InstanceService) UpdateInstance(request UpdateInstanceRequest) (models.
 	if request.InstanceDisplayName != nil {
 		displayName := strings.TrimSpace(*request.InstanceDisplayName)
 		if displayName == "" {
-			return models.InstanceInfo{}, ErrInstanceDisplayNameRequired
+			return models.InstanceInfo{}, &InputError{ErrInstanceDisplayNameRequired}
 		}
 
 		dto.InstanceDisplayName = displayName

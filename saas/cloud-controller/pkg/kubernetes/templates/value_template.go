@@ -8,11 +8,15 @@ orchesty:
 {{logsBlockOrchesty}}
 global:
   orchestyVersion: "{{appOrchestyVersion}}"
-  backend_url: https://api-{{instance}}.eu1.cloud.orchesty.io
-  frontend_url: https://ui-{{instance}}.eu1.cloud.orchesty.io
-  starting_point_url: https://start-{{instance}}.eu1.cloud.orchesty.io
+  backend_url: https://api-{{instancePrefix}}-{{instance}}.{{domainSuffix}}
+  frontend_url: https://ui-{{instancePrefix}}-{{instance}}.{{domainSuffix}}
+  starting_point_url: https://start-{{instancePrefix}}-{{instance}}.{{domainSuffix}}
   backend:
     alpha_instance_id: {{instance}}
+    postInstall:
+      createDefaultUser: false
+  frontend:
+    title: "{{frontendTitle}}"
   metricsCollector:
     enabled: true
   topologyApi:
@@ -24,6 +28,30 @@ global:
           key: {{bridgePoolKey}}
           operator: Equal
           value: "true"
+  cloud:
+    enabled: true
+    backendUrl: https://api.cloud.orchesty.io
+    frontendUrl: https://app.cloud.orchesty.io
+    startingPointUrl: https://start-{{cloudInstancePrefix}}-{{cloudInstance}}.{{domainSuffix}}
+    instance:
+      notifierUrl: https://ses-{{instancePrefix}}-{{instance}}.{{domainSuffix}}
+      traceUrl: https://ws-{{instancePrefix}}-{{instance}}.{{domainSuffix}}
+      tunnelProxyUrl: https://proxy-{{instancePrefix}}-{{instance}}.{{domainSuffix}}
+    features:
+      enterpriseDashboards: '{{featureEnterpriseDashboards}}'
+      traceAuditing: '{{featureTraceAuditing}}'
+      auditLogs: '{{featureAuditLogs}}'
+      pulse: '{{featurePulse}}'
+    limits:
+      topologySlots: '{{limitTopologySlots}}'
+      messages: '{{limitMessages}}'
+      storageGb: '{{limitStorageGb}}'
+    auth0:
+      domain: {{auth0Domain}}
+      audience: {{auth0Audience}}
+      clientId: {{auth0ClientId}}
+  notifier:
+    startingPointDsn: https://start-{{cloudInstancePrefix}}-{{cloudInstance}}.{{domainSuffix}}
 {{imageOverridesBlock}}
 {{resourceLimitsBlock}}
 {{logsBlockGlobal}}
@@ -121,7 +149,7 @@ global:
         requests.cpu: {{cpuLimit}}m
         requests.memory: {{memoryLimit}}Mi
         limits.cpu: {{cpuLimit}}m
-        limits.memory: {{memoryLimit}}Gi
+        limits.memory: {{memoryLimit}}Mi
 `
 	ImageOverridesBlock = `
     imageOverrides:

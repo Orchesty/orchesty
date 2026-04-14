@@ -57,12 +57,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: crypt_secret
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" $root) }}
+                  name: {{ include "pipes.secretName" $root }}
             - name: ORCHESTY_API_KEY
               valueFrom:
                 secretKeyRef:
                     key: orchesty_api_key
-                    name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" $root) }}
+                    name: {{ include "pipes.secretName" $root }}
 
           resources:
 {{- if $worker.resources }}

@@ -36,17 +36,17 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: rabbitmq_dsn
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: MONGODB_DSN
               valueFrom:
                 secretKeyRef:
                   key: mongodb_dsn
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: METRICS_DSN
               valueFrom:
                 secretKeyRef:
                   key: metrics_dsn
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: STARTING_POINT_DSN
               value: "{{ .Values.global.starting_point_url }}"
           resources:

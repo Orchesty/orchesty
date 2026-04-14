@@ -1,4 +1,3 @@
----
 {{- $componentName := "worker-api" -}}
 apiVersion: apps/v1
 kind: Deployment
@@ -34,12 +33,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: mongodb_dsn
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             -   name: METRICS_DB
                 valueFrom:
                     secretKeyRef:
                         key: metrics_db
-                        name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                        name: {{ include "pipes.secretName" . }}
 
           resources:
 {{ toYaml .Values.global.workerApi.resources | indent 12 }}

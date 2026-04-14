@@ -54,17 +54,17 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: rabbitmq_url
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: RABBITMQ_USER
               valueFrom:
                 secretKeyRef:
                   key: rabbitmq_user
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: RABBITMQ_PASSWORD
               valueFrom:
                 secretKeyRef:
                   key: rabbitmq_password
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             
             - name: MONGODB_HA_MODE
               value: "{{ .Values.global.metricsCollector.mongodbHaMode }}"
@@ -72,12 +72,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: mongodb_dsn
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: METRICS_DSN
               valueFrom:
                 secretKeyRef:
                   key: metrics_dsn
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             
             - name: K8S_NAMESPACE
               value: "{{ .Release.Namespace }}"

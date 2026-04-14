@@ -7,7 +7,12 @@ metadata:
   name: {{ include "pipes.fullname" (dict "suffix" $componentName "noPrefix" true "root" .) }}
   labels:
 {{ include "pipes.labels" . | indent 4 }}
-{{ include "pipes.dictSection" (dict "name" "annotations" "items" .Values.global.applinthMarketplaceUI.serviceAnnotations) | indent 2 }}
+{{- with .Values.global.applinthMarketplaceUI.serviceAnnotations }}
+  annotations:
+    {{- range $key, $value := . }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+{{- end }}
 spec:
   selector:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}

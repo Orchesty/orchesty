@@ -15,9 +15,10 @@ func TestNewInstanceDTO(t *testing.T) {
 				SdkType: "nodejs",
 			},
 		},
+		UserName: "user@test.local",
 	}
 
-	dto, err := NewInstanceDTO("Test Instance", "prefix", "user@test.local", customizations)
+	dto, err := NewInstanceDTO("Test Instance", "prefix", "", customizations)
 	if err != nil {
 		t.Fatalf("expected NewInstanceDTO without error, got %v", err)
 	}
@@ -164,6 +165,20 @@ func TestNewInstanceDTOFromExistingDataRequiresFields(t *testing.T) {
 	_, err = NewInstanceDTOFromExistingData(ExistingInstanceData{Instance: "instance-test"})
 	if err == nil || err.Error() != "instanceDisplayName is required" {
 		t.Fatalf("expected missing instanceDisplayName error, got %v", err)
+	}
+}
+
+func TestNewInstanceDTOWithForceInstanceId(t *testing.T) {
+	dto, err := NewInstanceDTO("Test Instance", "prefix", "myinstanceid", Customizations{})
+	if err != nil {
+		t.Fatalf("expected NewInstanceDTO without error, got %v", err)
+	}
+
+	if dto.Instance != "instance-myinstanceid" {
+		t.Fatalf("expected instance 'instance-myinstanceid', got %q", dto.Instance)
+	}
+	if dto.InstanceId != "myinstanceid" {
+		t.Fatalf("expected instanceId 'myinstanceid', got %q", dto.InstanceId)
 	}
 }
 

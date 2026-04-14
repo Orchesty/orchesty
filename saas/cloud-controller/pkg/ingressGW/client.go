@@ -3,6 +3,7 @@ package ingressGW
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -12,13 +13,16 @@ import (
 	"cloud-controller/pkg/models"
 )
 
+var errNotFound = errors.New("not found")
+
 type serviceEntry struct {
 	name string
 	url  string
 	host string
 }
 
-var serviceSuffixes = []string{"fe", "be", "sp"}
+var serviceSuffixes = []string{"fe", "be", "sp", "tp", "ws", "ses"}
+var optionalServiceSuffixes = []string{"grafana", "applinth-marketplace-ui"}
 
 type Client struct {
 	httpClient *http.Client
@@ -64,16 +68,11 @@ func (c *Client) UpdateServices(dto *models.InstanceDTO) error {
 
 func (c *Client) DeleteServices(instance string) error {
 	for _, suffix := range serviceSuffixes {
-		serviceName := instance + "-" + suffix
-		routeName := serviceName + "-route"
+		c.deleteRoute(instance, suffix)
+	}
 
-		if err := c.sendRequest(http.MethodDelete, fmt.Sprintf("/routes/%s", routeName), nil); err != nil {
-			return fmt.Errorf("delete kong route %s: %w", routeName, err)
-		}
-
-		if err := c.sendRequest(http.MethodDelete, fmt.Sprintf("/services/%s", serviceName), nil); err != nil {
-			return fmt.Errorf("delete kong service %s: %w", serviceName, err)
-		}
+	for _, suffix := range optionalServiceSuffixes {
+		c.deleteRoute(instance, suffix)
 	}
 
 	return nil
@@ -111,6 +110,21 @@ func (c *Client) updateRoute(entry serviceEntry) error {
 	return c.sendRequest(http.MethodPatch, fmt.Sprintf("/routes/%s", entry.name+"-route"), payload)
 }
 
+func (c *Client) deleteRoute(instance, suffix string) error {
+	serviceName := instance + "-" + suffix
+	routeName := serviceName + "-route"
+
+	if err := c.sendRequest(http.MethodDelete, fmt.Sprintf("/routes/%s", routeName), nil); err != nil && !errors.Is(err, errNotFound) {
+		return fmt.Errorf("delete kong route %s: %w", routeName, err)
+	}
+
+	if err := c.sendRequest(http.MethodDelete, fmt.Sprintf("/services/%s", serviceName), nil); err != nil && !errors.Is(err, errNotFound) {
+		return fmt.Errorf("delete kong service %s: %w", serviceName, err)
+	}
+
+	return nil
+}
+
 func (c *Client) sendRequest(method, path string, data any) error {
 	var body io.Reader
 	if data != nil {
@@ -137,6 +151,10 @@ func (c *Client) sendRequest(method, path string, data any) error {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode == http.StatusNotFound {
+		return errNotFound
+	}
+
 	if resp.StatusCode >= 400 {
 		respBody, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("kong API %s %s returned %d: %s", method, path, resp.StatusCode, string(respBody))
@@ -146,7 +164,7 @@ func (c *Client) sendRequest(method, path string, data any) error {
 }
 
 func buildServiceEntries(dto *models.InstanceDTO) []serviceEntry {
-	suffix := config.Kong.DomainSuffix
+	suffix := config.Cloud.DomainSuffix
 
 	entries := []serviceEntry{
 		{
@@ -163,6 +181,21 @@ func buildServiceEntries(dto *models.InstanceDTO) []serviceEntry {
 			name: dto.Instance + "-sp",
 			url:  fmt.Sprintf("http://starting-point.%s.svc.cluster.local:8080", dto.Instance),
 			host: fmt.Sprintf("start-%s-%s.%s", dto.InstanceUrlPrefix, dto.InstanceId, suffix),
+		},
+		{
+			name: dto.Instance + "-tp",
+			url:  fmt.Sprintf("http://tunnel-proxy.%s.svc.cluster.local:8080", dto.Instance),
+			host: fmt.Sprintf("proxy-%s-%s.%s", dto.InstanceUrlPrefix, dto.InstanceId, suffix),
+		},
+		{
+			name: dto.Instance + "-ws",
+			url:  fmt.Sprintf("http://trace.%s.svc.cluster.local:8080", dto.Instance),
+			host: fmt.Sprintf("ws-%s-%s.%s", dto.InstanceUrlPrefix, dto.InstanceId, suffix),
+		},
+		{
+			name: dto.Instance + "-ses",
+			url:  fmt.Sprintf("http://notifier.%s.svc.cluster.local:8080", dto.Instance),
+			host: fmt.Sprintf("ses-%s-%s.%s", dto.InstanceUrlPrefix, dto.InstanceId, suffix),
 		},
 	}
 

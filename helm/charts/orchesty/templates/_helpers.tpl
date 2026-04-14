@@ -1,5 +1,16 @@
 {{/* vim: set filetype=mustache: */}}
 
+{{/*
+Secret name: uses global.secretName if set, otherwise computes from pipes.fullname.
+*/}}
+{{- define "pipes.secretName" -}}
+{{- if .Values.global.secretName -}}
+{{ .Values.global.secretName }}
+{{- else -}}
+{{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+{{- end -}}
+{{- end -}}
+
 {{- define "pipes.imagePullSecrets" }}
 {{- if .Values.global.orchestyImageRegistry.enablePullSecret -}}
 imagePullSecrets:

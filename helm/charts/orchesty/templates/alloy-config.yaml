@@ -1,8 +1,9 @@
 {{- if .Values.alloy.enabled -}}
+{{- $componentName := "alloy" -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: pipes-alloy
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
   labels:
     {{- include "pipes.labels" . | nindent 4 }}
 data:

@@ -20,6 +20,7 @@ type config struct {
 	Applinth *applinth
 	Kong     *kong
 	GCS      *gcs
+	Cloud    *cloud
 }
 
 type app struct {
@@ -60,9 +61,8 @@ type helm struct {
 }
 
 type kong struct {
-	Enabled      bool   `env:"KONG_ENABLED" default:"false"`
-	AdminURL     string `env:"KONG_ADMIN_URL" default:"http://kong:8001"`
-	DomainSuffix string `env:"KONG_DOMAIN_SUFFIX" default:"eu1.cloud.orchesty.io"`
+	Enabled  bool   `env:"KONG_ENABLED" default:"false"`
+	AdminURL string `env:"KONG_ADMIN_URL" default:"http://kong:8001"`
 }
 
 type gcs struct {
@@ -72,6 +72,15 @@ type gcs struct {
 	ProjectID           string `env:"GCS_PROJECT_ID" default:""`
 	CredentialsFile     string `env:"GCS_CREDENTIALS_FILE" default:""`
 	ServiceAccountEmail string `env:"GCS_SERVICE_ACCOUNT_EMAIL" default:""`
+}
+
+type cloud struct {
+	InstancePrefix string `env:"CLOUD_INSTANCE_PREFIX" default:"prod"`
+	Instance       string `env:"CLOUD_INSTANCE" default:"orchesty-instance"`
+	DomainSuffix   string `env:"KONG_DOMAIN_SUFFIX" default:"eu1.cloud.orchesty.io"`
+	Oauth0Domain   string `env:"CLOUD_AUTH0_DOMAIN" required:"true"`
+	Oauth0Audience string `env:"CLOUD_AUTH0_AUDIENCE" required:"true"`
+	Oauth0ClientId string `env:"CLOUD_AUTH0_CLIENT_ID" required:"true"`
 }
 
 func (g *gcs) S3Endpoint() string {
@@ -90,6 +99,7 @@ var (
 	Applinth applinth
 	Kong     kong
 	GCS      gcs
+	Cloud    cloud
 	Logger   log.Logger
 
 	c = config{
@@ -100,7 +110,7 @@ var (
 		Helm:     &Helm,
 		Orchesty: &Orchesty,
 		Kong:     &Kong,
-		GCS:      &GCS,
+		Cloud:    &Cloud,
 	}
 )
 

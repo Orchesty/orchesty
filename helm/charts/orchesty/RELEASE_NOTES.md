@@ -1,5 +1,16 @@
 # Release Notes
 
+## 3.0.0-rc1
+- Backend: added new ENVs
+- Frontend: added new ENVs
+- Notifier: added new deployment and service
+- Trace: added new deployment and service
+- Tunnel-proxy: added new deployment and service
+
+### Changes
+
+- Backend: Post-install: added missing ENVs
+
 ## 2.1.17
 
 ### Changes

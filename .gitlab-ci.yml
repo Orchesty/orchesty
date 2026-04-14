@@ -23,6 +23,7 @@ include:
   - local: "/pf-bundles/.gitlab-ci.yml" # aka backend
   - local: "/pf-bundles-enterprise/.gitlab-ci.yml" # aka enterprise backend
   - local: "/saas/applinth-billing-processor/.gitlab-ci.yml"
+  - local: "/saas/cloud-controller/.gitlab-ci.yml"
   - local: "/saas/console-api/.gitlab-ci.yml"
   - local: "/saas/usccp/.gitlab-ci.yml"
   - local: "/starting-point/.gitlab-ci.yml"

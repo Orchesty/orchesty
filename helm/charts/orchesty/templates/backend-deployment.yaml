@@ -44,7 +44,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: applinth_jwe_private_key
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
 {{- end }}
             - name: CHECK_INFINITY_LOOP
               value: "{{ .Values.global.backend.checkInfinityLoop }}"
@@ -52,38 +52,80 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: rabbitmq_dsn
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:
                   key: backend_jwt_key
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: MONGODB_DSN
               valueFrom:
                 secretKeyRef:
                   key: mongodb_dsn
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: MONGODB_DB
               valueFrom:
                 secretKeyRef:
                   key: mongodb_db
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: METRICS_DB
               valueFrom:
                 secretKeyRef:
                   key: metrics_db
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: METRICS_DSN
               valueFrom:
                 secretKeyRef:
                   key: metrics_dsn
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: TOPOLOGY_API_DSN
               value: "{{ include "pipes.fullname" (dict "suffix" "topology-api" "noPrefix" true "root" .) }}:8080"
             - name: LIMITER_URL
               value: "{{ include "pipes.fullname" (dict "suffix" "limiter" "root" .) }}:80"
             - name: FRONTEND_URL
               value: "{{ .Values.global.frontend_url }}/"
+{{- if not .Values.global.cloud.enabled }}
+            - name: LOKI_URL
+              value: "http://{{ .Values.global.logs.lokiHostname }}"
+            - name: NOTIFIER_DSN
+              value: "http://{{ include "pipes.fullname" (dict "suffix" "notifier" "root" .) }}:8080"
+            - name: TUNNEL_PROXY_HOST
+              value: "{{ .Values.global.cloud.instance.tunnelProxyUrl }}"
+            - name: ORCHESTY_CLOUD_BACKEND_URL
+              value: "{{ .Values.global.cloud.backendUrl }}"
+            - name: ORCHESTY_CLOUD_FRONTEND_URL
+              value: "{{ .Values.global.cloud.frontendUrl }}"
+            - name: ORCHESTY_CLOUD_STARTING_POINT_URL
+              value: "{{ .Values.global.cloud.startingPointUrl }}"
+            - name: ORCHESTY_CLOUD_INSTANCE_ID
+              valueFrom:
+                secretKeyRef:
+                  key: orchesty_cloud_instance_id
+                  name: {{ include "pipes.secretName" . }}
+            - name: ORCHESTY_CLOUD_INSTANCE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: orchesty_cloud_instance_secret
+                  name: {{ include "pipes.secretName" . }}
+            - name: ORCHESTY_FEATURE_ENTERPRISE_DASHBOARDS
+              value: "{{ .Values.global.cloud.features.enterpriseDashboards }}"
+            - name: ORCHESTY_FEATURE_TRACE_AUDITING
+              value: "{{ .Values.global.cloud.features.traceAuditing }}"
+            - name: ORCHESTY_FEATURE_AUDIT_LOGS
+              value: "{{ .Values.global.cloud.features.auditLogs }}"
+            - name: ORCHESTY_FEATURE_PULSE
+              value: "{{ .Values.global.cloud.features.pulse }}"
+            - name: ORCHESTY_LIMIT_TOPOLOGY_SLOTS
+              value: "{{ .Values.global.cloud.limits.topologySlots }}"
+            - name: ORCHESTY_LIMIT_MESSAGES
+              value: "{{ .Values.global.cloud.limits.messages }}"
+            - name: ORCHESTY_LIMIT_STORAGE_GB
+              value: "{{ .Values.global.cloud.limits.storageGb }}"
+            - name: AUTH0_DOMAIN
+              value: "{{ .Values.global.cloud.auth0.domain }}"
+            - name: AUTH0_AUDIENCE
+              value: "{{ .Values.global.cloud.auth0.audience }}"
+{{- end }}
 
 {{- if not .Values.global.imageOverrides.bridge }}
             - name: DOCKER_PF_BRIDGE_IMAGE

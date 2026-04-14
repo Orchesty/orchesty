@@ -33,6 +33,9 @@ spec:
               {{- range .Values.global.backend.postInstall.commands }}
               {{ . }}
               {{- end }}
+              {{- if .Values.global.backend.postInstall.createDefaultUser }}
+              {{ .Values.global.backend.postInstall.createDefaultUserCommand }}
+              {{- end }}
           env:
             - name: TZ
               value: "{{ .Values.global.timezone }}"
@@ -54,47 +57,49 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: rabbitmq_dsn
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:
                   key: backend_jwt_key
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: MONGODB_DSN
               valueFrom:
                 secretKeyRef:
                   key: mongodb_dsn
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: MONGODB_DB
               valueFrom:
                 secretKeyRef:
                   key: mongodb_db
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: METRICS_DB
               valueFrom:
                 secretKeyRef:
                   key: metrics_db
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: METRICS_DSN
               valueFrom:
                 secretKeyRef:
                   key: metrics_dsn
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: ORCHESTY_API_KEY
               valueFrom:
                 secretKeyRef:
                   key: orchesty_api_key
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
+{{- if .Values.global.backend.postInstall.createDefaultUser }}
             - name: ORCHESTY_USR
               valueFrom:
                 secretKeyRef:
                   key: oc_user_name
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
             - name: ORCHESTY_PWD
               valueFrom:
                 secretKeyRef:
                   key: oc_user_password
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+                  name: {{ include "pipes.secretName" . }}
+{{- end }}
           resources:
 {{ toYaml .Values.global.backend.postInstall.resources | indent 12 }}
 {{- with .Values.global.nodeSelector }}

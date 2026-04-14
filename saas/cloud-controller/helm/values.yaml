@@ -6,7 +6,7 @@ replicaCount: 1
 image:
   repository: dkr.hanaboso.net/pipes/pipes/saas-cloud-controller
   pullPolicy: Always
-  tag: test
+  tag: master
 
 nameOverride: ""
 fullnameOverride: ""
@@ -27,14 +27,22 @@ secret:
 
 env:
   appDebug: true
-  appOrchestyVersion: "2.1"
-  helmOrchestyVersion: "2.1.17"
+  appOrchestyVersion: "3.0.0-rc1"
+  helmOrchestyVersion: "3.0.0-rc1"
   helmBridgePoolKey: bridgepool
 
 kong:
   enabled: false
   adminUrl: "http://kong-kong-admin.kong.svc.cluster.local:8001"
   domainSuffix: "eu1.cloud.orchesty.io"
+
+cloud:
+  instancePrefix: "prod"
+  instance: "orchesty-instance"
+  auth0:
+    domain: "dev-qsa0lopaqbhr0vmj.eu.auth0.com"
+    audience: "https://api.orchesty.cloud"
+    clientId: "1XIsyOq2kpTDt4qOlop2rEAQzPcE2Q5p"
 
 gcs:
   enabled: false

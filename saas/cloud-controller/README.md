@@ -89,8 +89,9 @@ Request body:
 {
   "instanceDisplayName": "My Instance",
   "instanceUrlPrefix": "my-instance",
-  "userName": "admin@example.com",
+  "forceInstanceId": "customid123",
   "customizations": {
+    "userName": "admin@example.com",
     "workers": [
       {
         "name": "default",
@@ -127,32 +128,38 @@ Request body:
     },
     "resourceLimits": {
       "enabled": true,
-      "cpu": "500m",
-      "memory": "512Mi"
+      "cpu": "500",
+      "memory": "512",
+      "topologySlots": 0,
+      "messages": 0,
+      "storageGb": 0
     },
-    "traceAuditing": false,
-    "enterpriseDashboards": false,
-    "auditLogs": false,
-    "useBundle": false
+    "features": {
+      "traceAuditing": false,
+      "enterpriseDashboards": false,
+      "auditLogs": false,
+      "pulse": false
+    }
   }
 }
 ```
 
 Notes:
-- `instanceDisplayName` is required.
-- `instanceUrlPrefix` is required.
-- `userName` is optional (default: `orchesty@hanaboso.com`).
+- `instanceDisplayName` is required. Must contain at least one alphanumeric character (used to generate a valid Kubernetes chart name — spaces and special characters are replaced by `-`, result is lowercased and truncated to 63 characters).
+- `instanceUrlPrefix` is required. Truncated to **20 characters** automatically.
+- `forceInstanceId` is optional; when provided, uses the given ID instead of generating a random one.
+- `customizations.userName` is optional (default: `orchesty@hanaboso.com`).
 - `customizations.valkey.limit` is optional; when set, configures CPU (millicores), memory (Gi), and ephemeral-storage (Gi) limits.
 - `customizations.logs` is optional; controls Grafana/Loki/Alloy deployment. When `enabled`, a GCS bucket and HMAC credentials are provisioned (if `GCS_ENABLED`).
 - `customizations.logs.grafanaEnabled` generates a random Grafana admin password stored in the K8s secret.
 - `customizations.logs.retentionPeriod` is optional; log retention period in hours.
 - `customizations.logs.logsStorageSize` is optional; log storage size in Gi.
 - `customizations.applinth` is optional; when `enabled`, generates an EC key pair (secp521r1) for JWE and stores PEM-encoded keys in the K8s secret.
-- `customizations.resourceLimits` is optional; when `enabled`, sets CPU and memory limits on Orchesty pods.
-- `customizations.traceAuditing` is optional; enables trace auditing.
-- `customizations.enterpriseDashboards` is optional; enables enterprise dashboards.
-- `customizations.auditLogs` is optional; enables audit logs.
-- `customizations.useBundle` is optional; switches to bundled deployment mode.
+- `customizations.resourceLimits` is optional; when `enabled`, sets CPU and memory limits on Orchesty pods. `topologySlots`, `messages`, `storageGb` control per-instance cloud limits.
+- `customizations.features.traceAuditing` is optional; enables trace auditing.
+- `customizations.features.enterpriseDashboards` is optional; enables enterprise dashboards.
+- `customizations.features.auditLogs` is optional; enables audit logs.
+- `customizations.features.pulse` is optional; enables pulse.
 
 Success response (`201`):
 
@@ -267,6 +274,14 @@ Configuration is loaded from environment variables in `pkg/config/config.go`.
 - `GCS_ENDPOINT` - custom GCS API endpoint (for testing with fake-gcs-server)
 - `GCS_SERVICE_ACCOUNT_EMAIL` - service account email for HMAC key creation
 
+### Cloud / Auth0
+
+- `CLOUD_INSTANCE_PREFIX` (default: `prod`) - prefix for the cloud instance URL
+- `CLOUD_INSTANCE` (default: `orchesty-instance`) - cloud instance identifier used in starting point and notifier URLs
+- `CLOUD_AUTH0_DOMAIN` **required** - Auth0 domain, e.g. `example.auth0.com`
+- `CLOUD_AUTH0_AUDIENCE` **required** - Auth0 audience, e.g. `https://api.orchesty.example.com`
+- `CLOUD_AUTH0_CLIENT_ID` **required** - Auth0 client ID
+
 You can bootstrap local env file from `.env.dist`:
 
 ```bash
@@ -368,33 +383,3 @@ Delete instance:
 ```bash
 curl -i -X DELETE "http://localhost:8080/instance?instance=instance-abc123def4"
 ```
-
-## Kubernetes Secret Keys
-
-The `orchesty-secrets` secret created per instance contains:
-
-| Key | Source | Condition |
-|-----|--------|-----------|
-| `backend_jwt_key` | generated | always |
-| `crypt_secret` | generated | always |
-| `orchesty_api_key` | generated | always |
-| `mongodb_dsn` | generated | always |
-| `mongodb_db` | instance name | always |
-| `metrics_dsn` | generated | always |
-| `metrics_db` | instance name | always |
-| `rabbitmq_dsn` | generated | always |
-| `rabbitmq_url` | config | always |
-| `rabbitmq_user` | instance name | always |
-| `rabbitmq_password` | generated | always |
-| `oc_instance_display_name` | request | always |
-| `oc_instance_url_prefix` | request | always |
-| `oc_user_name` | request | always |
-| `oc_user_password` | generated | always |
-| `applinth_jwe_private_key` | generated EC P-521 PEM | `applinth.enabled` |
-| `applinth_jwe_public_key` | generated EC P-521 PEM | `applinth.enabled` |
-| `admin-user` | `"admin"` | `logs.grafanaEnabled` |
-| `admin-password` | generated | `logs.grafanaEnabled` |
-| `s3-endpoint` | config (`GCS_ENDPOINT` host or `storage.googleapis.com`) | `logs.enabled` |
-| `s3-bucket` | `logs-{instance}` | `logs.enabled` |
-| `s3-access-key` | GCS HMAC | `logs.enabled` |
-| `s3-secret-key` | GCS HMAC | `logs.enabled` |

@@ -95,7 +95,13 @@ func (h *Helm) execute(args ...string) (string, error) {
 }
 
 func (h *Helm) createFiles(path string, dto *models.InstanceDTO) error {
-	chart := strings.ReplaceAll(templates.ChartTemplate, "{{name}}", dto.InstanceDisplayName)
+	sanitizedChartName, err := sanitizeK8sName(dto.InstanceDisplayName)
+	if err != nil {
+		return fmt.Errorf("invalid instance display name for chart name: %w", err)
+	}
+
+	chart := strings.ReplaceAll(templates.ChartTemplate, "{{chartName}}", sanitizedChartName)
+	chart = strings.ReplaceAll(chart, "{{displayName}}", dto.InstanceDisplayName)
 	chart = strings.ReplaceAll(chart, "{{orchestyVersion}}", config.Helm.OrchestyVersion)
 
 	if err := os.WriteFile(filepath.Join(path, "Chart.yaml"), []byte(chart), 0o600); err != nil {
@@ -109,8 +115,34 @@ func (h *Helm) createFiles(path string, dto *models.InstanceDTO) error {
 	values = strings.ReplaceAll(values, "{{logsBlockGlobal}}", h.buildLogs(dto, true))
 	values = strings.ReplaceAll(values, "{{workersBlock}}", h.buildWorkers(dto))
 
+	// Instance prefix and instance replacement in public URLs
+	values = strings.ReplaceAll(values, "{{instancePrefix}}", dto.InstanceUrlPrefix)
 	values = strings.ReplaceAll(values, "{{instance}}", dto.Instance)
+
+	// Cloud instance prefix and cloud instance replacement in public URLs
+	values = strings.ReplaceAll(values, "{{cloudInstancePrefix}}", config.Cloud.InstancePrefix)
+	values = strings.ReplaceAll(values, "{{cloudInstance}}", config.Cloud.Instance)
+
+	// Feature flags replacement
+	values = strings.ReplaceAll(values, "{{featureEnterpriseDashboards}}", strconv.FormatBool(dto.Customizations.Features.EnterpriseDashboards))
+	values = strings.ReplaceAll(values, "{{featureTraceAuditing}}", strconv.FormatBool(dto.Customizations.Features.TraceAuditing))
+	values = strings.ReplaceAll(values, "{{featureAuditLogs}}", strconv.FormatBool(dto.Customizations.Features.AuditLogs))
+	values = strings.ReplaceAll(values, "{{featurePulse}}", strconv.FormatBool(dto.Customizations.Features.Pulse))
+
+	// Instance limits replacement
+	values = strings.ReplaceAll(values, "{{limitTopologySlots}}", strconv.Itoa(dto.Customizations.ResourceLimits.TopologySlots))
+	values = strings.ReplaceAll(values, "{{limitMessages}}", strconv.Itoa(dto.Customizations.ResourceLimits.Messages))
+	values = strings.ReplaceAll(values, "{{limitStorageGb}}", strconv.Itoa(dto.Customizations.ResourceLimits.StorageGb))
+
+	// Auth0 configuration replacement
+	values = strings.ReplaceAll(values, "{{auth0Domain}}", config.Cloud.Oauth0Domain)
+	values = strings.ReplaceAll(values, "{{auth0Audience}}", config.Cloud.Oauth0Audience)
+	values = strings.ReplaceAll(values, "{{auth0ClientId}}", config.Cloud.Oauth0ClientId)
+
+	// Other replacements
+	values = strings.ReplaceAll(values, "{{frontendTitle}}", dto.InstanceDisplayName)
 	values = strings.ReplaceAll(values, "{{appOrchestyVersion}}", config.Orchesty.Version)
+	values = strings.ReplaceAll(values, "{{domainSuffix}}", config.Cloud.DomainSuffix)
 	values = strings.ReplaceAll(values, "{{bridgePoolKey}}", config.Helm.BridgePoolKey)
 
 	return os.WriteFile(filepath.Join(path, "Values.yaml"), []byte(values), 0o600)
@@ -222,4 +254,45 @@ func (h *Helm) getKubeConfigArgs() []string {
 	}
 
 	return []string{}
+}
+
+func sanitizeK8sName(value string) (string, error) {
+	value = strings.ToLower(strings.TrimSpace(value))
+	if value == "" {
+		return "", fmt.Errorf("instance display name is empty")
+	}
+
+	var builder strings.Builder
+	builder.Grow(len(value))
+
+	lastWasDash := false
+	for _, char := range value {
+		isLowercaseLetter := char >= 'a' && char <= 'z'
+		isDigit := char >= '0' && char <= '9'
+
+		if isLowercaseLetter || isDigit {
+			builder.WriteRune(char)
+			lastWasDash = false
+			continue
+		}
+
+		if !lastWasDash {
+			builder.WriteByte('-')
+			lastWasDash = true
+		}
+	}
+
+	name := strings.Trim(builder.String(), "-")
+	if name == "" {
+		return "", fmt.Errorf("instance display name %q does not contain any valid characters", value)
+	}
+
+	if len(name) > 63 {
+		name = strings.TrimRight(name[:63], "-")
+		if name == "" {
+			return "", fmt.Errorf("instance display name %q produced an empty chart name after truncation", value)
+		}
+	}
+
+	return name, nil
 }
