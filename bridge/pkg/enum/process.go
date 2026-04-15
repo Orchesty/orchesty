@@ -12,6 +12,7 @@ const (
 
 	ProcessStatus_Error
 	ProcessStatus_Trash
+	ProcessStatus_Discard
 )
 
 const (

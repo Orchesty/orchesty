@@ -158,6 +158,12 @@ init-more: init
 		curl -s -X PUT "http://localhost/api/notifications/subscriptions" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
 			-d "{\"event_type\":\"topology_slow\",\"channel\":\"email\",\"enabled\":true}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/notifications/subscriptions" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{\"event_type\":\"limit_overflow\",\"channel\":\"email\",\"enabled\":true}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/notifications/subscriptions" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{\"event_type\":\"limit_recovered\",\"channel\":\"email\",\"enabled\":true}" > /dev/null && \
 		printf "\033[32mNotification subscriptions were successfully created.\033[0m\n" && \
 		curl -s -X PUT "http://localhost/api/platform-services/trace-ai-provider" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \

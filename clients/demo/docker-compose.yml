@@ -85,6 +85,9 @@ services:
             GENERATOR_PATH: /srv/topology
             MONGO_DSN: ${MONGO_DSN}
             PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}/../topology
+            APP_PASS_BACKEND_URL: http://backend-enterprise:80
+            APP_PASS_TRASH_DUPLICATION_LIMIT: '10'
+            APP_PASS_LIMITS_CHECK_INTERVAL: '10'
         volumes:
             - ./../../topology-generator/:/app:cached
             - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
@@ -193,8 +196,8 @@ services:
             ORCHESTY_FEATURE_AUDIT_LOGS: 'true'
             ORCHESTY_FEATURE_PULSE: 'false'
             ORCHESTY_LIMIT_TOPOLOGY_SLOTS: '0'
-            ORCHESTY_LIMIT_MESSAGES: '0'
-            ORCHESTY_LIMIT_STORAGE_GB: '0'
+            ORCHESTY_LIMIT_MESSAGES: '1000'
+            ORCHESTY_LIMIT_STORAGE_GB: '1'
             EMAIL_DSN: smtp://mailhog:1025
             ALPHA_INSTANCE_ID: 'local'
             INSTALLER_DIRS: '["/var/www/pipes/clients/demo/node-sdk/src/topology","/var/www/pipes/enterprise-sys-worker/src/topology"]'
@@ -272,9 +275,9 @@ services:
             MONGO_DSN: ${MONGO_DSN}
             RABBITMQ_DSN: ${RABBITMQ_DSN}
             STARTING_POINT_URL: ${STARTING_POINT_DSN}
-            THROTTLE_WINDOW: '7200'
             BUFFER_WINDOW: '60'
-            INAPP_THROTTLE_WINDOW: '60'
+            THROTTLE_WINDOW: '1'
+            INAPP_THROTTLE_WINDOW: '1'
         volumes:
             - ./../../notifier/:/app:cached
         ports:
@@ -293,6 +296,22 @@ services:
         ports:
             - ${DEV_IP}:8082:8080
         command: /run.sh -p cmd/trace.go -l 2345
+        security_opt: ['seccomp:unconfined']
+
+    metrics-collector:
+        image: hanabosocom/go-base:1.26
+        user: ${DEV_UID}:${DEV_GID}
+        environment:
+            MONGODB_DSN: ${MONGO_DSN}
+            METRICS_DSN: ${METRICS_DSN}
+            RABBITMQ_URL: http://rabbitmq:15672
+            RABBITMQ_USER: guest
+            RABBITMQ_PASSWORD: guest
+            LOKI_URL: ${LOKI_DSN}
+            LOKI_ENABLED: 'true'
+        volumes:
+            - ./../../metrics-collector/:/app:cached
+        command: /run.sh -p main.go -l 2345
         security_opt: ['seccomp:unconfined']
 
     tunnel-proxy:

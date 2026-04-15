@@ -70,3 +70,11 @@ func TrashResult(message *ProcessMessage, error error) ProcessResult {
 		error:   error,
 	}
 }
+
+func DiscardResult(message *ProcessMessage, error error) ProcessResult {
+	return ProcessResult{
+		message: message,
+		status:  enum.ProcessStatus_Discard,
+		error:   error,
+	}
+}
