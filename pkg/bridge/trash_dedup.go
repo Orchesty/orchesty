@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hanaboso/pipes/bridge/pkg/config"
 	"github.com/rs/zerolog/log"
 )
 
@@ -43,7 +42,11 @@ func trashDedupKey(nodeId, correlationId, resultMessage string) string {
 // ShouldTrash returns true if the message should be stored in trash (under limit).
 // Returns false if the dedup limit is exceeded for this group.
 func ShouldTrash(nodeId, correlationId, resultMessage string) bool {
-	limit := config.App.TrashDuplicationLimit
+	limits := cachedLimits.Load()
+	if limits == nil {
+		return true
+	}
+	limit := limits.trashDuplicationLimit
 	if limit <= 0 {
 		return true
 	}
@@ -66,7 +69,11 @@ func ShouldTrash(nodeId, correlationId, resultMessage string) bool {
 // RecordTrashed increments the counter for a trash group after storing.
 // Sends a one-time notification when the limit is first hit.
 func RecordTrashed(nodeId, correlationId, resultMessage string) {
-	limit := config.App.TrashDuplicationLimit
+	limits := cachedLimits.Load()
+	if limits == nil {
+		return
+	}
+	limit := limits.trashDuplicationLimit
 	if limit <= 0 || globalTrashDedup == nil {
 		return
 	}

@@ -119,9 +119,10 @@ func TestFetchLimitsFromBackend_Success(t *testing.T) {
 		resp := map[string]interface{}{
 			"status": "ok",
 			"limits": map[string]interface{}{
-				"messages":      2000,
-				"storageGb":     5,
-				"topologySlots": 10,
+				"messages":              2000,
+				"storageGb":             5,
+				"topologySlots":         10,
+				"trashDuplicationLimit": 500,
 			},
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -139,6 +140,7 @@ func TestFetchLimitsFromBackend_Success(t *testing.T) {
 	assert.NotNil(t, limits)
 	assert.Equal(t, 5*1024, limits.storageLimitMB, "storageGb should be converted to MB via *1024")
 	assert.Equal(t, 2000, limits.messageLimit)
+	assert.Equal(t, 500, limits.trashDuplicationLimit)
 }
 
 func TestFetchLimitsFromBackend_RefetchUpdatesCachedValues(t *testing.T) {
@@ -248,6 +250,7 @@ func TestFetchLimitsFromBackend_MissingLimitsKey(t *testing.T) {
 	assert.NotNil(t, limits, "cache should be set to zero values when limits key is missing")
 	assert.Equal(t, 0, limits.storageLimitMB)
 	assert.Equal(t, 0, limits.messageLimit)
+	assert.Equal(t, 0, limits.trashDuplicationLimit)
 }
 
 func TestFetchLimitsFromBackend_ConnectionError(t *testing.T) {
