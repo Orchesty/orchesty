@@ -19,8 +19,9 @@ import (
 var limitsCheckInterval = time.Duration(config.App.LimitsCheckInterval) * time.Second
 
 type backendLimits struct {
-	storageLimitMB int
-	messageLimit   int
+	storageLimitMB        int
+	messageLimit          int
+	trashDuplicationLimit int
 }
 
 var cachedLimits atomic.Pointer[backendLimits]
@@ -34,6 +35,7 @@ type limitsChecker struct {
 	messageIntegrityExceeded atomic.Bool
 	resourceDiscardCount     int64
 	messageDiscardCount      int64
+	rabbitTotalMessages      int64
 }
 
 var globalLimits atomic.Pointer[limitsChecker]
@@ -67,8 +69,9 @@ type statusResponse struct {
 }
 
 type statusLimits struct {
-	Messages  int `json:"messages"`
-	StorageGb int `json:"storageGb"`
+	Messages              int `json:"messages"`
+	StorageGb             int `json:"storageGb"`
+	TrashDuplicationLimit int `json:"trashDuplicationLimit"`
 }
 
 var limitsHTTPClient = &http.Client{Timeout: 10 * time.Second}
@@ -102,13 +105,14 @@ func fetchLimitsFromBackend() {
 
 	if status.Limits == nil {
 		log.Warn().Str("url", url).Msg("backend status response has no limits key (non-cloud mode?), clearing limits")
-		cachedLimits.Store(&backendLimits{storageLimitMB: 0, messageLimit: 0})
+		cachedLimits.Store(&backendLimits{storageLimitMB: 0, messageLimit: 0, trashDuplicationLimit: 0})
 		return
 	}
 
 	limits := &backendLimits{
-		storageLimitMB: status.Limits.StorageGb * 1024,
-		messageLimit:   status.Limits.Messages,
+		storageLimitMB:        status.Limits.StorageGb * 1024,
+		messageLimit:          status.Limits.Messages,
+		trashDuplicationLimit: status.Limits.TrashDuplicationLimit,
 	}
 	cachedLimits.Store(limits)
 
@@ -116,6 +120,7 @@ func fetchLimitsFromBackend() {
 		Int("storage_gb", status.Limits.StorageGb).
 		Int("storage_limit_mb", limits.storageLimitMB).
 		Int("message_limit", limits.messageLimit).
+		Int("trash_duplication_limit", limits.trashDuplicationLimit).
 		Msg("fetched limits from backend")
 }
 
@@ -182,11 +187,14 @@ func (lc *limitsChecker) checkResourceLimit() {
 		return
 	}
 
-	rabbitMB, err := lc.metricsReader.GetLatestRabbitMetric()
+	rabbitMB, rabbitMessages, err := lc.metricsReader.GetLatestRabbitMetric()
 	if err != nil {
 		log.Warn().Err(err).Msg("failed to read rabbitmq metric, skipping check cycle")
 		return
 	}
+	lc.mu.Lock()
+	lc.rabbitTotalMessages = rabbitMessages
+	lc.mu.Unlock()
 
 	lokiMB, err := lc.metricsReader.GetLatestLokiMetric()
 	if err != nil {
@@ -259,13 +267,11 @@ func (lc *limitsChecker) checkMessageLimit() {
 		return
 	}
 
-	trashCount, err := lc.mongodb.CountTrashMessages()
-	if err != nil {
-		log.Warn().Err(err).Msg("failed to count trash messages, skipping check cycle")
-		return
-	}
+	lc.mu.Lock()
+	rabbitMessages := lc.rabbitTotalMessages
+	lc.mu.Unlock()
 
-	totalCount := limiterCount + trashCount
+	totalCount := limiterCount + rabbitMessages
 	exceeded := totalCount > int64(limit)
 	wasExceeded := lc.messageIntegrityExceeded.Load()
 

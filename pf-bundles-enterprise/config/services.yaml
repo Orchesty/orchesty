@@ -32,6 +32,7 @@ parameters:
   env(ORCHESTY_LIMIT_TOPOLOGY_SLOTS): '0'
   env(ORCHESTY_LIMIT_MESSAGES): '0'
   env(ORCHESTY_LIMIT_STORAGE_GB): '0'
+  env(ORCHESTY_LIMIT_TRASH_DUPLICATION): '0'
   orchesty_cloud_backend_url: '%env(string:ORCHESTY_CLOUD_BACKEND_URL)%'
   orchesty_cloud_starting_point_url: '%env(string:ORCHESTY_CLOUD_STARTING_POINT_URL)%'
   orchesty_cloud_frontend_url: '%env(string:ORCHESTY_CLOUD_FRONTEND_URL)%'
@@ -46,6 +47,7 @@ parameters:
   limit_topology_slots: '%env(int:ORCHESTY_LIMIT_TOPOLOGY_SLOTS)%'
   limit_messages: '%env(int:ORCHESTY_LIMIT_MESSAGES)%'
   limit_storage_gb: '%env(int:ORCHESTY_LIMIT_STORAGE_GB)%'
+  limit_trash_duplication: '%env(int:ORCHESTY_LIMIT_TRASH_DUPLICATION)%'
   system_worker_names: ['sys-worker']
 
 services:

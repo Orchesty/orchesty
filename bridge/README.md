@@ -67,16 +67,15 @@ When a worker returns a 5xx status code or is unreachable, the bridge implements
 
 Three independent limits cause the bridge to discard (ack + drop) messages when exceeded:
 
-1. **Trash Deduplication Limit** — per `nodeId + correlationId + resultMessage`, limits how many identical messages get stored in trash. Excess copies are acknowledged but not persisted.
+1. **Trash Deduplication Limit** — per `nodeId + correlationId + resultMessage`, limits how many identical messages get stored in trash. Excess copies are acknowledged but not persisted. The limit is fetched from the backend API (`limits.trashDuplicationLimit`).
 2. **Resource Limit** — when total storage (MongoDB + RabbitMQ disk + Loki) exceeds a configured MB threshold, all incoming messages are discarded before processing.
-3. **Message Integrity Limit** — when total message count (limiter + trash) exceeds a configured count, all incoming messages are discarded before processing.
+3. **Message Integrity Limit** — when total message count (limiter documents + RabbitMQ total messages) exceeds a configured count, all incoming messages are discarded before processing.
 
 #### Configuration
 
 | Environment Variable | Default | Description |
 |---------------------|---------|-------------|
-| `TRASH_DUPLICATION_LIMIT` | `1000` | Max identical messages per `nodeId+correlationId+resultMessage` stored in trash. `0` = disabled. |
-| `BACKEND_URL` | `""` | URL of the PHP backend (e.g. `http://backend`). The bridge fetches `GET /api/status` every check cycle to read `limits.storageGb` (converted to MB via \*1024) and `limits.messages`. Empty = limits disabled. |
+| `BACKEND_URL` | `""` | URL of the PHP backend (e.g. `http://backend`). The bridge fetches `GET /api/status` every check cycle to read `limits.storageGb` (converted to MB via \*1024), `limits.messages`, and `limits.trashDuplicationLimit`. Empty = all limits disabled. |
 | `LIMITER_COLLECTION` | `limiter` | Name of the limiter collection on the bridge's `MONGODB_DSN` database. |
 | `METRICS_STORAGE_COLLECTION` | `db_storage_metrics` | Metrics-collector collection for MongoDB storage data. |
 | `METRICS_RABBITMQ_COLLECTION` | `rabbitmq_metrics` | Metrics-collector collection for RabbitMQ disk data. |
@@ -88,9 +87,9 @@ Three independent limits cause the bridge to discard (ack + drop) messages when 
 **Global limits (resource + message integrity):**
 
 - A background goroutine fetches limits from the PHP backend (`GET {BACKEND_URL}/api/status`) and polls MongoDB every `LIMITS_CHECK_INTERVAL` seconds (default 60).
-- The `storageGb` limit from the backend is converted to MB via \*1024. The `messages` limit is used as-is. On fetch error, the last successfully fetched values remain in effect.
+- The `storageGb` limit from the backend is converted to MB via \*1024. The `messages` and `trashDuplicationLimit` values are used as-is. On fetch error, the last successfully fetched values remain in effect.
 - Resource limit sums the latest `storage_size_mb` (MongoDB), `total_disk_mb` (RabbitMQ), and `total_data_size_mb` (Loki) from the metrics database (`METRICS_DSN`).
-- Message integrity limit counts documents in the `limiter` collection and `UserTask` documents with `type: "trash"` on the bridge's own database.
+- Message integrity limit sums documents in the `limiter` collection and `total_messages` from the latest `rabbitmq_metrics` entry in the metrics database.
 - When a limit is exceeded, an atomic flag is set and all incoming messages are immediately acked and dropped (no processing, no storage, no retry).
 - A notification is sent once on state transition (OK -> exceeded, exceeded -> OK) via both HTTP to starting-point and RabbitMQ event with type `limit_overflow`.
 - If metrics-collector collections don't exist, they are treated as 0 (no false positives).
@@ -122,5 +121,5 @@ Notifications fire only on state transitions, never per-message. Each event type
 | Storage drops below resource limit | Normal processing resumes, recovery notification sent |
 | Identical trash messages exceed dedup limit | Excess copies acked but not stored in MongoDB |
 | Trash dedup limit hit for a group | One-time notification sent for that group |
-| `TRASH_DUPLICATION_LIMIT=0` | Trash dedup disabled, all trash messages stored |
+| `trashDuplicationLimit` is 0 or not set | Trash dedup disabled, all trash messages stored |
 | Metrics-collector not deployed | Metrics collections missing, treated as 0 MB, resource limit never triggers |

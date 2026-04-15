@@ -28,6 +28,7 @@ final class StatusController extends AbstractController
      * @param int     $limitTopologySlots
      * @param int     $limitMessages
      * @param int     $limitStorageGb
+     * @param int     $limitTrashDuplication
      */
     public function __construct(
         private readonly string $orchestyCloudUrl = '',
@@ -40,6 +41,7 @@ final class StatusController extends AbstractController
         private readonly int $limitTopologySlots = 0,
         private readonly int $limitMessages = 0,
         private readonly int $limitStorageGb = 0,
+        private readonly int $limitTrashDuplication = 0,
     )
     {
     }
@@ -69,9 +71,10 @@ final class StatusController extends AbstractController
                 : $this->orchestyCloudUrl;
             $data['cloudUrl'] = rtrim($frontendUrl, '/');
             $data['limits']   = [
-                'messages'      => $this->limitMessages,
-                'storageGb'     => $this->limitStorageGb,
-                'topologySlots' => $this->limitTopologySlots,
+                'messages'               => $this->limitMessages,
+                'storageGb'              => $this->limitStorageGb,
+                'topologySlots'          => $this->limitTopologySlots,
+                'trashDuplicationLimit'  => $this->limitTrashDuplication,
             ];
         }
 

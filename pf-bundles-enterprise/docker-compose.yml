@@ -43,6 +43,7 @@ services:
             ORCHESTY_LIMIT_TOPOLOGY_SLOTS: '0'
             ORCHESTY_LIMIT_MESSAGES: '0'
             ORCHESTY_LIMIT_STORAGE_GB: '0'
+            ORCHESTY_LIMIT_TRASH_DUPLICATION: '0'
 
     swagger-ui:
         image: swaggerapi/swagger-ui

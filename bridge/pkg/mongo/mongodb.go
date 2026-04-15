@@ -135,17 +135,6 @@ func (m *MongoDb) CountLimiterMessages() (int64, error) {
 	return count, nil
 }
 
-func (m *MongoDb) CountTrashMessages() (int64, error) {
-	ctx, cancel := m.connection.Context()
-	defer cancel()
-
-	count, err := m.collection.CountDocuments(ctx, bson.M{"type": Type_Trash})
-	if err != nil {
-		return 0, err
-	}
-	return count, nil
-}
-
 func NewMongoDb() *MongoDb {
 	mongoDb := &mongodb.Connection{}
 	mongoDb.Connect(config.MongoDb.Dsn)

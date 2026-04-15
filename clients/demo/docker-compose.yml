@@ -86,7 +86,6 @@ services:
             MONGO_DSN: ${MONGO_DSN}
             PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}/../topology
             APP_PASS_BACKEND_URL: http://backend-enterprise:80
-            APP_PASS_TRASH_DUPLICATION_LIMIT: '10'
             APP_PASS_LIMITS_CHECK_INTERVAL: '10'
         volumes:
             - ./../../topology-generator/:/app:cached
@@ -198,6 +197,7 @@ services:
             ORCHESTY_LIMIT_TOPOLOGY_SLOTS: '0'
             ORCHESTY_LIMIT_MESSAGES: '1000'
             ORCHESTY_LIMIT_STORAGE_GB: '1'
+            ORCHESTY_LIMIT_TRASH_DUPLICATION: '10'
             EMAIL_DSN: smtp://mailhog:1025
             ALPHA_INSTANCE_ID: 'local'
             INSTALLER_DIRS: '["/var/www/pipes/clients/demo/node-sdk/src/topology","/var/www/pipes/enterprise-sys-worker/src/topology"]'

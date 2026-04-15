@@ -16,8 +16,9 @@ type StorageMetric struct {
 }
 
 type RabbitMetric struct {
-	TotalDiskMB float64   `bson:"total_disk_mb"`
-	Timestamp   time.Time `bson:"timestamp"`
+	TotalDiskMB   float64   `bson:"total_disk_mb"`
+	TotalMessages int64     `bson:"total_messages"`
+	Timestamp     time.Time `bson:"timestamp"`
 }
 
 type LokiMetric struct {
@@ -62,7 +63,7 @@ func (r *MetricsReader) GetLatestStorageMetric() (float64, error) {
 	return metric.StorageSizeMB, nil
 }
 
-func (r *MetricsReader) GetLatestRabbitMetric() (float64, error) {
+func (r *MetricsReader) GetLatestRabbitMetric() (float64, int64, error) {
 	var metric RabbitMetric
 	ctx, cancel := r.connection.Context()
 	defer cancel()
@@ -70,11 +71,11 @@ func (r *MetricsReader) GetLatestRabbitMetric() (float64, error) {
 	err := r.rabbitmqCollection.FindOne(ctx, bson.M{}, options.FindOne().SetSort(bson.D{{Key: "timestamp", Value: -1}})).Decode(&metric)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return 0, nil
+			return 0, 0, nil
 		}
-		return 0, err
+		return 0, 0, err
 	}
-	return metric.TotalDiskMB, nil
+	return metric.TotalDiskMB, metric.TotalMessages, nil
 }
 
 func (r *MetricsReader) GetLatestLokiMetric() (float64, error) {

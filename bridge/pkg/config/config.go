@@ -42,9 +42,8 @@ type (
 		TopologyJSON      string `env:"TOPOLOGY_JSON" default:"/srv/app/topology/topology.json"`
 		WorkerMaxFailures int    `env:"WORKER_MAX_FAILURES" default:"10"`
 
-		BackendUrl            string `env:"BACKEND_URL" default:""`
-		TrashDuplicationLimit int    `env:"TRASH_DUPLICATION_LIMIT" default:"1000"`
-		LimitsCheckInterval   int    `env:"LIMITS_CHECK_INTERVAL" default:"60"`
+		BackendUrl          string `env:"BACKEND_URL" default:""`
+		LimitsCheckInterval int    `env:"LIMITS_CHECK_INTERVAL" default:"60"`
 	}
 
 	startingPoint struct {

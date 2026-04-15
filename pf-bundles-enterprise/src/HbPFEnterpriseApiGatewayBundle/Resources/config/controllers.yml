@@ -17,6 +17,7 @@ services:
             $limitTopologySlots: '%limit_topology_slots%'
             $limitMessages: '%limit_messages%'
             $limitStorageGb: '%limit_storage_gb%'
+            $limitTrashDuplication: '%limit_trash_duplication%'
 
     Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\AuditEntityController:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\AuditEntityController

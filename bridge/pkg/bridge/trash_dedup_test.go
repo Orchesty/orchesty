@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanaboso/pipes/bridge/pkg/config"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/stretchr/testify/assert"
 )
@@ -24,7 +23,7 @@ func resetTrashDedup() {
 
 func TestShouldTrash_UnderLimit(t *testing.T) {
 	resetTrashDedup()
-	config.App.TrashDuplicationLimit = 3
+	cachedLimits.Store(&backendLimits{trashDuplicationLimit: 3})
 
 	assert.True(t, ShouldTrash("node-1", "corr-1", "error msg"))
 
@@ -37,7 +36,7 @@ func TestShouldTrash_UnderLimit(t *testing.T) {
 
 func TestShouldTrash_AtLimit(t *testing.T) {
 	resetTrashDedup()
-	config.App.TrashDuplicationLimit = 3
+	cachedLimits.Store(&backendLimits{trashDuplicationLimit: 3})
 
 	RecordTrashed("node-1", "corr-1", "error msg")
 	RecordTrashed("node-1", "corr-1", "error msg")
@@ -48,7 +47,7 @@ func TestShouldTrash_AtLimit(t *testing.T) {
 
 func TestShouldTrash_DifferentGroups(t *testing.T) {
 	resetTrashDedup()
-	config.App.TrashDuplicationLimit = 2
+	cachedLimits.Store(&backendLimits{trashDuplicationLimit: 2})
 
 	RecordTrashed("node-1", "corr-1", "error A")
 	RecordTrashed("node-1", "corr-1", "error A")
@@ -60,7 +59,7 @@ func TestShouldTrash_DifferentGroups(t *testing.T) {
 
 func TestShouldTrash_Disabled(t *testing.T) {
 	resetTrashDedup()
-	config.App.TrashDuplicationLimit = 0
+	cachedLimits.Store(&backendLimits{trashDuplicationLimit: 0})
 
 	for i := 0; i < 100; i++ {
 		assert.True(t, ShouldTrash("node-1", "corr-1", "error msg"), "should always allow when disabled")
@@ -69,7 +68,7 @@ func TestShouldTrash_Disabled(t *testing.T) {
 
 func TestShouldTrash_NilTracker(t *testing.T) {
 	globalTrashDedup = nil
-	config.App.TrashDuplicationLimit = 1
+	cachedLimits.Store(&backendLimits{trashDuplicationLimit: 1})
 
 	assert.True(t, ShouldTrash("node-1", "corr-1", "error msg"), "should allow when tracker is nil")
 }
@@ -81,7 +80,7 @@ func TestTrashDedupKey(t *testing.T) {
 
 func TestCleanupTrashDedup_RemovesExpired(t *testing.T) {
 	resetTrashDedup()
-	config.App.TrashDuplicationLimit = 5
+	cachedLimits.Store(&backendLimits{trashDuplicationLimit: 5})
 
 	RecordTrashed("node-1", "corr-1", "error msg")
 
@@ -101,7 +100,7 @@ func TestCleanupTrashDedup_RemovesExpired(t *testing.T) {
 
 func TestCleanupTrashDedup_KeepsFresh(t *testing.T) {
 	resetTrashDedup()
-	config.App.TrashDuplicationLimit = 5
+	cachedLimits.Store(&backendLimits{trashDuplicationLimit: 5})
 
 	RecordTrashed("node-1", "corr-1", "error msg")
 
@@ -117,7 +116,7 @@ func TestCleanupTrashDedup_KeepsFresh(t *testing.T) {
 
 func TestRecordTrashed_NotificationOnce(t *testing.T) {
 	resetTrashDedup()
-	config.App.TrashDuplicationLimit = 2
+	cachedLimits.Store(&backendLimits{trashDuplicationLimit: 2})
 
 	RecordTrashed("node-1", "corr-1", "error msg")
 
