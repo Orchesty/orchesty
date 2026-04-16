@@ -13,6 +13,8 @@ import (
 	"strings"
 )
 
+const maxInstanceURLPrefixLength = 20
+
 const InstancePrefix = "instance-"
 
 const charsetFull = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -63,12 +65,13 @@ type Applinth struct {
 }
 
 type ResourceLimits struct {
-	Enabled       bool   `json:"enabled"`
-	Cpu           string `json:"cpu"`    // in millicores, e.g. "500"
-	Memory        string `json:"memory"` // in Gi
-	TopologySlots int    `json:"topologySlots"`
-	Messages      int    `json:"messages"`
-	StorageGb     int    `json:"storageGb"`
+	Enabled          bool   `json:"enabled"`
+	Cpu              string `json:"cpu"`    // in millicores, e.g. "500"
+	Memory           string `json:"memory"` // in Gi
+	TopologySlots    int    `json:"topologySlots"`
+	Messages         int    `json:"messages"`
+	StorageGb        int    `json:"storageGb"`
+	TrashDuplication int    `json:"trashDuplication"`
 }
 
 type Features struct {
@@ -88,6 +91,17 @@ type Customizations struct {
 	UserName       string         `json:"userName,omitempty"`
 }
 
+type RequestInstanceInfo struct {
+	InstanceDisplayName string `json:"instanceDisplayName"`
+	InstanceUrlPrefix   string `json:"instanceUrlPrefix"`
+	ForceInstanceId     string `json:"forceInstanceId,omitempty"`
+}
+
+type RequestInstanceCredentials struct {
+	InstanceId     string `json:"instanceId"`
+	InstanceSecret string `json:"instanceSecret"`
+}
+
 type ExistingInstanceData struct {
 	Instance            string
 	InstanceDisplayName string
@@ -99,6 +113,8 @@ type ExistingInstanceData struct {
 	BackendJwtKey       string
 	CryptSecret         string
 	OrchestyApiKey      string
+	CloudInstanceId     string
+	CloudInstanceSecret string
 	S3AccessKey         string
 	S3SecretKey         string
 	GrafanaPassword     string
@@ -120,6 +136,8 @@ type InstanceDTO struct {
 	BackendJwtKey       string
 	CryptSecret         string
 	OrchestyApiKey      string
+	CloudInstanceId     string
+	CloudInstanceSecret string
 	S3AccessKey         string
 	S3SecretKey         string
 	GrafanaPassword     string
@@ -140,7 +158,22 @@ type InstanceInfo struct {
 }
 
 // NewInstanceDTO creates a new InstanceDTO with generated credentials.
-func NewInstanceDTO(instanceDisplayName, instanceUrlPrefix, forceInstanceId string, customizations Customizations) (*InstanceDTO, error) {
+func NewInstanceDTO(instanceInfo RequestInstanceInfo, instanceCredentials RequestInstanceCredentials, customizations Customizations) (*InstanceDTO, error) {
+	instanceDisplayName := strings.TrimSpace(instanceInfo.InstanceDisplayName)
+	if instanceDisplayName == "" {
+		return nil, fmt.Errorf("instanceDisplayName is empty")
+	}
+
+	instanceUrlPrefix := strings.TrimSpace(instanceInfo.InstanceUrlPrefix)
+	if instanceUrlPrefix == "" {
+		return nil, fmt.Errorf("instanceUrlPrefix is empty")
+	}
+	if len(instanceUrlPrefix) > maxInstanceURLPrefixLength {
+		instanceUrlPrefix = instanceUrlPrefix[:maxInstanceURLPrefixLength]
+	}
+
+	forceInstanceId := strings.TrimSpace(instanceInfo.ForceInstanceId)
+
 	var instanceId string
 	var err error
 	if forceInstanceId != "" {
@@ -217,6 +250,8 @@ func NewInstanceDTO(instanceDisplayName, instanceUrlPrefix, forceInstanceId stri
 		BackendJwtKey:       backendKey,
 		CryptSecret:         cryptSec,
 		OrchestyApiKey:      apiKey,
+		CloudInstanceId:     instanceCredentials.InstanceId,
+		CloudInstanceSecret: instanceCredentials.InstanceSecret,
 		GrafanaPassword:     grafanaPwd,
 		ApplinthPrivateKey:  applinthPrivKey,
 		ApplinthPublicKey:   applinthPubKey,
@@ -272,6 +307,8 @@ func NewInstanceDTOFromExistingData(data ExistingInstanceData) (*InstanceDTO, er
 		BackendJwtKey:       backendJwtKey,
 		CryptSecret:         cryptSecret,
 		OrchestyApiKey:      orchestyApiKey,
+		CloudInstanceId:     data.CloudInstanceId,
+		CloudInstanceSecret: data.CloudInstanceSecret,
 		S3AccessKey:         data.S3AccessKey,
 		S3SecretKey:         data.S3SecretKey,
 		GrafanaPassword:     data.GrafanaPassword,

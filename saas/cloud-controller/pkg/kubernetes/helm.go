@@ -148,6 +148,7 @@ func (h *Helm) createFiles(path string, dto *models.InstanceDTO) error {
 	values = strings.ReplaceAll(values, "{{limitTopologySlots}}", strconv.Itoa(dto.Customizations.ResourceLimits.TopologySlots))
 	values = strings.ReplaceAll(values, "{{limitMessages}}", strconv.Itoa(dto.Customizations.ResourceLimits.Messages))
 	values = strings.ReplaceAll(values, "{{limitStorageGb}}", strconv.Itoa(dto.Customizations.ResourceLimits.StorageGb))
+	values = strings.ReplaceAll(values, "{{limitTrashDuplication}}", strconv.Itoa(dto.Customizations.ResourceLimits.TrashDuplication))
 
 	// Auth0 configuration replacement
 	values = strings.ReplaceAll(values, "{{auth0Domain}}", config.Cloud.Oauth0Domain)
@@ -268,6 +269,7 @@ func (h *Helm) buildImageOverrides(dto *models.InstanceDTO) string {
 	imageOverridesBlock = strings.ReplaceAll(imageOverridesBlock, "{{tunnelProxyImage}}", config.Orchesty.TunnelProxyImage)
 	imageOverridesBlock = strings.ReplaceAll(imageOverridesBlock, "{{traceImage}}", config.Orchesty.TraceImage)
 	imageOverridesBlock = strings.ReplaceAll(imageOverridesBlock, "{{notifierImage}}", config.Orchesty.NotifierImage)
+	imageOverridesBlock = strings.ReplaceAll(imageOverridesBlock, "{{metricsCollectorImage}}", config.Orchesty.MetricsCollectorImage)
 	imageOverridesBlock = strings.ReplaceAll(imageOverridesBlock, "{{appOrchestyVersion}}", config.Orchesty.Version)
 
 	imageOverridesBlock = strings.ReplaceAll(templates.ImageOverridesBlockHeaderTemplate, "{{imageOverridesBlock}}", imageOverridesBlock)

@@ -1,7 +1,9 @@
 # Release Notes
 
 ## 3.0.0-rc2
-- Service-Account: added default SA with pullSecret for cloud
+- Limiter: added new Env
+- Backend: added new Env
+- Notifier: added new Env
 
 ## 3.0.0-rc1
 - Backend: added new ENVs

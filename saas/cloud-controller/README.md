@@ -87,9 +87,15 @@ Request body:
 
 ```json
 {
-  "instanceDisplayName": "My Instance",
-  "instanceUrlPrefix": "my-instance",
-  "forceInstanceId": "customid123",
+  "instanceInfo": {
+    "instanceDisplayName": "My Instance",
+    "instanceUrlPrefix": "my-instance",
+    "forceInstanceId": "customid123"
+  },
+  "instanceCredentials": {
+    "instanceId": "aa",
+    "instanceSecret": "bbb"
+  },
   "customizations": {
     "userName": "admin@example.com",
     "workers": [
@@ -132,7 +138,8 @@ Request body:
       "memory": "512",
       "topologySlots": 0,
       "messages": 0,
-      "storageGb": 0
+      "storageGb": 0,
+      "trashDuplication": 0
     },
     "features": {
       "traceAuditing": false,
@@ -145,17 +152,19 @@ Request body:
 ```
 
 Notes:
-- `instanceDisplayName` is required. Must contain at least one alphanumeric character (used to generate a valid Kubernetes chart name — spaces and special characters are replaced by `-`, result is lowercased and truncated to 63 characters).
-- `instanceUrlPrefix` is required. Truncated to **20 characters** automatically.
-- `forceInstanceId` is optional; when provided, uses the given ID instead of generating a random one.
+- `instanceInfo.instanceDisplayName` is required. Must contain at least one alphanumeric character (used to generate a valid Kubernetes chart name — spaces and special characters are replaced by `-`, result is lowercased and truncated to 63 characters).
+- `instanceInfo.instanceUrlPrefix` is required. Truncated to **20 characters** automatically.
+- `instanceInfo.forceInstanceId` is optional; when provided, uses the given ID instead of generating a random one.
+- `instanceCredentials.instanceId` and `instanceCredentials.instanceSecret` are optional request credentials stored into instance secret as `orchesty_cloud_instance_id` and `orchesty_cloud_instance_secret`.
 - `customizations.userName` is optional (default: `orchesty@hanaboso.com`).
+- `customizations.userName` must be a valid email and its length must be 3-254 chars.
 - `customizations.valkey.limit` is optional; when set, configures CPU (millicores), memory (Gi), and ephemeral-storage (Gi) limits.
 - `customizations.logs` is optional; controls Grafana/Loki/Alloy deployment. When `enabled`, a GCS bucket and HMAC credentials are provisioned (if `GCS_ENABLED`).
 - `customizations.logs.grafanaEnabled` generates a random Grafana admin password stored in the K8s secret.
 - `customizations.logs.retentionPeriod` is optional; log retention period in hours.
 - `customizations.logs.logsStorageSize` is optional; log storage size in Gi.
 - `customizations.applinth` is optional; when `enabled`, generates an EC key pair (secp521r1) for JWE and stores PEM-encoded keys in the K8s secret.
-- `customizations.resourceLimits` is optional; when `enabled`, sets CPU and memory limits on Orchesty pods. `topologySlots`, `messages`, `storageGb` control per-instance cloud limits.
+- `customizations.resourceLimits` is optional; when `enabled`, sets CPU and memory limits on Orchesty pods. `topologySlots`, `messages`, `storageGb`, `trashDuplication` control per-instance cloud limits.
 - `customizations.features.traceAuditing` is optional; enables trace auditing.
 - `customizations.features.enterpriseDashboards` is optional; enables enterprise dashboards.
 - `customizations.features.auditLogs` is optional; enables audit logs.
@@ -363,8 +372,14 @@ Create instance:
 curl -s -X POST http://localhost:8080/instance \
   -H "Content-Type: application/json" \
   -d '{
-    "instanceDisplayName": "Demo Instance",
-    "instanceUrlPrefix": "instance",
+    "instanceInfo": {
+      "instanceDisplayName": "Demo Instance",
+      "instanceUrlPrefix": "instance"
+    },
+    "instanceCredentials": {
+      "instanceId": "aa",
+      "instanceSecret": "bbb"
+    },
     "customizations": {
       "userName": "admin@example.com",
       "workers": [

@@ -127,7 +127,7 @@ func TestCreateInstanceSuccess(t *testing.T) {
 	}}
 	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
-	request := httptest.NewRequest(http.MethodPost, "/instance", bytes.NewBufferString(`{"instanceDisplayName":"Test Instance","customizations":{"userName":"user@test.local","workers":[{"name":"default","image":"img","sdkType":"nodejs"}]}}`))
+	request := httptest.NewRequest(http.MethodPost, "/instance", bytes.NewBufferString(`{"instanceInfo":{"instanceDisplayName":"Test Instance","instanceUrlPrefix":"test"},"instanceCredentials":{"instanceId":"aa","instanceSecret":"bbb"},"customizations":{"userName":"user@test.local","workers":[{"name":"default","image":"img","sdkType":"nodejs"}]}}`))
 	request.Header.Set("Content-Type", "application/json")
 	response := httptest.NewRecorder()
 
@@ -139,8 +139,8 @@ func TestCreateInstanceSuccess(t *testing.T) {
 	if serviceStub.createCalls != 1 {
 		t.Fatalf("expected one create call, got %d", serviceStub.createCalls)
 	}
-	if serviceStub.createRequest.InstanceDisplayName != "Test Instance" {
-		t.Fatalf("unexpected instanceDisplayName %q", serviceStub.createRequest.InstanceDisplayName)
+	if serviceStub.createRequest.InstanceInfo.InstanceDisplayName != "Test Instance" {
+		t.Fatalf("unexpected instanceDisplayName %q", serviceStub.createRequest.InstanceInfo.InstanceDisplayName)
 	}
 	if serviceStub.createRequest.Customizations.UserName != "user@test.local" {
 		t.Fatalf("unexpected userName %q", serviceStub.createRequest.Customizations.UserName)
@@ -174,7 +174,7 @@ func TestCreateInstanceBadRequest(t *testing.T) {
 func TestCreateInstanceUnknownFieldBadRequest(t *testing.T) {
 	handler := New(&instanceServiceStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
-	request := httptest.NewRequest(http.MethodPost, "/instance", bytes.NewBufferString(`{"instanceDisplayName":"Test Instance","unexpected":true}`))
+	request := httptest.NewRequest(http.MethodPost, "/instance", bytes.NewBufferString(`{"instanceInfo":{"instanceDisplayName":"Test Instance","instanceUrlPrefix":"test"},"unexpected":true}`))
 	response := httptest.NewRecorder()
 
 	handler.ServeHTTP(response, request)
@@ -188,7 +188,7 @@ func TestCreateInstanceConflict(t *testing.T) {
 	serviceStub := &instanceServiceStub{createErr: service.ErrInstanceUnavailable}
 	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
-	request := httptest.NewRequest(http.MethodPost, "/instance", bytes.NewBufferString(`{"instanceDisplayName":"Test Instance"}`))
+	request := httptest.NewRequest(http.MethodPost, "/instance", bytes.NewBufferString(`{"instanceInfo":{"instanceDisplayName":"Test Instance","instanceUrlPrefix":"test"}}`))
 	response := httptest.NewRecorder()
 
 	handler.ServeHTTP(response, request)
@@ -202,7 +202,7 @@ func TestCreateInstanceInternalError(t *testing.T) {
 	serviceStub := &instanceServiceStub{createErr: errors.New("create failed")}
 	handler := New(serviceStub, healthStub{}, healthStub{}, healthStub{}, healthStub{}, healthStub{})
 
-	request := httptest.NewRequest(http.MethodPost, "/instance", bytes.NewBufferString(`{"instanceDisplayName":"Test Instance"}`))
+	request := httptest.NewRequest(http.MethodPost, "/instance", bytes.NewBufferString(`{"instanceInfo":{"instanceDisplayName":"Test Instance","instanceUrlPrefix":"test"}}`))
 	response := httptest.NewRecorder()
 
 	handler.ServeHTTP(response, request)

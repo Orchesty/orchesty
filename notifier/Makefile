@@ -1,7 +1,7 @@
 DC=docker-compose
 DE=docker-compose exec -T app
 DB=docker-compose exec -T bruno
-IMAGE=orchesty/notifier:$(TAG)
+IMAGE=dkr.hanaboso.net/pipes/pipes/notifier:$(TAG)
 
 .env:
 	sed -e 's/{DEV_UID}/$(shell id -u)/g' \

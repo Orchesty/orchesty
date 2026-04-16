@@ -18,7 +18,11 @@ func TestNewInstanceDTO(t *testing.T) {
 		UserName: "user@test.local",
 	}
 
-	dto, err := NewInstanceDTO("Test Instance", "prefix", "", customizations)
+	dto, err := NewInstanceDTO(
+		RequestInstanceInfo{InstanceDisplayName: "Test Instance", InstanceUrlPrefix: "prefix"},
+		RequestInstanceCredentials{},
+		customizations,
+	)
 	if err != nil {
 		t.Fatalf("expected NewInstanceDTO without error, got %v", err)
 	}
@@ -169,7 +173,11 @@ func TestNewInstanceDTOFromExistingDataRequiresFields(t *testing.T) {
 }
 
 func TestNewInstanceDTOWithForceInstanceId(t *testing.T) {
-	dto, err := NewInstanceDTO("Test Instance", "prefix", "myinstanceid", Customizations{})
+	dto, err := NewInstanceDTO(
+		RequestInstanceInfo{InstanceDisplayName: "Test Instance", InstanceUrlPrefix: "prefix", ForceInstanceId: "myinstanceid"},
+		RequestInstanceCredentials{},
+		Customizations{},
+	)
 	if err != nil {
 		t.Fatalf("expected NewInstanceDTO without error, got %v", err)
 	}

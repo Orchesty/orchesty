@@ -104,7 +104,7 @@ global:
         cpu: 20m
       limits:
         memory: 128Mi
-        cpu: 500m
+        cpu: 200m
     postInstall:
       enabled: true
       backoffLimit: 3
@@ -124,7 +124,7 @@ global:
           cpu: 20m
         limits:
           memory: 128Mi
-          cpu: 500m
+          cpu: 200m
 
   cronApi:
     resources:
@@ -156,7 +156,7 @@ global:
         cpu: 10m
       limits:
         memory: 32Mi
-        cpu: 500m
+        cpu: 250m
 
   fluentd:
     resources:
@@ -174,7 +174,7 @@ global:
         cpu: 10m
       limits:
         memory: 32Mi
-        cpu: 500m
+        cpu: 250m
 
   startingPoint:
     service:
@@ -187,7 +187,7 @@ global:
         cpu: 20m
       limits:
         memory: 32Mi
-        cpu: 500m
+        cpu: 250m
 
   detector:
     manageServiceAccount: true
@@ -246,6 +246,7 @@ global:
       topologySlots: '0'
       messages: '0'
       storageGb: '0'
+      trashDuplication: '0'
     auth0:
       domain: example.auth0.com
       audience: https://api.orchesty.example.com
@@ -277,10 +278,10 @@ global:
     resources:
       requests:
         memory: 128Mi
-        cpu: 50m
+        cpu: 100m
       limits:
-        memory: 512Mi
-        cpu: 1001m
+        memory: 256Mi
+        cpu: 200m
 
   workers: {}
   # foo:
@@ -295,8 +296,8 @@ global:
   #       memory: 128Mi
   #       cpu: 50m
   #     limits:
-  #       memory: 512Mi
-  #       cpu: 1001m
+  #       memory: 256Mi
+  #       cpu: 500m
 
   workerApi:
     serviceAnnotations: {}

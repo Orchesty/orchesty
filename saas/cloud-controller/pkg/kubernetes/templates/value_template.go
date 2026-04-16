@@ -20,6 +20,11 @@ global:
   metricsCollector:
     enabled: true
   topologyApi:
+    topologiesExtraEnv:
+      BACKEND_URL:
+        value: https://api-{{instancePrefix}}-{{instance}}.{{domainSuffix}}
+      LIMITS_CHECK_INTERVAL:
+        value: "60"
     topologiesExtraSpec:
       nodeSelector:
         {{bridgePoolKey}}: "true"
@@ -46,6 +51,7 @@ global:
       topologySlots: '{{limitTopologySlots}}'
       messages: '{{limitMessages}}'
       storageGb: '{{limitStorageGb}}'
+      trashDuplication: '{{limitTrashDuplication}}'
     auth0:
       domain: {{auth0Domain}}
       audience: {{auth0Audience}}
@@ -165,5 +171,6 @@ global:
     tunnel-proxy: {{hanabosoDockerRegistry}}/{{tunnelProxyImage}}:{{appOrchestyVersion}}
     trace: {{hanabosoDockerRegistry}}/{{traceImage}}:{{appOrchestyVersion}}
     notifier: {{hanabosoDockerRegistry}}/{{notifierImage}}:{{appOrchestyVersion}}
+    metrics-collector: {{hanabosoDockerRegistry}}/{{metricsCollectorImage}}:{{appOrchestyVersion}}
 `
 )

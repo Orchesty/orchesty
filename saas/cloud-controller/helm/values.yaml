@@ -28,17 +28,18 @@ secret:
 env:
   appDebug: true
   appOrchestyVersion: "3.0.0-rc1"
-  helmOrchestyVersion: "3.0.0-rc1"
+  helmOrchestyVersion: "3.0.0-rc2"
   helmBridgePoolKey: bridgepool
 
 kong:
-  enabled: false
-  adminUrl: "http://kong-kong-admin.kong.svc.cluster.local:8001"
-  domainSuffix: "eu1.cloud.orchesty.io"
+  enabled: true
+  adminUrl: "http://kong-admin.kong.svc.cluster.local:8001"
+  domainSuffix: "eu2.cloud.orchesty.io"
 
 cloud:
   instancePrefix: "prod"
   instance: "orchesty-instance"
+  pullSecret: "hanaboso"
   auth0:
     domain: "dev-qsa0lopaqbhr0vmj.eu.auth0.com"
     audience: "https://api.orchesty.cloud"

@@ -84,6 +84,8 @@ spec:
               value: {{ .Values.cloud.instancePrefix | quote }}
             - name: CLOUD_INSTANCE
               value: {{ .Values.cloud.instance | quote }}
+            - name: CLOUD_PULL_SECRET
+              value: {{ .Values.cloud.pullSecret | quote }}
             - name: CLOUD_AUTH0_DOMAIN
               value: {{ .Values.cloud.auth0.domain | quote }}
             - name: CLOUD_AUTH0_AUDIENCE

@@ -1,5 +1,4 @@
-IMAGE=orchesty/metrics-collector:$(TAG)
-# IMAGE=dkr.hanaboso.net/pipes/pipes/metrics-collector:$(TAG)
+IMAGE=dkr.hanaboso.net/pipes/pipes/metrics-collector:$(TAG)
 
 DC=docker-compose
 DE=docker-compose exec -T app

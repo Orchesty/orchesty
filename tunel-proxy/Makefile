@@ -1,6 +1,6 @@
 DC=docker-compose
 DE=docker-compose exec -T app
-IMAGE=orchesty/tunnel-proxy:$(TAG)
+IMAGE=dkr.hanaboso.net/pipes/pipes/tunnel-proxy:$(TAG)
 
 .env:
 	sed -e 's/{DEV_UID}/$(shell id -u)/g' \

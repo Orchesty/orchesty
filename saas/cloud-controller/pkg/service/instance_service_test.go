@@ -364,7 +364,7 @@ func TestCreateInstanceSuccess(t *testing.T) {
 	kubernetes := &kubernetesStub{namespaceAvailable: true, stepErrs: map[string]error{}}
 	service := NewInstanceService(mongo, rabbit, kubernetes, &ingressStub{stepErrs: map[string]error{}}, &objectStorageStub{stepErrs: map[string]error{}})
 
-	result, err := service.CreateInstance(CreateInstanceRequest{InstanceDisplayName: "Test instance", InstanceUrlPrefix: "test-instance"})
+	result, err := service.CreateInstance(CreateInstanceRequest{InstanceInfo: models.RequestInstanceInfo{InstanceDisplayName: "Test instance", InstanceUrlPrefix: "test-instance"}})
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -398,7 +398,7 @@ func TestCreateInstanceRollbackOnInstallError(t *testing.T) {
 	}
 	service := NewInstanceService(mongo, rabbit, kubernetes, &ingressStub{stepErrs: map[string]error{}}, &objectStorageStub{stepErrs: map[string]error{}})
 
-	_, err := service.CreateInstance(CreateInstanceRequest{InstanceDisplayName: "Test instance", InstanceUrlPrefix: "test-instance"})
+	_, err := service.CreateInstance(CreateInstanceRequest{InstanceInfo: models.RequestInstanceInfo{InstanceDisplayName: "Test instance", InstanceUrlPrefix: "test-instance"}})
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -511,9 +511,8 @@ func TestCreateInstanceInvalidUserNameTooShort(t *testing.T) {
 	service := NewInstanceService(mongo, rabbit, kubernetes, &ingressStub{stepErrs: map[string]error{}}, &objectStorageStub{stepErrs: map[string]error{}})
 
 	_, err := service.CreateInstance(CreateInstanceRequest{
-		InstanceDisplayName: "Test instance",
-		InstanceUrlPrefix:   "test-instance",
-		Customizations:      models.Customizations{UserName: "a@b"},
+		InstanceInfo:   models.RequestInstanceInfo{InstanceDisplayName: "Test instance", InstanceUrlPrefix: "test-instance"},
+		Customizations: models.Customizations{UserName: "a@b"},
 	})
 	if !errors.Is(err, ErrInvalidUserName) {
 		t.Fatalf("expected ErrInvalidUserName, got %v", err)
@@ -527,9 +526,8 @@ func TestCreateInstanceInvalidUserNameNotEmail(t *testing.T) {
 	service := NewInstanceService(mongo, rabbit, kubernetes, &ingressStub{stepErrs: map[string]error{}}, &objectStorageStub{stepErrs: map[string]error{}})
 
 	_, err := service.CreateInstance(CreateInstanceRequest{
-		InstanceDisplayName: "Test instance",
-		InstanceUrlPrefix:   "test-instance",
-		Customizations:      models.Customizations{UserName: "invalid-user"},
+		InstanceInfo:   models.RequestInstanceInfo{InstanceDisplayName: "Test instance", InstanceUrlPrefix: "test-instance"},
+		Customizations: models.Customizations{UserName: "invalid-user"},
 	})
 	if !errors.Is(err, ErrInvalidUserName) {
 		t.Fatalf("expected ErrInvalidUserName, got %v", err)
@@ -584,9 +582,8 @@ func TestCreateInstanceValidCustomEmail(t *testing.T) {
 	service := NewInstanceService(mongo, rabbit, kubernetes, &ingressStub{stepErrs: map[string]error{}}, &objectStorageStub{stepErrs: map[string]error{}})
 
 	result, err := service.CreateInstance(CreateInstanceRequest{
-		InstanceDisplayName: "Test instance",
-		InstanceUrlPrefix:   "test-instance",
-		Customizations:      models.Customizations{UserName: "admin@example.com"},
+		InstanceInfo:   models.RequestInstanceInfo{InstanceDisplayName: "Test instance", InstanceUrlPrefix: "test-instance"},
+		Customizations: models.Customizations{UserName: "admin@example.com"},
 	})
 	if err != nil {
 		t.Fatalf("expected no error for valid email, got %v", err)
@@ -602,7 +599,7 @@ func TestCreateInstanceWithKongEnabled(t *testing.T) {
 	kubernetes := &kubernetesStub{namespaceAvailable: true, stepErrs: map[string]error{}}
 	service := NewInstanceService(&mongoStub{}, &rabbitStub{stepErrs: map[string]error{}}, kubernetes, ingress, &objectStorageStub{stepErrs: map[string]error{}})
 
-	_, err := service.CreateInstance(CreateInstanceRequest{InstanceDisplayName: "Test", InstanceUrlPrefix: "test"})
+	_, err := service.CreateInstance(CreateInstanceRequest{InstanceInfo: models.RequestInstanceInfo{InstanceDisplayName: "Test", InstanceUrlPrefix: "test"}})
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -623,9 +620,8 @@ func TestCreateInstanceWithGCSEnabled(t *testing.T) {
 	service := NewInstanceService(&mongoStub{}, &rabbitStub{stepErrs: map[string]error{}}, kubernetes, &ingressStub{stepErrs: map[string]error{}}, objStorage)
 
 	_, err := service.CreateInstance(CreateInstanceRequest{
-		InstanceDisplayName: "Test",
-		InstanceUrlPrefix:   "test",
-		Customizations:      models.Customizations{Logs: models.Logs{Enabled: true}},
+		InstanceInfo:   models.RequestInstanceInfo{InstanceDisplayName: "Test", InstanceUrlPrefix: "test"},
+		Customizations: models.Customizations{Logs: models.Logs{Enabled: true}},
 	})
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
@@ -651,9 +647,8 @@ func TestCreateInstanceRollbackWithKongAndGCS(t *testing.T) {
 	service := NewInstanceService(&mongoStub{}, &rabbitStub{stepErrs: map[string]error{}}, kubernetes, ingress, objStorage)
 
 	_, err := service.CreateInstance(CreateInstanceRequest{
-		InstanceDisplayName: "Test",
-		InstanceUrlPrefix:   "test",
-		Customizations:      models.Customizations{Logs: models.Logs{Enabled: true}},
+		InstanceInfo:   models.RequestInstanceInfo{InstanceDisplayName: "Test", InstanceUrlPrefix: "test"},
+		Customizations: models.Customizations{Logs: models.Logs{Enabled: true}},
 	})
 	if err == nil {
 		t.Fatal("expected error")
@@ -757,9 +752,8 @@ func TestCreateInstanceWithGrafanaEnabled(t *testing.T) {
 	service := NewInstanceService(&mongoStub{}, &rabbitStub{stepErrs: map[string]error{}}, kubernetes, &ingressStub{stepErrs: map[string]error{}}, &objectStorageStub{stepErrs: map[string]error{}})
 
 	result, err := service.CreateInstance(CreateInstanceRequest{
-		InstanceDisplayName: "Test",
-		InstanceUrlPrefix:   "test",
-		Customizations:      models.Customizations{Logs: models.Logs{GrafanaEnabled: true}},
+		InstanceInfo:   models.RequestInstanceInfo{InstanceDisplayName: "Test", InstanceUrlPrefix: "test"},
+		Customizations: models.Customizations{Logs: models.Logs{GrafanaEnabled: true}},
 	})
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
@@ -775,9 +769,8 @@ func TestCreateInstanceWithApplinthEnabled(t *testing.T) {
 	service := NewInstanceService(&mongoStub{}, &rabbitStub{stepErrs: map[string]error{}}, kubernetes, &ingressStub{stepErrs: map[string]error{}}, &objectStorageStub{stepErrs: map[string]error{}})
 
 	result, err := service.CreateInstance(CreateInstanceRequest{
-		InstanceDisplayName: "Test",
-		InstanceUrlPrefix:   "test",
-		Customizations:      models.Customizations{Applinth: models.Applinth{Enabled: true}},
+		InstanceInfo:   models.RequestInstanceInfo{InstanceDisplayName: "Test", InstanceUrlPrefix: "test"},
+		Customizations: models.Customizations{Applinth: models.Applinth{Enabled: true}},
 	})
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
@@ -796,9 +789,7 @@ func TestCreateInstanceWithForceInstanceId(t *testing.T) {
 	service := NewInstanceService(&mongoStub{}, &rabbitStub{stepErrs: map[string]error{}}, kubernetes, &ingressStub{stepErrs: map[string]error{}}, &objectStorageStub{stepErrs: map[string]error{}})
 
 	result, err := service.CreateInstance(CreateInstanceRequest{
-		InstanceDisplayName: "Test",
-		InstanceUrlPrefix:   "test",
-		ForceInstanceId:     "customid123",
+		InstanceInfo: models.RequestInstanceInfo{InstanceDisplayName: "Test", InstanceUrlPrefix: "test", ForceInstanceId: "customid123"},
 	})
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
@@ -814,8 +805,7 @@ func TestCreateInstanceTruncatesInstanceURLPrefix(t *testing.T) {
 	service := NewInstanceService(&mongoStub{}, &rabbitStub{stepErrs: map[string]error{}}, kubernetes, &ingressStub{stepErrs: map[string]error{}}, &objectStorageStub{stepErrs: map[string]error{}})
 
 	_, err := service.CreateInstance(CreateInstanceRequest{
-		InstanceDisplayName: "Test",
-		InstanceUrlPrefix:   "abcdefghijklmnopqrstuvwxyz",
+		InstanceInfo: models.RequestInstanceInfo{InstanceDisplayName: "Test", InstanceUrlPrefix: "abcdefghijklmnopqrstuvwxyz"},
 	})
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)

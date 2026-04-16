@@ -41,6 +41,11 @@ spec:
                 secretKeyRef:
                   key: mongodb_dsn
                   name: {{ include "pipes.secretName" . }}
+            - name: METRICS_DSN
+              valueFrom:
+                secretKeyRef:
+                  key: metrics_dsn
+                  name: {{ include "pipes.secretName" . }}
           resources:
 {{ toYaml .Values.global.limiter.resources | indent 12 }}
 

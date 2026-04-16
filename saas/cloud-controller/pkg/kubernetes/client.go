@@ -14,6 +14,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -169,6 +170,10 @@ func (c *Client) ApplyInstanceSecret(dto *models.InstanceDTO) (bool, error) {
 		"oc_instance_url_prefix":   dto.InstanceUrlPrefix,
 		"oc_user_name":             dto.UserName,
 		"oc_user_password":         dto.UserPassword,
+
+		// Customization envs
+		"orchesty_cloud_instance_id":     dto.CloudInstanceId,
+		"orchesty_cloud_instance_secret": dto.CloudInstanceSecret,
 	}
 
 	if dto.Customizations.Applinth.Enabled {
@@ -296,6 +301,8 @@ func (c *Client) LoadInstanceDTO(instance string) (*models.InstanceDTO, error) {
 		BackendJwtKey:       getSecretValue(secret, "backend_jwt_key"),
 		CryptSecret:         getSecretValue(secret, "crypt_secret"),
 		OrchestyApiKey:      getSecretValue(secret, "orchesty_api_key"),
+		CloudInstanceId:     getSecretValue(secret, "orchesty_cloud_instance_id"),
+		CloudInstanceSecret: getSecretValue(secret, "orchesty_cloud_instance_secret"),
 		S3AccessKey:         getSecretValue(secret, "s3-access-key"),
 		S3SecretKey:         getSecretValue(secret, "s3-secret-key"),
 		GrafanaPassword:     getSecretValue(secret, "admin-password"),
@@ -372,7 +379,42 @@ func sanitizeK8sLabelValue(value string) (string, error) {
 }
 
 func (c *Client) Install(dto *models.InstanceDTO) error {
+	if err := c.adoptDefaultServiceAccount(dto.Instance); err != nil {
+		return err
+	}
+
 	return c.helm.Install(dto)
+}
+
+// adoptDefaultServiceAccount adds Helm ownership metadata and imagePullSecrets to the default
+// ServiceAccount that Kubernetes auto-creates in every namespace, so Helm can manage it during
+// install and pods can pull images from private registries.
+func (c *Client) adoptDefaultServiceAccount(namespace string) error {
+	clientSet, err := c.getClientSet()
+	if err != nil {
+		return err
+	}
+
+	pullSecret := config.Cloud.PullSecret
+	patch := fmt.Sprintf(
+		`{"metadata":{"labels":{"app.kubernetes.io/managed-by":"Helm"},"annotations":{"meta.helm.sh/release-name":%q,"meta.helm.sh/release-namespace":%q}},"imagePullSecrets":[{"name":%q}]}`,
+		orchestyRepo,
+		namespace,
+		pullSecret,
+	)
+
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+	defer cancel()
+
+	_, err = clientSet.CoreV1().ServiceAccounts(namespace).Patch(
+		ctx,
+		"default",
+		types.MergePatchType,
+		[]byte(patch),
+		metav1.PatchOptions{},
+	)
+
+	return err
 }
 
 func (c *Client) Health() error {

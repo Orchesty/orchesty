@@ -2,7 +2,7 @@ DC=docker-compose
 DE=docker-compose exec -T app
 DB=docker-compose exec -T bruno
 DM=docker-compose exec -T mongo
-IMAGE=orchesty/trace:$(TAG)
+IMAGE=dkr.hanaboso.net/pipes/pipes/trace:$(TAG)
 
 .env:
 	sed -e 's/{DEV_UID}/$(shell id -u)/g' \

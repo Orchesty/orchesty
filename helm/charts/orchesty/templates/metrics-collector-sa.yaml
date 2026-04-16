@@ -8,6 +8,8 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+imagePullSecrets:
+  - name: {{ .Values.global.cloud.pullSecret }}
 {{ end }}
 
 {{- if .Values.global.metricsCollector.manageRBAC -}}

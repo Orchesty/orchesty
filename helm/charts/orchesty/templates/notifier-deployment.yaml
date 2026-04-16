@@ -50,6 +50,11 @@ spec:
               value: "{{ .Values.global.notifier.throttleWindow }}"
             - name: INAPP_THROTTLE_WINDOW
               value: "{{ .Values.global.notifier.inAppThrottleWindow }}"
+            - name: ORCHESTY_CLOUD_INSTANCE_ID
+              valueFrom:
+                secretKeyRef:
+                  key: orchesty_cloud_instance_id
+                  name: {{ include "pipes.secretName" . }}
           resources:
 {{ toYaml .Values.global.notifier.resources | indent 12 }}
 

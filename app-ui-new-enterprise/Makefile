@@ -1,6 +1,5 @@
 DC=docker-compose exec -T ui
-
-IMAGE=orchesty/frontend-enterprise:$(TAG)
+IMAGE=dkr.hanaboso.net/pipes/pipes/enterprise-frontend:$(TAG)
 
 docker-compose.ci.yml:
 	# Comment out any port

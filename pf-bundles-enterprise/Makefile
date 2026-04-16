@@ -1,6 +1,6 @@
 DC=docker-compose
 DE=docker-compose exec -T app
-IMAGE=dkr.hanaboso.net/pipes/pipes/enterprise:$(TAG)
+IMAGE=dkr.hanaboso.net/pipes/pipes/enterprise-backend:$(TAG)
 
 .env:
 	sed -e "s/{DEV_UID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -u); else echo '1001'; fi)/g" \

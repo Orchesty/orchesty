@@ -41,3 +41,17 @@ fasttest: lint
 test: init-dev fasttest docker-down-clean
 
 ci-test: test
+
+deploy-instance:
+	curl -s -X POST "$(API_URL)/instance" \
+		-H "Content-Type: application/json" \
+		-d '{"instanceInfo":{"instanceDisplayName":"Prod Instance orchesty","instanceUrlPrefix":"prod","forceInstanceId":"orchesty"},"instanceCredentials":{"instanceId":"aa","instanceSecret":"bbb"},"customizations":{"workers":[{"name":"sys-worker","image":"dkr.hanaboso.net/pipes/pipes/enterprise-system-worker:3.0.0-rc1","sdkType":"nodejs"},{"name":"cloud-worker","image":"dkr.hanaboso.net/orchesty/orchesty-cloud/cloud-worker:master","sdkType":"nodejs"}],"resourceLimits":{"enabled":true,"cpu":"8000","memory":"8192","topologySlots":10,"messages":0,"storageGb":0,"trashDuplication":0},"features":{"traceAuditing":true,"enterpriseDashboards":true,"auditLogs":true,"pulse":true}}}' | jq
+
+update-instance:
+	curl -s -X PATCH "$(API_URL)/instance" \
+		-H "Content-Type: application/json" \
+		-d '{"instance":"instance-orchesty","instanceDisplayName":"Prod Instance orchesty","customizations":{"workers":[{"name":"sys-worker","image":"dkr.hanaboso.net/pipes/pipes/enterprise-system-worker:3.0.0-rc1","sdkType":"nodejs"},{"name":"cloud-worker","image":"dkr.hanaboso.net/orchesty/orchesty-cloud/cloud-worker:master","sdkType":"nodejs"}],"resourceLimits":{"enabled":true,"cpu":"8000","memory":"8192","topologySlots":10,"messages":0,"storageGb":0,"trashDuplication":0},"features":{"traceAuditing":true,"enterpriseDashboards":true,"auditLogs":true,"pulse":true},"userName":"admin@example.com"}}' | jq
+
+destroy-instance:
+	curl -s -X DELETE "$(API_URL)/instance?instance=instance-orchesty" \
+		-H "Content-Type: application/json" | jq

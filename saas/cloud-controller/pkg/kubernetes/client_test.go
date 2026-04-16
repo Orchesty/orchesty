@@ -4,6 +4,7 @@ import (
 	"errors"
 	"testing"
 
+	"cloud-controller/pkg/config"
 	"cloud-controller/pkg/models"
 
 	corev1 "k8s.io/api/core/v1"
@@ -224,7 +225,8 @@ func TestHealth(t *testing.T) {
 func TestInstallDelegatesToHelm(t *testing.T) {
 	stub := &helmStub{}
 	dto := testK8sDTO()
-	client := &Client{helm: stub}
+	defaultSA := &corev1.ServiceAccount{ObjectMeta: metav1.ObjectMeta{Name: "default", Namespace: dto.Instance}}
+	client := &Client{helm: stub, clientSet: fake.NewSimpleClientset(defaultSA)}
 
 	if err := client.Install(dto); err != nil {
 		t.Fatalf("expected no error, got %v", err)
@@ -239,6 +241,33 @@ func TestInstallDelegatesToHelm(t *testing.T) {
 	stub.err = errors.New("install failed")
 	if err := client.Install(dto); !errors.Is(err, stub.err) {
 		t.Fatalf("expected propagated helm error, got %v", err)
+	}
+}
+
+func TestAdoptDefaultServiceAccountPatchesLabelsAndAnnotations(t *testing.T) {
+	dto := testK8sDTO()
+	defaultSA := &corev1.ServiceAccount{ObjectMeta: metav1.ObjectMeta{Name: "default", Namespace: dto.Instance}}
+	client := &Client{clientSet: fake.NewSimpleClientset(defaultSA)}
+
+	if err := client.adoptDefaultServiceAccount(dto.Instance); err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	sa, err := client.clientSet.CoreV1().ServiceAccounts(dto.Instance).Get(t.Context(), "default", metav1.GetOptions{})
+	if err != nil {
+		t.Fatalf("expected SA to exist, got %v", err)
+	}
+	if sa.Labels["app.kubernetes.io/managed-by"] != "Helm" {
+		t.Fatalf("expected managed-by label to be Helm, got %q", sa.Labels["app.kubernetes.io/managed-by"])
+	}
+	if sa.Annotations["meta.helm.sh/release-name"] != orchestyRepo {
+		t.Fatalf("expected release-name annotation %q, got %q", orchestyRepo, sa.Annotations["meta.helm.sh/release-name"])
+	}
+	if sa.Annotations["meta.helm.sh/release-namespace"] != dto.Instance {
+		t.Fatalf("expected release-namespace annotation %q, got %q", dto.Instance, sa.Annotations["meta.helm.sh/release-namespace"])
+	}
+	if len(sa.ImagePullSecrets) != 1 || sa.ImagePullSecrets[0].Name != config.Cloud.PullSecret {
+		t.Fatalf("expected imagePullSecrets [{%q}], got %v", config.Cloud.PullSecret, sa.ImagePullSecrets)
 	}
 }
 

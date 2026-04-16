@@ -15,13 +15,10 @@ import (
 
 var (
 	ErrInstanceDisplayNameRequired = errors.New("instanceDisplayName is empty")
-	ErrInstanceUrlPrefixRequired   = errors.New("instanceUrlPrefix is empty")
 	ErrInstanceRequired            = errors.New("instance is empty")
 	ErrInstanceUnavailable         = errors.New("instance namespace is not available")
 	ErrInvalidUserName             = models.ErrInvalidUserName
 )
-
-const maxInstanceURLPrefixLength = 20
 
 type InputError struct {
 	Err error
@@ -70,15 +67,14 @@ type ObjectStorageClient interface {
 }
 
 type CreateInstanceRequest struct {
-	InstanceDisplayName string                `json:"instanceDisplayName"`
-	InstanceUrlPrefix   string                `json:"instanceUrlPrefix"`
-	ForceInstanceId     string                `json:"forceInstanceId,omitempty"`
-	Customizations      models.Customizations `json:"customizations"`
+	InstanceInfo        models.RequestInstanceInfo        `json:"instanceInfo"`
+	InstanceCredentials models.RequestInstanceCredentials `json:"instanceCredentials"`
+	Customizations      models.Customizations             `json:"customizations,omitempty"`
 }
 
 type UpdateInstanceRequest struct {
 	Instance            string                 `json:"instance"`
-	InstanceDisplayName *string                `json:"instanceDisplayName,omitempty"`
+	InstanceDisplayName *string                `json:"instanceDisplayName"`
 	Customizations      *models.Customizations `json:"customizations,omitempty"`
 }
 
@@ -110,22 +106,7 @@ func NewInstanceService(mongo MongoClient, rabbit RabbitClient, kubernetes Kuber
 }
 
 func (s *InstanceService) CreateInstance(request CreateInstanceRequest) (models.InstanceInfo, error) {
-	instanceDisplayName := strings.TrimSpace(request.InstanceDisplayName)
-	if instanceDisplayName == "" {
-		return models.InstanceInfo{}, &InputError{ErrInstanceDisplayNameRequired}
-	}
-
-	instanceUrlPrefix := strings.TrimSpace(request.InstanceUrlPrefix)
-	if instanceUrlPrefix == "" {
-		return models.InstanceInfo{}, &InputError{ErrInstanceUrlPrefixRequired}
-	}
-	if len(instanceUrlPrefix) > maxInstanceURLPrefixLength {
-		instanceUrlPrefix = instanceUrlPrefix[:maxInstanceURLPrefixLength]
-	}
-
-	forceInstanceId := strings.TrimSpace(request.ForceInstanceId)
-
-	dto, err := models.NewInstanceDTO(instanceDisplayName, instanceUrlPrefix, forceInstanceId, request.Customizations)
+	dto, err := models.NewInstanceDTO(request.InstanceInfo, request.InstanceCredentials, request.Customizations)
 	if err != nil {
 		return models.InstanceInfo{}, &InputError{err}
 	}
@@ -224,14 +205,14 @@ func (s *InstanceService) UpdateInstance(request UpdateInstanceRequest) (models.
 		}
 
 		dto.InstanceDisplayName = displayName
+
+		if err := s.kubernetes.UpdateNamespaceDisplayName(dto.Instance, dto.InstanceDisplayName); err != nil {
+			return models.InstanceInfo{}, fmt.Errorf("update namespace display name: %w", err)
+		}
 	}
 
 	if request.Customizations != nil {
 		dto.Customizations = *request.Customizations
-	}
-
-	if err := s.kubernetes.UpdateNamespaceDisplayName(dto.Instance, dto.InstanceDisplayName); err != nil {
-		return models.InstanceInfo{}, fmt.Errorf("update namespace display name: %w", err)
 	}
 
 	if config.GCS.Enabled && request.Customizations != nil {

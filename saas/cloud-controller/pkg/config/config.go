@@ -52,6 +52,7 @@ type orchesty struct {
 	TunnelProxyImage        string `env:"ORCHESTY_TUNNEL_PROXY_IMAGE" default:"pipes/pipes/tunnel-proxy"`
 	TraceImage              string `env:"ORCHESTY_TRACE_IMAGE" default:"pipes/pipes/trace"`
 	NotifierImage           string `env:"ORCHESTY_NOTIFIER_IMAGE" default:"pipes/pipes/notifier"`
+	MetricsCollectorImage   string `env:"ORCHESTY_METRICS_COLLECTOR_IMAGE" default:"pipes/pipes/metrics-collector"`
 }
 
 type applinth struct {
@@ -82,10 +83,11 @@ type gcs struct {
 type cloud struct {
 	InstancePrefix string `env:"CLOUD_INSTANCE_PREFIX" default:"prod"`
 	Instance       string `env:"CLOUD_INSTANCE" default:"orchesty-instance"`
-	DomainSuffix   string `env:"KONG_DOMAIN_SUFFIX" default:"eu1.cloud.orchesty.io"`
+	DomainSuffix   string `env:"KONG_DOMAIN_SUFFIX" default:"eu2.cloud.orchesty.io"`
 	Oauth0Domain   string `env:"CLOUD_AUTH0_DOMAIN" required:"true"`
 	Oauth0Audience string `env:"CLOUD_AUTH0_AUDIENCE" required:"true"`
 	Oauth0ClientId string `env:"CLOUD_AUTH0_CLIENT_ID" required:"true"`
+	PullSecret     string `env:"CLOUD_PULL_SECRET" default:"hanaboso"`
 }
 
 func (g *gcs) S3Endpoint() string {
