@@ -38,4 +38,7 @@ const (
 	LogHeader_Timestamp             = "timestamp"
 	LogHeader_Message               = "message"
 	LogHeader_IsForUi               = "isForUi"
+	LogHeader_NodeName              = "nodeName"
+	LogHeader_SequenceId            = "sequenceId"
+	LogHeader_LevelName             = "levelName"
 )
