@@ -3,6 +3,8 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"time"
+
 	"github.com/hanaboso/go-utils/pkg/timex"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -239,10 +241,13 @@ func (pm ProcessMessage) MarshalZerologObject(e *zerolog.Event) {
 	e.Str(enum.LogHeader_ProcessId, pm.GetHeaderOrDefault(enum.Header_ProcessId, ""))
 	e.Str(enum.LogHeader_TopologyId, pm.GetHeaderOrDefault(enum.Header_TopologyId, ""))
 	e.Str(enum.LogHeader_NodeId, pm.GetHeaderOrDefault(enum.Header_NodeId, ""))
+	e.Str(enum.LogHeader_NodeName, pm.GetHeaderOrDefault(enum.Header_NodeName, ""))
+	e.Str(enum.LogHeader_SequenceId, pm.GetHeaderOrDefault(enum.Header_SequenceId, ""))
 	e.Str(enum.LogHeader_Service, "bridge")
 	e.Str(enum.LogHeader_UserId, pm.GetHeaderOrDefault(enum.Header_User, ""))
 	e.Str(enum.LogHeader_ParentId, pm.GetHeaderOrDefault(enum.Header_ParentProcessId, ""))
 	e.Str(enum.LogHeader_Applications, pm.GetHeaderOrDefault(enum.Header_Application, ""))
 	e.Str(enum.LogHeader_PreviousNodeId, pm.GetHeaderOrDefault(enum.Header_PreviousNodeId, ""))
 	e.Str(enum.LogHeader_PreviousCorrelationId, pm.GetHeaderOrDefault(enum.LogHeader_PreviousCorrelationId, ""))
+	e.Int64(enum.LogHeader_Timestamp, time.Now().UnixMilli())
 }
