@@ -1,6 +1,5 @@
-const AUTH0_DOMAIN = import.meta.env.VITE_AUTH0_DOMAIN || ''
-const AUTH0_CLIENT_ID = import.meta.env.VITE_AUTH0_CLIENT_ID || ''
-const AUTH0_AUDIENCE = import.meta.env.VITE_AUTH0_AUDIENCE || ''
+import { AUTH0_DOMAIN, AUTH0_CLIENT_ID, AUTH0_AUDIENCE } from '@/config'
+
 const AUTH0_DB_CONNECTION = 'Username-Password-Authentication'
 
 interface RopgTokenResponse {

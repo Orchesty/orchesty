@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
-import { defineConfig, type Plugin } from 'vite'
+import { defineConfig, type Plugin, type PluginOption } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import tailwindcss from '@tailwindcss/vite'
@@ -36,14 +36,15 @@ function dualAliasPlugin(): Plugin {
 }
 
 // https://vite.dev/config/
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
+  const plugins: PluginOption[] = [dualAliasPlugin(), vue(), tailwindcss()]
+
+  if (mode !== 'production') {
+    plugins.push(vueDevTools())
+  }
+
   return {
-    plugins: [
-      dualAliasPlugin(),
-      vue(),
-      vueDevTools(),
-      tailwindcss(),
-    ],
+    plugins,
     resolve: {
       alias: {
         '@orchesty/ui-core': fileURLToPath(
