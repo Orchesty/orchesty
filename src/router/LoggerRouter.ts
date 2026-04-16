@@ -61,6 +61,20 @@ export default class LoggerRouter {
                 res.json({ message: 'Worker-api: Fluentd unknown error' });
             }
         });
+
+        this.app.post('/logger/loki', (req, res) => {
+            const result = inputSchema.validate(req.body, { allowUnknown: true });
+
+            if (result.error) {
+                logger.error(result.error);
+                res.statusCode = 400;
+                res.json({ message: { error: result.error.message } });
+                return;
+            }
+
+            logger.info(req.body);
+            res.json({ message: { status: 'OK' } });
+        });
     }
 
 }
