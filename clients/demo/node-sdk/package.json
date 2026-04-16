@@ -14,7 +14,7 @@
   "license": "Apache-2.0",
   "packageManager": "pnpm@9.1.4",
   "dependencies": {
-    "@aws-sdk/client-ses": "^3.1026.0",
+    "@aws-sdk/client-ses": "^3.1030.0",
     "@orchesty/connector-airtable": "^1.0.1",
     "@orchesty/connector-amazon-apps-common": "^1.0.2",
     "@orchesty/connector-amazon-apps-lambda": "^1.0.2",
@@ -67,12 +67,12 @@
     "@orchesty/connector-zendesk": "^1.0.1",
     "@orchesty/connector-zoho": "^1.0.1",
     "@orchesty/connector-zoom": "^1.0.1",
-    "@orchesty/nodejs-sdk": "^5.0.5",
+    "@orchesty/nodejs-sdk": "^5.0.6",
     "copyfiles": "^2.4.1",
     "lodash": "^4.18.1",
     "luxon": "^3.7.2",
     "mongodb": "^7.1.1",
-    "mysql2": "^3.20.0"
+    "mysql2": "^3.22.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
@@ -80,7 +80,7 @@
     "@hanaboso/eslint-plugin": "^1.2.5",
     "@types/jest": "^30.0.0",
     "@types/luxon": "^3.7.1",
-    "@types/node": "^25.5.2",
+    "@types/node": "^25.6.0",
     "@types/supertest": "^7.2.0",
     "axios-mock-adapter": "^2.1.0",
     "eslint": "^10.2.0",
@@ -92,7 +92,8 @@
   },
   "pnpm": {
     "overrides": {
-      "@orchesty/nodejs-sdk": "^5.0.0"
+      "@orchesty/nodejs-sdk": "^5.0.0",
+      "eslint": "^10.2.0"
     }
   }
 }

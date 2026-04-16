@@ -1,5 +1,13 @@
-export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.66:8085'
-export const TITLE = import.meta.env.VITE_TITLE || ''
+function env(value: string | undefined, placeholder: string): string {
+  return value || (import.meta.env.PROD ? placeholder : '')
+}
+
+export const BACKEND_URL = env(import.meta.env.VITE_BACKEND_URL, '%VITE_BACKEND_URL%')
+export const NOTIFIER_URL = env(import.meta.env.VITE_NOTIFIER_URL, '%VITE_NOTIFIER_URL%')
+export const TITLE = env(import.meta.env.VITE_TITLE, '%VITE_TITLE%')
+export const AUTH0_DOMAIN = env(import.meta.env.VITE_AUTH0_DOMAIN, '%VITE_AUTH0_DOMAIN%')
+export const AUTH0_CLIENT_ID = env(import.meta.env.VITE_AUTH0_CLIENT_ID, '%VITE_AUTH0_CLIENT_ID%')
+export const AUTH0_AUDIENCE = env(import.meta.env.VITE_AUTH0_AUDIENCE, '%VITE_AUTH0_AUDIENCE%')
 
 export const STORAGE_KEYS = {
   AUTH_TOKEN: 'auth_token',

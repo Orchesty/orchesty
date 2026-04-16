@@ -1,4 +1,5 @@
 import { ref, onMounted, onUnmounted } from 'vue'
+import { NOTIFIER_URL } from '@/config'
 
 export interface InAppNotification {
   id: string
@@ -21,8 +22,7 @@ export function useNotificationStream() {
   const listeners: Array<(n: InAppNotification) => void> = []
 
   const connect = () => {
-    const notifierUrl = import.meta.env.VITE_NOTIFIER_URL || 'http://127.0.0.66:8086'
-    const url = `${notifierUrl}/api/notifications/stream`
+    const url = `${NOTIFIER_URL}/api/notifications/stream`
 
     eventSource = new EventSource(url)
 

@@ -64,6 +64,13 @@ func (h httpBeforeProcess) BeforeProcess(node types.Node, dto *model.ProcessMess
 	defer cancel()
 	req = req.WithContext(ctx)
 
+	log.Info().EmbedObject(dto).
+		Str(enum.LogHeader_LevelName, "info").
+		Interface("reqHeaders", req.Header).
+		Interface("reqBody", messageBody).
+		Msgf("Incoming request: Method[POST] Url[/%s]", node.Settings().ActionPath)
+
+	startTime := time.Now()
 	response, err := h.client.Do(req)
 	if err != nil {
 		RecordFailure(host, nodeId, correlationId)
@@ -76,6 +83,11 @@ func (h httpBeforeProcess) BeforeProcess(node types.Node, dto *model.ProcessMess
 		return dto.Error(err)
 	}
 	defer response.Body.Close()
+	duration := time.Since(startTime)
+
+	log.Debug().EmbedObject(dto).
+		Str(enum.LogHeader_LevelName, "debug").
+		Msgf("Total request duration: %dms for endpoint POST[/%s]", duration.Milliseconds(), node.Settings().ActionPath)
 
 	dto.FromHttpResponse(response)
 	if response.StatusCode > 500 {
@@ -103,5 +115,29 @@ func (h httpBeforeProcess) BeforeProcess(node types.Node, dto *model.ProcessMess
 		return dto.Trash(err)
 	}
 
+	resultMessage := dto.GetHeaderOrDefault(enum.Header_ResultMessage, "")
+	resultCode := dto.GetIntHeaderOrDefault(enum.Header_ResultCode, 0)
+
+	if isSuccessResultCode(resultCode) {
+		log.Debug().EmbedObject(dto).
+			Str(enum.LogHeader_LevelName, "debug").
+			Msgf("Request successfully processed. Message: [%s]", resultMessage)
+	} else {
+		log.Error().EmbedObject(dto).
+			Str(enum.LogHeader_LevelName, "error").
+			Msgf("Request process failed. Message: [%s]", resultMessage)
+	}
+
 	return dto.Ok()
+}
+
+func isSuccessResultCode(code int) bool {
+	switch code {
+	case enum.ResultCode_Ok, enum.ResultCode_Repeat, enum.ResultCode_ForwardToQueue,
+		enum.ResultCode_DoNotContinue, enum.ResultCode_CursorWithFollowers, enum.ResultCode_CursorOnly,
+		enum.ResultCode_LimitExceeded:
+		return true
+	default:
+		return false
+	}
 }

@@ -1,6 +1,10 @@
 *
 !app-ui-new
 !app-ui-new-enterprise
+app-ui-new/node_modules
+app-ui-new-enterprise/node_modules
+app-ui-new/dist
+app-ui-new-enterprise/dist
 !.npmrc
 !package.json
 !pnpm-lock.yaml

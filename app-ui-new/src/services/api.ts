@@ -2,7 +2,8 @@ import axios, { type InternalAxiosRequestConfig } from 'axios'
 import type { LoginResponse } from '@/types/auth'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.66:8080',
+  baseURL: import.meta.env.VITE_BACKEND_URL
+    || (import.meta.env.PROD ? '%VITE_BACKEND_URL%' : ''),
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',

@@ -18,4 +18,8 @@ COPY --from=builder /build/app-ui-new-enterprise/dist /var/www/html
 
 COPY app-ui-new-enterprise/nginx.conf /etc/nginx/nginx.conf
 
+COPY app-ui-new-enterprise/entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
+
 CMD ["nginx", "-g", "daemon off;"]
