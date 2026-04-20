@@ -31,14 +31,19 @@ services:
             # Envs for tests are load from node-sdk/.jest/testEnvs.js
             JEST_DOCKER: 1
             APP_ENV: debug
+            # Needed by SDK
+            TENANT_ID: docker
             CRYPT_SECRET: ThisIsNotSoSecret
-            BACKEND_URL: ${BACKEND_URL}
+            ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
+            # Needed by GRPC SDK
+            #TENANT_ID: prod-orchesty
+            #CLOUD_REGION: eu2
+            #TUNNEL_ENABLED: true
+            #TUNNEL_WORKER_ID: node-sdk-tunnel
+            # Needed by current SDK implementation
             MONGO_DSN: ${MONGO_DSN}
-            STARTING_POINT_DSN: ${STARTING_POINT_DSN}
             AWS_SES_KEY: ${AWS_SES_KEY}
             AWS_SES_SECRET: ${AWS_SES_SECRET}
-            WORKER_API_HOST: http://worker-api:8080
-            ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
         command: sh -c 'pnpm install && pnpm run start'
 
     php-sdk:
@@ -137,7 +142,7 @@ services:
             AUTH0_DOMAIN: dev-qsa0lopaqbhr0vmj.eu.auth0.com
             AUTH0_AUDIENCE: https://api.orchesty.cloud
             EMAIL_DSN: smtp://mailhog:1025
-            ALPHA_INSTANCE_ID: 'local'
+            ALPHA_INSTANCE_ID: 'docker'
             INSTALLER_DIRS: '["/var/www/pipes/clients/demo/node-sdk/src/topology","/var/www/pipes/enterprise-sys-worker/src/topology"]'
             TUNNEL_PROXY_HOST: 'http://tunnel-proxy:8080'
             JWE_PRIVATE_KEY: |
@@ -199,7 +204,7 @@ services:
             ORCHESTY_LIMIT_STORAGE_GB: '1'
             ORCHESTY_LIMIT_TRASH_DUPLICATION: '10'
             EMAIL_DSN: smtp://mailhog:1025
-            ALPHA_INSTANCE_ID: 'local'
+            ALPHA_INSTANCE_ID: 'docker'
             INSTALLER_DIRS: '["/var/www/pipes/clients/demo/node-sdk/src/topology","/var/www/pipes/enterprise-sys-worker/src/topology"]'
             TUNNEL_PROXY_HOST: 'http://tunnel-proxy:8080'
             JWE_PRIVATE_KEY: |
