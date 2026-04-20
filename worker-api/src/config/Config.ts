@@ -15,10 +15,6 @@ export const appOptions = {
 
 export const mongoOptions = {
     mongoDsn: getEnv('MONGODB_DSN'),
-    // metricsDb: getEnv('METRICS_DB', undefined), TODO: use for v2.1.0 orchesty
-    metricsDb: process.env.METRICS_DB,
-};
-
-export const fluentdOptions = {
-    fluentdDsn: getEnv('FLUENTD_DSN'),
+    logsCollection: getEnv('LOGS_COLLECTION', 'Logs'),
+    metricsDb: getEnv('METRICS_DB'),
 };

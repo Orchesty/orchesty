@@ -7,12 +7,10 @@ export default class DefaultRouter {
     }
 
     public initRoutes(): void {
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.app.get('/', async (req, res) => {
             await this.makeStatusMessage(res);
         });
 
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.app.get('/status', async (req, res) => {
             await this.makeStatusMessage(res);
         });

@@ -132,7 +132,7 @@ func (h *Helm) createFiles(path string, dto *models.InstanceDTO) error {
 
 	// Instance prefix and instance replacement in public URLs
 	values = strings.ReplaceAll(values, "{{instancePrefix}}", dto.InstanceUrlPrefix)
-	values = strings.ReplaceAll(values, "{{instance}}", dto.Instance)
+	values = strings.ReplaceAll(values, "{{instance}}", dto.InstanceId)
 
 	// Cloud instance prefix and cloud instance replacement in public URLs
 	values = strings.ReplaceAll(values, "{{cloudInstancePrefix}}", config.Cloud.InstancePrefix)

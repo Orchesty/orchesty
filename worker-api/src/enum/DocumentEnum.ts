@@ -3,6 +3,7 @@ enum DocumentEnum {
     WEBHOOK = 'Webhook',
     NODE = 'Node',
     API_TOKEN = 'ApiToken',
+    LOGS = 'Logs',
 }
 
 export function isDocumentSupported(document: string): boolean {

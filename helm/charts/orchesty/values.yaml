@@ -48,7 +48,6 @@ global:
     limiter: limiter
     starting-point: starting-point
     topology-api: topology-api
-    fluentd: fluentd
     detector: detector
     worker-api: worker-api
     metrics-collector: metrics-collector
@@ -104,7 +103,7 @@ global:
         cpu: 20m
       limits:
         memory: 128Mi
-        cpu: 200m
+        cpu: 500m
     postInstall:
       enabled: true
       backoffLimit: 3
@@ -158,15 +157,6 @@ global:
         memory: 32Mi
         cpu: 250m
 
-  fluentd:
-    resources:
-      requests:
-        memory: 128Mi
-        cpu: 20m
-      limits:
-        memory: 128Mi
-        cpu: 150m
-
   multiCounter:
     resources:
       requests:
@@ -194,10 +184,10 @@ global:
     manageRBAC: true
     resources:
       requests:
-        memory: 64Mi
+        memory: 128Mi
         cpu: 20m
       limits:
-        memory: 64Mi
+        memory: 128Mi
         cpu: 100m
 
   topologyApi:
@@ -205,10 +195,10 @@ global:
     manageRBAC: true
     resources:
       requests:
-        memory: 64Mi
+        memory: 128Mi
         cpu: 20m
       limits:
-        memory: 64Mi
+        memory: 128Mi
         cpu: 100m
     topologiesResources:
       defaultRequestCpu: 10m

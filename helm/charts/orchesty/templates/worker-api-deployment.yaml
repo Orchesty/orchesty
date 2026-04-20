@@ -27,8 +27,6 @@ spec:
           env:
             - name: TZ
               value: "{{ .Values.global.timezone }}"
-            - name: FLUENTD_DSN
-              value: {{ include "pipes.fullname" (dict "suffix" "fluentd" "root" .) }}:9880
             - name: MONGODB_DSN
               valueFrom:
                 secretKeyRef:

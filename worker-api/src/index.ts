@@ -32,11 +32,10 @@ export async function init(): Promise<IServices> {
         }),
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     expressApp.use(authorizator.isAuthorized());
 
     new DefaultRouter(expressApp, mongoClient).initRoutes();
-    new LoggerRouter(expressApp).initRoutes();
+    new LoggerRouter(expressApp, mongoClient).initRoutes();
     new MetricsRouter(expressApp, metricsManager).initRoutes();
     new DocumentRouter(expressApp, documentManager).initRoutes();
 

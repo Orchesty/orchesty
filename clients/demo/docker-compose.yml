@@ -228,16 +228,9 @@ services:
         environment:
             APP_ENV: 'debug'
             MONGODB_DSN: ${MONGO_DSN}
-            FLUENTD_DSN: 'fluentd:9880'
             METRICS_DB: metrics
             TZ: 'UTC'
         command: sh -c 'pnpm install && pnpm run start'
-
-    fluentd:
-        image: dkr.hanaboso.net/pipes/pipes/fluentd:dev
-        environment:
-            - MONGO_DSN=${MONGO_DSN}
-            - MONGO_COLLECTION=Logs
 
     multi-counter:
         image: hanabosocom/go-base:1.26
@@ -247,7 +240,6 @@ services:
             MONGODB_DSN: ${MONGO_DSN}
             METRICS_DSN: ${METRICS_DSN}
             STARTING_POINT_DSN: ${STARTING_POINT_DSN}
-            UDP_LOGGER_URL: fluentd:5120
         command: go run main.go start
         ports:
             - ${DEV_IP}:8005:8005
@@ -262,7 +254,6 @@ services:
             RABBITMQ_DSN: ${RABBITMQ_DSN}
             MONGO_DSN: ${MONGO_DSN}
             METRICS_DSN: ${METRICS_DSN}
-            UDP_LOGGER_URL: "fluentd:5120"
         command: go run cmd/limiter_app.go
         volumes:
             - ./../../limiter/:/app:cached

@@ -82,8 +82,8 @@ func TestRegisterServicesSuccess(t *testing.T) {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	if len(requests) != 12 {
-		t.Fatalf("expected 12 requests, got %d", len(requests))
+	if len(requests) != 14 {
+		t.Fatalf("expected 14 requests, got %d", len(requests))
 	}
 
 	expectedRequests := []struct {
@@ -98,6 +98,8 @@ func TestRegisterServicesSuccess(t *testing.T) {
 		{http.MethodPost, "/services/instance-abc123-sp/routes"},
 		{http.MethodPut, "/services/instance-abc123-tp"},
 		{http.MethodPost, "/services/instance-abc123-tp/routes"},
+		{http.MethodPut, "/services/instance-abc123-wa"},
+		{http.MethodPost, "/services/instance-abc123-wa/routes"},
 		{http.MethodPut, "/services/instance-abc123-ws"},
 		{http.MethodPost, "/services/instance-abc123-ws/routes"},
 		{http.MethodPut, "/services/instance-abc123-ses"},
@@ -120,9 +122,39 @@ func TestRegisterServicesSuccess(t *testing.T) {
 	if routeBody["name"] != "instance-abc123-fe-route" {
 		t.Fatalf("expected route name instance-abc123-fe-route, got %v", routeBody["name"])
 	}
+	protocols := routeBody["protocols"].([]any)
+	if protocols[0] != "https" {
+		t.Fatalf("expected protocol https for fe route, got %v", protocols)
+	}
+	methods := routeBody["methods"].([]any)
+	containsOptions := false
+	for _, method := range methods {
+		if method == http.MethodOptions {
+			containsOptions = true
+			break
+		}
+	}
+	if !containsOptions {
+		t.Fatalf("expected OPTIONS in route methods, got %v", methods)
+	}
 	hosts := routeBody["hosts"].([]any)
 	if hosts[0] != "ui-myapp-abc123.eu1.cloud.orchesty.io" {
 		t.Fatalf("expected host ui-myapp-abc123.eu1.cloud.orchesty.io, got %v", hosts[0])
+	}
+
+	tpRouteBody := requests[7].Body
+	tpProtocols := tpRouteBody["protocols"].([]any)
+	if len(tpProtocols) != 2 || tpProtocols[0] != "grpc" || tpProtocols[1] != "grpcs" {
+		t.Fatalf("expected tunnel-proxy route protocols [grpc grpcs], got %v", tpProtocols)
+	}
+	if _, hasMethods := tpRouteBody["methods"]; hasMethods {
+		t.Fatalf("expected tunnel-proxy route payload without methods, got %v", tpRouteBody["methods"])
+	}
+
+	wsRouteBody := requests[9].Body
+	wsProtocols := wsRouteBody["protocols"].([]any)
+	if len(wsProtocols) != 1 || wsProtocols[0] != "https" {
+		t.Fatalf("expected ws route protocols [https], got %v", wsProtocols)
 	}
 }
 
@@ -150,6 +182,7 @@ func TestRegisterServicesHostFormats(t *testing.T) {
 		"api-myapp-abc123.eu1.cloud.orchesty.io",
 		"start-myapp-abc123.eu1.cloud.orchesty.io",
 		"proxy-myapp-abc123.eu1.cloud.orchesty.io",
+		"worker-myapp-abc123.eu1.cloud.orchesty.io",
 		"ws-myapp-abc123.eu1.cloud.orchesty.io",
 		"ses-myapp-abc123.eu1.cloud.orchesty.io",
 	}
@@ -182,8 +215,8 @@ func TestUpdateServicesSuccess(t *testing.T) {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	if len(requests) != 12 {
-		t.Fatalf("expected 12 requests, got %d", len(requests))
+	if len(requests) != 14 {
+		t.Fatalf("expected 14 requests, got %d", len(requests))
 	}
 
 	expectedRequests := []struct {
@@ -198,6 +231,8 @@ func TestUpdateServicesSuccess(t *testing.T) {
 		{http.MethodPatch, "/routes/instance-abc123-sp-route"},
 		{http.MethodPut, "/services/instance-abc123-tp"},
 		{http.MethodPatch, "/routes/instance-abc123-tp-route"},
+		{http.MethodPut, "/services/instance-abc123-wa"},
+		{http.MethodPatch, "/routes/instance-abc123-wa-route"},
 		{http.MethodPut, "/services/instance-abc123-ws"},
 		{http.MethodPatch, "/routes/instance-abc123-ws-route"},
 		{http.MethodPut, "/services/instance-abc123-ses"},
@@ -208,6 +243,27 @@ func TestUpdateServicesSuccess(t *testing.T) {
 		if requests[i].Method != expected.method || requests[i].Path != expected.path {
 			t.Fatalf("request %d: expected %s %s, got %s %s", i, expected.method, expected.path, requests[i].Method, requests[i].Path)
 		}
+	}
+
+	wsUpdateBody := requests[9].Body
+	wsProtocols := wsUpdateBody["protocols"].([]any)
+	if len(wsProtocols) != 1 || wsProtocols[0] != "https" {
+		t.Fatalf("expected ws route protocols [https] on update, got %v", wsProtocols)
+	}
+	tpUpdateBody := requests[7].Body
+	if _, hasMethods := tpUpdateBody["methods"]; hasMethods {
+		t.Fatalf("expected tunnel-proxy update payload without methods, got %v", tpUpdateBody["methods"])
+	}
+	methods := wsUpdateBody["methods"].([]any)
+	containsOptions := false
+	for _, method := range methods {
+		if method == http.MethodOptions {
+			containsOptions = true
+			break
+		}
+	}
+	if !containsOptions {
+		t.Fatalf("expected OPTIONS in update route methods, got %v", methods)
 	}
 }
 

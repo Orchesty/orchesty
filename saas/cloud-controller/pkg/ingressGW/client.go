@@ -16,9 +16,15 @@ import (
 var errNotFound = errors.New("not found")
 
 type serviceEntry struct {
-	name string
-	url  string
-	host string
+	name        string
+	url         string
+	host        string
+	routeConfig routeConfig
+}
+
+type routeConfig struct {
+	protocols []string
+	methods   []string
 }
 
 var serviceSuffixes = []string{"fe", "be", "sp", "tp", "ws", "ses"}
@@ -59,7 +65,9 @@ func (c *Client) UpdateServices(dto *models.InstanceDTO) error {
 		}
 
 		if err := c.updateRoute(entry); err != nil {
-			return fmt.Errorf("update kong route for %s: %w", entry.name, err)
+			if err := c.createRoute(entry); err != nil {
+				return fmt.Errorf("register kong route for %s: %w", entry.name, err)
+			}
 		}
 	}
 
@@ -95,7 +103,11 @@ func (c *Client) createRoute(entry serviceEntry) error {
 	payload := map[string]any{
 		"name":      entry.name + "-route",
 		"hosts":     []string{entry.host},
-		"protocols": []string{"https"},
+		"protocols": entry.routeConfig.protocols,
+	}
+
+	if len(entry.routeConfig.methods) > 0 {
+		payload["methods"] = entry.routeConfig.methods
 	}
 
 	return c.sendRequest(http.MethodPost, fmt.Sprintf("/services/%s/routes", entry.name), payload)
@@ -104,7 +116,11 @@ func (c *Client) createRoute(entry serviceEntry) error {
 func (c *Client) updateRoute(entry serviceEntry) error {
 	payload := map[string]any{
 		"hosts":     []string{entry.host},
-		"protocols": []string{"https"},
+		"protocols": entry.routeConfig.protocols,
+	}
+
+	if len(entry.routeConfig.methods) > 0 {
+		payload["methods"] = entry.routeConfig.methods
 	}
 
 	return c.sendRequest(http.MethodPatch, fmt.Sprintf("/routes/%s", entry.name+"-route"), payload)
@@ -188,6 +204,11 @@ func buildServiceEntries(dto *models.InstanceDTO) []serviceEntry {
 			host: fmt.Sprintf("proxy-%s-%s.%s", dto.InstanceUrlPrefix, dto.InstanceId, suffix),
 		},
 		{
+			name: dto.Instance + "-wa",
+			url:  fmt.Sprintf("http://worker-api.%s.svc.cluster.local:8080", dto.Instance),
+			host: fmt.Sprintf("worker-%s-%s.%s", dto.InstanceUrlPrefix, dto.InstanceId, suffix),
+		},
+		{
 			name: dto.Instance + "-ws",
 			url:  fmt.Sprintf("http://trace.%s.svc.cluster.local:8080", dto.Instance),
 			host: fmt.Sprintf("ws-%s-%s.%s", dto.InstanceUrlPrefix, dto.InstanceId, suffix),
@@ -215,5 +236,26 @@ func buildServiceEntries(dto *models.InstanceDTO) []serviceEntry {
 		})
 	}
 
+	for i := range entries {
+		entries[i].routeConfig = routeConfigForService(entries[i].name)
+	}
+
 	return entries
+}
+
+func routeConfigForService(serviceName string) routeConfig {
+	defaultMethods := []string{
+		http.MethodGet,
+		http.MethodPost,
+		http.MethodPut,
+		http.MethodPatch,
+		http.MethodDelete,
+		http.MethodOptions,
+	}
+
+	if len(serviceName) >= 3 && serviceName[len(serviceName)-3:] == "-tp" {
+		return routeConfig{protocols: []string{"grpc", "grpcs"}, methods: nil}
+	}
+
+	return routeConfig{protocols: []string{"https"}, methods: defaultMethods}
 }

@@ -4,6 +4,8 @@
 - Limiter: added new Env
 - Backend: added new Env
 - Notifier: added new Env
+- Fluentd: removed
+- Resources: Updated request and limit
 
 ## 3.0.0-rc1
 - Backend: added new ENVs

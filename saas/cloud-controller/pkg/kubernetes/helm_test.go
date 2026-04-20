@@ -36,6 +36,7 @@ func withHelmConfig(t *testing.T, rootDir, version, bridgePoolKey, clusterConfig
 func testHelmDTO() *models.InstanceDTO {
 	return &models.InstanceDTO{
 		Instance:            "instance-test",
+		InstanceId:          "instance-test",
 		InstanceDisplayName: "Test Instance",
 		InstanceUrlPrefix:   "test-prefix",
 		Customizations: models.Customizations{
@@ -95,7 +96,7 @@ func TestCreateFilesWithoutWorkers(t *testing.T) {
 	withHelmConfig(t, tempDir, "~2.1.15", "bridgepool", "")
 
 	helm := NewHelm()
-	dto := &models.InstanceDTO{Instance: "instance-test", InstanceDisplayName: "Test Instance", InstanceUrlPrefix: "test-prefix"}
+	dto := &models.InstanceDTO{Instance: "instance-test", InstanceId: "instance-test", InstanceDisplayName: "Test Instance", InstanceUrlPrefix: "test-prefix"}
 
 	if err := helm.createFiles(tempDir, dto); err != nil {
 		t.Fatalf("expected no error, got %v", err)
@@ -224,6 +225,7 @@ func TestCreateFilesWithValkeyLimit(t *testing.T) {
 	helm := NewHelm()
 	dto := &models.InstanceDTO{
 		Instance:            "instance-test",
+		InstanceId:          "instance-test",
 		InstanceDisplayName: "Test Instance",
 		InstanceUrlPrefix:   "test-prefix",
 		Customizations: models.Customizations{
@@ -277,6 +279,7 @@ func TestCreateFilesWithWorkerEnvs(t *testing.T) {
 	helm := NewHelm()
 	dto := &models.InstanceDTO{
 		Instance:            "instance-test",
+		InstanceId:          "instance-test",
 		InstanceDisplayName: "Test Instance",
 		InstanceUrlPrefix:   "test-prefix",
 		Customizations: models.Customizations{
@@ -327,7 +330,7 @@ func TestCreateFilesReplacesAppOrchestyVersionPlaceholder(t *testing.T) {
 	})
 
 	helm := NewHelm()
-	dto := &models.InstanceDTO{Instance: "instance-test", InstanceDisplayName: "Test Instance", InstanceUrlPrefix: "test-prefix"}
+	dto := &models.InstanceDTO{Instance: "instance-test", InstanceId: "instance-test", InstanceDisplayName: "Test Instance", InstanceUrlPrefix: "test-prefix"}
 
 	if err := helm.createFiles(tempDir, dto); err != nil {
 		t.Fatalf("expected no error, got %v", err)
@@ -390,7 +393,7 @@ func TestCreateFilesSanitizesChartName(t *testing.T) {
 	withHelmConfig(t, tempDir, "~2.1.15", "bridgepool", "")
 
 	helm := NewHelm()
-	dto := &models.InstanceDTO{Instance: "instance-test", InstanceDisplayName: "Demo Instance @ EU", InstanceUrlPrefix: "test-prefix"}
+	dto := &models.InstanceDTO{Instance: "instance-test", InstanceId: "instance-test", InstanceDisplayName: "Demo Instance @ EU", InstanceUrlPrefix: "test-prefix"}
 
 	if err := helm.createFiles(tempDir, dto); err != nil {
 		t.Fatalf("expected no error, got %v", err)
