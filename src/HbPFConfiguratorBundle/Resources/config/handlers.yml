@@ -42,6 +42,7 @@ services:
             - '@hbpf.configurator.manager.sdk'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '%alpha_instance_id%'
+            - '%instance_url_prefix%'
 
     hbpf.configurator.handler.topology_progress:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyProgressHandler

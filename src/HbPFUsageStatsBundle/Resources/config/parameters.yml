@@ -1,3 +1,5 @@
 parameters:
     env(ALPHA_INSTANCE_ID): 'orchesty'
     alpha_instance_id: '%env(string:ALPHA_INSTANCE_ID)%'
+    env(INSTANCE_URL_PREFIX): ''
+    instance_url_prefix: '%env(string:INSTANCE_URL_PREFIX)%'
