@@ -45,7 +45,6 @@ export default class DocumentManager {
         const id = entity._id;
         delete entity._id;
         if (id) {
-            // eslint-disable-next-line @typescript-eslint/no-deprecated
             await collection.updateOne({ _id: new ObjectId(id) }, { $set: entity });
         } else {
             await collection.insertOne(entity);

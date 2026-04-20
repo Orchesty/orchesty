@@ -9,7 +9,6 @@ export default class DocumentRouter {
     }
 
     public initRoutes(): void {
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.app.get('/document/:document', async (req, res) => {
             const { document } = req.params;
 
@@ -30,7 +29,6 @@ export default class DocumentRouter {
             }
         });
 
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.app.post('/document/:document', async (req, res) => {
             const { document } = req.params;
 
@@ -51,7 +49,6 @@ export default class DocumentRouter {
             }
         });
 
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.app.delete('/document/:document', async (req, res) => {
             const { document } = req.params;
 

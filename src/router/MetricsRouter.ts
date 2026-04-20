@@ -44,7 +44,6 @@ export default class MetricsRouter {
     }
 
     public initRoutes(): void {
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.app.post('/metrics/:measurement', async (req, res) => {
             const { measurement } = req.params;
 
