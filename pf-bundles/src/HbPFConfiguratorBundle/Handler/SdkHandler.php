@@ -26,8 +26,14 @@ final class SdkHandler
      * @param SdkManager      $manager
      * @param DocumentManager $dm
      * @param string          $instanceId
+     * @param string          $instanceUrlPrefix
      */
-    public function __construct(private SdkManager $manager, private DocumentManager $dm, private string $instanceId)
+    public function __construct(
+        private SdkManager $manager,
+        private DocumentManager $dm,
+        private string $instanceId,
+        private string $instanceUrlPrefix = '',
+    )
     {
     }
 
@@ -142,9 +148,13 @@ final class SdkHandler
             $lines[] = '';
         }
 
+        $tenant = $this->instanceUrlPrefix !== ''
+            ? sprintf('%s-%s', $this->instanceUrlPrefix, $this->instanceId)
+            : $this->instanceId;
+
         $lines[] = '# --- Orchesty Platform Connection ---';
         $lines[] = sprintf('ORCHESTY_API_KEY=%s', $apiKey);
-        $lines[] = sprintf('TENANT_ID=%s', $this->instanceId);
+        $lines[] = sprintf('TENANT_ID=%s', $tenant);
 
         return ['env' => implode("\n", $lines)];
     }
