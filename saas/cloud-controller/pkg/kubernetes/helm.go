@@ -60,7 +60,18 @@ func (h *Helm) Install(dto *models.InstanceDTO) error {
 	installArgs = append(installArgs, kubeConfigArgs...)
 
 	if output, err := h.execute(installArgs...); err != nil {
-		return fmt.Errorf("helm install failed: %w, output: %s (helm files kept at %s)", err, output, chartPath)
+		if isApplyConflict(output) {
+			forceConflictArgs := append([]string{}, installArgs...)
+			forceConflictArgs = append(forceConflictArgs, "--force-conflicts")
+
+			if retryOutput, retryErr := h.execute(forceConflictArgs...); retryErr == nil {
+				output = retryOutput
+			} else {
+				return fmt.Errorf("helm install failed: %w, output: %s (helm files kept at %s)", retryErr, retryOutput, chartPath)
+			}
+		} else {
+			return fmt.Errorf("helm install failed: %w, output: %s (helm files kept at %s)", err, output, chartPath)
+		}
 	}
 
 	if err := os.RemoveAll(chartPath); err != nil {
@@ -328,4 +339,8 @@ func sanitizeK8sName(value string) (string, error) {
 	}
 
 	return name, nil
+}
+
+func isApplyConflict(output string) bool {
+	return strings.Contains(output, "conflict occurred while applying object")
 }

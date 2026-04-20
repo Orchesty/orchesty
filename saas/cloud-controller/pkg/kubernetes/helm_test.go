@@ -218,6 +218,45 @@ func TestInstallReturnsWrappedUpgradeError(t *testing.T) {
 	}
 }
 
+func TestInstallRetriesWithForceConflictsOnApplyConflict(t *testing.T) {
+	tempDir := t.TempDir()
+	withHelmConfig(t, tempDir, "~2.1.15", "bridgepool", "")
+
+	var calls [][]string
+	upgradeAttempts := 0
+	helm := &Helm{
+		executeFn: func(args ...string) (string, error) {
+			copied := append([]string(nil), args...)
+			calls = append(calls, copied)
+
+			if len(args) > 0 && args[0] == "upgrade" {
+				upgradeAttempts++
+				if upgradeAttempts == 1 {
+					return "conflict occurred while applying object instance-orchesty/orchesty-backend apps/v1, Kind=Deployment", errors.New("boom")
+				}
+			}
+
+			return "ok", nil
+		},
+	}
+
+	if err := helm.Install(testHelmDTO()); err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	if len(calls) != 5 {
+		t.Fatalf("expected five helm calls, got %d", len(calls))
+	}
+
+	lastCall := calls[len(calls)-1]
+	if lastCall[0] != "upgrade" {
+		t.Fatalf("expected last call to be upgrade, got %v", lastCall)
+	}
+	if lastCall[len(lastCall)-1] != "--force-conflicts" {
+		t.Fatalf("expected --force-conflicts in retry call, got %v", lastCall)
+	}
+}
+
 func TestCreateFilesWithValkeyLimit(t *testing.T) {
 	tempDir := t.TempDir()
 	withHelmConfig(t, tempDir, "~2.1.15", "bridgepool", "")
