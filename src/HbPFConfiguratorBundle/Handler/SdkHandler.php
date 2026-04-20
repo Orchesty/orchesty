@@ -144,7 +144,7 @@ final class SdkHandler
         if ($sdk->getType() === Sdk::TYPE_TUNNEL) {
             $lines[] = '# --- Orchesty Tunnel Configuration ---';
             $lines[] = 'TUNNEL_ENABLED=true';
-            $lines[] = sprintf('TUNNEL_WORKER_ID=%s', $sdk->getName());
+            $lines[] = sprintf('TUNNEL_WORKER_ID="%s"', $sdk->getName());
             $lines[] = '';
         }
 
@@ -153,8 +153,9 @@ final class SdkHandler
             : $this->instanceId;
 
         $lines[] = '# --- Orchesty Platform Connection ---';
-        $lines[] = sprintf('ORCHESTY_API_KEY=%s', $apiKey);
         $lines[] = sprintf('TENANT_ID=%s', $tenant);
+        $lines[] = 'CRYPT_SECRET=_CHANGE_ME_';
+        $lines[] = sprintf('ORCHESTY_API_KEY=%s', $apiKey);
 
         return ['env' => implode("\n", $lines)];
     }
