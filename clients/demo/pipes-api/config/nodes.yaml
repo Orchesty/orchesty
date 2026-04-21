@@ -76,6 +76,14 @@ services:
         arguments:
             - '@hbpf.application_install.repository'
 
+    hbpf.connector.http-status-204-connector:
+        class: Demo\HttpStatus\Connector\HttpStatus204Connector
+        calls:
+            -   setSender: [ '@hbpf.transport.curl_manager' ]
+            -   setApplication: [ '@hbpf.application.http-status' ]
+        arguments:
+            - '@hbpf.application_install.repository'
+
     hbpf.connector.http-status-400-connector:
         class: Demo\HttpStatus\Connector\HttpStatus400Connector
         calls:
