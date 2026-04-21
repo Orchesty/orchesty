@@ -11,7 +11,7 @@ export default class HttpStatusBatch extends ABatchNode {
     }
 
     public processAction(dto: BatchProcessDto<IInput>): BatchProcessDto | Promise<BatchProcessDto> {
-        for (let i = 0; i < (dto.getJsonData().size ?? 100); i++) {
+        for (let i = 0; i < (dto.getJsonData().size ?? 10); i++) {
             dto.addItem({ counter: i });
         }
 

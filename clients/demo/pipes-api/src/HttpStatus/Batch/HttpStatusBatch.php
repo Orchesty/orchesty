@@ -30,7 +30,7 @@ final class HttpStatusBatch extends BatchAbstract
      */
     public function processAction(BatchProcessDto $dto): BatchProcessDto
     {
-        for ($i = 0; $i < ($dto->getJsonData()['size'] ?? 100); $i++) {
+        for ($i = 0; $i < ($dto->getJsonData()['size'] ?? 10); $i++) {
             $dto->addItem(Json::encode(['counter' => $i]));
         }
 

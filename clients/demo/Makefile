@@ -54,6 +54,7 @@ init: up
 	$(DCW) topology-api:8080 -t 600
 	$(DCB) bin/console service:install sys-worker sys-worker:8080
 	$(DCB) bin/console service:install node-sdk node-sdk:8080
+	$(DCB) bin/console service:install node-sdk-tunnel '' tunnel
 	$(DCB) bin/console service:install php-sdk php-sdk:80
 	$(DCB) bin/console topology:install -c -u --force ''
 	#$(DCB) bin/console topology:install -c -u -m --force ''
@@ -108,17 +109,27 @@ init-more: init
 			-d "{}" > /dev/null && \
 		curl -s -X PUT "http://localhost/api/applications/http-status?sdk=node-sdk" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
-			-d "{\"limiter_form\":{\"useLimit\":true,\"value\":\"200\",\"time\":\"60\"}}" > /dev/null && \
+			-d "{\"limiter_form\":{\"useLimit\":true,\"value\":\"40\",\"time\":\"60\"}}" > /dev/null && \
 		curl -s -X PUT "http://localhost/api/applications/http-status/changeState?sdk=node-sdk" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
 			-d "{\"enabled\":true}" > /dev/null && \
 		printf "\033[32mApplication http-status (node-sdk) was successfully installed.\033[0m\n" && \
+		curl -s -X POST "http://localhost/api/applications/http-status?sdk=node-sdk-tunnel" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/applications/http-status?sdk=node-sdk-tunnel" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{\"limiter_form\":{\"useLimit\":true,\"value\":\"40\",\"time\":\"60\"}}" > /dev/null && \
+		curl -s -X PUT "http://localhost/api/applications/http-status/changeState?sdk=node-sdk-tunnel" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{\"enabled\":true}" > /dev/null && \
+		printf "\033[32mApplication http-status (node-sdk-tunnel) was successfully installed.\033[0m\n" && \
 		curl -s -X POST "http://localhost/api/applications/http-status?sdk=php-sdk" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
 			-d "{}" > /dev/null && \
 		curl -s -X PUT "http://localhost/api/applications/http-status?sdk=php-sdk" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
-			-d "{\"limiter_form\":{\"useLimit\":true,\"value\":\"100\",\"time\":\"60\"}}" > /dev/null && \
+			-d "{\"limiter_form\":{\"useLimit\":true,\"value\":\"20\",\"time\":\"60\"}}" > /dev/null && \
 		curl -s -X PUT "http://localhost/api/applications/http-status/changeState?sdk=php-sdk" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
 			-d "{\"enabled\":true}" > /dev/null && \
@@ -171,8 +182,7 @@ init-more: init
 		printf "\033[32mPlatform service trace-ai-provider was successfully bound to open-ai.\033[0m\n"'
 	$(DCBE) sh -c '\
 		curl -s -X POST "http://starting-point:8080/topologies/http-status/nodes/start/run-by-name" > /dev/null && \
-		printf "\033[32mTopology http-status was successfully triggered.\033[0m\n"'
-	$(DCBE) sh -c '\
+		printf "\033[32mTopology http-status was successfully triggered.\033[0m\n" && \
 		curl -s -X POST "http://starting-point:8080/topologies/json-placeholder-to-beeceptor-posts/nodes/start/run-by-name" > /dev/null && \
 		printf "\033[32mTopology json-placeholder-to-beeceptor-posts was successfully triggered.\033[0m\n" && \
 		sleep 5 && \

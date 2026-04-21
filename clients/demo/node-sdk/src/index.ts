@@ -163,6 +163,7 @@ import HanabosoContactFormMapper from './HanabosoCom/CustomNode/ContactFormMappe
 import HttpStatusBatch from './HttpStatus/Batch/HttpStatusBatch';
 import HttpStatus200Connector from './HttpStatus/Connector/HttpStatus200Connector';
 import HttpStatus201Connector from './HttpStatus/Connector/HttpStatus201Connector';
+import HttpStatus204Connector from './HttpStatus/Connector/HttpStatus204Connector';
 import HttpStatus400Connector from './HttpStatus/Connector/HttpStatus400Connector';
 import HttpStatus401Connector from './HttpStatus/Connector/HttpStatus401Connector';
 import HttpStatus404Connector from './HttpStatus/Connector/HttpStatus404Connector';
@@ -711,6 +712,7 @@ export async function start(): Promise<void> {
     container.setNode(new HttpStatusBatch(), httpStatusApplication);
     container.setNode(new HttpStatus200Connector(), httpStatusApplication);
     container.setNode(new HttpStatus201Connector(), httpStatusApplication);
+    container.setNode(new HttpStatus204Connector(), httpStatusApplication);
     container.setNode(new HttpStatus400Connector(), httpStatusApplication);
     container.setNode(new HttpStatus401Connector(), httpStatusApplication);
     container.setNode(new HttpStatus404Connector(), httpStatusApplication);
