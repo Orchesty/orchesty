@@ -35,11 +35,31 @@ services:
             TENANT_ID: docker
             CRYPT_SECRET: ThisIsNotSoSecret
             ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
-            # Needed by GRPC SDK
-            #TENANT_ID: prod-orchesty
+            # Needed by current SDK implementation
+            MONGO_DSN: ${MONGO_DSN}
+            AWS_SES_KEY: ${AWS_SES_KEY}
+            AWS_SES_SECRET: ${AWS_SES_SECRET}
+        command: sh -c 'pnpm install && pnpm run start'
+
+    node-sdk-tunnel:
+        image: node-sdk:tag
+        build: node-sdk/docker
+        user: ${DEV_UID}:${DEV_GID}
+        working_dir: /var/www
+        volumes:
+            - ./node-sdk/:/var/www:cached
+        environment:
+            # Envs for tests are load from node-sdk/.jest/testEnvs.js
+            JEST_DOCKER: 1
+            APP_ENV: debug
+            # Needed by SDK
+            TENANT_ID: docker
+            CRYPT_SECRET: ThisIsNotSoSecret
+            ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
             #CLOUD_REGION: eu2
-            #TUNNEL_ENABLED: true
-            #TUNNEL_WORKER_ID: node-sdk-tunnel
+            # Needed by GRPC SDK
+            TUNNEL_ENABLED: true
+            TUNNEL_WORKER_ID: node-sdk-tunnel
             # Needed by current SDK implementation
             MONGO_DSN: ${MONGO_DSN}
             AWS_SES_KEY: ${AWS_SES_KEY}
