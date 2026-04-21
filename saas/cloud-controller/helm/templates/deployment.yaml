@@ -78,6 +78,18 @@ spec:
               value: {{ .Values.kong.adminUrl | quote }}
             - name: KONG_DOMAIN_SUFFIX
               value: {{ .Values.kong.domainSuffix | quote }}
+            - name: KONG_RATE_LIMIT_REDIS_HOST
+              value: {{ .Values.kong.redisHost | quote }}
+            - name: KONG_RATE_LIMIT_REDIS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.name }}
+                  key: {{ .Values.secret.keys.kongValkeyUser }}
+            - name: KONG_RATE_LIMIT_REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.name }}
+                  key: {{ .Values.secret.keys.kongValkeyPass }}
 
             # Cloud / Auth0
             - name: CLOUD_INSTANCE_PREFIX

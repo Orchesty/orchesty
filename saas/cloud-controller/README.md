@@ -146,6 +146,16 @@ Request body:
       "enterpriseDashboards": false,
       "auditLogs": false,
       "pulse": false
+    },
+    "trialEndsAt": "2026-12-31T23:59:59Z",
+    "rateLimits": {
+      "enabled": true,
+      "second": 100,
+      "minute": 0,
+      "hour": 0,
+      "day": 0,
+      "month": 0,
+      "year": 0
     }
   }
 }
@@ -169,6 +179,11 @@ Notes:
 - `customizations.features.enterpriseDashboards` is optional; enables enterprise dashboards.
 - `customizations.features.auditLogs` is optional; enables audit logs.
 - `customizations.features.pulse` is optional; enables pulse.
+- `customizations.trialEndsAt` is optional; trial end timestamp propagated to Helm values. Use ISO 8601 / RFC3339 format, for example `2026-12-31T23:59:59Z`.
+- `customizations.rateLimits` is optional; configures Kong `rate-limiting` plugin only for the `starting-point` (`-sp`) and `worker-api` (`-wa`) instance routes.
+- `customizations.rateLimits.second|minute|hour|day|month|year` are optional request limits for each time window. At least one value must be > 0 when `enabled=true`.
+- Rate limit `policy` and `limitBy` are controlled globally via Kong environment configuration, not from request payload.
+- On update, rate-limit plugins are created/updated only for `-sp` and `-wa`; any existing rate-limit plugin on other instance routes is removed.
 
 Success response (`201`):
 
@@ -208,6 +223,11 @@ Request body:
         "envs": []
       }
     ],
+    "rateLimits": {
+      "enabled": true,
+      "second": 100
+    },
+    "trialEndsAt": "2026-12-31T23:59:59Z",
     "valkey": {
       "enabled": true,
       "persistentStorage": {
@@ -273,6 +293,19 @@ Configuration is loaded from environment variables in `pkg/config/config.go`.
 - `KONG_ENABLED` (default: `false`) - enable Kong ingress registration
 - `KONG_ADMIN_URL` (default: `http://kong:8001`) - Kong Admin API URL
 - `KONG_DOMAIN_SUFFIX` (default: `eu1.cloud.orchesty.io`) - domain suffix for generated routes
+- `KONG_RATE_LIMIT_POLICY` (default: `redis`) - Kong rate-limiting policy (`local`, `cluster`, `redis`)
+- `KONG_RATE_LIMIT_LIMIT_BY` (default: `ip`) - entity used by Kong for counting requests
+- `KONG_RATE_LIMIT_REDIS_HOST` - Redis host for `KONG_RATE_LIMIT_POLICY=redis` (hostname only, without `redis://` scheme)
+- `KONG_RATE_LIMIT_REDIS_PORT` (default: `6379`) - Redis port
+- `KONG_RATE_LIMIT_REDIS_USERNAME` - optional Redis username
+- `KONG_RATE_LIMIT_REDIS_PASSWORD` - optional Redis password
+- `KONG_RATE_LIMIT_REDIS_DATABASE` (default: `0`) - Redis database index
+- `KONG_RATE_LIMIT_REDIS_SSL` (default: `false`) - enable TLS for Redis connection
+- `KONG_RATE_LIMIT_REDIS_SSL_VERIFY` (default: `true`) - verify Redis TLS certificate
+- `KONG_RATE_LIMIT_REDIS_TIMEOUT` (default: `2000`) - Redis timeout in milliseconds
+- `KONG_RATE_LIMIT_REDIS_SERVER_NAME` - optional TLS SNI name for Redis
+- When `KONG_RATE_LIMIT_POLICY=redis`, `KONG_RATE_LIMIT_REDIS_HOST` is required.
+- Example valid Redis host: `kong-valkey.kong.svc.cluster.local`
 
 ### GCS / Object Storage
 
@@ -382,6 +415,11 @@ curl -s -X POST http://localhost:8080/instance \
     },
     "customizations": {
       "userName": "admin@example.com",
+      "trialEndsAt": "2026-12-31T23:59:59Z",
+      "rateLimits": {
+        "enabled": true,
+        "second": 100
+      },
       "workers": [
         {
           "name": "default",

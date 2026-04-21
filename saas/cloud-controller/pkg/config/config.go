@@ -67,8 +67,23 @@ type helm struct {
 }
 
 type kong struct {
-	Enabled  bool   `env:"KONG_ENABLED" default:"false"`
-	AdminURL string `env:"KONG_ADMIN_URL" default:"http://kong:8001"`
+	Enabled         bool   `env:"KONG_ENABLED" default:"false"`
+	AdminURL        string `env:"KONG_ADMIN_URL" default:"http://kong:8001"`
+	RateLimitConfig struct {
+		Policy  string `env:"KONG_RATE_LIMIT_POLICY" default:"redis"`
+		LimitBy string `env:"KONG_RATE_LIMIT_LIMIT_BY" default:"ip"`
+		Redis   struct {
+			Host       string `env:"KONG_RATE_LIMIT_REDIS_HOST" default:""`
+			Port       int    `env:"KONG_RATE_LIMIT_REDIS_PORT" default:"6379"`
+			Username   string `env:"KONG_RATE_LIMIT_REDIS_USERNAME" default:""`
+			Password   string `env:"KONG_RATE_LIMIT_REDIS_PASSWORD" default:""`
+			Database   int    `env:"KONG_RATE_LIMIT_REDIS_DATABASE" default:"0"`
+			SSL        bool   `env:"KONG_RATE_LIMIT_REDIS_SSL" default:"false"`
+			SSLVerify  bool   `env:"KONG_RATE_LIMIT_REDIS_SSL_VERIFY" default:"true"`
+			Timeout    int    `env:"KONG_RATE_LIMIT_REDIS_TIMEOUT" default:"2000"`
+			ServerName string `env:"KONG_RATE_LIMIT_REDIS_SERVER_NAME" default:""`
+		}
+	}
 }
 
 type gcs struct {

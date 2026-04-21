@@ -24,6 +24,8 @@ secret:
     rabbitManagementPort: rabbit_management_port
     rabbitAdminUser: rabbit_admin_user
     rabbitAdminPass: rabbit_admin_pass
+    kongValkeyUser: kong_valkey_user
+    kongValkeyPass: kong_valkey_pass
 
 env:
   appDebug: true
@@ -35,6 +37,7 @@ kong:
   enabled: true
   adminUrl: "http://kong-admin.kong.svc.cluster.local:8001"
   domainSuffix: "eu2.cloud.orchesty.io"
+  redisHost: "kong-valkey.kong.svc.cluster.local"
 
 cloud:
   instancePrefix: "prod"

@@ -81,6 +81,16 @@ type Features struct {
 	Pulse                bool `json:"pulse,omitempty"`
 }
 
+type RateLimits struct {
+	Enabled bool `json:"enabled"`
+	Second  int  `json:"second,omitempty"`
+	Minute  int  `json:"minute,omitempty"`
+	Hour    int  `json:"hour,omitempty"`
+	Day     int  `json:"day,omitempty"`
+	Month   int  `json:"month,omitempty"`
+	Year    int  `json:"year,omitempty"`
+}
+
 type Customizations struct {
 	Workers        []Worker       `json:"workers,omitempty"`
 	Valkey         Valkey         `json:"valkey,omitempty"`
@@ -88,7 +98,9 @@ type Customizations struct {
 	Applinth       Applinth       `json:"applinth,omitempty"`
 	ResourceLimits ResourceLimits `json:"resourceLimits,omitempty"`
 	Features       Features       `json:"features,omitempty"`
+	RateLimits     RateLimits     `json:"rateLimits,omitempty"`
 	UserName       string         `json:"userName,omitempty"`
+	TrialEndsAt    string         `json:"trialEndsAt,omitempty"`
 }
 
 type RequestInstanceInfo struct {

@@ -95,7 +95,8 @@ global:
     service:
       type: none
       port: 80
-    alpha_instance_id: not-set
+    alphaInstanceId: not-set
+    instanceUrlPrefix: ""
     checkInfinityLoop: true
     resources:
       requests:
@@ -223,10 +224,10 @@ global:
     backendUrl: https://cloud-backend.orchesty.example.com
     frontendUrl: https://cloud-frontend.orchesty.example.com
     startingPointUrl: http://cloud-starting-point.orchesty.example.com
+    trialEndsAt: ""
     instance:
       notifierUrl: http://notifier.orchesty.example.com
       traceUrl: http://trace.orchesty.example.com
-      tunnelProxyUrl: http://cloud-tunnel-proxy.orchesty.example.com
     features:
       enterpriseDashboards: 'true'
       traceAuditing: 'true'

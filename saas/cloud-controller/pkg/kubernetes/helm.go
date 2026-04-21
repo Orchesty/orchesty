@@ -149,6 +149,9 @@ func (h *Helm) createFiles(path string, dto *models.InstanceDTO) error {
 	values = strings.ReplaceAll(values, "{{cloudInstancePrefix}}", config.Cloud.InstancePrefix)
 	values = strings.ReplaceAll(values, "{{cloudInstance}}", config.Cloud.Instance)
 
+	// Trial end date replacement
+	values = strings.ReplaceAll(values, "{{trialEndsAt}}", dto.Customizations.TrialEndsAt)
+
 	// Feature flags replacement
 	values = strings.ReplaceAll(values, "{{featureEnterpriseDashboards}}", strconv.FormatBool(dto.Customizations.Features.EnterpriseDashboards))
 	values = strings.ReplaceAll(values, "{{featureTraceAuditing}}", strconv.FormatBool(dto.Customizations.Features.TraceAuditing))

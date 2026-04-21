@@ -1,11 +1,12 @@
 # Release Notes
 
 ## 3.0.0-rc2
-- Limiter: added new Env
-- Backend: added new Env
-- Notifier: added new Env
+- Limiter: added new ENVs
+- Notifier: added new ENVs
+- Backend: updated ENVs
 - Fluentd: removed
 - Resources: Updated request and limit
+- Service naming: Unified service name across chart
 
 ## 3.0.0-rc1
 - Backend: added new ENVs

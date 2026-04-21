@@ -32,11 +32,13 @@ spec:
             - name: STARTING_POINT_URL
               value: "{{ .Values.global.starting_point_url }}"
             - name: ALPHA_INSTANCE_ID
-              value: {{ .Values.global.backend.alpha_instance_id }}
+              value: "{{ .Values.global.backend.alphaInstanceId }}"
+            - name: INSTANCE_URL_PREFIX
+              value: "{{ .Values.global.backend.instanceUrlPrefix }}"
             - name: CRON_DSN
-              value: cron-api:8080
+              value: "http://{{ include "pipes.fullname" (dict "suffix" "cron-api" "root" .) }}:8080"
             - name: PHP_FPM_MAX_REQUESTS
-              value: "5000"
+              value: "200"
             - name: PHP_FPM_MAX_CHILDREN
               value: "20"
 {{- if (index .Values.global.imageOverrides "applinth-marketplace-ui") }}
@@ -81,16 +83,19 @@ spec:
             - name: TOPOLOGY_API_DSN
               value: "{{ include "pipes.fullname" (dict "suffix" "topology-api" "noPrefix" true "root" .) }}:8080"
             - name: LIMITER_URL
-              value: "{{ include "pipes.fullname" (dict "suffix" "limiter" "root" .) }}:80"
+              value: "{{ include "pipes.fullname" (dict "suffix" "limiter" "noPrefix" true "root" .) }}:80"
             - name: FRONTEND_URL
               value: "{{ .Values.global.frontend_url }}/"
-{{- if not .Values.global.cloud.enabled }}
+{{- if .Values.loki.enabled }}
             - name: LOKI_URL
               value: "http://{{ .Values.global.logs.lokiHostname }}"
+{{- end }}
+
+{{- if .Values.global.cloud.enabled }}
             - name: NOTIFIER_DSN
-              value: "http://{{ include "pipes.fullname" (dict "suffix" "notifier" "root" .) }}:8080"
+              value: "http://{{ include "pipes.fullname" (dict "suffix" "notifier" "noPrefix" true "root" .) }}:8080"
             - name: TUNNEL_PROXY_HOST
-              value: "{{ .Values.global.cloud.instance.tunnelProxyUrl }}"
+              value: "http://{{ include "pipes.fullname" (dict "suffix" "tunnel-proxy" "noPrefix" true "root" .) }}:8080"
             - name: ORCHESTY_CLOUD_BACKEND_URL
               value: "{{ .Values.global.cloud.backendUrl }}"
             - name: ORCHESTY_CLOUD_FRONTEND_URL
@@ -127,6 +132,8 @@ spec:
               value: "{{ .Values.global.cloud.auth0.domain }}"
             - name: AUTH0_AUDIENCE
               value: "{{ .Values.global.cloud.auth0.audience }}"
+            - name: TRIALS_ENDS_AT
+              value: "{{ .Values.global.cloud.trialEndsAt }}"
 {{- end }}
 
 {{- if not .Values.global.imageOverrides.bridge }}

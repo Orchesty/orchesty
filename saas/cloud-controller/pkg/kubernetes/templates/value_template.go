@@ -12,7 +12,8 @@ global:
   frontend_url: https://ui-{{instancePrefix}}-{{instance}}.{{domainSuffix}}
   starting_point_url: https://start-{{instancePrefix}}-{{instance}}.{{domainSuffix}}
   backend:
-    alpha_instance_id: {{instance}}
+    alphaInstanceId: {{instance}}
+    instanceUrlPrefix: {{instancePrefix}}
     postInstall:
       createDefaultUser: false
   frontend:
@@ -38,10 +39,10 @@ global:
     backendUrl: https://api.cloud.orchesty.io
     frontendUrl: https://app.cloud.orchesty.io
     startingPointUrl: https://start-{{cloudInstancePrefix}}-{{cloudInstance}}.{{domainSuffix}}
+    trialEndsAt: {{trialEndsAt}}
     instance:
       notifierUrl: https://ses-{{instancePrefix}}-{{instance}}.{{domainSuffix}}
       traceUrl: https://ws-{{instancePrefix}}-{{instance}}.{{domainSuffix}}
-      tunnelProxyUrl: https://proxy-{{instancePrefix}}-{{instance}}.{{domainSuffix}}
     features:
       enterpriseDashboards: '{{featureEnterpriseDashboards}}'
       traceAuditing: '{{featureTraceAuditing}}'
@@ -123,13 +124,13 @@ global:
 `
 	LogsBlockGlobalTemplate = `
   logs:
-    lokiHostname: pipes-loki-gateway.{{instance}}.svc.cluster.local
+    lokiHostname: orchesty-loki-gateway.{{instance}}.svc.cluster.local
     filter:
       namespaces:
         include: ["{{instance}}"]
         exclude: []
       pods:
-        include: ["pipes-worker-.*", "topology-.*"]
+        include: ["orchesty-worker-.*", "topology-.*"]
         exclude: []
 `
 	ValkeyBlockTemplate = `
