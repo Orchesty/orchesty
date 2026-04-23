@@ -15,7 +15,7 @@
     "@orchesty/connector-open-ai": "^1.0.1",
     "@orchesty/connector-slack": "^1.0.1",
     "@orchesty/connector-smtp": "^1.0.1",
-    "@orchesty/nodejs-sdk": "^5.0.5",
+    "@orchesty/nodejs-sdk": "^5.0.7",
     "dotenv": "^16.6.1"
   },
   "pnpm": {
