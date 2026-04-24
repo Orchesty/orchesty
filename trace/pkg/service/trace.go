@@ -19,6 +19,11 @@ const (
 	pingPeriod     = (pongWait * 9) / 10
 	maxMessageSize = 4096
 	authTimeout    = 10 * time.Second
+
+	// maxHistoryTurns caps the per-session conversation kept in memory and sent
+	// to the LLM. The window slides — older user/assistant turns drop off so
+	// token usage stays bounded across long chats.
+	maxHistoryTurns = 20
 )
 
 type (
@@ -39,7 +44,11 @@ type (
 		token         string
 		userID        string
 		authenticated bool
-		mu            sync.RWMutex
+		// history is the rolling chat memory for this WebSocket session. It is
+		// guarded by mu and trimmed to the last maxHistoryTurns entries before
+		// every LLM call.
+		history []ChatTurn
+		mu      sync.RWMutex
 	}
 )
 
@@ -207,10 +216,15 @@ func (svc traceService) handleRequest(sess *session, data json.RawMessage) {
 		return
 	}
 
+	// Capture the current snapshot of session state once, then work with locals.
 	sess.mu.RLock()
 	token := sess.token
 	userID := sess.userID
 	sess.mu.RUnlock()
+
+	// Append the user turn first so the model always sees the latest message
+	// at the tail of the history window, even if a downstream call fails.
+	svc.appendTurn(sess, ChatTurn{Role: "user", Content: rd.Content})
 
 	actions, err := svc.manifestService.FetchManifest(token)
 	if err != nil {
@@ -219,27 +233,39 @@ func (svc traceService) handleRequest(sess *session, data json.RawMessage) {
 		return
 	}
 
-	prompt := BuildPrompt(rd.Content, actions)
+	system := BuildSystemPrompt(actions)
+	history := svc.snapshotHistory(sess)
 
-	aiResponse, err := svc.aiService.SendPrompt(token, userID, prompt)
+	aiResponse, err := svc.aiService.SendChat(token, userID, system, history)
 	if err != nil {
 		svc.sendError(sess, 502, fmt.Sprintf("AI request failed: %s", err.Error()))
 
 		return
 	}
 
-	var mcpAction struct {
-		Audit string                 `json:"audit"`
-		Data  map[string]interface{} `json:"data"`
-	}
+	// The model is contracted to return one of two JSON envelopes. Anything
+	// else is treated as a degraded "raw text" fallback so the user is not
+	// stranded with a stack trace when the model misbehaves.
+	envelope := parseEnvelope(aiResponse)
 
-	if err := json.Unmarshal([]byte(aiResponse), &mcpAction); err != nil || mcpAction.Audit == "" {
+	switch {
+	case envelope.Audit != "":
+		svc.dispatchAudit(sess, token, envelope, aiResponse)
+	case envelope.Reply != "":
+		svc.appendTurn(sess, ChatTurn{Role: "assistant", Content: envelope.Reply})
+		svc.sendMessage(sess, TypeResponse, ResponseData{Content: envelope.Reply})
+	default:
+		svc.appendTurn(sess, ChatTurn{Role: "assistant", Content: aiResponse})
 		svc.sendMessage(sess, TypeResponse, ResponseData{Content: aiResponse})
-
-		return
 	}
+}
 
-	mcpResult, err := svc.manifestService.RunAction(token, []byte(aiResponse))
+// dispatchAudit forwards a recognised action envelope to /mcp/run, formats the
+// result for the user and records a compact assistant turn in the history so
+// the model can refer back to "the last search" in subsequent turns without
+// having the full Loki dump replayed in the context window.
+func (svc traceService) dispatchAudit(sess *session, token string, envelope chatEnvelope, raw string) {
+	mcpResult, err := svc.manifestService.RunAction(token, []byte(raw))
 	if err != nil {
 		svc.sendError(sess, 502, fmt.Sprintf("MCP run failed: %s", err.Error()))
 
@@ -251,7 +277,68 @@ func (svc traceService) handleRequest(sess *session, data json.RawMessage) {
 		mcpResult = []byte(strings.Join(logs, "\n"))
 	}
 
-	svc.sendMessage(sess, TypeResponse, ResponseData{Content: string(mcpResult)})
+	content := string(mcpResult)
+
+	summary := fmt.Sprintf("(ran action %q, returned %d chars)", envelope.Audit, len(content))
+	svc.appendTurn(sess, ChatTurn{Role: "assistant", Content: summary})
+
+	svc.sendMessage(sess, TypeResponse, ResponseData{Content: content})
+}
+
+// appendTurn pushes a turn onto the session history under the write lock and
+// drops the oldest turns to keep the window bounded.
+func (svc traceService) appendTurn(sess *session, turn ChatTurn) {
+	sess.mu.Lock()
+	defer sess.mu.Unlock()
+
+	sess.history = append(sess.history, turn)
+	if overflow := len(sess.history) - maxHistoryTurns; overflow > 0 {
+		sess.history = sess.history[overflow:]
+	}
+}
+
+// snapshotHistory returns a defensive copy so the caller can pass it to the AI
+// client without holding the session lock during the network round trip.
+func (svc traceService) snapshotHistory(sess *session) []ChatTurn {
+	sess.mu.RLock()
+	defer sess.mu.RUnlock()
+
+	snapshot := make([]ChatTurn, len(sess.history))
+	copy(snapshot, sess.history)
+
+	return snapshot
+}
+
+// chatEnvelope is the dual-shape JSON the model is instructed to emit.
+type chatEnvelope struct {
+	Audit string                 `json:"audit"`
+	Data  map[string]interface{} `json:"data"`
+	Reply string                 `json:"reply"`
+}
+
+// parseEnvelope tolerates light formatting noise around the JSON (whitespace,
+// stray prose before/after the object, accidental ```json fences) and falls
+// back to a zero envelope when nothing parses, which the caller treats as
+// "raw text reply".
+func parseEnvelope(raw string) chatEnvelope {
+	var env chatEnvelope
+	trimmed := strings.TrimSpace(raw)
+
+	if trimmed == "" {
+		return env
+	}
+
+	if err := json.Unmarshal([]byte(trimmed), &env); err == nil {
+		return env
+	}
+
+	start := strings.Index(trimmed, "{")
+	end := strings.LastIndex(trimmed, "}")
+	if start >= 0 && end > start {
+		_ = json.Unmarshal([]byte(trimmed[start:end+1]), &env)
+	}
+
+	return env
 }
 
 func (svc traceService) sendMessage(sess *session, msgType string, data interface{}) {

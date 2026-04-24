@@ -221,7 +221,7 @@ services:
             ORCHESTY_FEATURE_PULSE: 'false'
             ORCHESTY_LIMIT_TOPOLOGY_SLOTS: '0'
             ORCHESTY_LIMIT_MESSAGES: '1000'
-            ORCHESTY_LIMIT_STORAGE_GB: '1'
+            ORCHESTY_LIMIT_STORAGE_GB: '10'
             ORCHESTY_LIMIT_TRASH_DUPLICATION: '10'
             EMAIL_DSN: smtp://mailhog:1025
             ALPHA_INSTANCE_ID: 'docker'

@@ -17,7 +17,7 @@ const (
 
 type (
 	AIService interface {
-		SendPrompt(token, userID, prompt string) (string, error)
+		SendChat(token, userID, system string, history []ChatTurn) (string, error)
 	}
 
 	aiService struct {
@@ -27,8 +27,9 @@ type (
 	}
 
 	platformServiceRequest struct {
-		Request string `json:"request"`
-		User    string `json:"user"`
+		System   string     `json:"system,omitempty"`
+		Messages []ChatTurn `json:"messages"`
+		User     string     `json:"user"`
 	}
 
 	platformServiceResponse struct {
@@ -40,15 +41,23 @@ func NewAIService(httpSender sender.HttpSender, backendURL string, logger log.Lo
 	return aiService{httpSender: httpSender, backendURL: backendURL, logger: logger}
 }
 
-func (svc aiService) SendPrompt(token, userID, prompt string) (string, error) {
-	reqBody, err := json.Marshal(platformServiceRequest{Request: prompt, User: userID})
+// SendChat dispatches the conversation to the bound AI provider through
+// platform-services. The provider is expected to return a JSON object with a
+// "response" string containing the model's raw textual reply (which the caller
+// then parses as either an action envelope or a reply envelope).
+func (svc aiService) SendChat(token, userID, system string, history []ChatTurn) (string, error) {
+	reqBody, err := json.Marshal(platformServiceRequest{
+		System:   system,
+		Messages: history,
+		User:     userID,
+	})
 	if err != nil {
 		return "", fmt.Errorf("failed to marshal request: %w", err)
 	}
 
 	url := sender.NewPlatformServiceCallURL(svc.backendURL, platformServiceType, platformServiceMethod)
 
-	svc.logContext().Info("Sending prompt via platform-services: %s", url)
+	svc.logContext().Info("Sending chat via platform-services: %s (turns=%d)", url, len(history))
 
 	resp, body, err := svc.httpSender.SendRawWithBody(
 		http.MethodPost, url,
