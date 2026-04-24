@@ -9,6 +9,7 @@ Enterprise frontend for Orchesty. Consumes `app-ui-new` (core) as a library and 
 | Variable | Required | Description |
 |---|---|---|
 | `VITE_BACKEND_URL` | Yes | Backend API base URL (e.g. `http://127.0.0.1:8085`) |
+| `VITE_TRACE_URL` | Trace | Trace WebSocket service base URL (e.g. `wss://trace.cloud.orchesty.io` or `ws://localhost:8090`). Required when `ORCHESTY_FEATURE_TRACE_AUDITING` is enabled. |
 | `VITE_AUTH0_DOMAIN` | SSO/Cloud | Auth0 tenant domain (e.g. `dev-xxx.eu.auth0.com`) |
 | `VITE_AUTH0_CLIENT_ID` | SSO/Cloud | Auth0 SPA application Client ID |
 | `VITE_AUTH0_AUDIENCE` | SSO/Cloud | Auth0 API audience identifier (e.g. `https://api.orchesty.cloud`) |

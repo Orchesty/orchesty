@@ -44,6 +44,7 @@ const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 const limiterData = ref<LimiterData | null>(null)
 const appSettings = ref<Map<string, AppLimiterSetting>>(new Map())
+const snapshotLoaded = ref(false)
 const chartEl = ref<HTMLElement | null>(null)
 const chartMounted = ref(false)
 
@@ -67,6 +68,7 @@ const summaryColumns: TableColumn[] = [
   { key: 'application', label: 'Application', sortable: false },
   { key: 'limitSetting', label: 'Limit', sortable: false },
   { key: 'messages', label: 'Max (actual)', sortable: true },
+  { key: 'liveMessages', label: 'Live', sortable: false },
   { key: 'remainingTime', label: 'Remaining time', sortable: false },
   { key: 'actions', label: '', className: 'text-right w-16' },
 ]
@@ -92,7 +94,10 @@ const getTopologyIdsForApp = (applicationId: string): string[] => {
 const summaryData = computed(() => {
   if (!limiterData.value) return []
 
-  const byApp = new Map<string, { applicationId: string; messages: number; maxMessages: number }>()
+  const byApp = new Map<
+    string,
+    { applicationId: string; messages: number; maxMessages: number; liveMessages: number }
+  >()
 
   for (const row of limiterData.value.tableData) {
     const key = row.applicationId || '-'
@@ -100,8 +105,14 @@ const summaryData = computed(() => {
     if (existing) {
       existing.messages += row.messages
       existing.maxMessages += row.maxMessages
+      existing.liveMessages += row.liveMessages ?? 0
     } else {
-      byApp.set(key, { applicationId: key, messages: row.messages, maxMessages: row.maxMessages })
+      byApp.set(key, {
+        applicationId: key,
+        messages: row.messages,
+        maxMessages: row.maxMessages,
+        liveMessages: row.liveMessages ?? 0,
+      })
     }
   }
 
@@ -113,14 +124,14 @@ const summaryData = computed(() => {
         : 'off'
 
       let remainingTime = '-'
-      if (row.messages > 0 && setting?.useLimit && setting.value && setting.time) {
+      if (row.liveMessages > 0 && setting?.useLimit && setting.value && setting.time) {
         const rate = setting.value / setting.time
-        remainingTime = formatDurationSeconds(row.messages / rate)
+        remainingTime = formatDurationSeconds(row.liveMessages / rate)
       }
 
       return { ...row, limitSetting, remainingTime }
     })
-    .sort((a, b) => b.messages - a.messages)
+    .sort((a, b) => (b.liveMessages - a.liveMessages) || (b.messages - a.messages))
 })
 
 const columns: TableColumn[] = [
@@ -129,6 +140,7 @@ const columns: TableColumn[] = [
   { key: 'topology', label: 'Topology', sortable: false },
   { key: 'limitSetting', label: 'Limit', sortable: false },
   { key: 'messages', label: 'Max (actual)', sortable: true },
+  { key: 'liveMessages', label: 'Live', sortable: false },
 ]
 
 // Load data function
@@ -154,6 +166,9 @@ const loadData = async () => {
 
     if (snapshot) {
       applySnapshot(response, snapshot.totalMessages, snapshot.items)
+      snapshotLoaded.value = true
+    } else {
+      snapshotLoaded.value = false
     }
 
     limiterData.value = response
@@ -173,7 +188,10 @@ const loadData = async () => {
 }
 
 function applySnapshot(data: LimiterData, totalMessages: number, items: LimiterSnapshotItem[]): void {
-  data.totalMessages = totalMessages
+  // Live (current) values from the limiter service. Historical values from the
+  // metrics API are kept untouched so the page shows both "actual in window"
+  // and "actual right now" side by side.
+  data.liveTotalMessages = totalMessages
 
   const snapshotByNode = new Map<string, number>()
   for (const item of items) {
@@ -181,12 +199,7 @@ function applySnapshot(data: LimiterData, totalMessages: number, items: LimiterS
   }
 
   for (const row of data.tableData) {
-    row.messages = snapshotByNode.get(row.nodeId) ?? 0
-  }
-
-  const chart = data.chartData
-  if (chart.series.length > 0) {
-    chart.series[chart.series.length - 1] = totalMessages
+    row.liveMessages = snapshotByNode.get(row.nodeId) ?? 0
   }
 }
 
@@ -424,6 +437,26 @@ const getChartOptions = () => {
                 </span>
               </div>
             </div>
+            <div v-if="snapshotLoaded" class="flex flex-col items-center">
+              <span class="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                <span
+                  class="inline-block h-2 w-2 rounded-full"
+                  :class="(limiterData.liveTotalMessages ?? 0) > 0
+                    ? 'bg-red-500 animate-pulse'
+                    : 'bg-green-500'"
+                  aria-hidden="true"
+                ></span>
+                live
+              </span>
+              <span
+                class="text-2xl font-bold"
+                :class="(limiterData.liveTotalMessages ?? 0) > 0
+                  ? 'text-red-600 dark:text-red-400'
+                  : 'text-gray-900 dark:text-white'"
+              >
+                {{ limiterData.liveTotalMessages ?? 0 }}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -463,6 +496,16 @@ const getChartOptions = () => {
         </template>
         <template #cell-messages="{ row }">
           <LimiterMessagesCell :messages="row.messages" :max-messages="row.maxMessages" />
+        </template>
+        <template #cell-liveMessages="{ row }">
+          <span
+            class="whitespace-nowrap font-medium"
+            :class="(row.liveMessages ?? 0) > 0
+              ? 'text-red-600 dark:text-red-400'
+              : 'text-gray-400 dark:text-gray-500'"
+          >
+            {{ row.liveMessages ?? 0 }}
+          </span>
         </template>
         <template #cell-remainingTime="{ value }">
           <span class="whitespace-nowrap font-medium text-gray-900 dark:text-white">{{ value }}</span>
@@ -537,6 +580,16 @@ const getChartOptions = () => {
         </template>
         <template #cell-messages="{ row }">
           <LimiterMessagesCell :messages="row.messages" :max-messages="row.maxMessages" />
+        </template>
+        <template #cell-liveMessages="{ row }">
+          <span
+            class="whitespace-nowrap font-medium"
+            :class="(row.liveMessages ?? 0) > 0
+              ? 'text-red-600 dark:text-red-400'
+              : 'text-gray-400 dark:text-gray-500'"
+          >
+            {{ row.liveMessages ?? 0 }}
+          </span>
         </template>
       </DataGrid>
     </Card>

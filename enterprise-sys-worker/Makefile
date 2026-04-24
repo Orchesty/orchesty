@@ -32,14 +32,18 @@ update:
 lint:
 	$(DCS) pnpm run lint
 
+typecheck:
+	$(DCS) pnpm run typecheck
+
 unit:
 	$(DCS) pnpm run test
 
 localtest:
 	pnpm run lint
+	pnpm run typecheck
 	pnpm run test
 
-fasttest: lint unit
+fasttest: lint typecheck unit
 
 test: docker-up-force install fasttest docker-down-clean
 

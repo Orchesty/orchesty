@@ -53,11 +53,13 @@ export interface LimiterTableRow {
   limitSetting: string
   messages: number
   maxMessages: number
+  liveMessages?: number
 }
 
 export interface LimiterData {
   totalMessages: number
   maxMessages: number
+  liveTotalMessages?: number
   chartData: {
     categories: string[]
     series: number[]

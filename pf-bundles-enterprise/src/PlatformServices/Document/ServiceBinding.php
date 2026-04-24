@@ -21,6 +21,7 @@ final class ServiceBinding
 
     public const string SERVICE_TYPE    = 'serviceType';
     public const string APPLICATION_KEY = 'applicationKey';
+    public const string SDK             = 'sdk';
     public const string USER            = 'user';
 
     /**
@@ -34,6 +35,12 @@ final class ServiceBinding
      */
     #[ODM\Field(type: 'string')]
     private string $applicationKey;
+
+    /**
+     * @var string|null
+     */
+    #[ODM\Field(type: 'string', nullable: TRUE)]
+    private ?string $sdk = NULL;
 
     /**
      * @var string
@@ -82,6 +89,26 @@ final class ServiceBinding
     }
 
     /**
+     * @return string|null
+     */
+    public function getSdk(): ?string
+    {
+        return $this->sdk;
+    }
+
+    /**
+     * @param string|null $sdk
+     *
+     * @return ServiceBinding
+     */
+    public function setSdk(?string $sdk): self
+    {
+        $this->sdk = $sdk;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getUser(): string
@@ -109,6 +136,7 @@ final class ServiceBinding
         return [
             'id'                  => $this->getId(),
             self::APPLICATION_KEY => $this->applicationKey,
+            self::SDK             => $this->sdk,
             self::SERVICE_TYPE    => $this->serviceType,
             self::USER            => $this->user,
         ];

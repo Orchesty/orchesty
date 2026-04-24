@@ -3,8 +3,11 @@ import { ref, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { Bot } from 'lucide-vue-next'
 import ChatMessage from './ChatMessage.vue'
 import type { ChatMessage as ChatMessageType } from '@/types/trace'
-import { sendChatMessage } from '@/services/traceService'
-import initialChatData from '@/assets/mock-data/trace-initial-chat.json'
+
+// NOTE: TraceDrawer is currently deactivated. The mini-chat UI is preserved so it can
+// render in the topbar slot, but message sending is a no-op until the drawer is wired
+// to the same `useTraceSocket` composable used by `TraceView.vue`.
+// TODO(trace): wire to useTraceSocket (share connection/state with TraceView).
 
 interface Props {
   modelValue: boolean
@@ -33,15 +36,8 @@ const autoResize = () => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const drawerInstance = ref<any>(null)
 
-// Load initial data
+// Drawer init (chat starts empty until wired to the socket)
 onMounted(async () => {
-  // Load initial chat messages
-  messages.value = initialChatData.map(msg => ({
-    ...msg,
-    timestamp: new Date(msg.timestamp)
-  })) as ChatMessageType[]
-  
-  // Initialize Flowbite Drawer
   await nextTick()
   const drawerElement = document.getElementById('traceDrawer')
   
@@ -91,40 +87,42 @@ const scrollToBottom = () => {
 }
 
 // Send message handler
+//
+// TODO(trace): wire this drawer to `useTraceSocket` so it shares the same connection
+// and message stream with `TraceView.vue`. Until then, sending is a visual no-op:
+// the user message is appended locally and no request is dispatched.
 const handleSendMessage = async () => {
   const trimmedMessage = messageInput.value.trim()
   if (!trimmedMessage || sending.value) return
-  
-  // Add user message
+
   const userMessage: ChatMessageType = {
     id: `msg-user-${Date.now()}`,
     role: 'user',
     content: trimmedMessage.replace(/\n/g, '<br>'),
     timestamp: new Date(),
-    status: 'sent'
+    status: 'sent',
   }
   messages.value.push(userMessage)
   messageInput.value = ''
   if (textareaRef.value) {
     textareaRef.value.style.height = 'auto'
   }
-  
+
   await nextTick()
   scrollToBottom()
-  
-  // Send to backend (mock)
-  sending.value = true
-  try {
-    const assistantMessage = await sendChatMessage(trimmedMessage)
-    messages.value.push(assistantMessage)
-    
-    await nextTick()
-    scrollToBottom()
-  } catch (error) {
-    console.error('Failed to send message:', error)
-  } finally {
-    sending.value = false
-  }
+
+  // Disabled until the drawer is wired to the socket.
+  // sending.value = true
+  // try {
+  //   const assistantMessage = await socket.send(trimmedMessage)
+  //   messages.value.push(assistantMessage)
+  //   await nextTick()
+  //   scrollToBottom()
+  // } catch (error) {
+  //   console.error('Failed to send message:', error)
+  // } finally {
+  //   sending.value = false
+  // }
 }
 
 const handleKeydown = (event: KeyboardEvent) => {

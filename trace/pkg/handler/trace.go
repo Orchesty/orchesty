@@ -7,28 +7,11 @@ import (
 	"trace/pkg/utils"
 )
 
+// HandleTrace upgrades the HTTP request to a WebSocket. Authentication is intentionally not
+// validated here because browser WebSocket clients cannot send custom headers — the client must
+// send a {type: "token"} message as the first frame after the connection opens, which is then
+// validated against the backend (see traceService.handleToken).
 func HandleTrace(writer http.ResponseWriter, request *http.Request) {
-	authHeader := request.Header.Get("Authorization")
-	if authHeader == "" {
-		writeErrorResponse(writer, &utils.Error{Code: http.StatusUnauthorized, Message: "Missing Authorization header"})
-
-		return
-	}
-
-	body, statusCode, err := service.Container.AuthService.CheckLogged(authHeader)
-	if err != nil {
-		logContext().Error(err)
-		writeErrorResponse(writer, &utils.Error{Code: http.StatusBadGateway, Message: "Backend unreachable"})
-
-		return
-	}
-
-	if statusCode != http.StatusOK {
-		writeErrorResponse(writer, &utils.Error{Code: statusCode}, body)
-
-		return
-	}
-
 	userID := request.URL.Query().Get("user")
 	if userID == "" {
 		writeErrorResponse(writer, &utils.Error{Code: http.StatusBadRequest, Message: "Missing 'user' query parameter"})
@@ -36,5 +19,5 @@ func HandleTrace(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	service.Container.TraceService.HandleConnection(writer, request, authHeader, userID)
+	service.Container.TraceService.HandleConnection(writer, request, userID)
 }

@@ -129,6 +129,17 @@ services:
         arguments:
             - '@hbpf.audit_log.handler'
 
+    hbpf.trace_report.handler:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\TraceReportHandler
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@security.helper'
+
+    Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\TraceReportController:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\TraceReportController
+        arguments:
+            - '@hbpf.trace_report.handler'
+
     Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\ResourceController:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\ResourceController
         arguments:

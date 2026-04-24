@@ -178,7 +178,7 @@ init-more: init
 		printf "\033[32mNotification subscriptions were successfully created.\033[0m\n" && \
 		curl -s -X PUT "http://localhost/api/platform-services/trace-ai-provider" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
-			-d "{\"applicationKey\":\"open-ai\"}" > /dev/null && \
+			-d "{\"applicationKey\":\"open-ai\",\"sdk\":\"sys-worker\"}" > /dev/null && \
 		printf "\033[32mPlatform service trace-ai-provider was successfully bound to open-ai.\033[0m\n"'
 	$(DCBE) sh -c '\
 		curl -s -X POST "http://starting-point:8080/topologies/http-status/nodes/start/run-by-name" > /dev/null && \

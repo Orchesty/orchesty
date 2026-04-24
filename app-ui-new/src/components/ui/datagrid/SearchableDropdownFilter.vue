@@ -48,6 +48,7 @@ const filteredOptions = computed(() => {
 const dropdownInstanceRef = ref<any>(null)
 const searchInputRef = ref<HTMLInputElement | null>(null)
 let observer: MutationObserver | null = null
+let resizeObserver: ResizeObserver | null = null
 
 const handleSelect = async (value: string | null) => {
   emit('update:modelValue', value)
@@ -74,6 +75,14 @@ onMounted(async () => {
       offsetDistance: 10,
     })
 
+    // Keep menu at least as wide as the trigger button.
+    const syncWidth = () => {
+      dropdownElement.style.minWidth = `${buttonElement.offsetWidth}px`
+    }
+    syncWidth()
+    resizeObserver = new ResizeObserver(syncWidth)
+    resizeObserver.observe(buttonElement)
+
     observer = new MutationObserver(() => {
       const isVisible = !dropdownElement.classList.contains('hidden')
       if (isVisible) {
@@ -88,6 +97,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   observer?.disconnect()
+  resizeObserver?.disconnect()
 })
 </script>
 

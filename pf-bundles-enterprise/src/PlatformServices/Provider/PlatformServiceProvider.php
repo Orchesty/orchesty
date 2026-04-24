@@ -2,7 +2,10 @@
 
 namespace Hanaboso\PipesFrameworkEnterprise\PlatformServices\Provider;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
 use Hanaboso\PipesFrameworkEnterprise\PlatformServices\Document\ServiceBinding;
 use Hanaboso\PipesFrameworkEnterprise\PlatformServices\Exception\PlatformServiceException;
 use Hanaboso\PipesFrameworkEnterprise\PlatformServices\Repository\ServiceBindingRepository;
@@ -21,10 +24,12 @@ final class PlatformServiceProvider
     /**
      * PlatformServiceProvider constructor.
      *
+     * @param DocumentManager          $dm
      * @param ServiceBindingRepository $bindingRepository
      * @param ServiceLocator           $serviceLocator
      */
     public function __construct(
+        private readonly DocumentManager $dm,
         private readonly ServiceBindingRepository $bindingRepository,
         private readonly ServiceLocator $serviceLocator,
     )
@@ -46,12 +51,19 @@ final class PlatformServiceProvider
     {
         $binding = $this->resolveBinding($serviceType);
         $appKey  = $binding->getApplicationKey();
+        $sdk     = $this->resolveSdk($binding);
 
         try {
-            $sdk         = $this->serviceLocator->getSdkNameByInstalledApplication($appKey);
             $data['sdk'] = $sdk;
-            $request     = new Request([], $data, [], [], [], ['REQUEST_METHOD' => 'POST']);
-            $response    = $this->serviceLocator->runSyncActions($request, $appKey, $sdk, $method);
+
+            // Platform services are system-wide: applications they call were installed via the
+            // admin UI under ApplicationController::SYSTEM_USER. The caller's user (e.g. the chat
+            // session owner) is irrelevant for the ApplicationInstall lookup on the worker, so we
+            // override it here. The binding's `user` field stays as audit metadata only.
+            $data['user'] = ApplicationController::SYSTEM_USER;
+
+            $request  = new Request([], $data, [], [], [], ['REQUEST_METHOD' => 'POST']);
+            $response = $this->serviceLocator->runSyncActions($request, $appKey, $sdk, $method);
 
             return Json::decode($response);
         } catch (Throwable $e) {
@@ -61,6 +73,52 @@ final class PlatformServiceProvider
                 $e,
             );
         }
+    }
+
+    /**
+     * Resolve the SDK name for a binding.
+     *
+     * - If the binding has no sdk yet (legacy record), auto-discover one and persist it back.
+     * - If the binding has an sdk but the application is no longer installed there, fail hard.
+     *
+     * @param ServiceBinding $binding
+     *
+     * @return string
+     *
+     * @throws PlatformServiceException
+     */
+    private function resolveSdk(ServiceBinding $binding): string
+    {
+        $appKey = $binding->getApplicationKey();
+        $sdk    = $binding->getSdk();
+
+        if ($sdk === NULL || $sdk === '') {
+            $sdk = $this->serviceLocator->getSdkNameByInstalledApplication($appKey);
+            $binding->setSdk($sdk);
+
+            try {
+                $this->dm->flush();
+            } catch (MongoDBException) {
+                // Backfill is best-effort; even if persistence fails the call below still works.
+            }
+
+            return $sdk;
+        }
+
+        if (!$this->serviceLocator->isApplicationInstalledOnSdk($appKey, $sdk)) {
+            throw new PlatformServiceException(
+                sprintf(
+                    'Application "%s" is no longer installed on worker "%s" for platform service "%s". '
+                    . 'Update the binding in Settings.',
+                    $appKey,
+                    $sdk,
+                    $binding->getServiceType(),
+                ),
+                PlatformServiceException::CALL_FAILED,
+            );
+        }
+
+        return $sdk;
     }
 
     /**

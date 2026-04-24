@@ -279,6 +279,85 @@ export function authorizeApplication(key: string, worker: string): void {
   window.location.href = authorizeURL.href
 }
 
+export interface InstalledApplicationWithSyncMethods {
+  key: string
+  name: string
+  worker: string
+  logo: string
+  authorized: boolean
+  syncMethods: string[]
+}
+
+/**
+ * Normalize the `/sync/list` payload into a clean `string[]`.
+ *
+ * The PHP gateway's `doRequest` always merges a `host` key into responses,
+ * which mangles a list-shaped SDK response (`["trace"]`) into an
+ * object-with-numeric-keys (`{"0":"trace","host":"…"}`). Handle both shapes
+ * so the FE works regardless of whether the backend fix is deployed.
+ */
+function normalizeSyncMethods(raw: unknown): string[] {
+  if (Array.isArray(raw)) {
+    return raw.filter((v): v is string => typeof v === 'string')
+  }
+  if (raw && typeof raw === 'object') {
+    return Object.entries(raw as Record<string, unknown>)
+      .filter(([key, value]) => /^\d+$/.test(key) && typeof value === 'string')
+      .map(([, value]) => value as string)
+  }
+  return []
+}
+
+/**
+ * Fetch all *installed* applications across all workers, including their sync method names.
+ * Sync method names are flattened from `sync<Method>(...)` to `<method>` by the SDK
+ * (e.g. an app implementing `syncTrace()` exposes `'trace'` here).
+ *
+ * Used e.g. when picking the application that backs a platform service (Settings → Trace).
+ */
+export async function fetchInstalledApplicationsWithSyncMethods(): Promise<
+  InstalledApplicationWithSyncMethods[]
+> {
+  const response = await api.get<WorkerApiResponse[]>('/api/applications')
+
+  const tasks: Array<Promise<InstalledApplicationWithSyncMethods>> = []
+
+  for (const worker of response.data ?? []) {
+    for (const app of worker.applications ?? []) {
+      if (!app.installed) continue
+
+      const baseInfo = {
+        key: app.key,
+        name: app.name,
+        worker: worker.name,
+        logo: app.logo,
+        authorized: app.authorized,
+      }
+
+      tasks.push(
+        api
+          .get<unknown>(
+            `/api/applications/${encodeURIComponent(app.key)}/sync/list`,
+            { params: { sdk: worker.name } },
+          )
+          .then<InstalledApplicationWithSyncMethods>((res) => ({
+            ...baseInfo,
+            syncMethods: normalizeSyncMethods(res.data),
+          }))
+          .catch((error: unknown) => {
+            console.warn(
+              `[applicationsService] Failed to load sync methods for ${app.key}@${worker.name}:`,
+              error,
+            )
+            return { ...baseInfo, syncMethods: [] }
+          }),
+      )
+    }
+  }
+
+  return Promise.all(tasks)
+}
+
 /**
  * Fetch available worker names
  */

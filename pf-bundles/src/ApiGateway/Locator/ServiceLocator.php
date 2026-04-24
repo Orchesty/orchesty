@@ -432,10 +432,17 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function listSyncActions(string $key, string $sdk): array
     {
-        return $this->doRequest(
+        $raw = $this->doRequest(
             sprintf('applications/%s/sync/list', $key),
             $sdk,
         );
+
+        // SDK returns a plain JSON list (e.g. ["trace"]); doRequest however
+        // always merges a `host` key into the response, which corrupts list
+        // shapes into objects. Strip the artifact and return values only.
+        unset($raw['host']);
+
+        return array_values($raw);
     }
 
     /**
@@ -547,17 +554,26 @@ final class ServiceLocator implements LoggerAwareInterface
     public function getSdkNameByInstalledApplication(string $key): string
     {
         foreach ($this->getSdks() as $sdk) {
-            $hasApplication = array_find(
-                $this->doRequest('applications', $sdk->getName())['items'] ?? [],
-                static fn(array $application): bool => $application['key'] === $key,
-            ) !== NULL;
-
-            if ($hasApplication) {
+            if ($this->isApplicationInstalledOnSdk($key, $sdk->getName())) {
                 return $sdk->getName();
             }
         }
 
         return $this->getSdks()[0]->getName();
+    }
+
+    /**
+     * @param string $key
+     * @param string $sdk
+     *
+     * @return bool
+     */
+    public function isApplicationInstalledOnSdk(string $key, string $sdk): bool
+    {
+        return array_find(
+            $this->doRequest('applications', $sdk)['items'] ?? [],
+            static fn(array $application): bool => $application['key'] === $key,
+        ) !== NULL;
     }
 
     /*

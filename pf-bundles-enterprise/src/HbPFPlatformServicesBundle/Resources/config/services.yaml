@@ -11,6 +11,7 @@ services:
     hbpf.platform_services.provider:
         class: Hanaboso\PipesFrameworkEnterprise\PlatformServices\Provider\PlatformServiceProvider
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.platform_services.repository'
             - '@hbpp.service.locator'
 
