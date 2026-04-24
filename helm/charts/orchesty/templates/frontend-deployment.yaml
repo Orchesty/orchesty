@@ -44,6 +44,22 @@ spec:
             - name: VITE_AUTH0_REDIRECT
               value: "{{ .Values.global.cloud.auth0.redirect }}"
 {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
           resources:
 {{ toYaml .Values.global.frontend.resources | indent 12 }}
 

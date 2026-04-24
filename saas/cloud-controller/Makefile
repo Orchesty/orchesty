@@ -53,5 +53,5 @@ update-instance:
 		-d '{"instance":"instance-orchesty","instanceDisplayName":"Prod Instance orchesty","customizations":{"workers":[{"name":"sys-worker","image":"dkr.hanaboso.net/pipes/pipes/enterprise-system-worker:3.0.0-rc1","sdkType":"nodejs"},{"name":"cloud-worker","image":"dkr.hanaboso.net/orchesty/orchesty-cloud/cloud-worker:master","sdkType":"nodejs"}],"resourceLimits":{"enabled":true,"cpu":"4000","memory":"4048","topologySlots":10,"messages":0,"storageGb":0,"trashDuplication":0},"features":{"traceAuditing":true,"enterpriseDashboards":true,"auditLogs":true,"pulse":true},"trialEndsAt":"2026-12-31T23:59:59Z","rateLimits":{"enabled":false,"second":100},"userName":"admin@example.com"}}' | jq
 
 destroy-instance:
-	curl -s -X DELETE "$(API_URL)/instance?instance=instance-orchesty" \
+	curl -s -X DELETE "$(API_URL)/instance?instance=instance-cse612e5go" \
 		-H "Content-Type: application/json" | jq

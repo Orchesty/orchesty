@@ -147,7 +147,7 @@ global:
         cpu: 10m
       limits:
         memory: 16Mi
-        cpu: 10m
+        cpu: 50m
 
   limiter:
     resources:
@@ -156,7 +156,7 @@ global:
         cpu: 10m
       limits:
         memory: 32Mi
-        cpu: 250m
+        cpu: 200m
 
   multiCounter:
     resources:
@@ -165,7 +165,7 @@ global:
         cpu: 10m
       limits:
         memory: 32Mi
-        cpu: 250m
+        cpu: 100m
 
   startingPoint:
     service:
@@ -178,7 +178,7 @@ global:
         cpu: 20m
       limits:
         memory: 32Mi
-        cpu: 250m
+        cpu: 100m
 
   detector:
     manageServiceAccount: true
@@ -202,10 +202,10 @@ global:
         memory: 128Mi
         cpu: 100m
     topologiesResources:
-      defaultRequestCpu: 10m
-      defaultRequestMemory: 50Mi
-      defaultLimitCpu: 200m
-      defaultLimitMemory: 128Mi
+      defaultRequestCpu: 50m
+      defaultRequestMemory: 64Mi
+      defaultLimitCpu: 100m
+      defaultLimitMemory: 64Mi
     topologiesExtraEnv: {}
 #     FOO:
 #       value: bar
@@ -256,11 +256,11 @@ global:
     tickLoki: 12 # in hours, how often collect metrics for Loki
     resources:
       requests:
-        memory: 256Mi
+        memory: 128Mi
         cpu: 50m
       limits:
-        memory: 256Mi
-        cpu: 200m
+        memory: 128Mi
+        cpu: 100m
 
   worker:
     hostPathMounts: []
@@ -298,7 +298,7 @@ global:
         cpu: 20m
       limits:
         memory: 64Mi
-        cpu: 250m
+        cpu: 150m
 
   notifier:
     throttleMode: per_topology_per_preset
@@ -313,7 +313,7 @@ global:
         cpu: 20m
       limits:
         memory: 64Mi
-        cpu: 100m
+        cpu: 50m
 
   trace:
     backendTimeout: "30"
@@ -323,7 +323,7 @@ global:
         cpu: 20m
       limits:
         memory: 64Mi
-        cpu: 100m
+        cpu: 50m
 
   tunnelProxy:
     requestTimeout: "30"
@@ -334,7 +334,7 @@ global:
         cpu: 20m
       limits:
         memory: 64Mi
-        cpu: 100m
+        cpu: 50m
   
   logs:
     lokiHostname: loki-gateway.{{ .Release.Namespace }}.svc.cluster.local

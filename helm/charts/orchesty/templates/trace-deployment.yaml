@@ -30,7 +30,7 @@ spec:
             - name: APP_DEBUG
               value: "false"
             - name: BACKEND_URL
-              value: "http://{{ include "pipes.fullname" (dict "suffix" "backend" "root" .) }}:80"
+              value: "http://{{ include "pipes.fullname" (dict "suffix" "backend" "noPrefix" true "root" .) }}:80"
             - name: BACKEND_TIMEOUT
               value: "{{ .Values.global.trace.backendTimeout }}"
           resources:

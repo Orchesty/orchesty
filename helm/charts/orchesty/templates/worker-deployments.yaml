@@ -44,7 +44,7 @@ spec:
 {{- end }}
 {{- if not $root.Values.global.worker_api_url }}
             - name: WORKER_API_HOST
-              value: "http://{{ include "pipes.fullname" (dict "suffix" "worker-api" "root" $root) }}"
+              value: "http://{{ include "pipes.fullname" (dict "suffix" "worker-api" "noPrefix" true "root" $root) }}"
 {{- else }}
             - name: WORKER_API_HOST
               value: "{{ $root.Values.global.worker_api_url }}"
