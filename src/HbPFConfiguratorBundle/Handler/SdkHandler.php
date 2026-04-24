@@ -27,12 +27,20 @@ final class SdkHandler
      * @param DocumentManager $dm
      * @param string          $instanceId
      * @param string          $instanceUrlPrefix
+     * @param string          $tunnelProxyUrl
+     * @param string          $backendUrl
+     * @param string          $startingPointUrl
+     * @param string          $workerApiUrl
      */
     public function __construct(
         private SdkManager $manager,
         private DocumentManager $dm,
         private string $instanceId,
         private string $instanceUrlPrefix = '',
+        private string $tunnelProxyUrl = '',
+        private string $backendUrl = '',
+        private string $startingPointUrl = '',
+        private string $workerApiUrl = '',
     )
     {
     }
@@ -145,6 +153,9 @@ final class SdkHandler
             $lines[] = '# --- Orchesty Tunnel Configuration ---';
             $lines[] = 'TUNNEL_ENABLED=true';
             $lines[] = sprintf('TUNNEL_WORKER_ID="%s"', $sdk->getName());
+            if ($this->tunnelProxyUrl !== '') {
+                $lines[] = sprintf('TUNNEL_PROXY_URL=%s', $this->tunnelProxyUrl);
+            }
             $lines[] = '';
         }
 
@@ -156,6 +167,24 @@ final class SdkHandler
         $lines[] = sprintf('TENANT_ID=%s', $tenant);
         $lines[] = 'CRYPT_SECRET=_CHANGE_ME_';
         $lines[] = sprintf('ORCHESTY_API_KEY=%s', $apiKey);
+
+        // Self-hosted instances expose externally-reachable URLs of platform services so
+        // that workers running outside the docker/k8s network can reach them. On cloud
+        // these stay empty and the SDK falls back to TENANT_ID-derived URLs, keeping the
+        // snippet bit-identical with the legacy output.
+        if ($this->backendUrl !== '' || $this->startingPointUrl !== '' || $this->workerApiUrl !== '') {
+            $lines[] = '';
+            $lines[] = '# --- Orchesty Platform URLs ---';
+            if ($this->backendUrl !== '') {
+                $lines[] = sprintf('BACKEND_URL=%s', $this->backendUrl);
+            }
+            if ($this->startingPointUrl !== '') {
+                $lines[] = sprintf('STARTING_POINT_URL=%s', $this->startingPointUrl);
+            }
+            if ($this->workerApiUrl !== '') {
+                $lines[] = sprintf('WORKER_API_HOST=%s', $this->workerApiUrl);
+            }
+        }
 
         return ['env' => implode("\n", $lines)];
     }
