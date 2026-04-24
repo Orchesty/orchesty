@@ -14,6 +14,7 @@ import MetricsRouter from './router/MetricsRouter';
 export async function init(): Promise<IServices> {
     const mongoClient = new Mongo();
     await mongoClient.connect();
+    await mongoClient.ensureMetricsIndexes();
 
     const metricsManager = new MetricsManager(mongoClient);
     const documentManager = new DocumentManager(mongoClient);
