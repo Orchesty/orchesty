@@ -37,6 +37,106 @@ final class LokiManager
      */
     public function queryByCorrelationIds(array $correlationIds): array
     {
+        $entries = $this->fetchEntries($correlationIds);
+
+        return array_map(static fn(array $e): string => $e[1], $entries);
+    }
+
+    /**
+     * Returns audit checkpoint log entries scoped to the given correlationIds.
+     *
+     * The bridge-side audit emitter writes a structured `auditCheckpoint`
+     * object into each log line:
+     *   {
+     *     "auditCheckpoint": {
+     *       "role": "process_entry" | "process_step" | "process_exit",
+     *       "payload": {...},            // optional — absent for marker-only nodes
+     *       "resultCode": 0,             // SDK ResultCode the connector returned
+     *       "resultStatus": "success",   // success|failed|repeat|trashed|limit|unknown
+     *       "resultMessage": "...",      // truncated to 512 chars
+     *       "httpStatus": 200            // HTTP status of bridge -> worker call
+     *     },
+     *     "correlationId": "...",
+     *     "topologyId": "...", "topologyName": "...",
+     *     "nodeId": "...", "nodeName": "..."
+     *   }
+     *
+     * Filtering by per-entity audit data IDs is intentionally NOT done here:
+     * upstream Mongo (`audit_entity` -> `audit_data` -> `topology_progress`)
+     * already returned only the relevant correlationIds, and the bridge does
+     * NOT include `auditEntityIds` in the log line (chunked batches would
+     * otherwise carry 10k+ IDs per log entry). Multi-entity correlations are
+     * surfaced grouped by `nodeName` in the UI.
+     *
+     * Output shape per entry:
+     *   [
+     *     'role'          => 'process_entry'|'process_step'|'process_exit',
+     *     'payload'       => mixed,         // may be null for marker-only nodes
+     *     'resultCode'    => int|null,
+     *     'resultStatus'  => string|null,   // success|failed|repeat|trashed|limit|unknown
+     *     'resultMessage' => string|null,
+     *     'httpStatus'    => int|null,
+     *     'time'          => '<unix-nano-timestamp>',
+     *     'correlationId' => '...',
+     *     'topologyId'    => '...',
+     *     'topologyName'  => '...',
+     *     'nodeName'      => '...',
+     *   ]
+     *
+     * @param string[] $correlationIds
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function queryAuditCheckpointsByCorrelationIds(array $correlationIds): array
+    {
+        if ($correlationIds === []) {
+            return [];
+        }
+
+        $entries = $this->fetchEntries($correlationIds);
+        $result  = [];
+
+        foreach ($entries as [$time, $line]) {
+            $decoded = json_decode($line, TRUE);
+
+            if (!is_array($decoded)) {
+                continue;
+            }
+
+            $cp = $decoded['auditCheckpoint'] ?? NULL;
+
+            if (
+                !is_array($cp)
+                || !in_array($cp['role'] ?? '', ['process_entry', 'process_step', 'process_exit'], TRUE)
+            ) {
+                continue;
+            }
+
+            $result[] = [
+                'role'          => $cp['role'],
+                'payload'       => $cp['payload'] ?? NULL, // may be missing for fields:[] marker checkpoints
+                'resultCode'    => isset($cp['resultCode']) ? (int) $cp['resultCode'] : NULL,
+                'resultStatus'  => isset($cp['resultStatus']) ? (string) $cp['resultStatus'] : NULL,
+                'resultMessage' => isset($cp['resultMessage']) ? (string) $cp['resultMessage'] : NULL,
+                'httpStatus'    => isset($cp['httpStatus']) ? (int) $cp['httpStatus'] : NULL,
+                'time'          => $time,
+                'correlationId' => $decoded['correlationId'] ?? NULL,
+                'topologyId'    => $decoded['topologyId'] ?? NULL,
+                'topologyName'  => $decoded['topologyName'] ?? NULL,
+                'nodeName'      => $decoded['nodeName'] ?? NULL,
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string[] $correlationIds
+     *
+     * @return array<int, array{string, string}>
+     */
+    private function fetchEntries(array $correlationIds): array
+    {
         if ($this->lokiUrl === '' || $correlationIds === []) {
             return [];
         }
@@ -84,7 +184,7 @@ final class LokiManager
 
         usort($allEntries, static fn(array $a, array $b): int => $a[0] <=> $b[0]);
 
-        return array_map(static fn(array $e): string => $e[1], $allEntries);
+        return $allEntries;
     }
 
     /**

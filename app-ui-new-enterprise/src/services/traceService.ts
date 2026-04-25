@@ -1,5 +1,5 @@
 import api from '@/services/api'
-import type { TraceReport } from '@/types/trace'
+import type { EntityHistoryResponse, TraceReport } from '@/types/trace'
 
 interface TraceReportApiItem {
   id: string
@@ -48,4 +48,17 @@ export const updateReportTitle = async (id: string, title: string): Promise<void
 
 export const deleteReport = async (id: string): Promise<void> => {
   await api.delete(`/api/trace-reports/${id}`)
+}
+
+/**
+ * Per-entity audit history. Bypasses the AI chat and queries the MCP run
+ * endpoint directly so callers (e.g. EntityHistoryPanel) get the structured
+ * `{ entity, identifier, runs: [{ input, output }] }` response.
+ */
+export const fetchEntityHistory = async (
+  audit: string,
+  data: Record<string, string>,
+): Promise<EntityHistoryResponse> => {
+  const response = await api.post<EntityHistoryResponse>('/mcp/run', { audit, data })
+  return response.data
 }

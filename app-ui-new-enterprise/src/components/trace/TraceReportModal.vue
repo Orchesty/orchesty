@@ -58,8 +58,15 @@ const handleExportPdf = () => {
     :title="report?.title || 'Report'"
     size="4xl"
   >
-    <!-- Report Content -->
-    <div v-if="report" class="prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-headings:my-3" v-html="report.content"></div>
+    <!-- Report Content. The stored HTML is the styled audit report
+         (auditReportRenderer output) — a printable artefact that must
+         read identically light/dark, so we wrap it in a fixed light
+         surface and opt out of prose styling. -->
+    <div
+      v-if="report"
+      class="not-prose rounded-lg bg-white p-4 text-gray-900 dark:bg-white dark:text-gray-900"
+      v-html="report.content"
+    ></div>
     
     <!-- Footer Actions -->
     <template #footer-actions>

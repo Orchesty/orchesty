@@ -59,4 +59,5 @@ const (
 	Header_AuditEntityHeader       = "audit-entity"
 	Header_AuditEntityIdsHeader    = "audit-entity-ids"
 	Header_AuditEntityFieldsHeader = "audit-entity-fields"
+	Header_AuditCheckpoint         = "audit-checkpoint"
 )

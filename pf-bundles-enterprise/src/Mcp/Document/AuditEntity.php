@@ -13,7 +13,15 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  * @package Hanaboso\PipesFrameworkEnterprise\Mcp\Document
  */
 #[ODM\Document(repositoryClass: 'Hanaboso\PipesFrameworkEnterprise\Mcp\Repository\AuditEntityRepository')]
-#[ODM\Index(keys: ['key' => 'asc'], name: 'UK_audit_entity_key', unique: TRUE)]
+// Case-insensitive collation: lookups from MCP (`product` vs `Product`) must
+// match the same entity. Unique index is intentional — the collation makes
+// "product"/"Product" collide, which is the desired semantic.
+#[ODM\Index(
+    keys: ['key' => 'asc'],
+    name: 'UK_audit_entity_key',
+    options: ['collation' => ['locale' => 'en', 'strength' => 2]],
+    unique: TRUE,
+)]
 class AuditEntity
 {
 

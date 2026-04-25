@@ -6,7 +6,13 @@ import ChatMessage from '@/components/trace/ChatMessage.vue'
 import ChatInput from '@/components/trace/ChatInput.vue'
 import TraceReportsDrawer from '@/components/trace/TraceReportsDrawer.vue'
 import TraceReportModal from '@/components/trace/TraceReportModal.vue'
-import type { ChatMessage as ChatMessageType, TraceReport } from '@/types/trace'
+import {
+  renderAuditReportHtml,
+  makeReportId,
+  escapeHtml,
+} from '@/components/trace/auditReportRenderer'
+import { printReport } from '@/components/trace/printReport'
+import type { ChatMessage as ChatMessageType, EntityHistoryResponse, TraceReport } from '@/types/trace'
 import { fetchReports, saveReport, updateReportTitle, deleteReport } from '@/services/traceService'
 import { useTraceSocket } from '@/composables/useTraceSocket'
 import { useAuthStore } from '@/stores/auth'
@@ -109,14 +115,45 @@ const scrollToBottom = () => {
   }
 }
 
-const escapeHtml = (input: string): string => {
-  const div = document.createElement('div')
-  div.textContent = input
-  return div.innerHTML
+// Tries to extract a per-entity history payload from the assistant text.
+// Accepts either pure JSON or JSON wrapped in code fences / surrounding prose
+// (the AI sometimes returns the raw MCP result interleaved with commentary).
+const tryParseEntityHistory = (raw: string): EntityHistoryResponse | null => {
+  const candidates: string[] = [raw]
+  const fenceMatch = raw.match(/```(?:json)?\s*([\s\S]+?)\s*```/)
+  if (fenceMatch && fenceMatch[1]) candidates.unshift(fenceMatch[1])
+  const objectMatch = raw.match(/\{[\s\S]*"runs"\s*:\s*\[[\s\S]*?\][\s\S]*\}/)
+  if (objectMatch) candidates.unshift(objectMatch[0])
+
+  for (const candidate of candidates) {
+    try {
+      const parsed = JSON.parse(candidate)
+      if (
+        parsed && typeof parsed === 'object'
+        && typeof parsed.entity === 'string'
+        && Array.isArray(parsed.runs)
+      ) {
+        return parsed as EntityHistoryResponse
+      }
+    } catch {
+      // try next candidate
+    }
+  }
+  return null
 }
 
 // Wrap raw assistant text into safe HTML so newlines render as paragraphs.
+// If the text contains a per-entity history payload, render the structured
+// audit-report template (shared with the saved-report modal and PDF view).
 const formatAssistantContent = (raw: string): string => {
+  const history = tryParseEntityHistory(raw)
+  if (history) {
+    return renderAuditReportHtml(history, {
+      generatedAt: new Date(),
+      reportId: makeReportId(),
+    })
+  }
+
   const escaped = escapeHtml(raw)
   const paragraphs = escaped
     .split(/\n{2,}/)
@@ -206,14 +243,18 @@ const handleCopy = () => {
   // clipboard handled by ChatMessage component
 }
 
-const handleExportPdf = () => {
-  // TODO: implement PDF export (Phase 3)
+// Both ChatMessage and TraceReportModal emit `exportPdf` with the rendered
+// HTML content. We open it in a fresh tab and trigger window.print(); the
+// user picks "Save as PDF" in the print dialog.
+const handleExportPdf = (content: string) => {
+  printReport(content, 'Trace Audit Report')
 }
 </script>
 
 <template>
   <main class="h-full overflow-y-auto"><div class="px-4 pb-4 pt-6">
-    <div class="relative h-[calc(100vh-8rem)] w-full bg-gray-50 dark:bg-gray-900">
+    <div class="relative flex h-[calc(100vh-8rem)] w-full bg-gray-50 dark:bg-gray-900">
+      <div class="relative flex-1">
       <!-- Header (absolute, top): connection status + reports button -->
       <div class="absolute top-4 right-4 z-10 flex items-center gap-3">
         <span
@@ -272,6 +313,7 @@ const handleExportPdf = () => {
 
       <!-- Chat Input (fixed bottom) -->
       <ChatInput @send="handleSendMessage" :loading="sending" />
+      </div>
     </div>
 
     <!-- Drawers & Modals -->
