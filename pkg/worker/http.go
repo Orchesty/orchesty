@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/hanaboso/pipes/bridge/pkg/audit"
 	"github.com/hanaboso/pipes/bridge/pkg/bridge/types"
 	"github.com/hanaboso/pipes/bridge/pkg/config"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
@@ -64,9 +65,14 @@ func (h httpBeforeProcess) BeforeProcess(node types.Node, dto *model.ProcessMess
 	defer cancel()
 	req = req.WithContext(ctx)
 
-	log.Info().EmbedObject(dto).
-		Str(enum.LogHeader_LevelName, "info").
-		Interface("reqHeaders", req.Header).
+	// Demoted to DEBUG: this log historically dumped the full request body and
+	// every header (including Authorization, Cookie, ...) at INFO on every
+	// worker call. The audit signal we actually want is now produced by
+	// AuditCheckpointNode + the audit package below; verbose tracing remains
+	// available via BRIDGE_LOG_LEVEL=debug.
+	log.Debug().EmbedObject(dto).
+		Str(enum.LogHeader_LevelName, "debug").
+		Interface("reqHeaders", audit.SanitizeHeadersHttp(req.Header)).
 		Interface("reqBody", messageBody).
 		Msgf("Incoming request: Method[POST] Url[/%s]", node.Settings().ActionPath)
 
@@ -90,6 +96,60 @@ func (h httpBeforeProcess) BeforeProcess(node types.Node, dto *model.ProcessMess
 		Msgf("Total request duration: %dms for endpoint POST[/%s]", duration.Milliseconds(), node.Settings().ActionPath)
 
 	dto.FromHttpResponse(response)
+
+	// Business audit checkpoint emission.
+	//
+	// Any node may carry an audit checkpoint declaration:
+	// - input/output Connector overriding `getAuditCheckpoint()` -> entry/exit
+	//   audit captures the data the connector actually produced/delivered + the
+	//   delivery outcome (`resultCode/resultStatus/resultMessage/httpStatus`).
+	// - AuditCheckpointNode passthrough -> step markers / non-connector
+	//   boundaries.
+	//
+	// Body source rules (role-driven — what the node *means* by "the entity"):
+	//   - process_entry / process_step  -> response body. The connector just
+	//     PRODUCED this data (think: input connector fetched a record from an
+	//     external API; the request body is usually empty or just a cron tick).
+	//   - process_exit                  -> request body. The connector tried to
+	//     DELIVER this data to an external system; the response is whatever the
+	//     remote returned (often just an ACK / id).
+	//
+	// Batch nodes are special: a single bridge call returns N items that are
+	// fanned out one-by-one to followers. Emitting one audit log line for the
+	// whole batch would lose per-item correlation, so we skip single-shot
+	// emission here and let `Batch.AfterProcess` emit one audit per child
+	// message (with each child's body as the payload). The header is kept on
+	// the dto so AfterProcess can read it; it is then stripped from each
+	// published partial so it doesn't leak downstream.
+	//
+	// Failures (invalid header, missing fields, build errors) downgrade to
+	// WARN with no audit log emission — never silently log "everything".
+	if rawSpec := dto.GetHeaderOrDefault(enum.Header_AuditCheckpoint, ""); rawSpec != "" {
+		if node.WorkerType() == enum.WorkerType_Batch {
+			// Per-item audit fan-out happens in Batch.AfterProcess. Leave the
+			// header on the dto for AfterProcess to consume.
+		} else if spec, err := audit.Parse(rawSpec); err != nil {
+			log.Warn().EmbedObject(dto).Err(err).Msg("audit checkpoint header parse failed; skipping emission")
+			dto.DeleteHeader(enum.Header_AuditCheckpoint)
+		} else {
+			if spec != nil {
+				auditBody := auditBodyForRole(spec.Role, dto)
+				payload, truncated, perr := audit.BuildPayload(auditBody, spec)
+				if perr != nil {
+					log.Warn().EmbedObject(dto).Err(perr).Msg("audit checkpoint payload build failed; skipping emission")
+				} else {
+					audit.Emit(dto, node, spec, payload, truncated, audit.EmitParams{
+						ResultCode:    dto.GetIntHeaderOrDefault(enum.Header_ResultCode, 0),
+						ResultMessage: dto.GetHeaderOrDefault(enum.Header_ResultMessage, ""),
+						HTTPStatus:    response.StatusCode,
+					})
+				}
+			}
+			// One-shot header — strip so it doesn't leak into downstream messages.
+			dto.DeleteHeader(enum.Header_AuditCheckpoint)
+		}
+	}
+
 	if response.StatusCode > 500 {
 		RecordFailure(host, nodeId, correlationId)
 		if IsPoisoned(host, nodeId, correlationId) {
@@ -129,6 +189,26 @@ func (h httpBeforeProcess) BeforeProcess(node types.Node, dto *model.ProcessMess
 	}
 
 	return dto.Ok()
+}
+
+// auditBodyForRole picks the body that semantically represents "the entity at
+// this checkpoint" depending on the audit role:
+//
+//   - process_exit  -> request body (what the connector tried to DELIVER to
+//     the external system; the HTTP response is usually just an ACK / id).
+//   - everything else (process_entry, process_step) -> response body (what the
+//     connector PRODUCED; for input connectors the request is typically an
+//     empty cron tick or a lookup id and the actual entity lives in the
+//     response).
+//
+// `dto.GetOriginalBody()` returns the bytes the bridge sent to the worker
+// (preserved by `FromHttpResponse` before it overwrote `Body` with the
+// response). `dto.GetBody()` returns the worker's response body.
+func auditBodyForRole(role string, dto *model.ProcessMessage) []byte {
+	if role == "process_exit" {
+		return []byte(dto.GetOriginalBody())
+	}
+	return dto.GetBody()
 }
 
 func isSuccessResultCode(code int) bool {

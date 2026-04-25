@@ -41,4 +41,5 @@ const (
 	LogHeader_NodeName              = "nodeName"
 	LogHeader_SequenceId            = "sequenceId"
 	LogHeader_LevelName             = "levelName"
+	LogHeader_AuditCheckpoint       = "auditCheckpoint"
 )
