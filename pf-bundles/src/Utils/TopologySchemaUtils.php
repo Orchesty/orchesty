@@ -207,13 +207,44 @@ final class TopologySchemaUtils
             $label  = $node['label'] ?? '';
 
             $workerName = '';
+            $eventName  = '';
 
             if ($shape === 'circle') {
                 $handler   = self::getJsonCircleHandler($label);
                 $pipesType = self::getJsonEventPipesType($label);
-                $name      = $node['name'] ?? $pipesType;
-                $sdkHost   = '';
-                $app       = '';
+
+                if ($label === 'Webhook' && $action !== NULL) {
+                    $workerName = $action['worker'] ?? '';
+                    $sdkHost    = $sdkUrlMap[$workerName] ?? '';
+                    $app        = $action['app'] ?? '';
+                    $eventName  = $action['event'] ?? '';
+                    // Backwards compatibility: legacy schemas (and the editor
+                    // picker output) carry the canonical "<app>.<event>"
+                    // string in `action.name`. Split it on the first '.' so
+                    // we can derive both parts when the explicit fields are
+                    // missing.
+                    if ($app === '' || $eventName === '') {
+                        $rawName = (string) ($action['name'] ?? '');
+                        if ($rawName !== '' && str_contains($rawName, '.')) {
+                            [$splitApp, $splitEvent] = explode('.', $rawName, 2);
+                            if ($app === '')       $app       = $splitApp;
+                            if ($eventName === '') $eventName = $splitEvent;
+                        } elseif ($eventName === '') {
+                            $eventName = $rawName;
+                        }
+                    }
+                    // Force the canonical "<application>.<event>" name so a
+                    // user-edited node label can never desync from the
+                    // WebhookConfig key. The editor picker enforces this on
+                    // the front-end; this is the server-side guarantee.
+                    $name = $app !== '' && $eventName !== ''
+                        ? sprintf('%s.%s', $app, $eventName)
+                        : ($node['name'] ?? $eventName);
+                } else {
+                    $name    = $node['name'] ?? $pipesType;
+                    $sdkHost = '';
+                    $app     = '';
+                }
             } else if ($shape === 'hexagon') {
                 $handler   = self::BPMN_TASK;
                 $pipesType = TypeEnum::USER->value;
@@ -245,6 +276,7 @@ final class TopologySchemaUtils
                 '',
                 $app,
                 $workerName,
+                $eventName,
             );
 
             $schema->addNode($nodeId, $nodeSchemaDto);

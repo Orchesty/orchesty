@@ -20,6 +20,7 @@ final class NodeSchemaDto
     private const string PIPES_TYPE     = 'pipes_type';
     private const string SYSTEM_CONFIGS = 'system_configs';
     private const string APPLICATION    = 'application';
+    private const string EVENT_NAME     = 'event_name';
 
     /**
      * NodeSchemaDto constructor.
@@ -33,6 +34,7 @@ final class NodeSchemaDto
      * @param string          $cronParams
      * @param string          $application
      * @param string          $worker
+     * @param string          $eventName
      */
     public function __construct(
         private string $handler,
@@ -44,6 +46,7 @@ final class NodeSchemaDto
         private string $cronParams = '',
         private string $application = '',
         private string $worker = '',
+        private string $eventName = '',
     )
     {
     }
@@ -136,6 +139,14 @@ final class NodeSchemaDto
     }
 
     /**
+     * @return string
+     */
+    public function getEventName(): string
+    {
+        return $this->eventName;
+    }
+
+    /**
      * @return mixed[]
      */
     public function toArray(): array
@@ -144,6 +155,7 @@ final class NodeSchemaDto
             self::APPLICATION    => $this->getApplication(),
             self::CRON_PARAMS    => $this->getCronParams(),
             self::CRON_TIME      => $this->getCronTime(),
+            self::EVENT_NAME     => $this->getEventName(),
             self::HANDLER        => $this->getHandler(),
             self::ID             => $this->getId(),
             self::NAME           => $this->getName(),

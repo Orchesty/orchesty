@@ -753,7 +753,7 @@ onMounted(async () => {
     <div v-show="activeTopologyTab === 'topology'" class="flex-1 min-h-0 mt-4">
       <div class="h-full dark:bg-gray-800 dark:shadow-sm dark:rounded-lg">
         <div class="h-full bg-gray-50 dark:bg-gray-900 dark:rounded-lg overflow-hidden">
-          <TopologyEditor ref="topologyEditorRef" :topology-id="topology._id" :topology-enabled="topology.enabled" :refresh-key="refreshKey" @process-run="handleProcessRun" />
+          <TopologyEditor ref="topologyEditorRef" :topology-id="topology._id" :topology-name="topology.name" :topology-enabled="topology.enabled" :refresh-key="refreshKey" @process-run="handleProcessRun" />
         </div>
       </div>
     </div>

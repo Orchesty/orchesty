@@ -6,6 +6,16 @@ import CronSettingsModal from '@/components/scheduled-tasks/CronSettingsModal.vu
 import RunProcessModal from '@/components/topologies/RunProcessModal.vue'
 import BreakpointModal from '@/components/topologies/BreakpointModal.vue'
 import FailedMessageModal from '@/components/topologies/FailedMessageModal.vue'
+import WebhookSubscribeModal from '@/components/topologies/WebhookSubscribeModal.vue'
+import {
+  listWebhookConfigs,
+  subscribeWebhookConfig,
+  unsubscribeWebhookConfig,
+  deleteWebhookConfig,
+  cascadeWebhookConfigs,
+  buildWebhookCallbackUrl,
+  type WebhookConfigItem,
+} from '@/services/webhookConfigService'
 import CopyValue from '@/components/ui/CopyValue.vue'
 import StatusBadge from '@/components/ui/StatusBadge.vue'
 import type { BadgeVariant } from '@/components/ui/StatusBadge.vue'
@@ -27,6 +37,7 @@ import type { CronNode } from '@/types/topologies-page'
 
 interface Props {
   topologyId: string
+  topologyName: string
   topologyEnabled?: boolean
   refreshKey?: number
 }
@@ -62,10 +73,13 @@ interface BackendNode {
   enabled: boolean
   cron_time: string | null
   cron_params: string | null
+  application?: string | null
+  sdk?: string | null
 }
 
 const editorCore = ref<EditorCore>()
 const cronSettingsModalOpen = ref(false)
+const webhookSubscribeModalOpen = ref(false)
 const runProcessModalOpen = ref(false)
 const breakpointModalOpen = ref(false)
 const failedMessageModalOpen = ref(false)
@@ -79,6 +93,32 @@ let cachedSchema: any = null
 
 const nodesData = ref<Record<string, CronNode>>({})
 const schemaToBackendId = ref<Record<string, string>>({})
+const nodeApplications = ref<Record<string, { application: string; sdk: string }>>({})
+
+const webhookConfigs = ref<WebhookConfigItem[]>([])
+const webhookConfigsByNodeName = computed<Record<string, WebhookConfigItem>>(() => {
+  const map: Record<string, WebhookConfigItem> = {}
+  for (const cfg of webhookConfigs.value) {
+    if (!cfg.orphan) {
+      map[cfg.nodeName] = cfg
+    }
+  }
+  return map
+})
+const orphanWebhookConfigs = computed(() => webhookConfigs.value.filter((c) => c.orphan))
+
+const refreshWebhookConfigs = async () => {
+  if (!props.topologyName) {
+    webhookConfigs.value = []
+    return
+  }
+  try {
+    webhookConfigs.value = await listWebhookConfigs(props.topologyName)
+  } catch (error) {
+    console.error('Failed to load webhook configs:', error)
+    webhookConfigs.value = []
+  }
+}
 
 interface NodeMetricsData {
   processTime?: number
@@ -93,10 +133,24 @@ const resolveBackendId = (editorNodeId: string): string => {
   return schemaToBackendId.value[editorNodeId] || editorNodeId
 }
 
+// Strict starting-point URL: identifies the topology + node by Mongo
+// ObjectIds and is therefore pinned to one specific topology version. Useful
+// when integrators want to lock a tester / cron to a single deployed build.
 const getStartingPointUrl = (editorNodeId: string): string => {
   const backendId = resolveBackendId(editorNodeId)
   const baseUrl = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.66:8080'
   return `${baseUrl}/topologies/${props.topologyId}/nodes/${backendId}/run`
+}
+
+// Name-based starting-point URL: matches the starting-point's
+// `/run-by-name` route and resolves to whichever topology version is
+// currently active. This is the URL we want integrators to share by default
+// — copy actions in the editor expose it as the primary "Copy URL" action.
+const getStartingPointUrlByName = (node: EditorNode): string => {
+  const baseUrl = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.66:8080'
+  const topology = encodeURIComponent(props.topologyName || '')
+  const nodeName = encodeURIComponent(node.name || '')
+  return `${baseUrl}/topologies/${topology}/nodes/${nodeName}/run-by-name`
 }
 
 
@@ -340,11 +394,29 @@ const eventNodeActions = {
       id: 'copy-url',
       icon: '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
       label: 'Copy URL',
-      tooltip: 'Copy URL',
+      tooltip: 'Copy URL (resolves to the currently active topology version)',
+      onClick: async (n: EditorNode) => {
+        if (!n.name) {
+          showToast('Event has no name yet — save the topology first', 'warning')
+          return
+        }
+        const url = getStartingPointUrlByName(n)
+        await navigator.clipboard.writeText(url)
+        showToast('URL copied to clipboard', 'success')
+      }
+    })
+    actions.push({
+      id: 'copy-strict-url',
+      icon: '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 14l2 2 4-4"/>',
+      label: 'Copy strict version URL',
+      tooltip: 'Copy URL pinned to this exact topology version (uses Mongo IDs)',
+      // Strict version is power-user only — keep the inline label clean and
+      // expose it solely from the right-click dropdown.
+      hideInLabel: true,
       onClick: async (n: EditorNode) => {
         const url = getStartingPointUrl(n.id)
         await navigator.clipboard.writeText(url)
-        showToast('URL copied to clipboard', 'success')
+        showToast('Strict version URL copied to clipboard', 'success')
       }
     })
     return actions
@@ -352,9 +424,118 @@ const eventNodeActions = {
   getTopLeftSlot: getOverlayTopLeft,
 }
 
+// Webhook subscribe modal state. The user only ever sees subscribe /
+// unsubscribe — the underlying WebhookConfig document is created lazily on
+// the backend during the first subscribe call.
+const selectedWebhookNodeName = ref<string>('')
+const selectedWebhookApplication = ref<string>('')
+const selectedWebhookInitialParameters = ref<Record<string, unknown> | null>(null)
+
+const openWebhookSubscribeModal = (node: EditorNode) => {
+  const ctx = nodeApplications.value[node.name] ?? { application: '', sdk: '' }
+  const existing = webhookConfigsByNodeName.value[node.name]
+  selectedWebhookNodeName.value = node.name
+  selectedWebhookApplication.value = ctx.application
+  selectedWebhookInitialParameters.value = existing?.parameters
+    ? (existing.parameters as Record<string, unknown>)
+    : null
+  webhookSubscribeModalOpen.value = true
+}
+
+const handleWebhookCopyUrl = async (node: EditorNode) => {
+  // The callback URL is only meaningful once a token has been issued by the
+  // SDK during subscribe. Without it we have nothing usable to copy — bail
+  // with a hint and refuse to fall back to the id-based starting-point URL
+  // (which targets engineers running ad-hoc topologies, not external
+  // webhook providers).
+  const cfg = webhookConfigsByNodeName.value[node.name]
+  if (!cfg?.token) {
+    showToast('Subscribe the webhook first to generate a callback URL', 'warning')
+    return
+  }
+  const url = buildWebhookCallbackUrl(props.topologyName, node.name, cfg.token)
+  await navigator.clipboard.writeText(url)
+  showToast('URL copied to clipboard', 'success')
+}
+
+const handleWebhookUnsubscribe = async (node: EditorNode) => {
+  try {
+    await unsubscribeWebhookConfig(props.topologyName, node.name)
+    showToast('Webhook unsubscribed', 'success')
+    await refreshWebhookConfigs()
+    await applyEventDisabledState()
+    editorCore.value?.refreshNodeLabel(node.id)
+  } catch (error) {
+    console.error('Unsubscribe failed:', error)
+    showToast(`Unsubscribe failed: ${(error as Error).message}`, 'error')
+  }
+}
+
+const handleWebhookSubscribed = async () => {
+  webhookSubscribeModalOpen.value = false
+  selectedWebhookNodeName.value = ''
+  selectedWebhookApplication.value = ''
+  selectedWebhookInitialParameters.value = null
+  await refreshWebhookConfigs()
+  if (editorCore.value) {
+    await applyEventDisabledState()
+    for (const id of Object.keys(nodesData.value)) {
+      editorCore.value.refreshNodeLabel(id)
+    }
+  }
+}
+
+const webhookNodeActions = {
+  getFields: (node: EditorNode) => {
+    // Two-state UX: the user does not need to know about the WebhookConfig
+    // intent layer. Either the webhook is subscribed against the external
+    // API (live token + Webhook doc), or it is not.
+    const cfg = webhookConfigsByNodeName.value[node.name]
+    return [
+      { label: 'Status', value: cfg?.registered ? 'Subscribed' : 'Off' },
+    ]
+  },
+  getActions: (node: EditorNode) => {
+    const cfg = webhookConfigsByNodeName.value[node.name]
+    const actions: any[] = []
+
+    if (cfg?.registered) {
+      // One-click unsubscribe. Re-subscribing with different parameters means
+      // unsubscribe → Subscribe again (which re-opens the modal) — we
+      // deliberately do not expose a separate "edit parameters while
+      // subscribed" path to keep the UI in sync with the upstream service.
+      actions.push({
+        id: 'webhook-unsubscribe',
+        icon: '<path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm3.707 8.707-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 1 1 1.414-1.414L11 12.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>',
+        label: 'Unsubscribe',
+        tooltip: 'Unsubscribe from external API',
+        onClick: () => handleWebhookUnsubscribe(node),
+      })
+      actions.push({
+        id: 'webhook-copy-url',
+        icon: '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
+        label: 'Copy URL',
+        tooltip: 'Copy callback URL',
+        onClick: () => handleWebhookCopyUrl(node),
+      })
+    } else {
+      actions.push({
+        id: 'webhook-subscribe',
+        icon: '<path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm3.707 8.707-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 1 1 1.414-1.414L11 12.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>',
+        label: 'Subscribe',
+        tooltip: 'Subscribe to external API',
+        onClick: () => openWebhookSubscribeModal(node),
+      })
+    }
+
+    return actions
+  },
+  getTopLeftSlot: getOverlayTopLeft,
+}
+
 const labelCustomization: LabelCustomizationMap = {
   Event: eventNodeActions,
-  Webhook: eventNodeActions,
+  Webhook: webhookNodeActions,
   Connector: { ...overlayMethods, getCustomLabel: (node: EditorNode) => buildMetricsLabelHtml(node, false) },
   'Custom Action': { ...overlayMethods, getCustomLabel: (node: EditorNode) => buildMetricsLabelHtml(node, true) },
   Batch: { ...overlayMethods, getCustomLabel: (node: EditorNode) => buildMetricsLabelHtml(node, false) },
@@ -440,6 +621,12 @@ const initNodesData = (editor: EditorCore, backendNodes: BackendNode[]) => {
 
     if (backend) {
       schemaToBackendId.value[editorNode.id] = backend._id
+      if (backend.application || backend.sdk) {
+        nodeApplications.value[editorNode.name] = {
+          application: backend.application ?? '',
+          sdk: backend.sdk ?? '',
+        }
+      }
     }
 
     const label = (editorNode.label || '').toLowerCase()
@@ -465,6 +652,33 @@ const initNodesData = (editor: EditorCore, backendNodes: BackendNode[]) => {
   }
 }
 
+// Computes the full set of editor node ids that should appear visually
+// disabled (greyed-out) and pushes it to the rete editor. Two sources feed
+// into the set:
+//  1. cron / event nodes whose backend `enabled` flag is false,
+//  2. webhook nodes whose `WebhookConfig` is missing OR has `registered=false`
+//     — i.e. anything that isn't currently subscribed against the upstream
+//     API. This way an unsubscribed webhook reads as "off" at a glance, the
+//     same way a paused cron does.
+const applyEventDisabledState = async () => {
+  if (!editorCore.value) return
+  const ids = new Set<string>()
+  for (const [id, data] of Object.entries(nodesData.value)) {
+    const label = data.label.toLowerCase()
+    if (!data.enabled) {
+      ids.add(id)
+      continue
+    }
+    if (label === 'webhook') {
+      const cfg = webhookConfigsByNodeName.value[data.name]
+      if (!cfg || !cfg.registered) {
+        ids.add(id)
+      }
+    }
+  }
+  await editorCore.value.setDisabledNodes([...ids])
+}
+
 const onEditorReady = async (editor: EditorCore) => {
   editorCore.value = editor
 
@@ -478,13 +692,9 @@ const onEditorReady = async (editor: EditorCore) => {
     cachedSchema = structuredClone(schema)
     await editor.setActions(actions)
     initNodesData(editor, backendNodes)
+    await refreshWebhookConfigs()
 
-    const disabledNodeIds = Object.entries(nodesData.value)
-      .filter(([, data]) => !data.enabled)
-      .map(([id]) => id)
-    if (disabledNodeIds.length > 0) {
-      await editor.setDisabledNodes(disabledNodeIds)
-    }
+    await applyEventDisabledState()
 
     editor.zoomToFit()
     await loadInitialOverlays()
@@ -711,14 +921,50 @@ watch(() => polling.processCompleted.value, async (completed) => {
   }
 })
 
-watch(() => props.topologyEnabled, () => {
+watch(() => props.topologyEnabled, async (enabled, previous) => {
   if (!editorCore.value) return
   for (const [editorId, data] of Object.entries(nodesData.value)) {
     if (data.label.toLowerCase() === 'cron') {
       editorCore.value.refreshNodeLabel(editorId)
     }
   }
+
+  // Cascade webhook subscribe / unsubscribe when the topology is toggled.
+  if (props.topologyName && enabled !== previous && webhookConfigs.value.length > 0) {
+    try {
+      const results = await cascadeWebhookConfigs(props.topologyName, enabled)
+      const failures = results.filter((r) => r.status === 'error')
+      if (failures.length > 0) {
+        showToast(
+          `Webhook cascade ${enabled ? 'subscribe' : 'unsubscribe'} finished with ${failures.length} error(s)`,
+          'error',
+        )
+      } else if (results.length > 0) {
+        showToast(`Webhooks ${enabled ? 'subscribed' : 'unsubscribed'}`, 'success')
+      }
+      await refreshWebhookConfigs()
+      await applyEventDisabledState()
+      for (const id of Object.keys(nodesData.value)) {
+        editorCore.value.refreshNodeLabel(id)
+      }
+    } catch (error) {
+      console.error('Webhook cascade failed:', error)
+      showToast(`Webhook cascade failed: ${(error as Error).message}`, 'error')
+    }
+  }
 })
+
+const cleanupOrphan = async (orphan: WebhookConfigItem) => {
+  try {
+    await deleteWebhookConfig(orphan.topologyName, orphan.nodeName)
+    showToast(`Removed orphan webhook for "${orphan.nodeName}"`, 'success')
+    await refreshWebhookConfigs()
+    await applyEventDisabledState()
+  } catch (error) {
+    console.error('Failed to clean up orphan webhook:', error)
+    showToast(`Cleanup failed: ${(error as Error).message}`, 'error')
+  }
+}
 
 watch(() => props.refreshKey, () => {
   if (polling.isPolling.value) return
@@ -786,10 +1032,59 @@ watch(() => props.refreshKey, () => {
       </div>
     </Transition>
 
+    <Transition
+      enter-active-class="transition ease-out duration-200"
+      enter-from-class="opacity-0 -translate-y-1"
+      enter-to-class="opacity-100 translate-y-0"
+    >
+      <div
+        v-if="orphanWebhookConfigs.length > 0"
+        class="absolute top-3 right-3 z-50 max-w-md rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-3 text-sm shadow-lg dark:border-yellow-600 dark:bg-yellow-900/40 dark:text-yellow-100"
+      >
+        <div class="flex items-start gap-3">
+          <div class="flex-1 space-y-1.5">
+            <div class="font-semibold text-yellow-800 dark:text-yellow-200">
+              Orphan webhook registrations
+            </div>
+            <p class="text-xs text-yellow-700 dark:text-yellow-300">
+              These external registrations are still active but no longer have a matching node in this topology.
+              Clean them up or recreate the corresponding node to keep the integration consistent.
+            </p>
+            <ul class="space-y-1">
+              <li
+                v-for="orphan in orphanWebhookConfigs"
+                :key="`${orphan.nodeName}-${orphan.eventName}`"
+                class="flex items-center justify-between gap-2 rounded-md bg-white/40 px-2 py-1 dark:bg-yellow-900/40"
+              >
+                <span class="text-xs font-mono text-yellow-900 dark:text-yellow-100">
+                  {{ orphan.nodeName }} → {{ orphan.eventName }}
+                </span>
+                <button
+                  class="text-xs font-semibold text-yellow-800 underline hover:text-yellow-900 dark:text-yellow-200 dark:hover:text-yellow-100"
+                  @click="cleanupOrphan(orphan)"
+                >
+                  Cleanup
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
     <CronSettingsModal
       v-model="cronSettingsModalOpen"
       :task="selectedNodeAsTask"
       @save="handleCrontabSave"
+    />
+
+    <WebhookSubscribeModal
+      v-model="webhookSubscribeModalOpen"
+      :topology-name="topologyName"
+      :node-name="selectedWebhookNodeName"
+      :application="selectedWebhookApplication"
+      :initial-parameters="selectedWebhookInitialParameters"
+      @subscribed="handleWebhookSubscribed"
     />
 
     <RunProcessModal

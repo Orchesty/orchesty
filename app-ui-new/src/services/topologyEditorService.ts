@@ -4,14 +4,33 @@ import { fetchApplications } from './applicationsService'
 export type ActionOption = {
   name: string
   worker: string
-  type: 'custom' | 'connector' | 'batch' | 'user'
+  type: 'custom' | 'connector' | 'batch' | 'user' | 'webhook'
   app?: string | null
   icon?: string
+  /** Webhook only: bare event name (`order.created`) without the app prefix. */
+  event?: string
+  /** Optional human-readable description shown in the picker submenu. */
+  description?: string
+  /** Webhook only: default subscription parameters carried into the action. */
+  parameters?: Record<string, unknown>
 }
 
 type NodeActionItem = {
   name: string
   app?: string | null
+}
+
+type WebhookCatalogEvent = {
+  name: string
+  parameters?: Record<string, unknown>
+  description?: string
+}
+
+type WebhookCatalogApp = {
+  application: string
+  name?: string
+  logo?: string
+  events?: WebhookCatalogEvent[]
 }
 
 type ActionType = 'custom' | 'connector' | 'batch' | 'user'
@@ -38,7 +57,7 @@ async function buildAppLogoMap(): Promise<Map<string, string>> {
 export const topologyEditorService = {
   async getAllActions(): Promise<ActionOption[]> {
     const [response, logoMap] = await Promise.all([
-      api.get<Record<string, Record<string, NodeActionItem[] | string[]>>>('/api/nodes/list/name'),
+      api.get<Record<string, Record<string, NodeActionItem[] | string[] | WebhookCatalogApp[]>>>('/api/nodes/list/name'),
       buildAppLogoMap(),
     ])
     const data = response.data
@@ -46,10 +65,38 @@ export const topologyEditorService = {
 
     for (const [sdkGroup, types] of Object.entries(data)) {
       for (const [type, items] of Object.entries(types)) {
-        if (!VALID_TYPES.includes(type as ActionType)) continue
         if (!Array.isArray(items)) continue
 
-        for (const item of items) {
+        // Webhook bucket has a different shape: [{ application, events: [...] }, ...]
+        // Each event becomes a single action whose canonical name is `app.event`.
+        // `worker` MUST stay as the SDK service id (e.g. `node-sdk`) — the
+        // backend uses it to route subscribe / unsubscribe calls. The
+        // human-readable label belongs in `description`, not `worker`.
+        if (type === 'webhook') {
+          for (const entry of items as WebhookCatalogApp[]) {
+            const app = entry?.application
+            if (!app || !Array.isArray(entry.events)) continue
+            const icon = logoMap.get(app)
+            for (const ev of entry.events) {
+              if (!ev?.name) continue
+              actions.push({
+                name: `${app}.${ev.name}`,
+                worker: sdkGroup,
+                type: 'webhook',
+                app,
+                event: ev.name,
+                description: ev.description?.trim() || `${entry.name ?? app} · ${ev.name}`,
+                parameters: ev.parameters,
+                icon,
+              })
+            }
+          }
+          continue
+        }
+
+        if (!VALID_TYPES.includes(type as ActionType)) continue
+
+        for (const item of items as NodeActionItem[] | string[]) {
           if (typeof item === 'string') {
             actions.push({
               name: item,
@@ -81,7 +128,7 @@ export const topologyEditorService = {
     return Array.from(unique.values())
   },
 
-  async getActionsByType(nodeType: ActionType): Promise<ActionOption[]> {
+  async getActionsByType(nodeType: ActionType | 'webhook'): Promise<ActionOption[]> {
     const allActions = await this.getAllActions()
     return allActions.filter(action => action.type === nodeType)
   },
