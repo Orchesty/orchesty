@@ -99,6 +99,17 @@ class Node
     protected ?string $systemConfigs = NULL;
 
     /**
+     * Webhook subscription event name (only set on Webhook nodes).
+     * Pulled from the editor's `action.name` for nodes whose schema baseLabel
+     * is `Webhook`. Used by {@see WebhookConfigManager} to keep the matching
+     * `WebhookConfig` document in sync with the topology schema.
+     *
+     * @var string
+     */
+    #[ODM\Field(type: 'string')]
+    protected string $eventName = '';
+
+    /**
      * Node constructor.
      */
     public function __construct()
@@ -114,6 +125,7 @@ class Node
         $this->systemConfigs = NULL;
         $this->type          = TypeEnum::CUSTOM->value;
         $this->application   = '';
+        $this->eventName     = '';
     }
 
     /**
@@ -393,14 +405,36 @@ class Node
     }
 
     /**
+     * @return string
+     */
+    public function getEventName(): string
+    {
+        return $this->eventName;
+    }
+
+    /**
+     * @param string $eventName
+     *
+     * @return Node
+     */
+    public function setEventName(string $eventName): self
+    {
+        $this->eventName = $eventName;
+
+        return $this;
+    }
+
+    /**
      * @return mixed[]
      */
     public function toArray(): array
     {
         return [
+            'application' => $this->getApplication(),
             'cron_params' => $this->getCronParams(),
             'cron_time'   => $this->getCron(),
             'enabled'     => $this->isEnabled(),
+            'event_name'  => $this->getEventName(),
             'handler'     => $this->getHandler(),
             'name'        => $this->getName(),
             'next'        => $this->getNext(),

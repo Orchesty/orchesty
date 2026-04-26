@@ -13,6 +13,15 @@ use Symfony\Component\Routing\Attribute\Route;
 /**
  * Class WebhookController
  *
+ * @deprecated Use {@see WebhookConfigController} instead. The legacy
+ *             /webhook/applications/{key}/subscribe and /unsubscribe endpoints
+ *             require callers to know the topology / node names up front and
+ *             do not persist user intent. The new flow uses
+ *             /topologies/by-name/{topologyName}/nodes/{nodeName}/webhook-config
+ *             and stores a {@see \Hanaboso\PipesFramework\Application\Document\WebhookConfig}
+ *             document so the UI can re-subscribe, cascade and detect orphaned
+ *             registrations.
+ *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */
 final class WebhookController extends AbstractController

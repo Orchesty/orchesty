@@ -18,6 +18,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\PipesFramework\Application\Manager\WebhookConfigManager;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
@@ -38,6 +39,9 @@ use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\String\Strings;
 use Hanaboso\Utils\Traits\UrlBuilderTrait;
 use JsonException;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use Throwable;
 
 /**
  * Class TopologyManager
@@ -74,6 +78,14 @@ class TopologyManager
     private NodeRepository $nodeRepository;
 
     /**
+     * Optional WebhookConfigManager (set via DI). Kept as a separate setter
+     * so older service wiring without webhook support keeps booting.
+     */
+    private ?WebhookConfigManager $webhookConfigManager = NULL;
+
+    private LoggerInterface $logger;
+
+    /**
      * TopologyManager constructor.
      *
      * @param DatabaseManagerLocator $dml
@@ -105,7 +117,34 @@ class TopologyManager
         $nodeRepo             = $this->dm->getRepository(Node::class);
         $this->nodeRepository = $nodeRepo;
 
-        $this->host = rtrim($startingPointHost, '/');
+        $this->host   = rtrim($startingPointHost, '/');
+        $this->logger = new NullLogger();
+    }
+
+    /**
+     * Inject the WebhookConfigManager so each schema save can keep
+     * {@see WebhookConfig} documents in sync with the topology graph.
+     *
+     * Wired via DI's `calls:` so the manager remains optional from a typing
+     * standpoint and old test fixtures that build TopologyManager directly do
+     * not need to know about it.
+     */
+    public function setWebhookConfigManager(WebhookConfigManager $manager): self
+    {
+        $this->webhookConfigManager = $manager;
+
+        return $this;
+    }
+
+    /**
+     * Optional logger so we can surface swallowed cascade failures (the schema
+     * save must not abort if a webhook upsert fails, but we still want to know).
+     */
+    public function setLogger(LoggerInterface $logger): self
+    {
+        $this->logger = $logger;
+
+        return $this;
     }
 
     /**
@@ -727,6 +766,7 @@ class TopologyManager
             if ($node->getType() === TypeEnum::CRON->value) {
                 $this->cronManager->delete($node);
             }
+            $this->cascadeWebhookConfigDelete($topology, $node);
         }
 
         $this->dm->flush();
@@ -794,6 +834,17 @@ class TopologyManager
         foreach ($nodes as $node) {
             $nodeIds[] = $node->getId();
         }
+
+        $orphanedWebhookNodes = $this->nodeRepository->createQueryBuilder()
+            ->field('topology')->equals($topology->getId())
+            ->field('_id')->notIn($nodeIds)
+            ->field('type')->equals(TypeEnum::WEBHOOK->value)
+            ->getQuery()->execute();
+
+        foreach ($orphanedWebhookNodes as $orphan) {
+            $this->cascadeWebhookConfigDelete($topology, $orphan);
+        }
+
         $this->nodeRepository->createQueryBuilder()->remove()
             ->field('topology')->equals($topology->getId())
             ->field('_id')->notIn($nodeIds)
@@ -861,7 +912,8 @@ class TopologyManager
                 Strings::endsWith($dto->getHandler(), 'vent') ? HandlerEnum::EVENT->value : HandlerEnum::ACTION->value,
             )
             ->setApplication($dto->getApplication())
-            ->setSdk($dto->getWorker());
+            ->setSdk($dto->getWorker())
+            ->setEventName($dto->getEventName());
 
         if ($dto->getCronTime() !== '') {
             $node
@@ -870,6 +922,42 @@ class TopologyManager
         }
 
         return $node;
+    }
+
+    /**
+     * Best-effort cascade delete of WebhookConfig (and live registration)
+     * when a webhook node is removed from the schema.
+     *
+     * Note: there is no symmetrical `cascadeWebhookConfigUpsert` — webhook
+     * configs are now created lazily on the *first subscribe* in the UI
+     * (`WebhookConfigManager::subscribeForNode`). Persisting an "intent"
+     * config at schema-save time turned out to be a leaky abstraction
+     * (orphan banners on unrelated saves, modal showing "Not configured" for
+     * nodes the user just dropped in, etc.) and added no functional value.
+     */
+    private function cascadeWebhookConfigDelete(Topology $topology, Node $node): void
+    {
+        if ($this->webhookConfigManager === NULL) {
+            return;
+        }
+
+        if ($node->getType() !== TypeEnum::WEBHOOK->value) {
+            return;
+        }
+
+        try {
+            $this->webhookConfigManager->deleteForNode($topology, $node);
+        } catch (Throwable $t) {
+            $this->logger->error(
+                sprintf(
+                    'Webhook config delete failed for topology=%s node=%s: %s',
+                    $topology->getName(),
+                    $node->getName(),
+                    $t->getMessage(),
+                ),
+                ['exception' => $t],
+            );
+        }
     }
 
     /**
