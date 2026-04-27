@@ -152,6 +152,11 @@ services:
             - '%orchesty_cloud_instance_id%'
             - '%orchesty_cloud_instance_secret%'
 
+    Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\CloudLimitsController:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\CloudLimitsController
+        arguments:
+            - '@hbpf.cloud.limits_handler'
+
     hbpf.auth0.jwks_cache:
         class: Hanaboso\PipesFrameworkEnterprise\ApiGateway\Authenticator\Auth0\JwksCacheService
         arguments:

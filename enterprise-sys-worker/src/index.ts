@@ -14,6 +14,7 @@ import AdminInviteEmailMapper from './CustomNode/AdminInviteEmailMapper';
 import AdminRestoreAccessEmailMapper from './CustomNode/AdminRestoreAccessEmailMapper';
 import CloudForgotPasswordEmailMapper from './CustomNode/CloudForgotPasswordEmailMapper';
 import CloudInviteEmailMapper from './CustomNode/CloudInviteEmailMapper';
+import CloudLimitThresholdEmailMapper from './CustomNode/CloudLimitThresholdEmailMapper';
 import CloudNotificationMapper from './CustomNode/CloudNotificationMapper';
 import CloudRestoreAccessEmailMapper from './CustomNode/CloudRestoreAccessEmailMapper';
 import ForgotPasswordEmailMapper from './CustomNode/ForgotPasswordEmailMapper';
@@ -80,6 +81,7 @@ export function prepare(): void {
     container.setNode(new TopologySlowEmailMapper());
     container.setNode(new LimitOverflowEmailMapper());
     container.setNode(new LimitRecoveredEmailMapper());
+    container.setNode(new CloudLimitThresholdEmailMapper());
 
     // ── Custom Nodes (cloud notifications) ──
     container.setNode(new CloudNotificationMapper());

@@ -45,6 +45,11 @@ final class HbPFEnterpriseConfiguratorExtension extends Extension implements Pre
         if (!$container->hasExtension('hb_pf_commons')) {
             throw new RuntimeException('You must register HbPFCommonsBundle before.');
         }
+
+        if ($container->hasExtension('rabbit_mq')) {
+            $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
+            $loader->load('rabbitmq.yaml');
+        }
     }
 
 }

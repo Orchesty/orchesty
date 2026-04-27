@@ -139,16 +139,75 @@ const isFailureStatus = (snap: ICheckpointSnapshot | null): boolean => {
   if (!snap?.resultStatus) return false
   return snap.resultStatus === 'failed' || snap.resultStatus === 'repeat' || snap.resultStatus === 'limit'
 }
+
+// Display Start/End from audit checkpoints when present, otherwise fall
+// back to the bridge progress timestamps so non-instrumented runs still
+// show a timeline (the common case today). `entry/exit.time` is a
+// nanosecond Loki string; `startedAt/finishedAt` is ISO 8601 from Mongo.
+const formatIsoTime = (iso: string | null | undefined): string => {
+  if (!iso) return '—'
+  const ms = Date.parse(iso)
+  if (!Number.isFinite(ms)) return iso
+  return new Date(ms).toLocaleString()
+}
+
+const runStart = computed(() => (
+  props.run.entry?.time ? formatTime(props.run.entry.time) : formatIsoTime(props.run.startedAt)
+))
+
+const runEnd = computed(() => (
+  props.run.exit?.time ? formatTime(props.run.exit.time) : formatIsoTime(props.run.finishedAt)
+))
+
+const hasCounters = computed(() => (
+  typeof props.run.total === 'number' && (props.run.total > 0 || (props.run.ok ?? 0) > 0 || (props.run.nok ?? 0) > 0)
+))
+
+interface ProgressBadge { label: string; classes: string }
+
+const PROGRESS_BADGES: Record<string, ProgressBadge> = {
+  success: { label: 'Success', classes: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300' },
+  failed:  { label: 'Failed',  classes: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' },
+  running: { label: 'Running', classes: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' },
+}
+
+const progressBadge = computed<ProgressBadge | null>(() => {
+  const status = props.run.progressStatus
+  if (!status) return null
+  return PROGRESS_BADGES[status] ?? null
+})
 </script>
 
 <template>
   <article class="rounded-lg border border-gray-200 bg-white p-3 shadow-xs dark:border-gray-700 dark:bg-gray-900">
     <header class="mb-2">
-      <div class="text-sm font-semibold text-gray-900 dark:text-white">
-        {{ run.topologyName || 'Unknown topology' }}
+      <div class="flex items-center justify-between gap-2">
+        <div class="text-sm font-semibold text-gray-900 dark:text-white">
+          {{ run.topologyName || 'Unknown topology' }}
+        </div>
+        <span
+          v-if="progressBadge"
+          :class="['rounded-full px-2 py-0.5 text-[11px] font-medium', progressBadge.classes]"
+        >
+          {{ progressBadge.label }}
+        </span>
       </div>
       <div class="truncate text-xs text-gray-500 dark:text-gray-400" :title="run.correlationId">
         {{ run.correlationId }}
+      </div>
+      <div
+        v-if="hasCounters"
+        class="mt-1 text-xs text-gray-500 dark:text-gray-400"
+      >
+        <span class="font-semibold">{{ run.ok ?? 0 }}</span> ok
+        <template v-if="(run.nok ?? 0) > 0">
+          · <span class="font-semibold text-red-600 dark:text-red-300">{{ run.nok }}</span> failed
+        </template>
+        · of {{ run.total }}
+      </div>
+      <div class="mt-1 grid grid-cols-2 gap-x-3 text-[11px] text-gray-500 dark:text-gray-400">
+        <div><span class="font-semibold">Start:</span> {{ runStart }}</div>
+        <div><span class="font-semibold">End:</span> {{ runEnd }}</div>
       </div>
     </header>
 

@@ -68,5 +68,13 @@ func BuildPresets() []model.Preset {
 				return e.EventType == "limit_recovered", nil
 			},
 		},
+		{
+			ID:          "cloud_limit_threshold",
+			Enabled:     true,
+			Description: "cloud plan resource crossed warning/critical/exceeded threshold",
+			Match: func(_ context.Context, e model.EventEnvelope, _ model.EvaluatorHelpers) (bool, error) {
+				return e.EventType == "cloud_limit_threshold", nil
+			},
+		},
 	}
 }

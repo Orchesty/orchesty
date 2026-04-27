@@ -29,6 +29,12 @@ interface UseTraceSocketOptions {
   maxBackoffMs?: number
   /** Disable automatic reconnect (useful in tests). */
   noReconnect?: boolean
+  /**
+   * How often the open socket re-sends a fresh access token via a `{type: "token"}`
+   * frame so the backend session never works with an expired Auth0 access token.
+   * Defaults to 5 minutes — well below the typical 1h Auth0 lifetime.
+   */
+  tokenRefreshIntervalMs?: number
 }
 
 export interface UseTraceSocketReturn {
@@ -59,6 +65,7 @@ export interface UseTraceSocketReturn {
 export function useTraceSocket(options: UseTraceSocketOptions = {}): UseTraceSocketReturn {
   const initialBackoff = options.initialBackoffMs ?? 1000
   const maxBackoff = options.maxBackoffMs ?? 30_000
+  const tokenRefreshIntervalMs = options.tokenRefreshIntervalMs ?? 5 * 60 * 1000
 
   const status = ref<TraceConnectionStatus>('idle')
   const lastError = shallowRef<TraceErrorData | null>(null)
@@ -70,6 +77,8 @@ export function useTraceSocket(options: UseTraceSocketOptions = {}): UseTraceSoc
   let userID = ''
   let backoffMs = initialBackoff
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null
+  let tokenRefreshTimer: ReturnType<typeof setInterval> | null = null
+  let inFlightRotation: Promise<boolean> | null = null
   let manualClose = false
   let pendingMessages: ClientMessage[] = []
   let authenticated = false
@@ -115,6 +124,43 @@ export function useTraceSocket(options: UseTraceSocketOptions = {}): UseTraceSoc
         pendingMessages.push(msg)
       }
     }
+  }
+
+  // Rotate the access token over the open socket: ask Auth0 for a fresh token
+  // (silent refresh from the SDK's local cache when still valid, otherwise a
+  // network round-trip), persist it, and emit a `{type:"token"}` frame so the
+  // Go backend swaps `sess.token` for downstream MCP / AI calls. Concurrent
+  // calls coalesce on a single in-flight promise so a periodic tick and a
+  // 401-error-frame reaction never duplicate the work.
+  const rotateToken = (): Promise<boolean> => {
+    if (inFlightRotation) return inFlightRotation
+
+    inFlightRotation = (async () => {
+      const fresh = (await refreshTokenSilently()) ?? readToken()
+      if (!fresh) return false
+      if (!socket || socket.readyState !== WebSocket.OPEN) return false
+      return sendRaw({ type: 'token', data: { token: fresh } })
+    })().finally(() => {
+      inFlightRotation = null
+    })
+
+    return inFlightRotation
+  }
+
+  const stopTokenRefreshTimer = () => {
+    if (tokenRefreshTimer) {
+      clearInterval(tokenRefreshTimer)
+      tokenRefreshTimer = null
+    }
+  }
+
+  const startTokenRefreshTimer = () => {
+    stopTokenRefreshTimer()
+    if (tokenRefreshIntervalMs <= 0) return
+    tokenRefreshTimer = setInterval(() => {
+      if (!socket || socket.readyState !== WebSocket.OPEN) return
+      void rotateToken()
+    }, tokenRefreshIntervalMs)
   }
 
   const scheduleReconnect = async (reason: 'unauth' | 'transport' | 'unknown') => {
@@ -176,6 +222,10 @@ export function useTraceSocket(options: UseTraceSocketOptions = {}): UseTraceSoc
       status.value = 'open'
       authenticated = true
       flushPending()
+      // Keep the backend's `sess.token` fresh for the lifetime of this socket
+      // so long-running chats don't start failing with 401s once the original
+      // Auth0 access token expires (~1h).
+      startTokenRefreshTimer()
     }
 
     socket.onmessage = (event) => {
@@ -193,6 +243,20 @@ export function useTraceSocket(options: UseTraceSocketOptions = {}): UseTraceSoc
         const data = parsed.data as TraceErrorData
         lastError.value = data
         errorListeners.forEach((cb) => cb(data))
+
+        // Reactive safety net: backend now relays upstream 401/403 over the
+        // open socket (instead of dropping the connection). Rotate the token
+        // in place so the next user message picks up a fresh `sess.token`. If
+        // we cannot obtain a new token, fall back to a full reconnect cycle
+        // — that still tries `refreshTokenSilently()` before reopening.
+        if (data.code === 401 || data.code === 403) {
+          void rotateToken().then((ok) => {
+            if (!ok) {
+              cleanupSocket()
+              void scheduleReconnect('unauth')
+            }
+          })
+        }
       }
     }
 
@@ -210,6 +274,7 @@ export function useTraceSocket(options: UseTraceSocketOptions = {}): UseTraceSoc
 
       authenticated = false
       socket = null
+      stopTokenRefreshTimer()
 
       if (manualClose) {
         status.value = 'closed'
@@ -221,6 +286,7 @@ export function useTraceSocket(options: UseTraceSocketOptions = {}): UseTraceSoc
   }
 
   const cleanupSocket = () => {
+    stopTokenRefreshTimer()
     if (!socket) return
     socket.onopen = null
     socket.onmessage = null

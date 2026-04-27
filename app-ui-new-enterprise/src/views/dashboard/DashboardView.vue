@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import TimeFilter from '@/components/ui/TimeFilter.vue'
 import OverviewTab from '@/components/dashboard/OverviewTab.vue'
@@ -7,6 +7,8 @@ import ConnectorsTab from '@/components/dashboard/ConnectorsTab.vue'
 import TopologiesTab from '@/components/dashboard/TopologiesTab.vue'
 import ProcessesTab from '@/components/dashboard/ProcessesTab.vue'
 import ApplicationsTab from '@/components/dashboard/ApplicationsTab.vue'
+import ResourcesTab from '@/components/dashboard/ResourcesTab.vue'
+import { useCloudMode } from '@/composables/useCloudMode'
 import ConnectorDetailDrawer from '@/components/dashboard/ConnectorDetailDrawer.vue'
 import ProcessesDrawer from '@/components/dashboard/ProcessesDrawer.vue'
 import ProcessAuditDrawer from '@/components/dashboard/ProcessAuditDrawer.vue'
@@ -18,14 +20,23 @@ import { formatDateTimeLocal } from '@/utils/timeRangeConverter'
 
 const router = useRouter()
 const { enterpriseDashboards } = useFeatures()
+const { cloudMode } = useCloudMode()
 
-const dashboardTabs = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'applications', label: 'Applications' },
-  { id: 'connectors', label: 'Connectors' },
-  { id: 'topologies', label: 'Topologies' },
-  { id: 'processes', label: 'Processes' },
-]
+const dashboardTabs = computed(() => {
+  const baseTabs = [
+    { id: 'overview', label: 'Overview' },
+    { id: 'applications', label: 'Applications' },
+    { id: 'connectors', label: 'Connectors' },
+    { id: 'topologies', label: 'Topologies' },
+    { id: 'processes', label: 'Processes' },
+  ]
+
+  if (cloudMode.value) {
+    baseTabs.push({ id: 'resources', label: 'Resources' })
+  }
+
+  return baseTabs
+})
 
 // Active tab state -- Vue-controlled, persisted in localStorage
 const TAB_KEY = 'orchesty_dashboard_active_tab'
@@ -292,6 +303,12 @@ const handleTopologyProcessesClick = (topologyId: string) => {
         v-else-if="activeTab === 'processes'"
         :time-filter="activeTimeFilter"
         :external-filters="processesFilters"
+        :refresh-key="refreshKey"
+      />
+
+      <ResourcesTab
+        v-else-if="activeTab === 'resources'"
+        :time-filter="activeTimeFilter"
         :refresh-key="refreshKey"
       />
 

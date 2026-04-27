@@ -71,6 +71,10 @@ func (svc aiService) SendChat(token, userID, system string, history []ChatTurn) 
 		return "", fmt.Errorf("platform-services request failed: %w", err)
 	}
 
+	if resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden {
+		return "", fmt.Errorf("platform-services returned status %d: %s: %w", resp.StatusCode, string(body), ErrUnauthorized)
+	}
+
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("platform-services returned status %d: %s", resp.StatusCode, string(body))
 	}

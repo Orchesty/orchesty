@@ -6,6 +6,7 @@ import type { SidebarItem } from '@orchesty/ui-core'
 import { Bell, Bot, Search, Server, Timer, ShieldX, X } from 'lucide-vue-next'
 import DropdownMenu, { type DropdownMenuSection } from '@/components/ui/DropdownMenu.vue'
 import ConnectorMetricDetailModal from '@/components/dashboard/ConnectorMetricDetailModal.vue'
+import CloudLimitBanner from '@/components/dashboard/CloudLimitBanner.vue'
 import FailedMessageModal from '@/components/topologies/FailedMessageModal.vue'
 import { useNotificationStream, type InAppNotification } from '@/composables/useNotificationStream'
 import { getNotifications } from '@/services/inAppNotificationService'
@@ -210,6 +211,7 @@ const cloudMenuSectionsOverride = computed<DropdownMenuSection[] | undefined>(()
         </DropdownMenu>
       </template>
     </AppNavbar>
+    <CloudLimitBanner v-if="cloudMode" />
     <div v-if="notificationBarVisible" class="relative flex h-8 shrink-0 items-center overflow-hidden border-b border-gray-200 bg-white px-4 text-sm dark:border-gray-700 dark:bg-gray-800">
       <div class="flex flex-1 items-center justify-center overflow-hidden">
         <Transition name="notif-fade" mode="out-in">

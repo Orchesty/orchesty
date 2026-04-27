@@ -99,6 +99,17 @@ class Topology
     protected Collection $applications;
 
     /**
+     * Set whenever a node setting is changed via API (e.g. prefetch) without
+     * the bridge being regenerated. Cleared on the next successful republish.
+     * Lets the UI show a "stale bridge" banner so users know their changes
+     * are persisted but not yet propagated to the running consumer.
+     *
+     * @var bool
+     */
+    #[ODM\Field(type: 'bool', options: ['default' => 0])]
+    protected bool $bridgeOutOfSync = FALSE;
+
+    /**
      * Topology constructor.
      */
     public function __construct()
@@ -340,6 +351,26 @@ class Topology
     public function getContentHash(): string
     {
         return $this->contentHash;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBridgeOutOfSync(): bool
+    {
+        return $this->bridgeOutOfSync;
+    }
+
+    /**
+     * @param bool $bridgeOutOfSync
+     *
+     * @return static
+     */
+    public function setBridgeOutOfSync(bool $bridgeOutOfSync): static
+    {
+        $this->bridgeOutOfSync = $bridgeOutOfSync;
+
+        return $this;
     }
 
     /**

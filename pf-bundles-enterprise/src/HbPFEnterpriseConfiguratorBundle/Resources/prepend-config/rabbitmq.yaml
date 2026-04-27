@@ -1,0 +1,6 @@
+rabbit_mq:
+    publishers:
+        cloud-events:
+            exchange: 'orchesty.events'
+            routing_key: ''
+            persistent: true

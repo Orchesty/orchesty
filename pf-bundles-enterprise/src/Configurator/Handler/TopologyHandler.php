@@ -8,6 +8,8 @@ use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
+use Hanaboso\PipesFramework\Configurator\Model\PublishGuard\NullPublishGuard;
+use Hanaboso\PipesFramework\Configurator\Model\PublishGuard\PublishGuardInterface;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyTester;
@@ -53,6 +55,7 @@ final class TopologyHandler extends BaseTopologyHandler
         UserTaskHandler $userTaskHandler,
         TopologyTester $topologyTester,
         string $topologyClass = Topology::class,
+        PublishGuardInterface $publishGuard = new NullPublishGuard(),
     )
     {
         parent::__construct(
@@ -63,6 +66,7 @@ final class TopologyHandler extends BaseTopologyHandler
             $userTaskHandler,
             $topologyTester,
             $topologyClass,
+            $publishGuard,
         );
 
         $repo                             = $this->dm->getRepository(TopologyProgress::class);
@@ -125,7 +129,9 @@ final class TopologyHandler extends BaseTopologyHandler
             'items'   => $items,
             'summary' => [
                 'reducible' => $reducible,
-                'total'     => count($topologies),
+                // Same source as the Overview card and the publish gate:
+                // 1 published topology row = 1 occupied slot.
+                'total'     => $this->topologyRepository->getPublishedCount(),
             ],
         ];
     }

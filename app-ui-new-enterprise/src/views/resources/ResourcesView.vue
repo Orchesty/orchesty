@@ -8,6 +8,7 @@ import Button from '@/components/ui/Button.vue'
 import MoreActions from '@/components/ui/MoreActions.vue'
 import type { MoreActionsSection } from '@/components/ui/MoreActions.vue'
 import { useToast } from '@/composables/useToast'
+import { useCloudLimitsUsage } from '@/composables/useCloudLimitsUsage'
 import { fetchRunningBridges, decommissionBridge, restartBridge } from '@/services/resourcesService'
 import { deleteTopology } from '@/services/topologiesService'
 import type { BridgeItem, BridgesSummary } from '@/services/resourcesService'
@@ -15,6 +16,17 @@ import type { TableColumn } from '@/types/dashboard'
 import { Server, AlertTriangle, ArrowDown, RefreshCw, Loader2 } from 'lucide-vue-next'
 
 const { showToast } = useToast()
+const { usage: limitsUsage } = useCloudLimitsUsage()
+
+const slotLimit = computed<number | null>(() => {
+  const limit = limitsUsage.value?.limits.topologySlots
+  return typeof limit === 'number' && limit > 0 ? limit : null
+})
+
+const slotUsageLabel = computed(() => {
+  const total = summary.value.total
+  return slotLimit.value !== null ? `Used ${total} / ${slotLimit.value}` : `Used ${total} (unlimited plan)`
+})
 
 const allBridges = ref<BridgeItem[]>([])
 const summary = ref<BridgesSummary>({ total: 0, reducible: 0 })
@@ -287,8 +299,9 @@ onMounted(() => {
             <Server class="h-5 w-5 text-primary-600 dark:text-primary-400" :stroke-width="1.8" />
           </div>
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Active Bridges</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Topology slots</p>
             <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ summary.total }}</p>
+            <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{{ slotUsageLabel }}</p>
           </div>
         </div>
       </Card>
@@ -313,7 +326,7 @@ onMounted(() => {
           </Button>
         </div>
         <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-          Older versions that can be safely decommissioned because a newer version of the same topology is running.
+          Older versions still holding a topology slot. A newer version of the same topology is published, so these can be safely decommissioned to free their slot.
         </p>
       </Card>
     </div>

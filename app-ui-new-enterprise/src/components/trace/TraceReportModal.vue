@@ -59,12 +59,12 @@ const handleExportPdf = () => {
     size="4xl"
   >
     <!-- Report Content. The stored HTML is the styled audit report
-         (auditReportRenderer output) — a printable artefact that must
-         read identically light/dark, so we wrap it in a fixed light
-         surface and opt out of prose styling. -->
+         (auditReportRenderer output) — its root element carries both
+         light and dark Tailwind variants, so we just opt out of prose
+         styling here and let the report render itself. -->
     <div
       v-if="report"
-      class="not-prose rounded-lg bg-white p-4 text-gray-900 dark:bg-white dark:text-gray-900"
+      class="not-prose rounded-lg overflow-hidden"
       v-html="report.content"
     ></div>
     

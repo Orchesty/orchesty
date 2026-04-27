@@ -56,6 +56,12 @@ export interface ICheckpointSnapshot {
   httpStatus: number | null
 }
 
+// Status derived from bridge progress counters (TopologyProgress.ok / nok /
+// finishedAt). Surfaced separately from the per-checkpoint resultStatus so
+// the FE can fall back to a meaningful pill when the topology emits no
+// audit checkpoints (the common case today).
+export type ProgressStatus = 'success' | 'failed' | 'running' | 'unknown'
+
 export interface IEntityRun {
   correlationId: string
   topologyId: string | null
@@ -63,6 +69,14 @@ export interface IEntityRun {
   entry: ICheckpointSnapshot | null
   steps: ICheckpointSnapshot[]
   exit: ICheckpointSnapshot | null
+  // Progress snapshot (same numbers the dashboard process detail shows).
+  // Optional/nullable so older backend payloads still render.
+  startedAt?: string | null
+  finishedAt?: string | null
+  ok?: number
+  nok?: number
+  total?: number
+  progressStatus?: ProgressStatus
 }
 
 export interface EntityHistoryResponse {

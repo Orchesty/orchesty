@@ -49,6 +49,10 @@ func (svc manifestService) FetchManifest(token string) ([]ManifestAction, error)
 		return nil, fmt.Errorf("backend unreachable: %w", err)
 	}
 
+	if response.StatusCode == http.StatusUnauthorized || response.StatusCode == http.StatusForbidden {
+		return nil, fmt.Errorf("manifest request failed with status %d: %w", response.StatusCode, ErrUnauthorized)
+	}
+
 	if response.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("manifest request failed with status %d", response.StatusCode)
 	}
@@ -74,6 +78,10 @@ func (svc manifestService) RunAction(token string, payload []byte) ([]byte, erro
 	response, body, err := svc.sender.SendRawWithBody(http.MethodPost, url, headers, payload)
 	if err != nil {
 		return nil, fmt.Errorf("mcp/run request failed: %w", err)
+	}
+
+	if response.StatusCode == http.StatusUnauthorized || response.StatusCode == http.StatusForbidden {
+		return nil, fmt.Errorf("mcp/run returned status %d: %s: %w", response.StatusCode, string(body), ErrUnauthorized)
 	}
 
 	if response.StatusCode != http.StatusOK {

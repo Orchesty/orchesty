@@ -67,8 +67,20 @@ const extraMoreActions = computed<MoreActionsSection[]>(() => {
     {
       items: [
         { type: 'button', label: 'Access', onClick: () => { accessDrawerOpen.value = true } },
-        { type: 'button', label: restarting.value ? 'Restarting...' : 'Restart topology', onClick: restarting.value ? () => {} : handleRestartBridge },
-        { type: 'button', label: 'Unpublish', onClick: () => { unpublishConfirmOpen.value = true } },
+        {
+          type: 'button',
+          label: restarting.value ? 'Restarting...' : 'Restart topology',
+          onClick: handleRestartBridge,
+          loading: restarting.value,
+          disabled: unpublishing.value,
+        },
+        {
+          type: 'button',
+          label: unpublishing.value ? 'Unpublishing...' : 'Unpublish',
+          onClick: () => { unpublishConfirmOpen.value = true },
+          loading: unpublishing.value,
+          disabled: restarting.value,
+        },
       ],
     },
   ]
@@ -94,6 +106,7 @@ const extraMoreActions = computed<MoreActionsSection[]>(() => {
         :confirm-text="unpublishing ? 'Unpublishing...' : 'Unpublish'"
         confirm-variant="danger"
         size="lg"
+        :loading="unpublishing"
         @confirm="handleConfirmUnpublish"
       >
         <AlertTriangle class="mx-auto mb-3 h-12 w-12 text-amber-500" :stroke-width="1.5" />

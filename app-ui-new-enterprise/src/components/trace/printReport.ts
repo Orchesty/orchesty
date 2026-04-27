@@ -39,11 +39,18 @@ const buildPrintableDoc = (inner: string, title: string): string => `<!DOCTYPE h
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${escapeHtml(title)}</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Force class-based dark mode and never apply the "dark" class so the
+    // printable artefact stays light — the rendered report carries dark:*
+    // variants for the in-app modal, which must not leak into print.
+    tailwind.config = { darkMode: 'class' };
+  </script>
   <style>
     @page { size: A4; margin: 16mm; }
     html, body {
       background: #ffffff;
       color: #111827;
+      color-scheme: light;
     }
     body {
       -webkit-print-color-adjust: exact;

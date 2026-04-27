@@ -151,11 +151,12 @@ func (service processorService) scheduleFlush(bKey, presetID, tKey string) {
 		service.logContext().Error(fmt.Errorf("dispatch error for preset=%s: %v", presetID, err))
 	}
 
-	if err := service.throttle.SetThrottle(context.Background(), tKey, config.Throttle.Window); err != nil {
+	window := throttleWindowFor(presetID)
+	if err := service.throttle.SetThrottle(context.Background(), tKey, window); err != nil {
 		service.logContext().Error(fmt.Errorf("failed to set throttle after flush: %v", err))
 	}
 
-	service.logContext().Debug("Throttle set for %ds key=%s", config.Throttle.Window, tKey)
+	service.logContext().Debug("Throttle set for %ds key=%s", window, tKey)
 }
 
 func (service processorService) evaluatePresets(ctx context.Context, e model.EventEnvelope) []model.NotificationMessage {
@@ -217,10 +218,23 @@ func (service processorService) processInApp(ctx context.Context, e model.EventE
 			service.logContext().Error(fmt.Errorf("in_app dispatch error: %v", err))
 		}
 
-		if err := service.throttle.SetThrottle(ctx, tKey, config.Throttle.InAppThrottleWindow); err != nil {
+		window := config.Throttle.InAppThrottleWindow
+		if n.PresetID == "cloud_limit_threshold" {
+			window = config.Throttle.CloudLimitWindow
+		}
+		if err := service.throttle.SetThrottle(ctx, tKey, window); err != nil {
 			service.logContext().Error(fmt.Errorf("in_app throttle set error: %v", err))
 		}
 	}
+}
+
+// throttleWindowFor returns a per-preset override window for cloud-limit
+// notifications (default 2h) and falls back to the global window otherwise.
+func throttleWindowFor(presetID string) int {
+	if presetID == "cloud_limit_threshold" {
+		return config.Throttle.CloudLimitWindow
+	}
+	return config.Throttle.Window
 }
 
 func inAppThrottleKey(presetID string, e model.EventEnvelope) string {
@@ -229,12 +243,13 @@ func inAppThrottleKey(presetID string, e model.EventEnvelope) string {
 		topoID = e.Topology.ID
 	}
 
-	return fmt.Sprintf("inapp:throttle:%s:%s:%s", e.TenantID, presetID, topoID)
+	return fmt.Sprintf("inapp:throttle:%s:%s:%s%s", e.TenantID, presetID, topoID, presetSuffix(presetID, e))
 }
 
 func throttleKey(presetID string, e model.EventEnvelope) string {
+	suffix := presetSuffix(presetID, e)
 	if config.Throttle.Mode == "global_per_preset" {
-		return fmt.Sprintf("throttle:%s:%s", e.TenantID, presetID)
+		return fmt.Sprintf("throttle:%s:%s%s", e.TenantID, presetID, suffix)
 	}
 
 	topoID := "no-topo"
@@ -242,7 +257,7 @@ func throttleKey(presetID string, e model.EventEnvelope) string {
 		topoID = e.Topology.ID
 	}
 
-	return fmt.Sprintf("throttle:%s:%s:%s", e.TenantID, presetID, topoID)
+	return fmt.Sprintf("throttle:%s:%s:%s%s", e.TenantID, presetID, topoID, suffix)
 }
 
 func bufferKey(presetID string, e model.EventEnvelope) string {
@@ -251,7 +266,24 @@ func bufferKey(presetID string, e model.EventEnvelope) string {
 		topoID = e.Topology.ID
 	}
 
-	return fmt.Sprintf("%s:%s:%s", e.TenantID, presetID, topoID)
+	return fmt.Sprintf("%s:%s:%s%s", e.TenantID, presetID, topoID, presetSuffix(presetID, e))
+}
+
+// presetSuffix scopes throttle/buffer keys for presets that need independent
+// throttling per context dimension (e.g. cloud_limit_threshold splits keys
+// per resource so a "messages" warning does not silence a later "storage"
+// warning during the same 2h window).
+func presetSuffix(presetID string, e model.EventEnvelope) string {
+	if presetID != "cloud_limit_threshold" || e.Context == nil {
+		return ""
+	}
+
+	resource, _ := e.Context["resource"].(string)
+	if resource == "" {
+		return ""
+	}
+
+	return ":" + resource
 }
 
 func (service processorService) logContext() log.Logger {

@@ -30,11 +30,13 @@ export const renderAuditReportHtml = (
     renderProcessFlow(history),
   ].filter((b) => b.length > 0)
 
-  // Force light surface even inside a dark UI — the report is a printable
-  // artefact and must read identically wherever it lands. `not-prose`
-  // opts out of any surrounding @tailwindcss/typography prose styling
-  // so our explicit Tailwind classes win in the chat bubble and modal.
-  return `<article class="trace-audit-report not-prose bg-white text-gray-900 text-sm dark:bg-white dark:text-gray-900">
+  // The report is a printable artefact: light surface in light mode, a
+  // gentle dark variant inside the SPA's dark theme, and forced-light when
+  // exported to PDF (printReport.ts disables the `dark` variant globally
+  // for the printable doc). `not-prose` opts out of any surrounding
+  // @tailwindcss/typography prose styling so our explicit Tailwind
+  // classes win in the chat bubble and modal.
+  return `<article class="trace-audit-report not-prose bg-white text-gray-900 text-sm dark:bg-gray-800 dark:text-gray-100">
     <div class="max-w-4xl mx-auto">
       ${blocks.join('\n')}
     </div>
@@ -49,25 +51,25 @@ const renderHeader = (history: EntityHistoryResponse, meta: ReportMeta): string 
   const generatedAt = escapeHtml(formatDateTime(meta.generatedAt))
   const reportId = escapeHtml(meta.reportId)
 
-  return `<header class="border-b border-gray-200 pb-4 mb-6">
+  return `<header class="border-b border-gray-200 pb-4 mb-6 dark:border-gray-700">
     <div class="flex justify-between items-start gap-6">
       <div>
         <h1 class="text-2xl font-semibold tracking-tight mb-2">Trace Audit Report</h1>
-        <p class="text-sm text-gray-700">
+        <p class="text-sm text-gray-700 dark:text-gray-300">
           <span class="font-semibold">Entity type:</span>
           <span>${entity}</span>
         </p>
-        ${queryAttr ? `<p class="text-sm text-gray-700">
+        ${queryAttr ? `<p class="text-sm text-gray-700 dark:text-gray-300">
           <span class="font-semibold">Query attribute:</span>
           <span>${queryAttr}</span>
         </p>` : ''}
       </div>
       <div class="text-right space-y-1">
-        <p class="text-xs text-gray-500">
+        <p class="text-xs text-gray-500 dark:text-gray-400">
           <span class="font-semibold">Generated at:</span>
           <span>${generatedAt}</span>
         </p>
-        <p class="text-xs text-gray-500">
+        <p class="text-xs text-gray-500 dark:text-gray-400">
           <span class="font-semibold">Report ID:</span>
           <span class="font-mono">${reportId}</span>
         </p>
@@ -99,7 +101,7 @@ const renderSummaryCards = (history: EntityHistoryResponse): string => {
 
 const summaryCard = (label: string, value: string): string => `
   <div>
-    <p class="text-xs uppercase tracking-wide text-gray-500 mb-1">${escapeHtml(label)}</p>
+    <p class="text-xs uppercase tracking-wide text-gray-500 mb-1 dark:text-gray-400">${escapeHtml(label)}</p>
     <p class="text-base font-semibold">${escapeHtml(value)}</p>
   </div>`
 
@@ -151,8 +153,8 @@ const renderIdentifiersTable = (history: EntityHistoryResponse): string => {
   const rows = entries
     .map(
       ([k, v]) => `<tr>
-        <td class="py-2 text-gray-700">${escapeHtml(k)}</td>
-        <td class="py-2 font-mono text-gray-900">${escapeHtml(String(v))}</td>
+        <td class="py-2 text-gray-700 dark:text-gray-300">${escapeHtml(k)}</td>
+        <td class="py-2 font-mono text-gray-900 dark:text-gray-100">${escapeHtml(String(v))}</td>
       </tr>`,
     )
     .join('')
@@ -161,13 +163,13 @@ const renderIdentifiersTable = (history: EntityHistoryResponse): string => {
     <h2 class="text-lg font-semibold mb-3">Entity identifiers</h2>
     <div>
       <table class="min-w-full text-sm">
-        <thead class="bg-gray-50">
+        <thead class="bg-gray-50 dark:bg-gray-700/40">
           <tr>
-            <th class="py-2 text-left font-semibold text-gray-700 w-1/3">Attribute</th>
-            <th class="py-2 text-left font-semibold text-gray-700">Value</th>
+            <th class="py-2 text-left font-semibold text-gray-700 w-1/3 dark:text-gray-300">Attribute</th>
+            <th class="py-2 text-left font-semibold text-gray-700 dark:text-gray-300">Value</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-100">${rows}</tbody>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-700">${rows}</tbody>
       </table>
     </div>
   </section>`
@@ -179,7 +181,7 @@ const renderProcessFlow = (history: EntityHistoryResponse): string => {
   if (history.runs.length === 0) {
     return `<section class="mb-2">
       <h2 class="text-lg font-semibold mb-3">Process flow overview</h2>
-      <p class="text-sm italic text-gray-500">No topology runs touched this entity.</p>
+      <p class="text-sm italic text-gray-500 dark:text-gray-400">No topology runs touched this entity.</p>
     </section>`
   }
 
@@ -195,26 +197,32 @@ const renderRunCard = (run: IEntityRun): string => {
   const status = deriveOverallStatus(run)
   const statusPill = renderOverallStatusPill(status)
 
-  const start = run.entry?.time
-  const end = run.exit?.time
+  // Prefer audit checkpoint timestamps when available (they pinpoint the
+  // entry/exit moment from the bridge), but fall back to TopologyProgress
+  // start/finish so non-instrumented runs still show a timeline.
+  const start = run.entry?.time ?? run.startedAt ?? null
+  const end = run.exit?.time ?? run.finishedAt ?? null
+
+  const counters = renderProgressCounters(run)
 
   return `<article class="overflow-hidden">
-    <header class="py-3 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3">
+    <header class="py-3 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3 dark:border-gray-700">
       <div>
-        <p class="text-xs uppercase tracking-wide text-gray-500">Topology</p>
+        <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Topology</p>
         <p class="text-sm font-semibold">${escapeHtml(run.topologyName ?? 'Unknown topology')}</p>
-        ${run.topologyId ? `<p class="text-xs text-gray-500">ID: <span class="font-mono">${escapeHtml(run.topologyId)}</span></p>` : ''}
-        <p class="text-xs text-gray-500">Run ID: <span class="font-mono">${escapeHtml(run.correlationId)}</span></p>
+        ${run.topologyId ? `<p class="text-xs text-gray-500 dark:text-gray-400">ID: <span class="font-mono">${escapeHtml(run.topologyId)}</span></p>` : ''}
+        <p class="text-xs text-gray-500 dark:text-gray-400">Run ID: <span class="font-mono">${escapeHtml(run.correlationId)}</span></p>
+        ${counters}
       </div>
       <div class="text-right">
-        <p class="text-xs text-gray-500 mb-1">
+        <p class="text-xs text-gray-500 mb-1 dark:text-gray-400">
           <span class="font-semibold">Status:</span>${statusPill}
         </p>
-        <p class="text-xs text-gray-500">
+        <p class="text-xs text-gray-500 dark:text-gray-400">
           <span class="font-semibold">Start:</span>
           <span>${escapeHtml(start ? formatTimeNs(start) : '—')}</span>
         </p>
-        <p class="text-xs text-gray-500">
+        <p class="text-xs text-gray-500 dark:text-gray-400">
           <span class="font-semibold">End:</span>
           <span>${escapeHtml(end ? formatTimeNs(end) : '—')}</span>
         </p>
@@ -235,10 +243,10 @@ const renderIoBlock = (
   snap: ICheckpointSnapshot | null,
   emptyText: string,
 ): string => {
-  const heading = `<p class="text-xs uppercase tracking-wide text-gray-500 mb-1">${escapeHtml(label)}</p>`
+  const heading = `<p class="text-xs uppercase tracking-wide text-gray-500 mb-1 dark:text-gray-400">${escapeHtml(label)}</p>`
 
   if (!snap) {
-    return `<div>${heading}<p class="text-xs italic text-gray-500">${escapeHtml(emptyText)}</p></div>`
+    return `<div>${heading}<p class="text-xs italic text-gray-500 dark:text-gray-400">${escapeHtml(emptyText)}</p></div>`
   }
 
   return `<div>${heading}${renderPayloadBlock(snap.payload)}</div>`
@@ -253,21 +261,21 @@ const renderPayloadBlock = (payload: unknown): string => {
       ? ` (originalSize: ${flags.originalSizeBytes} B)`
       : ''
     blocks.push(
-      `<div class="mb-1 rounded border border-amber-200 bg-amber-50 p-1.5 text-xs text-amber-800">
+      `<div class="mb-1 rounded border border-amber-200 bg-amber-50 p-1.5 text-xs text-amber-800 dark:border-amber-700/50 dark:bg-amber-900/30 dark:text-amber-200">
         Payload překročil limit 64 KB${sizeNote}; zužte allowlist v <code class="font-mono">IAuditCheckpoint.fields</code>.
       </div>`,
     )
   }
 
   if (payload === null || payload === undefined) {
-    blocks.push('<p class="text-xs italic text-gray-500">(marker — bez payloadu)</p>')
+    blocks.push('<p class="text-xs italic text-gray-500 dark:text-gray-400">(marker — bez payloadu)</p>')
     return blocks.join('')
   }
 
   const text = formatPayloadJson(payload)
   if (text) {
     blocks.push(
-      `<pre class="bg-gray-50 border border-gray-200 rounded-md p-3 text-xs leading-snug overflow-x-auto"><code class="font-mono">${escapeHtml(text)}</code></pre>`,
+      `<pre class="bg-gray-50 border border-gray-200 rounded-md p-3 text-xs leading-snug overflow-x-auto dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"><code class="font-mono">${escapeHtml(text)}</code></pre>`,
     )
   }
 
@@ -290,8 +298,8 @@ const renderStepsBlock = (steps: ICheckpointSnapshot[]): string => {
     .map(([name, list]) => {
       const items = list
         .map(
-          (step) => `<div class="border-t border-dashed border-gray-100 pt-1 first:border-t-0 first:pt-0">
-            <div class="flex items-center justify-between gap-2 text-xs text-gray-600">
+          (step) => `<div class="border-t border-dashed border-gray-100 pt-1 first:border-t-0 first:pt-0 dark:border-gray-700">
+            <div class="flex items-center justify-between gap-2 text-xs text-gray-600 dark:text-gray-300">
               <span><span class="font-semibold">Time:</span> ${escapeHtml(step.time ? formatTimeNs(step.time) : '—')}</span>
               ${renderStatusBadgeHtml(step)}
             </div>
@@ -301,15 +309,15 @@ const renderStepsBlock = (steps: ICheckpointSnapshot[]): string => {
         )
         .join('')
 
-      return `<div class="rounded border border-gray-100 p-1.5">
-        <div class="mb-1 truncate text-xs font-semibold text-gray-700">${escapeHtml(name)}</div>
+      return `<div class="rounded border border-gray-100 p-1.5 dark:border-gray-700">
+        <div class="mb-1 truncate text-xs font-semibold text-gray-700 dark:text-gray-200">${escapeHtml(name)}</div>
         <div class="space-y-2">${items}</div>
       </div>`
     })
     .join('')
 
-  return `<details class="rounded border border-gray-200">
-    <summary class="cursor-pointer select-none px-2 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-600">
+  return `<details class="rounded border border-gray-200 dark:border-gray-700">
+    <summary class="cursor-pointer select-none px-2 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300">
       Audit checkpoints (${steps.length})
     </summary>
     <div class="space-y-2 p-2">${groupBlocks}</div>
@@ -341,14 +349,47 @@ const deriveOverallStatus = (run: IEntityRun): OverallStatus => {
     if (s === 'trashed') return 'failed'
     if (s === 'success') return 'success'
   }
-  return 'unknown'
+
+  // Fallback to bridge progress counters: most topologies don't override
+  // getAuditCheckpoint() yet, so without this fallback every run would
+  // render UNKNOWN even when the bridge knows the run finished cleanly.
+  switch (run.progressStatus) {
+    case 'success': return 'success'
+    case 'failed':  return 'failed'
+    case 'running': return 'repeating'
+    default:        return 'unknown'
+  }
+}
+
+// Compact `success / failed / total` line below the run header. Renders
+// only when the backend supplied counters (older payloads omit them).
+const renderProgressCounters = (run: IEntityRun): string => {
+  if (run.total === undefined || run.total === null) {
+    return ''
+  }
+
+  const ok = run.ok ?? 0
+  const nok = run.nok ?? 0
+  const total = run.total
+
+  if (total === 0 && ok === 0 && nok === 0) {
+    return ''
+  }
+
+  const parts: string[] = [`<span class="font-semibold">${ok}</span> ok`]
+  if (nok > 0) {
+    parts.push(`<span class="font-semibold text-red-600 dark:text-red-300">${nok}</span> failed`)
+  }
+  parts.push(`of ${total}`)
+
+  return `<p class="text-xs text-gray-500 dark:text-gray-400">${parts.join(' · ')}</p>`
 }
 
 const OVERALL_PILL: Record<OverallStatus, { label: string; classes: string }> = {
-  success:   { label: 'SUCCESS',   classes: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  failed:    { label: 'FAILED',    classes: 'bg-red-50 text-red-700 border-red-200' },
-  repeating: { label: 'REPEATING', classes: 'bg-amber-50 text-amber-700 border-amber-200' },
-  unknown:   { label: 'UNKNOWN',   classes: 'bg-gray-50 text-gray-700 border-gray-200' },
+  success:   { label: 'SUCCESS',   classes: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-200 dark:border-emerald-700/50' },
+  failed:    { label: 'FAILED',    classes: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-200 dark:border-red-700/50' },
+  repeating: { label: 'REPEATING', classes: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-200 dark:border-amber-700/50' },
+  unknown:   { label: 'UNKNOWN',   classes: 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-700/40 dark:text-gray-200 dark:border-gray-600' },
 }
 
 const renderOverallStatusPill = (status: OverallStatus): string => {
@@ -359,12 +400,12 @@ const renderOverallStatusPill = (status: OverallStatus): string => {
 interface InlineBadgeStyle { label: string; classes: string }
 
 const INLINE_BADGE: Record<string, InlineBadgeStyle> = {
-  success: { label: 'Delivered', classes: 'bg-emerald-100 text-emerald-800' },
-  failed:  { label: 'Failed',    classes: 'bg-red-100 text-red-800' },
-  repeat:  { label: 'Repeating', classes: 'bg-amber-100 text-amber-800' },
-  trashed: { label: 'Trashed',   classes: 'bg-gray-200 text-gray-800' },
-  limit:   { label: 'Limit',     classes: 'bg-orange-100 text-orange-800' },
-  unknown: { label: 'Unknown',   classes: 'bg-gray-100 text-gray-700' },
+  success: { label: 'Delivered', classes: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200' },
+  failed:  { label: 'Failed',    classes: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200' },
+  repeat:  { label: 'Repeating', classes: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200' },
+  trashed: { label: 'Trashed',   classes: 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200' },
+  limit:   { label: 'Limit',     classes: 'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200' },
+  unknown: { label: 'Unknown',   classes: 'bg-gray-100 text-gray-700 dark:bg-gray-700/60 dark:text-gray-200' },
 }
 
 const renderStatusBadgeHtml = (snap: ICheckpointSnapshot | null): string => {
@@ -384,7 +425,7 @@ const isFailureStatus = (status: string | null | undefined): boolean =>
 
 const renderResultMessageHtml = (snap: ICheckpointSnapshot | null): string => {
   if (!snap || !isFailureStatus(snap.resultStatus) || !snap.resultMessage) return ''
-  return `<div class="mt-1 rounded border border-red-200 bg-red-50 p-1.5 text-xs text-red-800">
+  return `<div class="mt-1 rounded border border-red-200 bg-red-50 p-1.5 text-xs text-red-800 dark:border-red-700/50 dark:bg-red-900/30 dark:text-red-200">
     <span class="font-semibold">Result:</span> ${escapeHtml(snap.resultMessage)}
   </div>`
 }

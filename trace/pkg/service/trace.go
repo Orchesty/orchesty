@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -228,7 +229,7 @@ func (svc traceService) handleRequest(sess *session, data json.RawMessage) {
 
 	actions, err := svc.manifestService.FetchManifest(token)
 	if err != nil {
-		svc.sendError(sess, 502, fmt.Sprintf("failed to fetch manifest: %s", err.Error()))
+		svc.sendError(sess, upstreamErrorCode(err), fmt.Sprintf("failed to fetch manifest: %s", err.Error()))
 
 		return
 	}
@@ -238,7 +239,7 @@ func (svc traceService) handleRequest(sess *session, data json.RawMessage) {
 
 	aiResponse, err := svc.aiService.SendChat(token, userID, system, history)
 	if err != nil {
-		svc.sendError(sess, 502, fmt.Sprintf("AI request failed: %s", err.Error()))
+		svc.sendError(sess, upstreamErrorCode(err), fmt.Sprintf("AI request failed: %s", err.Error()))
 
 		return
 	}
@@ -249,6 +250,8 @@ func (svc traceService) handleRequest(sess *session, data json.RawMessage) {
 	envelope := parseEnvelope(aiResponse)
 
 	switch {
+	case envelope.Tool != "":
+		svc.dispatchTool(sess, token, userID, envelope, aiResponse)
 	case envelope.Audit != "":
 		svc.dispatchAudit(sess, token, envelope, aiResponse)
 	case envelope.Reply != "":
@@ -260,6 +263,58 @@ func (svc traceService) handleRequest(sess *session, data json.RawMessage) {
 	}
 }
 
+// dispatchTool forwards a `{tool, args}` envelope to /mcp/run and turns the
+// compact JSON result into user-facing text.
+//
+// Two-tier strategy:
+//  1. Known structured kinds (`list`, `timeseries`) are rendered
+//     deterministically in Go. This keeps every field the aggregator returns
+//     (nodeName + topologyName, totals, peak bucket) and avoids spending an
+//     LLM call when the shape is already structured.
+//  2. Unknown / future kinds fall back to a second LLM pass with the
+//     summariser system prompt so we do not silently drop new tool results
+//     while the renderer catches up.
+//
+// Only the final short text lands in conversation history — the bulky JSON
+// stays out of the model's context window either way.
+func (svc traceService) dispatchTool(sess *session, token, userID string, envelope chatEnvelope, raw string) {
+	mcpResult, err := svc.manifestService.RunAction(token, []byte(raw))
+	if err != nil {
+		svc.sendError(sess, upstreamErrorCode(err), fmt.Sprintf("MCP run failed: %s", err.Error()))
+
+		return
+	}
+
+	if rendered, ok := renderToolResult(mcpResult); ok {
+		rendered = strings.TrimSpace(rendered)
+		if rendered == "" {
+			rendered = fmt.Sprintf("Action %q returned no readable result.", envelope.Tool)
+		}
+
+		svc.appendTurn(sess, ChatTurn{Role: "assistant", Content: rendered})
+		svc.sendMessage(sess, TypeResponse, ResponseData{Content: rendered})
+
+		return
+	}
+
+	summariser := BuildSummariserPrompt(envelope.Tool)
+	turn := ChatTurn{Role: "user", Content: string(mcpResult)}
+	summary, err := svc.aiService.SendChat(token, userID, summariser, []ChatTurn{turn})
+	if err != nil {
+		svc.sendError(sess, upstreamErrorCode(err), fmt.Sprintf("AI summary failed: %s", err.Error()))
+
+		return
+	}
+
+	summary = strings.TrimSpace(summary)
+	if summary == "" {
+		summary = fmt.Sprintf("Action %q returned no readable summary.", envelope.Tool)
+	}
+
+	svc.appendTurn(sess, ChatTurn{Role: "assistant", Content: summary})
+	svc.sendMessage(sess, TypeResponse, ResponseData{Content: summary})
+}
+
 // dispatchAudit forwards a recognised action envelope to /mcp/run, formats the
 // result for the user and records a compact assistant turn in the history so
 // the model can refer back to "the last search" in subsequent turns without
@@ -267,7 +322,7 @@ func (svc traceService) handleRequest(sess *session, data json.RawMessage) {
 func (svc traceService) dispatchAudit(sess *session, token string, envelope chatEnvelope, raw string) {
 	mcpResult, err := svc.manifestService.RunAction(token, []byte(raw))
 	if err != nil {
-		svc.sendError(sess, 502, fmt.Sprintf("MCP run failed: %s", err.Error()))
+		svc.sendError(sess, upstreamErrorCode(err), fmt.Sprintf("MCP run failed: %s", err.Error()))
 
 		return
 	}
@@ -283,6 +338,19 @@ func (svc traceService) dispatchAudit(sess *session, token string, envelope chat
 	svc.appendTurn(sess, ChatTurn{Role: "assistant", Content: summary})
 
 	svc.sendMessage(sess, TypeResponse, ResponseData{Content: content})
+}
+
+// upstreamErrorCode classifies an error from the manifest / AI HTTP clients
+// and returns the WebSocket error code we want the FE to see. Auth failures
+// surface as 401 so the browser-side socket can rotate the access token in
+// place; everything else stays 502 (Bad Gateway) which the FE renders as a
+// generic transport error.
+func upstreamErrorCode(err error) int {
+	if errors.Is(err, ErrUnauthorized) {
+		return http.StatusUnauthorized
+	}
+
+	return http.StatusBadGateway
 }
 
 // appendTurn pushes a turn onto the session history under the write lock and
@@ -309,10 +377,20 @@ func (svc traceService) snapshotHistory(sess *session) []ChatTurn {
 	return snapshot
 }
 
-// chatEnvelope is the dual-shape JSON the model is instructed to emit.
+// chatEnvelope is the multi-shape JSON the model is instructed to emit.
+//
+//   - {audit, data, [day|from|to|period]} — entity history flow, FE renders
+//     a structured run report.
+//   - {tool, args}                        — generic MCP tool flow, the
+//     compact JSON result is summarised by a second LLM pass into prose.
+//   - {reply}                             — small-talk / clarification text.
+//
+// Unset fields stay zero-valued and are ignored by the dispatcher.
 type chatEnvelope struct {
 	Audit string                 `json:"audit"`
 	Data  map[string]interface{} `json:"data"`
+	Tool  string                 `json:"tool"`
+	Args  map[string]interface{} `json:"args"`
 	Reply string                 `json:"reply"`
 }
 

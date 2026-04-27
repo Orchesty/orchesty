@@ -351,6 +351,23 @@ export async function publishTopology(topologyId: string): Promise<void> {
   await api.post(`/api/topologies/${topologyId}/publish`)
 }
 
+/**
+ * Regenerates and restarts the bridge for an already-published topology.
+ * Use after API-driven config changes (e.g. prefetch settings) so the running
+ * consumer picks up the new values. Backend clears the
+ * `topology.bridgeOutOfSync` flag on success.
+ */
+export async function republishTopology(topologyId: string): Promise<void> {
+  await api.post(`/api/topologies/${topologyId}/republish`)
+}
+
+/**
+ * Stops the bridge and flips the topology back to draft.
+ */
+export async function unpublishTopology(topologyId: string): Promise<void> {
+  await api.post(`/api/topologies/${topologyId}/unpublish`)
+}
+
 export async function toggleTopologyEnabled(topologyId: string, enabled: boolean): Promise<void> {
   await api.patch(`/api/topologies/${topologyId}`, { enabled })
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { ReteEditorKit } from 'rete-editor'
 import type { EditorCore, LabelCustomizationMap } from 'rete-editor'
 import CronSettingsModal from '@/components/scheduled-tasks/CronSettingsModal.vue'
@@ -7,6 +7,7 @@ import RunProcessModal from '@/components/topologies/RunProcessModal.vue'
 import BreakpointModal from '@/components/topologies/BreakpointModal.vue'
 import FailedMessageModal from '@/components/topologies/FailedMessageModal.vue'
 import WebhookSubscribeModal from '@/components/topologies/WebhookSubscribeModal.vue'
+import PrefetchSettingsModal from '@/components/topologies/PrefetchSettingsModal.vue'
 import {
   listWebhookConfigs,
   subscribeWebhookConfig,
@@ -24,7 +25,12 @@ import { getNextCronRun } from '@/utils/cronParser'
 import { useToast } from '@/composables/useToast'
 import { useDateFormat } from '@/composables/useDateFormat'
 import { useProcessPolling } from '@/composables/useProcessPolling'
-import { fetchTopologySchema, saveTopologySchema } from '@/services/topologiesService'
+import {
+  fetchTopologySchema,
+  saveTopologySchema,
+  fetchTopologyDetail,
+  republishTopology,
+} from '@/services/topologiesService'
 import {
   approveAllBreakpoints,
   rejectAllBreakpoints,
@@ -75,11 +81,13 @@ interface BackendNode {
   cron_params: string | null
   application?: string | null
   sdk?: string | null
+  prefetch?: number
 }
 
 const editorCore = ref<EditorCore>()
 const cronSettingsModalOpen = ref(false)
 const webhookSubscribeModalOpen = ref(false)
+const prefetchSettingsModalOpen = ref(false)
 const runProcessModalOpen = ref(false)
 const breakpointModalOpen = ref(false)
 const failedMessageModalOpen = ref(false)
@@ -94,6 +102,25 @@ let cachedSchema: any = null
 const nodesData = ref<Record<string, CronNode>>({})
 const schemaToBackendId = ref<Record<string, string>>({})
 const nodeApplications = ref<Record<string, { application: string; sdk: string }>>({})
+// Backend prefetch keyed by editor node id. Surfaced in the label and
+// settings modal for Connector / Batch / Custom Action types — see
+// `getNodePrefetch` callers below.
+const nodePrefetch = ref<Record<string, number>>({})
+
+// Topology-level "stale bridge" flag. Set when API edits (prefetch, ...)
+// persisted to Mongo haven't yet been propagated to the running consumer.
+// Cleared by republishing the topology.
+const bridgeOutOfSync = ref(false)
+const republishing = ref(false)
+
+const refreshTopologyMeta = async () => {
+  try {
+    const detail = await fetchTopologyDetail(props.topologyId)
+    bridgeOutOfSync.value = (detail as unknown as { bridgeOutOfSync?: boolean }).bridgeOutOfSync === true
+  } catch (error) {
+    console.error('Failed to load topology detail:', error)
+  }
+}
 
 const webhookConfigs = ref<WebhookConfigItem[]>([])
 const webhookConfigsByNodeName = computed<Record<string, WebhookConfigItem>>(() => {
@@ -163,7 +190,6 @@ const isProcessTimeRelevant = (editorId: string): boolean => {
 
 const buildMetricsLabelHtml = (node: EditorNode, isCustomAction: boolean): string | null => {
   const m = nodeMetrics.value[node.id]
-  if (!m) return null
 
   const boxStyle = 'text-align:center;padding:3px 10px;'
   const labelStyle = 'font-size:.8rem;opacity:.6;line-height:1.6;'
@@ -184,18 +210,34 @@ const buildMetricsLabelHtml = (node: EditorNode, isCustomAction: boolean): strin
         { key: 'repeaterCount', label: 'Repeater', isTime: false },
       ]
 
-  const boxes = allMetrics
-    .filter((def) => m[def.key] != null)
-    .map((def) => {
-      const raw = m[def.key]!
-      const display = def.isTime ? formatDurationMs(raw) : String(raw)
-      return `<div style="${boxStyle}"><div style="${labelStyle}">${def.label}</div><div style="${valueStyle}">${display}</div></div>`
-    })
-
-  if (boxes.length === 0) return null
+  const boxes = m
+    ? allMetrics
+        .filter((def) => m[def.key] != null)
+        .map((def) => {
+          const raw = m[def.key]!
+          const display = def.isTime ? formatDurationMs(raw) : String(raw)
+          return `<div style="${boxStyle}"><div style="${labelStyle}">${def.label}</div><div style="${valueStyle}">${display}</div></div>`
+        })
+    : []
 
   const defaultLabel = (node as any).getLabel?.() ?? ''
-  return `${defaultLabel}<div style="display:flex;justify-content:center;gap:6px;margin-top:6px;">${boxes.join('')}</div>`
+  const prefetch = nodePrefetch.value[node.id] ?? 1
+  // Inline Prefetch attribute + Settings action so the whole header (Connector,
+  // Worker, Prefetch, Settings) lives on a single row above the metric boxes.
+  // The Settings anchor uses `data-prefetch-settings="<nodeId>"` and is wired up
+  // via document-level click delegation in this component, because innerHTML
+  // can't carry Vue listeners.
+  const sep = '<span style="opacity:.4;margin:0 4px;">|</span>'
+  const prefetchHtml =
+    `${sep}<span style="opacity:.6;">Prefetch:</span> ${prefetch} ` +
+    `<a data-prefetch-settings="${node.id}" ` +
+    `class="ml-2 cursor-pointer underline text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 transition-colors">Settings</a>`
+
+  const header = `${defaultLabel}${prefetchHtml}`
+
+  if (boxes.length === 0) return header
+
+  return `${header}<div style="display:flex;justify-content:center;gap:6px;margin-top:6px;">${boxes.join('')}</div>`
 }
 
 const runAction = {
@@ -533,12 +575,122 @@ const webhookNodeActions = {
   getTopLeftSlot: getOverlayTopLeft,
 }
 
+const selectedPrefetchNodeId = ref<string>('')
+const selectedPrefetchNodeName = ref<string>('')
+const selectedPrefetchValue = ref<number>(1)
+
+const openPrefetchSettings = (node: EditorNode) => {
+  const backendId = resolveBackendId(node.id)
+  selectedPrefetchNodeId.value = backendId
+  selectedPrefetchNodeName.value = node.name || node.label
+  selectedPrefetchValue.value = nodePrefetch.value[node.id] ?? 1
+  prefetchSettingsModalOpen.value = true
+}
+
+// The prefetch "Settings" anchor is rendered via innerHTML inside the rete
+// editor label panel, so Vue listeners can't be attached directly. Use
+// document-level click delegation: when the click target matches
+// `[data-prefetch-settings]`, look up the node by id and open the modal.
+const handlePrefetchSettingsClick = (event: MouseEvent) => {
+  const target = event.target as HTMLElement | null
+  if (!target) return
+  const link = target.closest('[data-prefetch-settings]') as HTMLElement | null
+  if (!link) return
+  event.preventDefault()
+  event.stopPropagation()
+  const nodeId = link.getAttribute('data-prefetch-settings')
+  if (!nodeId) return
+  // Prefer the currently selected node (matches the rendered label) but fall
+  // back to looking it up from the editor core for safety.
+  if (selectedNode.value?.id === nodeId) {
+    openPrefetchSettings(selectedNode.value)
+    return
+  }
+  const editorNode = editorCore.value?.getNode?.(nodeId) as EditorNode | undefined
+  if (editorNode) openPrefetchSettings(editorNode)
+}
+
+onMounted(() => {
+  document.addEventListener('click', handlePrefetchSettingsClick)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handlePrefetchSettingsClick)
+})
+
+const handlePrefetchSaved = async (republished: boolean) => {
+  // Pull fresh node + topology state so the label and banner reflect what
+  // the backend actually has. We do this even if the republish failed
+  // (republished === false) so the banner becomes visible to nudge the
+  // user.
+  try {
+    const backendNodes = await fetchBackendNodes()
+    if (editorCore.value) {
+      initNodesData(editorCore.value, backendNodes)
+    }
+    await refreshTopologyMeta()
+    if (republished) {
+      bridgeOutOfSync.value = false
+    }
+    if (editorCore.value) {
+      for (const id of Object.keys(nodesData.value)) {
+        editorCore.value.refreshNodeLabel(id)
+      }
+      // Connector/Batch/Custom Action labels aren't tracked in nodesData,
+      // so refresh every node id we have prefetch for as well.
+      for (const id of Object.keys(nodePrefetch.value)) {
+        editorCore.value.refreshNodeLabel(id)
+      }
+    }
+  } catch (error) {
+    console.error('Failed to refresh after prefetch save:', error)
+  }
+}
+
+const handleRepublishNow = async () => {
+  if (republishing.value) return
+  republishing.value = true
+  try {
+    await republishTopology(props.topologyId)
+    showToast('Bridge republished', 'success')
+    bridgeOutOfSync.value = false
+    await refreshTopologyMeta()
+  } catch (error) {
+    console.error('Republish failed:', error)
+    showToast(`Republish failed: ${(error as Error).message}`, 'error')
+  } finally {
+    republishing.value = false
+  }
+}
+
+// Worker-consuming node types where setting prefetch makes sense. Mirrors
+// the allow-list in the backend NodeManager::applyPrefetch.
+const PREFETCH_ICON = '<path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>'
+
+const buildPrefetchAction = (node: EditorNode) => ({
+  id: 'prefetch-settings',
+  icon: PREFETCH_ICON,
+  label: 'Settings',
+  tooltip: 'Prefetch settings',
+  onClick: () => openPrefetchSettings(node),
+})
+
+const workerNodeCustomization = (isCustomAction: boolean) => ({
+  ...overlayMethods,
+  // Prefetch attribute + Settings link are baked into the customLabel HTML so
+  // they sit on the first row alongside the Connector / Worker attributes.
+  // We still expose the action via getActions for the right-click context
+  // menu (with hideInLabel: true so it doesn't render as a separate label row).
+  getCustomLabel: (node: EditorNode) => buildMetricsLabelHtml(node, isCustomAction),
+  getActions: (node: EditorNode) => [{ ...buildPrefetchAction(node), hideInLabel: true }],
+})
+
 const labelCustomization: LabelCustomizationMap = {
   Event: eventNodeActions,
   Webhook: webhookNodeActions,
-  Connector: { ...overlayMethods, getCustomLabel: (node: EditorNode) => buildMetricsLabelHtml(node, false) },
-  'Custom Action': { ...overlayMethods, getCustomLabel: (node: EditorNode) => buildMetricsLabelHtml(node, true) },
-  Batch: { ...overlayMethods, getCustomLabel: (node: EditorNode) => buildMetricsLabelHtml(node, false) },
+  Connector: workerNodeCustomization(false),
+  'Custom Action': workerNodeCustomization(true),
+  Batch: workerNodeCustomization(false),
   Breakpoint: {
     getTopLeftSlot: getBreakpointOverlay,
     getActions: getBreakpointActions,
@@ -601,6 +753,7 @@ const fetchBackendNodes = async (): Promise<BackendNode[]> => {
 const initNodesData = (editor: EditorCore, backendNodes: BackendNode[]) => {
   nodesData.value = {}
   schemaToBackendId.value = {}
+  nodePrefetch.value = {}
 
   const backendBySchemaId = new Map<string, BackendNode>()
   const backendByName = new Map<string, BackendNode>()
@@ -626,6 +779,9 @@ const initNodesData = (editor: EditorCore, backendNodes: BackendNode[]) => {
           application: backend.application ?? '',
           sdk: backend.sdk ?? '',
         }
+      }
+      if (typeof backend.prefetch === 'number' && backend.prefetch >= 1) {
+        nodePrefetch.value[editorNode.id] = backend.prefetch
       }
     }
 
@@ -692,7 +848,7 @@ const onEditorReady = async (editor: EditorCore) => {
     cachedSchema = structuredClone(schema)
     await editor.setActions(actions)
     initNodesData(editor, backendNodes)
-    await refreshWebhookConfigs()
+    await Promise.all([refreshWebhookConfigs(), refreshTopologyMeta()])
 
     await applyEventDisabledState()
 
@@ -780,6 +936,7 @@ const reloadSchema = async () => {
     cachedSchema = structuredClone(schema)
     await editorCore.value.setActions(actions)
     initNodesData(editorCore.value, backendNodes)
+    await refreshTopologyMeta()
     editorCore.value.zoomToFit()
   } catch (error) {
     console.error('Failed to reload topology schema:', error)
@@ -1038,8 +1195,39 @@ watch(() => props.refreshKey, () => {
       enter-to-class="opacity-100 translate-y-0"
     >
       <div
-        v-if="orphanWebhookConfigs.length > 0"
+        v-if="bridgeOutOfSync"
         class="absolute top-3 right-3 z-50 max-w-md rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-3 text-sm shadow-lg dark:border-yellow-600 dark:bg-yellow-900/40 dark:text-yellow-100"
+      >
+        <div class="flex items-start gap-3">
+          <div class="flex-1 space-y-1.5">
+            <div class="font-semibold text-yellow-800 dark:text-yellow-200">
+              Bridge is out of sync
+            </div>
+            <p class="text-xs text-yellow-700 dark:text-yellow-300">
+              Configuration changes (e.g. prefetch) are saved but the running consumer
+              still uses the old values. Republish the topology to apply them.
+            </p>
+            <button
+              class="text-xs font-semibold text-yellow-800 underline hover:text-yellow-900 dark:text-yellow-200 dark:hover:text-yellow-100"
+              :disabled="republishing"
+              @click="handleRepublishNow"
+            >
+              {{ republishing ? 'Republishing…' : 'Republish now' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
+    <Transition
+      enter-active-class="transition ease-out duration-200"
+      enter-from-class="opacity-0 -translate-y-1"
+      enter-to-class="opacity-100 translate-y-0"
+    >
+      <div
+        v-if="orphanWebhookConfigs.length > 0"
+        class="absolute right-3 z-50 max-w-md rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-3 text-sm shadow-lg dark:border-yellow-600 dark:bg-yellow-900/40 dark:text-yellow-100"
+        :class="bridgeOutOfSync ? 'top-32' : 'top-3'"
       >
         <div class="flex items-start gap-3">
           <div class="flex-1 space-y-1.5">
@@ -1085,6 +1273,15 @@ watch(() => props.refreshKey, () => {
       :application="selectedWebhookApplication"
       :initial-parameters="selectedWebhookInitialParameters"
       @subscribed="handleWebhookSubscribed"
+    />
+
+    <PrefetchSettingsModal
+      v-model="prefetchSettingsModalOpen"
+      :node-id="selectedPrefetchNodeId"
+      :node-name="selectedPrefetchNodeName"
+      :topology-id="topologyId"
+      :current-prefetch="selectedPrefetchValue"
+      @saved="handlePrefetchSaved"
     />
 
     <RunProcessModal

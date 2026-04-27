@@ -35,6 +35,8 @@ const webhookWarningOpen = ref(false)
 const webhookWarningMissing = ref<WebhookConfigItem[]>([])
 let pendingSavePayload: ReturnType<EditorCore['exportGraph']> | null = null
 
+const saving = ref(false)
+
 const collectWebhookNodeNames = (): Set<string> => {
   if (!editorCore.value) return new Set()
   const names = new Set<string>()
@@ -138,6 +140,7 @@ watch(
 )
 
 const persistSchema = async (workflow: ReturnType<EditorCore['exportGraph']>) => {
+  saving.value = true
   try {
     const result = await saveTopologySchema(props.topologyId, workflow)
     showToast('Topology saved successfully', 'success', 3000)
@@ -145,6 +148,8 @@ const persistSchema = async (workflow: ReturnType<EditorCore['exportGraph']>) =>
   } catch (error) {
     console.error('Failed to save topology:', error)
     showToast('Failed to save topology', 'error', 3000)
+  } finally {
+    saving.value = false
   }
 }
 
@@ -278,11 +283,11 @@ watch(
       </h5>
       
       <div class="flex items-center gap-2">
-        <Button variant="outline" @click="handleClose">
+        <Button variant="outline" :disabled="saving" @click="handleClose">
           Close
         </Button>
-        <Button @click="handleSave">
-          Save
+        <Button :loading="saving" @click="handleSave">
+          {{ saving ? 'Saving...' : 'Save' }}
         </Button>
       </div>
     </nav>
