@@ -249,6 +249,34 @@ final class TopologyController extends AbstractController
      *
      * @return Response
      */
+    #[Route('/topologies/{id}/republish', requirements: ['id' => '\w+'], methods: ['POST'])]
+    public function republishTopologyAction(string $id): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::republishTopologyAction',
+            ['id' => $id],
+        );
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route('/topologies/{id}/unpublish', requirements: ['id' => '\w+'], methods: ['POST'])]
+    public function unpublishTopologyAction(string $id): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::unpublishTopologyAction',
+            ['id' => $id],
+        );
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
     #[Route('/topologies/{id}/clone', requirements: ['id' => '\w+'], methods: ['POST'])]
     public function cloneTopologyAction(string $id): Response
     {

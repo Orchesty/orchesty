@@ -902,11 +902,31 @@ class TopologyManager
      */
     private function setNodeAttributes(Topology $topology, Node $node, NodeSchemaDto $dto): Node
     {
+        // Preserve API-managed prefetch when the schema would otherwise reset
+        // it. The Rete editor builds its DTO with the SystemConfigDto default
+        // prefetch=1, so saving a layout without going through the BPMN
+        // editor would clobber values the user set via the Prefetch settings
+        // modal. Treat any DTO prefetch >1 as an explicit BPMN override (the
+        // legacy editor still pushes `@pipes:rabbitPrefetch` from the
+        // schema), and fall back to the existing DB value otherwise.
+        $configs       = $dto->getSystemConfigs();
+        $existing      = $node->getSystemConfigs();
+        $existingValue = $existing?->getPrefetch() ?? 1;
+        if ($configs->getPrefetch() <= 1 && $existingValue > 1) {
+            $configs->setPrefetch($existingValue);
+        }
+        // Clamp the merged value into the supported range (1..20) so legacy
+        // BPMN schemas with absurd values can't bypass NodeManager's bounds.
+        $clamped = max(1, min(20, $configs->getPrefetch()));
+        if ($clamped !== $configs->getPrefetch()) {
+            $configs->setPrefetch($clamped);
+        }
+
         $node
             ->setName($dto->getName())
             ->setType($dto->getPipesType())
             ->setSchemaId($dto->getId())
-            ->setSystemConfigs($dto->getSystemConfigs())
+            ->setSystemConfigs($configs)
             ->setTopology($topology->getId())
             ->setHandler(
                 Strings::endsWith($dto->getHandler(), 'vent') ? HandlerEnum::EVENT->value : HandlerEnum::ACTION->value,

@@ -364,6 +364,46 @@ final class TopologyController
             $res = $this->topologyHandler->publishTopology($id);
 
             return $this->getResponse($res->getBody(), $res->getStatusCode());
+        } catch (TopologyException $e) {
+            $status = $e->getCode() === TopologyException::SLOT_LIMIT_REACHED
+                ? Response::HTTP_CONFLICT
+                : Response::HTTP_INTERNAL_SERVER_ERROR;
+
+            return $this->getErrorResponse($e, $status);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route('/topologies/{id}/republish', requirements: ['id' => '\w+'], methods: ['POST'])]
+    public function republishTopologyAction(string $id): Response
+    {
+        try {
+            $res = $this->topologyHandler->republishTopology($id);
+
+            return $this->getResponse($res->getBody(), $res->getStatusCode());
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route('/topologies/{id}/unpublish', requirements: ['id' => '\w+'], methods: ['POST'])]
+    public function unpublishTopologyAction(string $id): Response
+    {
+        try {
+            $res = $this->topologyHandler->unpublishTopology($id);
+
+            return $this->getResponse($res->getBody(), $res->getStatusCode());
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }

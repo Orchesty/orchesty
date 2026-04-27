@@ -67,6 +67,59 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
+    public function testGetPublishedCount(): void
+    {
+        $repo = $this->dm->getRepository(Topology::class);
+        self::assertSame(0, $repo->getPublishedCount());
+
+        $enabled = new Topology();
+        $enabled
+            ->setName('enabled')
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value)
+            ->setEnabled(TRUE);
+
+        $disabled = new Topology();
+        $disabled
+            ->setName('disabled')
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value)
+            ->setEnabled(FALSE);
+
+        $oldVersion = new Topology();
+        $oldVersion
+            ->setName('enabled')
+            ->setVersion(2)
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value)
+            ->setEnabled(FALSE);
+
+        $draft = new Topology();
+        $draft
+            ->setName('draft')
+            ->setVisibility(TopologyStatusEnum::DRAFT->value)
+            ->setEnabled(FALSE);
+
+        $deleted = new Topology();
+        $deleted
+            ->setName('deleted')
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value)
+            ->setEnabled(TRUE)
+            ->setDeleted(TRUE);
+
+        $this->dm->persist($enabled);
+        $this->dm->persist($disabled);
+        $this->dm->persist($oldVersion);
+        $this->dm->persist($draft);
+        $this->dm->persist($deleted);
+        $this->dm->flush();
+
+        // Slot semantics: every published row consumes a slot regardless
+        // of `enabled` flag. Older versions count too. Drafts and deleted
+        // rows are excluded.
+        self::assertSame(3, $repo->getPublishedCount());
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testGetMaxVersion(): void
     {
         $repo   = $this->dm->getRepository(Topology::class);

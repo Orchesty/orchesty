@@ -425,6 +425,16 @@ class Node
     }
 
     /**
+     * @return int
+     */
+    public function getPrefetch(): int
+    {
+        $configs = $this->getSystemConfigs();
+
+        return $configs ? $configs->getPrefetch() : 1;
+    }
+
+    /**
      * @return mixed[]
      */
     public function toArray(): array
@@ -438,6 +448,7 @@ class Node
             'handler'     => $this->getHandler(),
             'name'        => $this->getName(),
             'next'        => $this->getNext(),
+            'prefetch'    => $this->getPrefetch(),
             'schema_id'   => $this->getSchemaId(),
             'sdk'         => $this->getSdk(),
             'topology_id' => $this->getTopology(),

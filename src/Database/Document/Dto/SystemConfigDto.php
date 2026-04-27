@@ -114,6 +114,18 @@ final class SystemConfigDto
     }
 
     /**
+     * @param int $prefetch
+     *
+     * @return self
+     */
+    public function setPrefetch(int $prefetch): self
+    {
+        $this->prefetch = $prefetch;
+
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function isRepeaterEnabled(): bool
