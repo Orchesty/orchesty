@@ -7,8 +7,8 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\CommonsBundle\Exception\CronException;
 use Hanaboso\CommonsBundle\Exception\NodeException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
@@ -334,9 +334,14 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ->setEnabled(TRUE);
         $this->pfd($topology);
 
+        $curlManager = self::createMock(CurlManager::class);
+        $curlManager
+            ->method('send')
+            ->willReturn(new ResponseDto(200, '', '{}', []));
+
         $this->client
             ->getContainer()
-            ->set('hbpf.transport.curl_manager', self::createMock(CurlManagerInterface::class));
+            ->set('hbpf.transport.curl_manager', $curlManager);
 
         $this->client->request(
             'PUT',
@@ -574,9 +579,14 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ->setEnabled(TRUE);
         $this->pfd($topology);
 
+        $curlManager = self::createMock(CurlManager::class);
+        $curlManager
+            ->method('send')
+            ->willReturn(new ResponseDto(200, '', '{}', []));
+
         $this->client
             ->getContainer()
-            ->set('hbpf.transport.curl_manager', self::createMock(CurlManagerInterface::class));
+            ->set('hbpf.transport.curl_manager', $curlManager);
 
         $this->client->request(
             'PUT',

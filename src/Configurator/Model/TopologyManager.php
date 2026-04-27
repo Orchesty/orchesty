@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\Persistence\ObjectRepository;
 use Exception;
@@ -73,7 +74,7 @@ class TopologyManager
     private TopologyRepository $topologyRepository;
 
     /**
-     * @var NodeRepository
+     * @var ObjectRepository<Node>&NodeRepository
      */
     private NodeRepository $nodeRepository;
 
@@ -110,12 +111,8 @@ class TopologyManager
         $dm       = $dml->getDm();
         $this->dm = $dm;
 
-        /** @var TopologyRepository<Topology> $topoRepo */
-        $topoRepo                 = $this->dm->getRepository($this->topologyClass);
-        $this->topologyRepository = $topoRepo;
-
-        $nodeRepo             = $this->dm->getRepository(Node::class);
-        $this->nodeRepository = $nodeRepo;
+        $this->topologyRepository = $this->dm->getRepository($this->topologyClass);
+        $this->nodeRepository     = $this->dm->getRepository(Node::class);
 
         $this->host   = rtrim($startingPointHost, '/');
         $this->logger = new NullLogger();
@@ -128,6 +125,10 @@ class TopologyManager
      * Wired via DI's `calls:` so the manager remains optional from a typing
      * standpoint and old test fixtures that build TopologyManager directly do
      * not need to know about it.
+     *
+     * @param WebhookConfigManager $manager
+     *
+     * @return self
      */
     public function setWebhookConfigManager(WebhookConfigManager $manager): self
     {
@@ -139,6 +140,10 @@ class TopologyManager
     /**
      * Optional logger so we can surface swallowed cascade failures (the schema
      * save must not abort if a webhook upsert fails, but we still want to know).
+     *
+     * @param LoggerInterface $logger
+     *
+     * @return self
      */
     public function setLogger(LoggerInterface $logger): self
     {
@@ -835,6 +840,7 @@ class TopologyManager
             $nodeIds[] = $node->getId();
         }
 
+        /** @var Iterator<Node> $orphanedWebhookNodes */
         $orphanedWebhookNodes = $this->nodeRepository->createQueryBuilder()
             ->field('topology')->equals($topology->getId())
             ->field('_id')->notIn($nodeIds)
@@ -954,6 +960,11 @@ class TopologyManager
      * config at schema-save time turned out to be a leaky abstraction
      * (orphan banners on unrelated saves, modal showing "Not configured" for
      * nodes the user just dropped in, etc.) and added no functional value.
+     *
+     * @param Topology $topology
+     * @param Node     $node
+     *
+     * @return void
      */
     private function cascadeWebhookConfigDelete(Topology $topology, Node $node): void
     {

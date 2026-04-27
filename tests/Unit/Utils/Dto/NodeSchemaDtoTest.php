@@ -29,6 +29,7 @@ final class NodeSchemaDtoTest extends KernelTestCaseAbstract
                 'application'    => '',
                 'cron_params'    => '',
                 'cron_time'      => '',
+                'event_name'     => '',
                 'handler'        => 'handler',
                 'id'             => 'id',
                 'name'           => 'name',

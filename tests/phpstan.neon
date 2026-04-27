@@ -58,6 +58,7 @@ parameters:
 			- Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode
 			- Hanaboso\PipesFramework\Application\Document\ApplicationInstall
 			- Hanaboso\PipesFramework\Application\Document\Webhook
+			- Hanaboso\PipesFramework\Application\Document\WebhookConfig
 			- Hanaboso\PipesFramework\Database\Document\Category
 			- Hanaboso\PipesFramework\Database\Document\Node
 			- Hanaboso\PipesFramework\Database\Document\TopologyApplication

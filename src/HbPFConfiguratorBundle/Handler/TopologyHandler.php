@@ -71,6 +71,7 @@ class TopologyHandler
      * @param UserTaskHandler         $userTaskHandler
      * @param TopologyTester          $topologyTester
      * @param class-string<Topology>  $topologyClass
+     * @param PublishGuardInterface   $publishGuard
      */
     public function __construct(
         DatabaseManagerLocator $dml,
@@ -84,12 +85,9 @@ class TopologyHandler
     )
     {
         /** @var DocumentManager $dm */
-        $dm       = $dml->getDm();
-        $this->dm = $dm;
-
-        /** @var TopologyRepository<Topology> $repo */
-        $repo                     = $this->dm->getRepository($this->topologyClass);
-        $this->topologyRepository = $repo;
+        $dm                       = $dml->getDm();
+        $this->dm                 = $dm;
+        $this->topologyRepository = $this->dm->getRepository($this->topologyClass);
     }
 
     /**

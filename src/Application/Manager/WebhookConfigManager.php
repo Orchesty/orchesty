@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Application\Manager;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Hanaboso\PipesFramework\Application\Document\Webhook;
@@ -12,9 +13,15 @@ use Hanaboso\PipesFramework\Application\Repository\WebhookRepository;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\Utils\Exception\DateTimeException;
+use InvalidArgumentException;
+use RuntimeException;
 use Throwable;
 
 /**
+ * Class WebhookConfigManager
+ *
+ * @package Hanaboso\PipesFramework\Application\Manager
+ *
  * Persists user-defined webhook configuration (created in the topology editor)
  * and orchestrates the actual subscribe / unsubscribe call against the worker SDK.
  *
@@ -25,25 +32,31 @@ use Throwable;
 final class WebhookConfigManager
 {
 
+    /**
+     * @var ObjectRepository<WebhookConfig>&WebhookConfigRepository
+     */
     private WebhookConfigRepository $configRepository;
 
+    /**
+     * @var ObjectRepository<Webhook>&WebhookRepository
+     */
     private WebhookRepository $webhookRepository;
 
-    public function __construct(
-        private readonly DocumentManager $dm,
-        private readonly ServiceLocator $locator,
-    )
+    /**
+     * WebhookConfigManager constructor.
+     *
+     * @param DocumentManager $dm
+     * @param ServiceLocator  $locator
+     */
+    public function __construct(private readonly DocumentManager $dm, private readonly ServiceLocator $locator)
     {
-        /** @var WebhookConfigRepository $configRepo */
-        $configRepo = $this->dm->getRepository(WebhookConfig::class);
-        $this->configRepository = $configRepo;
-
-        /** @var WebhookRepository $webhookRepo */
-        $webhookRepo = $this->dm->getRepository(Webhook::class);
-        $this->webhookRepository = $webhookRepo;
+        $this->configRepository  = $this->dm->getRepository(WebhookConfig::class);
+        $this->webhookRepository = $this->dm->getRepository(Webhook::class);
     }
 
     /**
+     * @param string $topologyName
+     *
      * @return mixed[]
      */
     public function listForTopology(string $topologyName): array
@@ -72,21 +85,21 @@ final class WebhookConfigManager
         // Index live registrations by (node, name) to enrich the response.
         $live = [];
         foreach ($webhooks as $webhook) {
-            $live[$webhook->getNode() . '|' . $webhook->getName()] = $webhook;
+            $live[sprintf('%s|%s', $webhook->getNode(), $webhook->getName())] = $webhook;
         }
 
         $items = [];
         foreach ($configs as $config) {
-            $key        = $config->getNodeName() . '|' . $config->getEventName();
+            $key        = sprintf('%s|%s', $config->getNodeName(), $config->getEventName());
             $registered = $live[$key] ?? NULL;
             $isOrphan   = $enabledWebhookNodeNames !== NULL
                 && !in_array($config->getNodeName(), $enabledWebhookNodeNames, TRUE);
-            $items[] = $config->toArray() + [
+            $items[]    = $config->toArray() + [
+                'orphan'            => $isOrphan,
                 'registered'        => $registered !== NULL,
-                'webhookId'         => $registered?->getWebhookId() ?? '',
                 'token'             => $registered?->getToken() ?? '',
                 'unsubscribeFailed' => $registered?->isUnsubscribeFailed() ?? FALSE,
-                'orphan'            => $isOrphan,
+                'webhookId'         => $registered?->getWebhookId() ?? '',
             ];
             unset($live[$key]);
         }
@@ -98,19 +111,19 @@ final class WebhookConfigManager
         if ($enabledWebhookNodeNames !== NULL) {
             foreach ($live as $orphan) {
                 $items[] = [
-                    'orphan'      => TRUE,
-                    'topologyName'=> $orphan->getTopology(),
-                    'nodeName'    => $orphan->getNode(),
-                    'application' => $orphan->getApplication(),
-                    'user'        => $orphan->getUser(),
-                    'sdk'         => $orphan->getSdk(),
-                    'eventName'   => $orphan->getName(),
-                    'parameters'  => [],
-                    'enabled'     => TRUE,
-                    'registered'  => TRUE,
-                    'webhookId'   => $orphan->getWebhookId(),
-                    'token'       => $orphan->getToken(),
+                    'application'       => $orphan->getApplication(),
+                    'enabled'           => TRUE,
+                    'eventName'         => $orphan->getName(),
+                    'nodeName'          => $orphan->getNode(),
+                    'orphan'            => TRUE,
+                    'parameters'        => [],
+                    'registered'        => TRUE,
+                    'sdk'               => $orphan->getSdk(),
+                    'token'             => $orphan->getToken(),
+                    'topologyName'      => $orphan->getTopology(),
                     'unsubscribeFailed' => $orphan->isUnsubscribeFailed(),
+                    'user'              => $orphan->getUser(),
+                    'webhookId'         => $orphan->getWebhookId(),
                 ];
             }
         }
@@ -121,14 +134,17 @@ final class WebhookConfigManager
     /**
      * Upsert (create or update) a single webhook config for the given (topology, node).
      *
-     * @param array<string, mixed> $payload Expected keys:
-     *  - application (required)
-     *  - user (required)
-     *  - sdk (required)
-     *  - eventName (required)
-     *  - parameters (optional, hash)
-     *  - enabled (optional, bool)
+     * @param string               $topologyName
+     * @param string               $nodeName
+     * @param array<string, mixed> $payload      Expected keys:
+     *                                            - application (required)
+     *                                            - user (required)
+     *                                            - sdk (required)
+     *                                            - eventName (required)
+     *                                            - parameters (optional, hash)
+     *                                            - enabled (optional, bool)
      *
+     * @return WebhookConfig
      * @throws DateTimeException
      */
     public function upsertConfig(string $topologyName, string $nodeName, array $payload): WebhookConfig
@@ -165,6 +181,11 @@ final class WebhookConfigManager
      * Removes the webhook config for (topology, node). If a live registration
      * exists, unsubscribe is attempted first; failure leaves the registration
      * marked as `unsubscribeFailed` for manual cleanup.
+     *
+     * @param string $topologyName
+     * @param string $nodeName
+     *
+     * @return void
      */
     public function deleteConfig(string $topologyName, string $nodeName): void
     {
@@ -186,6 +207,8 @@ final class WebhookConfigManager
     }
 
     /**
+     * @param WebhookConfig $config
+     *
      * @return mixed[]
      */
     public function subscribe(WebhookConfig $config): array
@@ -225,15 +248,17 @@ final class WebhookConfigManager
             $config->getSdk(),
             [
                 'name'       => $config->getEventName(),
-                'topology'   => $config->getTopologyName(),
                 'node'       => $config->getNodeName(),
                 'parameters' => $config->getParameters(),
+                'topology'   => $config->getTopologyName(),
             ],
             TRUE,
         );
     }
 
     /**
+     * @param WebhookConfig $config
+     *
      * @return mixed[]
      */
     public function unsubscribe(WebhookConfig $config): array
@@ -256,8 +281,8 @@ final class WebhookConfigManager
             $config->getSdk(),
             [
                 'name'     => $config->getEventName(),
-                'topology' => $config->getTopologyName(),
                 'node'     => $config->getNodeName(),
+                'topology' => $config->getTopologyName(),
             ],
             TRUE,
         );
@@ -281,13 +306,16 @@ final class WebhookConfigManager
      * returns `{ noop: true, reason: 'already-subscribed' }` and does not
      * re-issue the upstream SDK request (see {@see subscribe}).
      *
+     * @param string                    $topologyName
+     * @param string                    $nodeName
      * @param array<string, mixed>|null $parameters
+     * @param string                    $user
      *
      * @return mixed[]
      *
      * @throws DateTimeException
-     * @throws \RuntimeException When no webhook node with the given name
-     *                           exists in the latest version of the topology.
+     * @throws RuntimeException When no webhook node with the given name
+     *                          exists in the latest version of the topology.
      */
     public function subscribeForNode(
         string $topologyName,
@@ -301,7 +329,7 @@ final class WebhookConfigManager
         if (!$config) {
             $node = $this->resolveLatestWebhookNode($topologyName, $nodeName);
             if ($node === NULL) {
-                throw new \RuntimeException(
+                throw new RuntimeException(
                     sprintf(
                         'No webhook node "%s" found in any version of topology "%s".',
                         $nodeName,
@@ -316,18 +344,13 @@ final class WebhookConfigManager
             /** @var Topology|null $topology */
             $topology = $this->dm->getRepository(Topology::class)->find($node->getTopology());
             if ($topology === NULL) {
-                throw new \RuntimeException(
-                    sprintf('Webhook node "%s" is detached from its topology.', $nodeName),
-                );
+                throw new RuntimeException(sprintf('Webhook node "%s" is detached from its topology.', $nodeName));
             }
 
             $config = $this->upsertFromNode($topology, $node, $user);
             if ($config === NULL) {
-                throw new \RuntimeException(
-                    sprintf(
-                        'Webhook node "%s" is missing application/eventName metadata.',
-                        $nodeName,
-                    ),
+                throw new RuntimeException(
+                    sprintf('Webhook node "%s" is missing application/eventName metadata.', $nodeName),
                 );
             }
         }
@@ -347,6 +370,9 @@ final class WebhookConfigManager
      * existing config or no live registration returns success with a `noop`
      * marker rather than 4xx.
      *
+     * @param string $topologyName
+     * @param string $nodeName
+     *
      * @return mixed[]
      */
     public function unsubscribeForNode(string $topologyName, string $nodeName): array
@@ -364,6 +390,9 @@ final class WebhookConfigManager
      * Subscribe / unsubscribe every WebhookConfig of the topology — used as the
      * cascade hook when the topology is enabled or disabled in the UI.
      *
+     * @param string $topologyName
+     * @param bool   $enable
+     *
      * @return mixed[] Per-config result entries (status + payload).
      */
     public function cascadeForTopology(string $topologyName, bool $enable): array
@@ -371,21 +400,21 @@ final class WebhookConfigManager
         $results = [];
         foreach ($this->configRepository->findByTopology($topologyName) as $config) {
             try {
-                $payload = $enable
+                $payload   = $enable
                     ? $this->subscribe($config)
                     : $this->unsubscribe($config);
                 $results[] = [
-                    'topologyName' => $config->getTopologyName(),
                     'nodeName'     => $config->getNodeName(),
-                    'status'       => 'ok',
                     'payload'      => $payload,
+                    'status'       => 'ok',
+                    'topologyName' => $config->getTopologyName(),
                 ];
             } catch (Throwable $t) {
                 $results[] = [
-                    'topologyName' => $config->getTopologyName(),
+                    'message'      => $t->getMessage(),
                     'nodeName'     => $config->getNodeName(),
                     'status'       => 'error',
-                    'message'      => $t->getMessage(),
+                    'topologyName' => $config->getTopologyName(),
                 ];
             }
         }
@@ -393,6 +422,9 @@ final class WebhookConfigManager
         return $results;
     }
 
+    /**
+     * @return WebhookConfigRepository
+     */
     public function getRepository(): WebhookConfigRepository
     {
         return $this->configRepository;
@@ -406,6 +438,10 @@ final class WebhookConfigManager
      * editor's picker (`action.app/worker/name`). We deliberately keep the
      * `enabled` flag on existing configs so a republish does not silently
      * disable a previously subscribed webhook.
+     *
+     * @param Topology $topology
+     * @param Node     $node
+     * @param string   $user
      *
      * @return WebhookConfig|null Returns null if the node is not a webhook node
      *                            or is missing required identity fields.
@@ -453,6 +489,11 @@ final class WebhookConfigManager
      * Schema-save hook: cascade delete of a WebhookConfig (and best-effort
      * unsubscribe of the live registration) for a node that has just been
      * removed from the topology schema.
+     *
+     * @param Topology $topology
+     * @param Node     $node
+     *
+     * @return void
      */
     public function deleteForNode(Topology $topology, Node $node): void
     {
@@ -464,20 +505,14 @@ final class WebhookConfigManager
     }
 
     /**
-     * Returns the names of webhook-typed nodes from the latest version of the
-     * named topology. Used by {@see listForTopology} to flag stale configs as
-     * orphans without deleting them implicitly — the user gets to choose
-     * cleanup vs. re-attaching the node in the editor.
-     *
-     * @return string[]
-     */
-    /**
      * Webhook node names that exist in the **currently enabled** version of
      * the topology. Returns `NULL` when no enabled version exists — the
      * caller must treat that as "do not perform orphan checks", because
      * runtime would not deliver events to *any* version anyway and we do
      * not want to scare the user into deleting registrations during a
      * temporary disable.
+     *
+     * @param string $topologyName
      *
      * @return string[]|null
      */
@@ -506,6 +541,11 @@ final class WebhookConfigManager
      * to read the application / eventName / sdk metadata for the lazy
      * upsert. The latest matching node is preferred so freshly-edited
      * metadata wins on a tie.
+     *
+     * @param string $topologyName
+     * @param string $nodeName
+     *
+     * @return Node|null
      */
     private function resolveLatestWebhookNode(string $topologyName, string $nodeName): ?Node
     {
@@ -519,13 +559,13 @@ final class WebhookConfigManager
             return NULL;
         }
 
-        $topologyIds = array_map(static fn (Topology $t): string => (string) $t->getId(), $topologies);
+        $topologyIds = array_map(static fn(Topology $t): string => $t->getId(), $topologies);
 
         /** @var Node[] $nodes */
         $nodes = $this->dm->getRepository(Node::class)->findBy([
+            'name'     => $nodeName,
             'topology' => ['$in' => $topologyIds],
             'type'     => TypeEnum::WEBHOOK->value,
-            'name'     => $nodeName,
         ]);
 
         if ($nodes === []) {
@@ -537,27 +577,27 @@ final class WebhookConfigManager
         // the version map we already loaded.
         $versionByTopologyId = [];
         foreach ($topologies as $topology) {
-            $versionByTopologyId[(string) $topology->getId()] = $topology->getVersion();
+            $versionByTopologyId[$topology->getId()] = $topology->getVersion();
         }
 
         usort(
             $nodes,
-            static fn (Node $a, Node $b): int =>
-                ($versionByTopologyId[$a->getTopology()] ?? 0) <=> ($versionByTopologyId[$b->getTopology()] ?? 0),
+            static fn(Node $a, Node $b): int => ($versionByTopologyId[$a->getTopology()] ?? 0) <=> ($versionByTopologyId[$b->getTopology()] ?? 0),
         );
 
-        return end($nodes) ?: NULL;
+        return end($nodes);
     }
 
+    // Webhook nodes from the currently enabled version of the topology.
+    //
+    // Returns `NULL` (not `[]`) when no enabled version exists, so callers
+    // can distinguish "topology has no active version → skip orphan
+    // detection" from "active version genuinely has zero webhook nodes →
+    // every config is orphan". If multiple versions are flagged enabled
+    // (should not happen by design, but DB invariants are not enforced)
+    // the latest by `version` wins.
     /**
-     * Webhook nodes from the currently enabled version of the topology.
-     *
-     * Returns `NULL` (not `[]`) when no enabled version exists, so callers
-     * can distinguish "topology has no active version → skip orphan
-     * detection" from "active version genuinely has zero webhook nodes →
-     * every config is orphan". If multiple versions are flagged enabled
-     * (should not happen by design, but DB invariants are not enforced)
-     * the latest by `version` wins.
+     * @param string $topologyName
      *
      * @return Node[]|null
      */
@@ -566,8 +606,8 @@ final class WebhookConfigManager
         /** @var Topology|null $topology */
         $topology = $this->dm->getRepository(Topology::class)->findOneBy(
             [
-                'name'    => $topologyName,
                 'enabled' => TRUE,
+                'name'    => $topologyName,
             ],
             ['version' => 'desc'],
         );
@@ -592,11 +632,15 @@ final class WebhookConfigManager
      * we detect such a value we transparently resolve the correct SDK from
      * the application's installation and persist the fix so subsequent
      * calls (subscribe/unsubscribe) stay aligned.
+     *
+     * @param WebhookConfig $config
+     *
+     * @return void
      */
     private function ensureValidSdk(WebhookConfig $config): void
     {
         $registered = $this->locator->getSdks();
-        $valid      = array_map(static fn ($sdk) => $sdk->getName(), $registered);
+        $valid      = array_map(static fn($sdk) => $sdk->getName(), $registered);
 
         if (in_array($config->getSdk(), $valid, TRUE)) {
             return;
@@ -607,6 +651,11 @@ final class WebhookConfigManager
         $this->dm->flush();
     }
 
+    /**
+     * @param WebhookConfig $config
+     *
+     * @return bool
+     */
     private function isRegistered(WebhookConfig $config): bool
     {
         // Must filter out soft-deleted Webhook records (worker-api flips the
@@ -623,12 +672,14 @@ final class WebhookConfigManager
     /**
      * @param array<string, mixed> $payload
      * @param string[]             $keys
+     *
+     * @return void
      */
     private function requireKeys(array $payload, array $keys): void
     {
         foreach ($keys as $key) {
             if (!array_key_exists($key, $payload) || $payload[$key] === '' || $payload[$key] === NULL) {
-                throw new \InvalidArgumentException(
+                throw new InvalidArgumentException(
                     sprintf('Missing required webhook config field [%s].', $key),
                 );
             }

@@ -113,7 +113,7 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
         $handler = self::getContainer()->get('hbpf.configurator.handler.topology');
         $result  = $handler->cloneTopology($topology->getId());
 
-        self::assertEquals(10, count($result));
+        self::assertEquals(11, count($result));
     }
 
     /**
