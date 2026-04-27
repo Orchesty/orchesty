@@ -1,8 +1,8 @@
 IMAGE=orchesty/counter:$(TAG)
 
-DC=docker-compose
-DE=docker-compose exec -T app
-DR=docker-compose exec -T rabbitmq
+DC=docker compose
+DE=docker compose exec -T app
+DR=docker compose exec -T rabbitmq
 
 .env:
 	sed -e "s/{DEV_UID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -u); else echo '1001'; fi)/g" \
