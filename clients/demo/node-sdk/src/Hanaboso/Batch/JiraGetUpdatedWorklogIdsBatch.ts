@@ -46,7 +46,7 @@ export default class JiraGetUpdatedWorklogIdsBatch extends ABatchNode {
             [{
                 worklogIds,
                 date: { from, to },
-            } as IEtlWorklogIds],
+            }],
         );
 
         if (!responseData.lastPage && responseData.until < dateTo.getTime()) {

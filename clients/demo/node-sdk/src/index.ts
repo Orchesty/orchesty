@@ -17,6 +17,7 @@ import ListUsersCommon from '@orchesty/connector-common/dist/ListUsers/ListUsers
 import GetApplicationForRefreshBatchConnector
     from '@orchesty/connector-common/dist/OAuth2/GetApplicationForRefreshBatchConnector';
 import RefreshOAuth2TokenNode from '@orchesty/connector-common/dist/OAuth2/RefreshOAuth2TokenNode';
+import RunTopology from '@orchesty/connector-common/dist/RunTopology/RunTopology';
 import DiscordSendMessageConnector
     from '@orchesty/connector-discord/dist/Connector/DiscordSendMessageConnector';
 import DiscordApplication from '@orchesty/connector-discord/dist/DiscordApplication';
@@ -717,4 +718,11 @@ export async function start(): Promise<void> {
     container.setNode(new HttpStatus401Connector(), httpStatusApplication);
     container.setNode(new HttpStatus404Connector(), httpStatusApplication);
     container.setNode(new HttpStatus500Connector(), httpStatusApplication);
+
+    const httpStatusListUsersCommon = new ListUsersCommon()
+        .setApplication(httpStatusApplication)
+        .setDb(mongoDb);
+    container.setBatch(httpStatusListUsersCommon);
+
+    container.setNode(new RunTopology(runner, 'http-status-applinth', 'users-start'), httpStatusApplication);
 }

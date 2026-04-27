@@ -24,7 +24,7 @@ export default class FlexiBeeCleneniDphToWflowVatReturnLinesMapper extends AComm
                 `Items ${items.map((i) => i.kod).join(', ')} could not be sent because they have ${items.map((i) => i.stat).join(', ')} countries.`,
             );
 
-            return dto as unknown as ProcessDto<IOutput[]>;
+            return dto;
         }
 
         return dto.setNewJsonData(
