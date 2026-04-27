@@ -57,6 +57,7 @@ export default class Mongo {
 
     public async ensureMetricsIndexes(): Promise<void> {
         const indexSpecs: Record<string, { key: Record<string, 1 | -1>; name: string }[]> = {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             pipes_node: [
                 { key: { 'tags.correlation_id': 1 }, name: 'tags_correlation_id_1' },
             ],

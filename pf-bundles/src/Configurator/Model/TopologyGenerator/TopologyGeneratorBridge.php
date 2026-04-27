@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\Persistence\ObjectRepository;
 use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
@@ -56,7 +57,7 @@ final class TopologyGeneratorBridge
     private DocumentManager $dm;
 
     /**
-     * @var ApiTokenRepository
+     * @var ObjectRepository<ApiToken>&ApiTokenRepository
      */
     private ApiTokenRepository $apiTokenRepository;
 

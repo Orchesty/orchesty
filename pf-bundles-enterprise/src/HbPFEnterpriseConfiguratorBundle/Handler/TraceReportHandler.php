@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Han
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\PipesFrameworkEnterprise\TraceReport\Document\TraceReport;
 use Hanaboso\PipesFrameworkEnterprise\TraceReport\Repository\TraceReportRepository;
 use Hanaboso\UserBundle\Document\User;
@@ -20,16 +21,19 @@ final class TraceReportHandler
 {
 
     /**
+     * @var ObjectRepository<TraceReport>&TraceReportRepository
+     */
+    private TraceReportRepository $reportRepository;
+
+    /**
      * TraceReportHandler constructor.
      *
      * @param DocumentManager $dm
      * @param Security        $security
      */
-    public function __construct(
-        private readonly DocumentManager $dm,
-        private readonly Security $security,
-    )
+    public function __construct(private readonly DocumentManager $dm, private readonly Security $security)
     {
+        $this->reportRepository = $this->dm->getRepository(TraceReport::class);
     }
 
     /**
@@ -42,7 +46,7 @@ final class TraceReportHandler
     public function list(int $page = 1, int $limit = 50): array
     {
         $userId = $this->getUserId();
-        $result = $this->getRepository()->findByUser($userId, $page, $limit);
+        $result = $this->reportRepository->findByUser($userId, $page, $limit);
 
         return [
             'items' => array_map(static fn(TraceReport $r): array => $r->toArray(), $result['items']),
@@ -92,7 +96,10 @@ final class TraceReportHandler
     {
         $report = $this->getOwned($id);
 
-        if (isset($data[TraceReport::TITLE]) && is_string($data[TraceReport::TITLE]) && $data[TraceReport::TITLE] !== '') {
+        if (isset($data[TraceReport::TITLE])
+            && is_string($data[TraceReport::TITLE])
+            && $data[TraceReport::TITLE] !== ''
+        ) {
             $report->setTitle($data[TraceReport::TITLE]);
         }
 
@@ -124,17 +131,6 @@ final class TraceReportHandler
     }
 
     /**
-     * @return TraceReportRepository
-     */
-    private function getRepository(): TraceReportRepository
-    {
-        /** @var TraceReportRepository $repository */
-        $repository = $this->dm->getRepository(TraceReport::class);
-
-        return $repository;
-    }
-
-    /**
      * @return string
      * @throws PipesFrameworkException
      */
@@ -156,7 +152,7 @@ final class TraceReportHandler
      */
     private function getOwned(string $id): TraceReport
     {
-        $report = $this->getRepository()->find($id);
+        $report = $this->reportRepository->find($id);
         if (!$report instanceof TraceReport) {
             throw new InvalidArgumentException(sprintf('Trace report [%s] not found.', $id));
         }

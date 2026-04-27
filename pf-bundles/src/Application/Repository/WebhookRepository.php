@@ -24,6 +24,8 @@ final class WebhookRepository extends DocumentRepository
      * silently returns soft-deleted records too — making the UI report
      * "Subscribed" even after a successful unsubscribe.
      *
+     * @param string $topology
+     *
      * @return Webhook[]
      */
     public function findActiveByTopology(string $topology): array
@@ -42,6 +44,12 @@ final class WebhookRepository extends DocumentRepository
      * lookup did not filter `deleted`, so once a webhook had been registered
      * + unsubscribed once, the manager would forever believe it was still
      * live and reply with `noop: already-subscribed` to every retry.
+     *
+     * @param string $topology
+     * @param string $node
+     * @param string $name
+     *
+     * @return Webhook|null
      */
     public function findActiveOne(string $topology, string $node, string $name): ?Webhook
     {

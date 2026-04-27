@@ -1,292 +1,319 @@
 {
-    "connections": [
-        {
-            "from": "a22949f71e32eda5",
-            "id": "024de9dfeb2c7e6c",
-            "sourceOutput": "output",
-            "targetInput": "input",
-            "to": "ce4c2561e0ec02cb"
-        },
-        {
-            "from": "ce4c2561e0ec02cb",
-            "id": "fb8acf584009e688",
-            "sourceOutput": "output",
-            "targetInput": "input",
-            "to": "58be76fbb90bacbd"
-        },
-        {
-            "from": "58be76fbb90bacbd",
-            "id": "e1265364e692d0e7",
-            "sourceOutput": "output",
-            "targetInput": "input",
-            "to": "bbf3120d3a7c7d68"
-        },
-        {
-            "from": "58be76fbb90bacbd",
-            "id": "b7db68ee274743cf",
-            "sourceOutput": "output",
-            "targetInput": "input",
-            "to": "f0d3814c1e9611b6"
-        },
-        {
-            "from": "bbf3120d3a7c7d68",
-            "id": "8fe374fc71d03ab7",
-            "sourceOutput": "output",
-            "targetInput": "input",
-            "to": "2d7d48f22ad6acd9"
-        },
-        {
-            "from": "26b0b8c8d05301f8",
-            "id": "0e733d9bc0bbb596",
-            "sourceOutput": "output",
-            "targetInput": "input",
-            "to": "ce4c2561e0ec02cb"
-        },
-        {
-            "from": "5c9d09682a2b8667",
-            "id": "4d051d3c519b6d80",
-            "sourceOutput": "output",
-            "targetInput": "input",
-            "to": "ce4c2561e0ec02cb"
-        },
-        {
-            "from": "92edba2a3a159b4c",
-            "id": "f4dc64f671e7abd2",
-            "sourceOutput": "output",
-            "targetInput": "input",
-            "to": "bafdc1bff566d22e"
-        },
-        {
-            "from": "bafdc1bff566d22e",
-            "id": "4c2cdd75d2ff9d35",
-            "sourceOutput": "output",
-            "targetInput": "input",
-            "to": "c417121b5fe897ec"
-        },
-        {
-            "from": "c417121b5fe897ec",
-            "id": "18f7cb476f0aee74",
-            "sourceOutput": "output",
-            "targetInput": "input",
-            "to": "b13563f0d3dad9e3"
-        },
-        {
-            "from": "be4c4c416efd4c9a",
-            "id": "e17759c77b81a143",
-            "sourceOutput": "output",
-            "targetInput": "input",
-            "to": "bafdc1bff566d22e"
-        }
-    ],
     "nodes": [
         {
-            "action": null,
+            "type": "flow",
             "id": "a22949f71e32eda5",
             "label": "Event",
+            "shape": "circle",
+            "property": null,
+            "action": null,
             "name": "product",
             "position": {
-                "x": 400,
-                "y": 304
-            },
-            "property": null,
-            "shape": "circle",
-            "type": "flow"
+                "x": 395,
+                "y": 295
+            }
         },
         {
-            "action": null,
+            "type": "flow",
             "id": "26b0b8c8d05301f8",
             "label": "Webhook",
-            "name": "product-created",
-            "position": {
-                "x": 400,
-                "y": 449
-            },
-            "property": null,
             "shape": "circle",
-            "type": "flow"
+            "property": null,
+            "action": {
+                "name": "beeceptor.product:created",
+                "worker": "node-sdk",
+                "type": "webhook",
+                "app": "beeceptor",
+                "event": "product:created",
+                "description": "Beeceptor Application · product:created",
+                "parameters": [],
+                "icon": "<img src=\"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODMiIGhlaWdodD0iODMiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTQuMzgxNjgyNzk0OTQ4MzIyLC00LjI5MDk4OTQwMjI4NjE1OSkgc2NhbGUoMC45MTYwOTUwODcxNzA3MjEpIj48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTc0LjMzMSw1LjU1MWMyLjc2Ny0wLjg2Nyw1LjQ4My0wLjczMiw4LjE0OSwwLjRjMiwwLjczMiw0LjA1MSwyLjA1MSw2LjE1LDMuOTQ5ICBjMS43NjcsMS43MDEsMy4yLDMuNCw0LjMsNS4xYzEuMywyLjI2OCwxLjk2Nyw0LjM1MiwyLDYuMjVjMC4xMDEsMi4wNjgtMC40MzMsNC4wMzMtMS42LDUuOWMtMC44MzMsMS4zNjctMi4wNSwyLjcwMS0zLjY1LDQgIGMtMiwxLjYtNC41NjYsMy4xMTctNy43LDQuNTUxYy0zLjUzMywxLjUtNy42OTksMi43ODMtMTIuNSwzLjg1Yy0xLjgsMC4zNjctMy40ODIsMC42NjYtNS4wNSwwLjljMy4zNjcsMS4xOTksNi40MTcsMi45LDkuMTUsNS4xICBjMi40NjcsMi4wMzMsNC41MTcsNC41NTEsNi4xNDksNy41NTFjMS40MzQsMi42OTksMi4zODQsNS41NDksMi44NTEsOC41NDljMSw2LjE2OCwwLjY2NywxMS41MTgtMSwxNi4wNTEgIGMtMC41LDEuMjk5LTEuMDY3LDIuNDE2LTEuNywzLjM1YzEuODMzLDEuOTY3LDIuOTgzLDMuNTY2LDMuNDUsNC44MDFjMC4yMzMsMC42OTksMC4yNSwxLjE2NiwwLjA1LDEuMzk4ICBjLTAuMjMzLDAuMjAxLTAuNywwLjE2OC0xLjQtMC4xYy0xLjE5OS0wLjQtMi43NS0xLjQ4Mi00LjY0OS0zLjI1bC0wLjE1LDAuMWMtMS4xLDAuODY3LTIuMiwxLjQ2Ny0zLjMsMS44MDEgIGMtMS4yMzMsMC40MzQtMi40LDAuNjY2LTMuNSwwLjY5OWMtMS45NjcsMC4wMzMtNC4xLTAuNDMyLTYuNC0xLjM5OGMtMS41NjYtMC43MDEtMy4xOTktMS42NjgtNC44OTktMi45ICBjLTIuMjY3LTEuNjMzLTQuNjUtMy44MzQtNy4xNS02LjZjLTMuMTY3LTMuNjM1LTUuOTMzLTcuNTMzLTguMy0xMS43MDFjLTAuOS0xLjYtMS44LTMuNDE2LTIuNy01LjQ0OSAgYzAsMi45MzQtMC40NjcsNi42NS0xLjM5OSwxMS4xNWMtMS4wMzMsNC42MzMtMi4zMzQsOC43ODMtMy45LDEyLjQ0OWMtMS4zMzMsMy4wNjYtMi44NSw1LjY1LTQuNTUsNy43NSAgYy0xLjE2NywxLjQ2Ny0yLjUsMi42NS00LDMuNTUxYy0xLjgzMywxLjE5OS0zLjgzMywxLjc1LTYsMS42NDhjLTIuMDMzLTAuMTY2LTQuMDY3LTAuODgzLTYuMTAxLTIuMTQ4ICBjLTEuMy0wLjczNC0zLTIuMTY4LTUuMS00LjMwMWMtMS45MzQtMi4xNjYtMy4yNS00LjIzMi0zLjk1LTYuMTk5Yy0xLjAzMy0yLjYzNS0xLjE0OS01LjM1Mi0wLjM1LTguMTUgIGMwLjYzMy0yLjMzNCwyLjA1LTQuNzY4LDQuMjUtNy4zMDFjMS42NjctMS45LDMuOC0zLjgxNiw2LjM5OS01Ljc1YzMuOTY3LTIuOTM0LDkuMjY4LTYuMDE2LDE1LjktOS4yNWwwLjU1LTAuMjk5aC0wLjE0OSAgYy0yLjg2Ny0wLjQzNC01LjUzMy0xLjgzNC04LTQuMjAxYy0xLjQ2Ny0xLjU2Ni0yLjY1LTMuMjUtMy41NTEtNS4wNDljLTEuMS0yLjUzMy0xLjU4My00Ljk1MS0xLjQ0OS03LjI1bDAuMDUtMC40ICBjLTEuMzMzLTAuOS0yLjcxNy0xLjIzNC00LjE1LTFjLTAuMTMzLTAuMDMzLTAuMjgzLTAuMDE4LTAuNDUsMC4wNDljLTAuMywwLjEwMi0wLjQ2NywwLjE1LTAuNSwwLjE1bC0wLjgsMC4yMDEgIGMtMC4xMzMsMC4wNjYtMC41MzMsMC4yNS0xLjIsMC41NDljLTAuNSwwLjMzNC0wLjkzMywwLjUzMy0xLjMsMC42bC0wLjM5OSwwLjA1MWMtMC4wNjctMC4wNjYtMC4xMDEtMC4xOTktMC4xMDEtMC40ICBjMC0wLjQsMC4xNjctMC45NDksMC41LTEuNjVjMC4zMzMtMC40NjcsMC43LTAuODk4LDEuMTAxLTEuMjk5YzAuMDMzLTAuMDMzLDAuMzUtMC4yNjgsMC45NDktMC43MDEgIGMwLjI2OC0wLjE2NiwwLjQ2Ny0wLjI4MywwLjYwMS0wLjM1YzAuMjY3LTAuMTY2LDAuNS0wLjI2NiwwLjctMC4yOTljMC44MzMtMC4yMzQsMS40MTYtMC4zNjcsMS43NS0wLjRoMiAgYzAuNzY3LDAuMTMzLDEuNDY3LDAuMzMyLDIuMSwwLjZjMC4zNjctMS4wMzMsMS4xLTIuMzUsMi4yLTMuOTQ5YzEuMDMzLTEuNDM0LDIuMTgzLTIuNjAyLDMuNDUtMy41ICBjMC44LTAuNTY4LDEuNDQ5LTAuOTUxLDEuOTQ5LTEuMTVjLTAuMzMzLTEuMjM0LTAuMy0yLjQ1MSwwLjEwMS0zLjY1YzAuMzMzLTEuMjMyLDAuODk5LTIuMjUsMS43LTMuMDUxICBjMS4wNjYtMS4xMzMsMi4yNjctMS43MzIsMy42LTEuNzk5YzAuNjY3LTAuMDMzLDEuMiwwLjA2NiwxLjYsMC4yOTlsMC4yNSwwLjI1bC0wLjE5OSwwLjM1MmMtMC4wNjcsMC4xLTAuNCwwLjM4My0xLDAuODUgIGMtMC45LDAuODY3LTEuNDgzLDEuNTY2LTEuNzUsMi4xYy0wLjc2OCwxLjE5OS0wLjk4MywyLjQxNi0wLjY1LDMuNjVjMS44NjctMC4yMDEsMy43NSwwLjA0OSw1LjY1LDAuNzUgIGMxLjgzMywwLjczMiwzLjUzMywxLjc4Myw1LjEsMy4xNWMxLjYsMS40MzIsMi44ODMsMy4xNDgsMy44NSw1LjE0OGMxLjEwMSwyLjEwMiwxLjcsNC4zMTgsMS44MDEsNi42NSAgYzAuMDY2LDAuNTY2LDAuMDE3LDEuMzAxLTAuMTUsMi4yMDFsMi4xLTAuNWMtMC4wMzMtMC42MDIsMC4wODQtMS40LDAuMzUxLTIuNGMwLjM2Ni0xLjMwMSwwLjg4My0yLjY2OCwxLjU1LTQuMSAgYzMuMjMzLTYuNjM1LDYuMzMzLTExLjk2Nyw5LjMtMTZjMS45NjctMi42MDIsMy45LTQuNzM0LDUuOC02LjRDNjkuNDE0LDcuNjAyLDcxLjg2NCw2LjIxNyw3NC4zMzEsNS41NTF6IE04MS4xODEsOS4yNTIgIGMtMS45NjctMC43MzQtMy45NS0wLjgwMS01Ljk1LTAuMjAxYy0xLjgsMC41LTMuNzUsMS42ODQtNS44NSwzLjU1MWMtMS42NjcsMS40MzItMy40LDMuMzgzLTUuMiw1Ljg1ICBjLTIuNjY3LDMuNjY2LTUuNiw4Ljc2Ni04LjgsMTUuMjk5Yy0wLjcsMS40NjctMS40MzQsMi43MzQtMi4yLDMuODAxYy0wLjIsMC4yNjgtMC4zODMsMC41MTgtMC41NSwwLjc1bDEuNCwwLjA1MSAgYzIuNTMzLDAuMSw0Ljk4MiwwLjQ2Nyw3LjM1LDEuMWMyLjk2Ny0wLjYsNS41NS0xLjIwMSw3Ljc1LTEuODAxYzQuNS0xLjI5OSw4LjQ1LTIuNzgzLDExLjg1LTQuNDQ5ICBjMi44MDEtMS4zNjcsNS4xMDEtMi44MzQsNi45LTQuNGMyLjgtMi41LDQuMDY2LTUuMDE4LDMuOC03LjU1MWMtMC4xLTEuMzY1LTAuNjY3LTIuODgzLTEuNy00LjU0OSAgYy0wLjczMi0xLjE2OC0xLjk4Mi0yLjYtMy43NS00LjMwMUM4NC40NjQsMTAuODY4LDgyLjc4MSw5LjgxOSw4MS4xODEsOS4yNTJ6IE01Mi45OCw0OS44NTJjLTAuOCwwLjY5OS0xLjUzMywxLjQxNi0yLjE5OSwyLjE0OCAgbC0xLjUsMS41NTFjLTEsMS4xNjYtMS42NjcsMS43MzItMiwxLjY5OWMtMC4wNjcsMC0wLjEwMS0wLjE2Ni0wLjEwMS0wLjVjMC4wMzMtMC41LDAuMi0xLjI1LDAuNS0yLjI1YzAuMTY3LTAuNDMyLDAuNS0xLjEzMywxLTIuMSAgYzAuNjAxLTAuOTY3LDEuMjY3LTEuOSwyLTIuNzk5YzEuMDY3LTEuMzAxLDIuOS0zLjAzMyw1LjUtNS4yMDFsLTYuODUtMC40NDljLTEuMDY3LTAuMS0yLjQ4My0wLjIzNC00LjI1LTAuNCAgYy0wLjMzMy0wLjMzNC0wLjU2Ny0wLjk4Mi0wLjctMS45NDlsLTAuMi0yLjVjLTAuMDY2LTEuNzY4LTAuNTE3LTMuNDg0LTEuMzUtNS4xNWMtMC43NjctMS41MzMtMS43ODMtMi45LTMuMDUtNC4xICBjLTEuMjMzLTEuMTAyLTIuNTUxLTEuOTE4LTMuOTUtMi40NTFjLTEuNDY3LTAuNS0yLjg2Ny0wLjY2Ni00LjItMC41Yy0yLjMzMywwLjI2OC00LjQzNCwxLjYzMy02LjMsNC4xICBjLTAuOCwxLjAzMy0xLjQxNywyLjA2OC0xLjg1MSwzLjEwMmMtMC4zNjYsMC45MzItMC42LDIuMDE2LTAuNjk5LDMuMjVjLTAuMjY4LDMuNzY2LDAuOTY3LDcuMTgyLDMuNjk5LDEwLjI1ICBjMS45MzQsMi4xNjYsNC4xMDEsMy41NDksNi41LDQuMTQ4YzEuNjM0LDAuNDM0LDMuMjUsMC40NTEsNC44NTEsMC4wNTFsMS40NS0wLjI1bDAuMTk5LDEuOWMxLjIsMy41LDMuMTUsNy4zNjcsNS44NTEsMTEuNiAgYzIuNjY3LDQuMDMzLDUuNTUsNy42NjYsOC42NDksMTAuOWMxLjMzNCwxLjMzMiwyLjU2NywyLjUsMy43LDMuNWMwLjA2Ny0wLjg2NywwLjE2Ny0xLjU2NiwwLjMtMi4xICBjMC42MDEtMi42MzUsMS45ODMtNS40MTgsNC4xNS04LjM1MmMxLjU2Ni0yLjE2NiwzLjMtNC4wMTYsNS4yLTUuNTQ5YzMtMi40MzQsNi4wMTctNC4wNjYsOS4wNS00LjljMC4yNjctMC4wNjYsMC41NS0wLjEsMC44NS0wLjEgIGMtMC4zMzMtMC43MzQtMC42MTYtMS4yODMtMC44NS0xLjY1Yy0wLjktMS43MzItMi4wNjYtMy4zMzQtMy41LTQuODAxYy0wLjQsMC4xMDItMC45NSwwLjIxNy0xLjY1LDAuMzUyICBjLTIuNTMzLDAuMzk4LTQuOTQ5LDEuMzgzLTcuMjUsMi45NDljLTEuMzY2LDAuOS0yLjg5OSwyLjE4NC00LjYsMy44NWMtMS4wNjYsMS4xLTIuNjMzLDMuMDY2LTQuNyw1LjkgIGMtMC44LDEuMjMyLTEuMzk5LDIuMDY2LTEuOCwyLjVsLTAuNDUsMC40Yy0wLjA2Ni0wLjA2Ni0wLjEtMC4yNjgtMC4xLTAuNmMwLTAuODAxLDAuMjE3LTEuODY3LDAuNjQ5LTMuMjAxICBjMC45MzQtMi41MzMsMi4yNjgtNC45LDQtNy4xYzEuNDM0LTEuODM0LDMuMDY3LTMuNDM0LDQuOS00LjgwMWMyLjMtMS42LDQuNjE3LTIuNzUsNi45NS0zLjQ0OWMtMi4yNjctMS40NjctNC44NjctMi42MTctNy44LTMuNDQ5ICBsLTAuMTAxLDAuMDQ5Yy0xLjA2NiwwLjg2Ny0yLjYsMi4xLTQuNiwzLjcwMUM1NC43NjQsNDguMzM0LDUzLjY0Nyw0OS4yNSw1Mi45OCw0OS44NTJ6IE03Ny4zODEsNjAuMjVjLTIuNDY3LDAuNjY4LTUuMDY2LDItNy44LDQgIGMtMS44MzMsMS41LTMuNSwzLjEwMi01LDQuODAxYy0yLjEwMSwyLjQ2Ny0zLjY4NCw0LjgwMS00Ljc1LDdsLTEuMDUsMmwtMC4wNTEsMC4yNWMwLjEzNCwwLjEzMywwLjg2NywwLjY2NiwyLjIsMS42ICBjMS41NjcsMS4wMzMsMy4wMzMsMS44MzQsNC40LDIuNGMxLjg5OSwwLjc2OCwzLjU2NiwxLjEsNSwxYzEuODk5LTAuMTY2LDMuNTE3LTAuODM0LDQuODUtMmMxLjMzMy0xLjEsMi4zODQtMi43NSwzLjE1LTQuOTQ5ICBjMS4zOTktMy45NjcsMS42MTYtOC42ODQsMC42NDktMTQuMTVsLTAuNjQ5LTIuNUM3OC4wNjQsNTkuOTY3LDc3Ljc0OCw2MC4xNTEsNzcuMzgxLDYwLjI1eiBNNDAuMjgxLDU2Ljk1MiAgYy0wLjYzNC0xLjcwMS0xLjEwMS0zLjMxNi0xLjQtNC44NWMtMSwxLjAzMy0yLjcsMi4xMTUtNS4xLDMuMjVjLTYuMzY3LDMuMS0xMS41LDYuMDQ5LTE1LjQsOC44NSAgYy0yLjQ2NywxLjktNC40MTcsMy42MzMtNS44NSw1LjE5OWMtMS43NjgsMi4wNjYtMi45MTcsNC4wMzMtMy40NSw1LjljLTAuNjAxLDIuMDY2LTAuNTE3LDQuMDUxLDAuMjUsNS45NDkgIGMwLjUzMywxLjU2OCwxLjU4MywzLjI1LDMuMTQ5LDUuMDUxYzEuNzMzLDEuODAxLDMuMTg0LDMuMDY2LDQuMzUxLDMuODAxYzEuNiwxLDMuMTMzLDEuNTQ5LDQuNiwxLjY0OCAgYzEuNDY3LDAuMDMzLDIuODUxLTAuMzMyLDQuMTUtMS4xYzEuMTMzLTAuNjY2LDIuMjUtMS42MTcsMy4zNS0yLjg1YzEuNjAxLTEuOTY3LDMuMDUtNC4yODMsNC4zNTEtNi45NDkgIGMxLjYzMy0zLjMzNCwzLjExNi03LjI2OCw0LjQ0OS0xMS44MDFjMS4wMzMtMy45LDEuODg0LTcuOSwyLjU1MS0xMlY1Ni45NTJ6Ij48L3BhdGg+PC9nPjwvc3ZnPg==\" alt=\"\" />"
+            },
+            "name": "beeceptor.product:created",
+            "position": {
+                "x": 395,
+                "y": 455
+            }
         },
         {
-            "action": null,
+            "type": "flow",
             "id": "5c9d09682a2b8667",
             "label": "Webhook",
-            "name": "product-updated",
-            "position": {
-                "x": 400,
-                "y": 594
-            },
-            "property": null,
             "shape": "circle",
-            "type": "flow"
+            "property": null,
+            "action": {
+                "name": "beeceptor.product:updated",
+                "worker": "node-sdk",
+                "type": "webhook",
+                "app": "beeceptor",
+                "event": "product:updated",
+                "description": "Beeceptor Application · product:updated",
+                "parameters": [],
+                "icon": "<img src=\"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODMiIGhlaWdodD0iODMiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTQuMzgxNjgyNzk0OTQ4MzIyLC00LjI5MDk4OTQwMjI4NjE1OSkgc2NhbGUoMC45MTYwOTUwODcxNzA3MjEpIj48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTc0LjMzMSw1LjU1MWMyLjc2Ny0wLjg2Nyw1LjQ4My0wLjczMiw4LjE0OSwwLjRjMiwwLjczMiw0LjA1MSwyLjA1MSw2LjE1LDMuOTQ5ICBjMS43NjcsMS43MDEsMy4yLDMuNCw0LjMsNS4xYzEuMywyLjI2OCwxLjk2Nyw0LjM1MiwyLDYuMjVjMC4xMDEsMi4wNjgtMC40MzMsNC4wMzMtMS42LDUuOWMtMC44MzMsMS4zNjctMi4wNSwyLjcwMS0zLjY1LDQgIGMtMiwxLjYtNC41NjYsMy4xMTctNy43LDQuNTUxYy0zLjUzMywxLjUtNy42OTksMi43ODMtMTIuNSwzLjg1Yy0xLjgsMC4zNjctMy40ODIsMC42NjYtNS4wNSwwLjljMy4zNjcsMS4xOTksNi40MTcsMi45LDkuMTUsNS4xICBjMi40NjcsMi4wMzMsNC41MTcsNC41NTEsNi4xNDksNy41NTFjMS40MzQsMi42OTksMi4zODQsNS41NDksMi44NTEsOC41NDljMSw2LjE2OCwwLjY2NywxMS41MTgtMSwxNi4wNTEgIGMtMC41LDEuMjk5LTEuMDY3LDIuNDE2LTEuNywzLjM1YzEuODMzLDEuOTY3LDIuOTgzLDMuNTY2LDMuNDUsNC44MDFjMC4yMzMsMC42OTksMC4yNSwxLjE2NiwwLjA1LDEuMzk4ICBjLTAuMjMzLDAuMjAxLTAuNywwLjE2OC0xLjQtMC4xYy0xLjE5OS0wLjQtMi43NS0xLjQ4Mi00LjY0OS0zLjI1bC0wLjE1LDAuMWMtMS4xLDAuODY3LTIuMiwxLjQ2Ny0zLjMsMS44MDEgIGMtMS4yMzMsMC40MzQtMi40LDAuNjY2LTMuNSwwLjY5OWMtMS45NjcsMC4wMzMtNC4xLTAuNDMyLTYuNC0xLjM5OGMtMS41NjYtMC43MDEtMy4xOTktMS42NjgtNC44OTktMi45ICBjLTIuMjY3LTEuNjMzLTQuNjUtMy44MzQtNy4xNS02LjZjLTMuMTY3LTMuNjM1LTUuOTMzLTcuNTMzLTguMy0xMS43MDFjLTAuOS0xLjYtMS44LTMuNDE2LTIuNy01LjQ0OSAgYzAsMi45MzQtMC40NjcsNi42NS0xLjM5OSwxMS4xNWMtMS4wMzMsNC42MzMtMi4zMzQsOC43ODMtMy45LDEyLjQ0OWMtMS4zMzMsMy4wNjYtMi44NSw1LjY1LTQuNTUsNy43NSAgYy0xLjE2NywxLjQ2Ny0yLjUsMi42NS00LDMuNTUxYy0xLjgzMywxLjE5OS0zLjgzMywxLjc1LTYsMS42NDhjLTIuMDMzLTAuMTY2LTQuMDY3LTAuODgzLTYuMTAxLTIuMTQ4ICBjLTEuMy0wLjczNC0zLTIuMTY4LTUuMS00LjMwMWMtMS45MzQtMi4xNjYtMy4yNS00LjIzMi0zLjk1LTYuMTk5Yy0xLjAzMy0yLjYzNS0xLjE0OS01LjM1Mi0wLjM1LTguMTUgIGMwLjYzMy0yLjMzNCwyLjA1LTQuNzY4LDQuMjUtNy4zMDFjMS42NjctMS45LDMuOC0zLjgxNiw2LjM5OS01Ljc1YzMuOTY3LTIuOTM0LDkuMjY4LTYuMDE2LDE1LjktOS4yNWwwLjU1LTAuMjk5aC0wLjE0OSAgYy0yLjg2Ny0wLjQzNC01LjUzMy0xLjgzNC04LTQuMjAxYy0xLjQ2Ny0xLjU2Ni0yLjY1LTMuMjUtMy41NTEtNS4wNDljLTEuMS0yLjUzMy0xLjU4My00Ljk1MS0xLjQ0OS03LjI1bDAuMDUtMC40ICBjLTEuMzMzLTAuOS0yLjcxNy0xLjIzNC00LjE1LTFjLTAuMTMzLTAuMDMzLTAuMjgzLTAuMDE4LTAuNDUsMC4wNDljLTAuMywwLjEwMi0wLjQ2NywwLjE1LTAuNSwwLjE1bC0wLjgsMC4yMDEgIGMtMC4xMzMsMC4wNjYtMC41MzMsMC4yNS0xLjIsMC41NDljLTAuNSwwLjMzNC0wLjkzMywwLjUzMy0xLjMsMC42bC0wLjM5OSwwLjA1MWMtMC4wNjctMC4wNjYtMC4xMDEtMC4xOTktMC4xMDEtMC40ICBjMC0wLjQsMC4xNjctMC45NDksMC41LTEuNjVjMC4zMzMtMC40NjcsMC43LTAuODk4LDEuMTAxLTEuMjk5YzAuMDMzLTAuMDMzLDAuMzUtMC4yNjgsMC45NDktMC43MDEgIGMwLjI2OC0wLjE2NiwwLjQ2Ny0wLjI4MywwLjYwMS0wLjM1YzAuMjY3LTAuMTY2LDAuNS0wLjI2NiwwLjctMC4yOTljMC44MzMtMC4yMzQsMS40MTYtMC4zNjcsMS43NS0wLjRoMiAgYzAuNzY3LDAuMTMzLDEuNDY3LDAuMzMyLDIuMSwwLjZjMC4zNjctMS4wMzMsMS4xLTIuMzUsMi4yLTMuOTQ5YzEuMDMzLTEuNDM0LDIuMTgzLTIuNjAyLDMuNDUtMy41ICBjMC44LTAuNTY4LDEuNDQ5LTAuOTUxLDEuOTQ5LTEuMTVjLTAuMzMzLTEuMjM0LTAuMy0yLjQ1MSwwLjEwMS0zLjY1YzAuMzMzLTEuMjMyLDAuODk5LTIuMjUsMS43LTMuMDUxICBjMS4wNjYtMS4xMzMsMi4yNjctMS43MzIsMy42LTEuNzk5YzAuNjY3LTAuMDMzLDEuMiwwLjA2NiwxLjYsMC4yOTlsMC4yNSwwLjI1bC0wLjE5OSwwLjM1MmMtMC4wNjcsMC4xLTAuNCwwLjM4My0xLDAuODUgIGMtMC45LDAuODY3LTEuNDgzLDEuNTY2LTEuNzUsMi4xYy0wLjc2OCwxLjE5OS0wLjk4MywyLjQxNi0wLjY1LDMuNjVjMS44NjctMC4yMDEsMy43NSwwLjA0OSw1LjY1LDAuNzUgIGMxLjgzMywwLjczMiwzLjUzMywxLjc4Myw1LjEsMy4xNWMxLjYsMS40MzIsMi44ODMsMy4xNDgsMy44NSw1LjE0OGMxLjEwMSwyLjEwMiwxLjcsNC4zMTgsMS44MDEsNi42NSAgYzAuMDY2LDAuNTY2LDAuMDE3LDEuMzAxLTAuMTUsMi4yMDFsMi4xLTAuNWMtMC4wMzMtMC42MDIsMC4wODQtMS40LDAuMzUxLTIuNGMwLjM2Ni0xLjMwMSwwLjg4My0yLjY2OCwxLjU1LTQuMSAgYzMuMjMzLTYuNjM1LDYuMzMzLTExLjk2Nyw5LjMtMTZjMS45NjctMi42MDIsMy45LTQuNzM0LDUuOC02LjRDNjkuNDE0LDcuNjAyLDcxLjg2NCw2LjIxNyw3NC4zMzEsNS41NTF6IE04MS4xODEsOS4yNTIgIGMtMS45NjctMC43MzQtMy45NS0wLjgwMS01Ljk1LTAuMjAxYy0xLjgsMC41LTMuNzUsMS42ODQtNS44NSwzLjU1MWMtMS42NjcsMS40MzItMy40LDMuMzgzLTUuMiw1Ljg1ICBjLTIuNjY3LDMuNjY2LTUuNiw4Ljc2Ni04LjgsMTUuMjk5Yy0wLjcsMS40NjctMS40MzQsMi43MzQtMi4yLDMuODAxYy0wLjIsMC4yNjgtMC4zODMsMC41MTgtMC41NSwwLjc1bDEuNCwwLjA1MSAgYzIuNTMzLDAuMSw0Ljk4MiwwLjQ2Nyw3LjM1LDEuMWMyLjk2Ny0wLjYsNS41NS0xLjIwMSw3Ljc1LTEuODAxYzQuNS0xLjI5OSw4LjQ1LTIuNzgzLDExLjg1LTQuNDQ5ICBjMi44MDEtMS4zNjcsNS4xMDEtMi44MzQsNi45LTQuNGMyLjgtMi41LDQuMDY2LTUuMDE4LDMuOC03LjU1MWMtMC4xLTEuMzY1LTAuNjY3LTIuODgzLTEuNy00LjU0OSAgYy0wLjczMi0xLjE2OC0xLjk4Mi0yLjYtMy43NS00LjMwMUM4NC40NjQsMTAuODY4LDgyLjc4MSw5LjgxOSw4MS4xODEsOS4yNTJ6IE01Mi45OCw0OS44NTJjLTAuOCwwLjY5OS0xLjUzMywxLjQxNi0yLjE5OSwyLjE0OCAgbC0xLjUsMS41NTFjLTEsMS4xNjYtMS42NjcsMS43MzItMiwxLjY5OWMtMC4wNjcsMC0wLjEwMS0wLjE2Ni0wLjEwMS0wLjVjMC4wMzMtMC41LDAuMi0xLjI1LDAuNS0yLjI1YzAuMTY3LTAuNDMyLDAuNS0xLjEzMywxLTIuMSAgYzAuNjAxLTAuOTY3LDEuMjY3LTEuOSwyLTIuNzk5YzEuMDY3LTEuMzAxLDIuOS0zLjAzMyw1LjUtNS4yMDFsLTYuODUtMC40NDljLTEuMDY3LTAuMS0yLjQ4My0wLjIzNC00LjI1LTAuNCAgYy0wLjMzMy0wLjMzNC0wLjU2Ny0wLjk4Mi0wLjctMS45NDlsLTAuMi0yLjVjLTAuMDY2LTEuNzY4LTAuNTE3LTMuNDg0LTEuMzUtNS4xNWMtMC43NjctMS41MzMtMS43ODMtMi45LTMuMDUtNC4xICBjLTEuMjMzLTEuMTAyLTIuNTUxLTEuOTE4LTMuOTUtMi40NTFjLTEuNDY3LTAuNS0yLjg2Ny0wLjY2Ni00LjItMC41Yy0yLjMzMywwLjI2OC00LjQzNCwxLjYzMy02LjMsNC4xICBjLTAuOCwxLjAzMy0xLjQxNywyLjA2OC0xLjg1MSwzLjEwMmMtMC4zNjYsMC45MzItMC42LDIuMDE2LTAuNjk5LDMuMjVjLTAuMjY4LDMuNzY2LDAuOTY3LDcuMTgyLDMuNjk5LDEwLjI1ICBjMS45MzQsMi4xNjYsNC4xMDEsMy41NDksNi41LDQuMTQ4YzEuNjM0LDAuNDM0LDMuMjUsMC40NTEsNC44NTEsMC4wNTFsMS40NS0wLjI1bDAuMTk5LDEuOWMxLjIsMy41LDMuMTUsNy4zNjcsNS44NTEsMTEuNiAgYzIuNjY3LDQuMDMzLDUuNTUsNy42NjYsOC42NDksMTAuOWMxLjMzNCwxLjMzMiwyLjU2NywyLjUsMy43LDMuNWMwLjA2Ny0wLjg2NywwLjE2Ny0xLjU2NiwwLjMtMi4xICBjMC42MDEtMi42MzUsMS45ODMtNS40MTgsNC4xNS04LjM1MmMxLjU2Ni0yLjE2NiwzLjMtNC4wMTYsNS4yLTUuNTQ5YzMtMi40MzQsNi4wMTctNC4wNjYsOS4wNS00LjljMC4yNjctMC4wNjYsMC41NS0wLjEsMC44NS0wLjEgIGMtMC4zMzMtMC43MzQtMC42MTYtMS4yODMtMC44NS0xLjY1Yy0wLjktMS43MzItMi4wNjYtMy4zMzQtMy41LTQuODAxYy0wLjQsMC4xMDItMC45NSwwLjIxNy0xLjY1LDAuMzUyICBjLTIuNTMzLDAuMzk4LTQuOTQ5LDEuMzgzLTcuMjUsMi45NDljLTEuMzY2LDAuOS0yLjg5OSwyLjE4NC00LjYsMy44NWMtMS4wNjYsMS4xLTIuNjMzLDMuMDY2LTQuNyw1LjkgIGMtMC44LDEuMjMyLTEuMzk5LDIuMDY2LTEuOCwyLjVsLTAuNDUsMC40Yy0wLjA2Ni0wLjA2Ni0wLjEtMC4yNjgtMC4xLTAuNmMwLTAuODAxLDAuMjE3LTEuODY3LDAuNjQ5LTMuMjAxICBjMC45MzQtMi41MzMsMi4yNjgtNC45LDQtNy4xYzEuNDM0LTEuODM0LDMuMDY3LTMuNDM0LDQuOS00LjgwMWMyLjMtMS42LDQuNjE3LTIuNzUsNi45NS0zLjQ0OWMtMi4yNjctMS40NjctNC44NjctMi42MTctNy44LTMuNDQ5ICBsLTAuMTAxLDAuMDQ5Yy0xLjA2NiwwLjg2Ny0yLjYsMi4xLTQuNiwzLjcwMUM1NC43NjQsNDguMzM0LDUzLjY0Nyw0OS4yNSw1Mi45OCw0OS44NTJ6IE03Ny4zODEsNjAuMjVjLTIuNDY3LDAuNjY4LTUuMDY2LDItNy44LDQgIGMtMS44MzMsMS41LTMuNSwzLjEwMi01LDQuODAxYy0yLjEwMSwyLjQ2Ny0zLjY4NCw0LjgwMS00Ljc1LDdsLTEuMDUsMmwtMC4wNTEsMC4yNWMwLjEzNCwwLjEzMywwLjg2NywwLjY2NiwyLjIsMS42ICBjMS41NjcsMS4wMzMsMy4wMzMsMS44MzQsNC40LDIuNGMxLjg5OSwwLjc2OCwzLjU2NiwxLjEsNSwxYzEuODk5LTAuMTY2LDMuNTE3LTAuODM0LDQuODUtMmMxLjMzMy0xLjEsMi4zODQtMi43NSwzLjE1LTQuOTQ5ICBjMS4zOTktMy45NjcsMS42MTYtOC42ODQsMC42NDktMTQuMTVsLTAuNjQ5LTIuNUM3OC4wNjQsNTkuOTY3LDc3Ljc0OCw2MC4xNTEsNzcuMzgxLDYwLjI1eiBNNDAuMjgxLDU2Ljk1MiAgYy0wLjYzNC0xLjcwMS0xLjEwMS0zLjMxNi0xLjQtNC44NWMtMSwxLjAzMy0yLjcsMi4xMTUtNS4xLDMuMjVjLTYuMzY3LDMuMS0xMS41LDYuMDQ5LTE1LjQsOC44NSAgYy0yLjQ2NywxLjktNC40MTcsMy42MzMtNS44NSw1LjE5OWMtMS43NjgsMi4wNjYtMi45MTcsNC4wMzMtMy40NSw1LjljLTAuNjAxLDIuMDY2LTAuNTE3LDQuMDUxLDAuMjUsNS45NDkgIGMwLjUzMywxLjU2OCwxLjU4MywzLjI1LDMuMTQ5LDUuMDUxYzEuNzMzLDEuODAxLDMuMTg0LDMuMDY2LDQuMzUxLDMuODAxYzEuNiwxLDMuMTMzLDEuNTQ5LDQuNiwxLjY0OCAgYzEuNDY3LDAuMDMzLDIuODUxLTAuMzMyLDQuMTUtMS4xYzEuMTMzLTAuNjY2LDIuMjUtMS42MTcsMy4zNS0yLjg1YzEuNjAxLTEuOTY3LDMuMDUtNC4yODMsNC4zNTEtNi45NDkgIGMxLjYzMy0zLjMzNCwzLjExNi03LjI2OCw0LjQ0OS0xMS44MDFjMS4wMzMtMy45LDEuODg0LTcuOSwyLjU1MS0xMlY1Ni45NTJ6Ij48L3BhdGg+PC9nPjwvc3ZnPg==\" alt=\"\" />"
+            },
+            "name": "beeceptor.product:updated",
+            "position": {
+                "x": 395,
+                "y": 595
+            }
         },
         {
-            "action": null,
+            "type": "flow",
             "id": "92edba2a3a159b4c",
             "label": "Event",
+            "shape": "circle",
+            "property": null,
+            "action": null,
             "name": "product-category",
             "position": {
-                "x": 400,
-                "y": 797
-            },
-            "property": null,
-            "shape": "circle",
-            "type": "flow"
+                "x": 395,
+                "y": 795
+            }
         },
         {
-            "action": null,
+            "type": "flow",
             "id": "be4c4c416efd4c9a",
             "label": "Webhook",
-            "name": "product-category-updated",
-            "position": {
-                "x": 570,
-                "y": 971
-            },
-            "property": null,
             "shape": "circle",
-            "type": "flow"
+            "property": null,
+            "action": {
+                "name": "beeceptor.productCategory:all",
+                "worker": "node-sdk",
+                "type": "webhook",
+                "app": "beeceptor",
+                "event": "productCategory:all",
+                "description": "Beeceptor Application · productCategory:all",
+                "parameters": [],
+                "icon": "<img src=\"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODMiIGhlaWdodD0iODMiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTQuMzgxNjgyNzk0OTQ4MzIyLC00LjI5MDk4OTQwMjI4NjE1OSkgc2NhbGUoMC45MTYwOTUwODcxNzA3MjEpIj48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTc0LjMzMSw1LjU1MWMyLjc2Ny0wLjg2Nyw1LjQ4My0wLjczMiw4LjE0OSwwLjRjMiwwLjczMiw0LjA1MSwyLjA1MSw2LjE1LDMuOTQ5ICBjMS43NjcsMS43MDEsMy4yLDMuNCw0LjMsNS4xYzEuMywyLjI2OCwxLjk2Nyw0LjM1MiwyLDYuMjVjMC4xMDEsMi4wNjgtMC40MzMsNC4wMzMtMS42LDUuOWMtMC44MzMsMS4zNjctMi4wNSwyLjcwMS0zLjY1LDQgIGMtMiwxLjYtNC41NjYsMy4xMTctNy43LDQuNTUxYy0zLjUzMywxLjUtNy42OTksMi43ODMtMTIuNSwzLjg1Yy0xLjgsMC4zNjctMy40ODIsMC42NjYtNS4wNSwwLjljMy4zNjcsMS4xOTksNi40MTcsMi45LDkuMTUsNS4xICBjMi40NjcsMi4wMzMsNC41MTcsNC41NTEsNi4xNDksNy41NTFjMS40MzQsMi42OTksMi4zODQsNS41NDksMi44NTEsOC41NDljMSw2LjE2OCwwLjY2NywxMS41MTgtMSwxNi4wNTEgIGMtMC41LDEuMjk5LTEuMDY3LDIuNDE2LTEuNywzLjM1YzEuODMzLDEuOTY3LDIuOTgzLDMuNTY2LDMuNDUsNC44MDFjMC4yMzMsMC42OTksMC4yNSwxLjE2NiwwLjA1LDEuMzk4ICBjLTAuMjMzLDAuMjAxLTAuNywwLjE2OC0xLjQtMC4xYy0xLjE5OS0wLjQtMi43NS0xLjQ4Mi00LjY0OS0zLjI1bC0wLjE1LDAuMWMtMS4xLDAuODY3LTIuMiwxLjQ2Ny0zLjMsMS44MDEgIGMtMS4yMzMsMC40MzQtMi40LDAuNjY2LTMuNSwwLjY5OWMtMS45NjcsMC4wMzMtNC4xLTAuNDMyLTYuNC0xLjM5OGMtMS41NjYtMC43MDEtMy4xOTktMS42NjgtNC44OTktMi45ICBjLTIuMjY3LTEuNjMzLTQuNjUtMy44MzQtNy4xNS02LjZjLTMuMTY3LTMuNjM1LTUuOTMzLTcuNTMzLTguMy0xMS43MDFjLTAuOS0xLjYtMS44LTMuNDE2LTIuNy01LjQ0OSAgYzAsMi45MzQtMC40NjcsNi42NS0xLjM5OSwxMS4xNWMtMS4wMzMsNC42MzMtMi4zMzQsOC43ODMtMy45LDEyLjQ0OWMtMS4zMzMsMy4wNjYtMi44NSw1LjY1LTQuNTUsNy43NSAgYy0xLjE2NywxLjQ2Ny0yLjUsMi42NS00LDMuNTUxYy0xLjgzMywxLjE5OS0zLjgzMywxLjc1LTYsMS42NDhjLTIuMDMzLTAuMTY2LTQuMDY3LTAuODgzLTYuMTAxLTIuMTQ4ICBjLTEuMy0wLjczNC0zLTIuMTY4LTUuMS00LjMwMWMtMS45MzQtMi4xNjYtMy4yNS00LjIzMi0zLjk1LTYuMTk5Yy0xLjAzMy0yLjYzNS0xLjE0OS01LjM1Mi0wLjM1LTguMTUgIGMwLjYzMy0yLjMzNCwyLjA1LTQuNzY4LDQuMjUtNy4zMDFjMS42NjctMS45LDMuOC0zLjgxNiw2LjM5OS01Ljc1YzMuOTY3LTIuOTM0LDkuMjY4LTYuMDE2LDE1LjktOS4yNWwwLjU1LTAuMjk5aC0wLjE0OSAgYy0yLjg2Ny0wLjQzNC01LjUzMy0xLjgzNC04LTQuMjAxYy0xLjQ2Ny0xLjU2Ni0yLjY1LTMuMjUtMy41NTEtNS4wNDljLTEuMS0yLjUzMy0xLjU4My00Ljk1MS0xLjQ0OS03LjI1bDAuMDUtMC40ICBjLTEuMzMzLTAuOS0yLjcxNy0xLjIzNC00LjE1LTFjLTAuMTMzLTAuMDMzLTAuMjgzLTAuMDE4LTAuNDUsMC4wNDljLTAuMywwLjEwMi0wLjQ2NywwLjE1LTAuNSwwLjE1bC0wLjgsMC4yMDEgIGMtMC4xMzMsMC4wNjYtMC41MzMsMC4yNS0xLjIsMC41NDljLTAuNSwwLjMzNC0wLjkzMywwLjUzMy0xLjMsMC42bC0wLjM5OSwwLjA1MWMtMC4wNjctMC4wNjYtMC4xMDEtMC4xOTktMC4xMDEtMC40ICBjMC0wLjQsMC4xNjctMC45NDksMC41LTEuNjVjMC4zMzMtMC40NjcsMC43LTAuODk4LDEuMTAxLTEuMjk5YzAuMDMzLTAuMDMzLDAuMzUtMC4yNjgsMC45NDktMC43MDEgIGMwLjI2OC0wLjE2NiwwLjQ2Ny0wLjI4MywwLjYwMS0wLjM1YzAuMjY3LTAuMTY2LDAuNS0wLjI2NiwwLjctMC4yOTljMC44MzMtMC4yMzQsMS40MTYtMC4zNjcsMS43NS0wLjRoMiAgYzAuNzY3LDAuMTMzLDEuNDY3LDAuMzMyLDIuMSwwLjZjMC4zNjctMS4wMzMsMS4xLTIuMzUsMi4yLTMuOTQ5YzEuMDMzLTEuNDM0LDIuMTgzLTIuNjAyLDMuNDUtMy41ICBjMC44LTAuNTY4LDEuNDQ5LTAuOTUxLDEuOTQ5LTEuMTVjLTAuMzMzLTEuMjM0LTAuMy0yLjQ1MSwwLjEwMS0zLjY1YzAuMzMzLTEuMjMyLDAuODk5LTIuMjUsMS43LTMuMDUxICBjMS4wNjYtMS4xMzMsMi4yNjctMS43MzIsMy42LTEuNzk5YzAuNjY3LTAuMDMzLDEuMiwwLjA2NiwxLjYsMC4yOTlsMC4yNSwwLjI1bC0wLjE5OSwwLjM1MmMtMC4wNjcsMC4xLTAuNCwwLjM4My0xLDAuODUgIGMtMC45LDAuODY3LTEuNDgzLDEuNTY2LTEuNzUsMi4xYy0wLjc2OCwxLjE5OS0wLjk4MywyLjQxNi0wLjY1LDMuNjVjMS44NjctMC4yMDEsMy43NSwwLjA0OSw1LjY1LDAuNzUgIGMxLjgzMywwLjczMiwzLjUzMywxLjc4Myw1LjEsMy4xNWMxLjYsMS40MzIsMi44ODMsMy4xNDgsMy44NSw1LjE0OGMxLjEwMSwyLjEwMiwxLjcsNC4zMTgsMS44MDEsNi42NSAgYzAuMDY2LDAuNTY2LDAuMDE3LDEuMzAxLTAuMTUsMi4yMDFsMi4xLTAuNWMtMC4wMzMtMC42MDIsMC4wODQtMS40LDAuMzUxLTIuNGMwLjM2Ni0xLjMwMSwwLjg4My0yLjY2OCwxLjU1LTQuMSAgYzMuMjMzLTYuNjM1LDYuMzMzLTExLjk2Nyw5LjMtMTZjMS45NjctMi42MDIsMy45LTQuNzM0LDUuOC02LjRDNjkuNDE0LDcuNjAyLDcxLjg2NCw2LjIxNyw3NC4zMzEsNS41NTF6IE04MS4xODEsOS4yNTIgIGMtMS45NjctMC43MzQtMy45NS0wLjgwMS01Ljk1LTAuMjAxYy0xLjgsMC41LTMuNzUsMS42ODQtNS44NSwzLjU1MWMtMS42NjcsMS40MzItMy40LDMuMzgzLTUuMiw1Ljg1ICBjLTIuNjY3LDMuNjY2LTUuNiw4Ljc2Ni04LjgsMTUuMjk5Yy0wLjcsMS40NjctMS40MzQsMi43MzQtMi4yLDMuODAxYy0wLjIsMC4yNjgtMC4zODMsMC41MTgtMC41NSwwLjc1bDEuNCwwLjA1MSAgYzIuNTMzLDAuMSw0Ljk4MiwwLjQ2Nyw3LjM1LDEuMWMyLjk2Ny0wLjYsNS41NS0xLjIwMSw3Ljc1LTEuODAxYzQuNS0xLjI5OSw4LjQ1LTIuNzgzLDExLjg1LTQuNDQ5ICBjMi44MDEtMS4zNjcsNS4xMDEtMi44MzQsNi45LTQuNGMyLjgtMi41LDQuMDY2LTUuMDE4LDMuOC03LjU1MWMtMC4xLTEuMzY1LTAuNjY3LTIuODgzLTEuNy00LjU0OSAgYy0wLjczMi0xLjE2OC0xLjk4Mi0yLjYtMy43NS00LjMwMUM4NC40NjQsMTAuODY4LDgyLjc4MSw5LjgxOSw4MS4xODEsOS4yNTJ6IE01Mi45OCw0OS44NTJjLTAuOCwwLjY5OS0xLjUzMywxLjQxNi0yLjE5OSwyLjE0OCAgbC0xLjUsMS41NTFjLTEsMS4xNjYtMS42NjcsMS43MzItMiwxLjY5OWMtMC4wNjcsMC0wLjEwMS0wLjE2Ni0wLjEwMS0wLjVjMC4wMzMtMC41LDAuMi0xLjI1LDAuNS0yLjI1YzAuMTY3LTAuNDMyLDAuNS0xLjEzMywxLTIuMSAgYzAuNjAxLTAuOTY3LDEuMjY3LTEuOSwyLTIuNzk5YzEuMDY3LTEuMzAxLDIuOS0zLjAzMyw1LjUtNS4yMDFsLTYuODUtMC40NDljLTEuMDY3LTAuMS0yLjQ4My0wLjIzNC00LjI1LTAuNCAgYy0wLjMzMy0wLjMzNC0wLjU2Ny0wLjk4Mi0wLjctMS45NDlsLTAuMi0yLjVjLTAuMDY2LTEuNzY4LTAuNTE3LTMuNDg0LTEuMzUtNS4xNWMtMC43NjctMS41MzMtMS43ODMtMi45LTMuMDUtNC4xICBjLTEuMjMzLTEuMTAyLTIuNTUxLTEuOTE4LTMuOTUtMi40NTFjLTEuNDY3LTAuNS0yLjg2Ny0wLjY2Ni00LjItMC41Yy0yLjMzMywwLjI2OC00LjQzNCwxLjYzMy02LjMsNC4xICBjLTAuOCwxLjAzMy0xLjQxNywyLjA2OC0xLjg1MSwzLjEwMmMtMC4zNjYsMC45MzItMC42LDIuMDE2LTAuNjk5LDMuMjVjLTAuMjY4LDMuNzY2LDAuOTY3LDcuMTgyLDMuNjk5LDEwLjI1ICBjMS45MzQsMi4xNjYsNC4xMDEsMy41NDksNi41LDQuMTQ4YzEuNjM0LDAuNDM0LDMuMjUsMC40NTEsNC44NTEsMC4wNTFsMS40NS0wLjI1bDAuMTk5LDEuOWMxLjIsMy41LDMuMTUsNy4zNjcsNS44NTEsMTEuNiAgYzIuNjY3LDQuMDMzLDUuNTUsNy42NjYsOC42NDksMTAuOWMxLjMzNCwxLjMzMiwyLjU2NywyLjUsMy43LDMuNWMwLjA2Ny0wLjg2NywwLjE2Ny0xLjU2NiwwLjMtMi4xICBjMC42MDEtMi42MzUsMS45ODMtNS40MTgsNC4xNS04LjM1MmMxLjU2Ni0yLjE2NiwzLjMtNC4wMTYsNS4yLTUuNTQ5YzMtMi40MzQsNi4wMTctNC4wNjYsOS4wNS00LjljMC4yNjctMC4wNjYsMC41NS0wLjEsMC44NS0wLjEgIGMtMC4zMzMtMC43MzQtMC42MTYtMS4yODMtMC44NS0xLjY1Yy0wLjktMS43MzItMi4wNjYtMy4zMzQtMy41LTQuODAxYy0wLjQsMC4xMDItMC45NSwwLjIxNy0xLjY1LDAuMzUyICBjLTIuNTMzLDAuMzk4LTQuOTQ5LDEuMzgzLTcuMjUsMi45NDljLTEuMzY2LDAuOS0yLjg5OSwyLjE4NC00LjYsMy44NWMtMS4wNjYsMS4xLTIuNjMzLDMuMDY2LTQuNyw1LjkgIGMtMC44LDEuMjMyLTEuMzk5LDIuMDY2LTEuOCwyLjVsLTAuNDUsMC40Yy0wLjA2Ni0wLjA2Ni0wLjEtMC4yNjgtMC4xLTAuNmMwLTAuODAxLDAuMjE3LTEuODY3LDAuNjQ5LTMuMjAxICBjMC45MzQtMi41MzMsMi4yNjgtNC45LDQtNy4xYzEuNDM0LTEuODM0LDMuMDY3LTMuNDM0LDQuOS00LjgwMWMyLjMtMS42LDQuNjE3LTIuNzUsNi45NS0zLjQ0OWMtMi4yNjctMS40NjctNC44NjctMi42MTctNy44LTMuNDQ5ICBsLTAuMTAxLDAuMDQ5Yy0xLjA2NiwwLjg2Ny0yLjYsMi4xLTQuNiwzLjcwMUM1NC43NjQsNDguMzM0LDUzLjY0Nyw0OS4yNSw1Mi45OCw0OS44NTJ6IE03Ny4zODEsNjAuMjVjLTIuNDY3LDAuNjY4LTUuMDY2LDItNy44LDQgIGMtMS44MzMsMS41LTMuNSwzLjEwMi01LDQuODAxYy0yLjEwMSwyLjQ2Ny0zLjY4NCw0LjgwMS00Ljc1LDdsLTEuMDUsMmwtMC4wNTEsMC4yNWMwLjEzNCwwLjEzMywwLjg2NywwLjY2NiwyLjIsMS42ICBjMS41NjcsMS4wMzMsMy4wMzMsMS44MzQsNC40LDIuNGMxLjg5OSwwLjc2OCwzLjU2NiwxLjEsNSwxYzEuODk5LTAuMTY2LDMuNTE3LTAuODM0LDQuODUtMmMxLjMzMy0xLjEsMi4zODQtMi43NSwzLjE1LTQuOTQ5ICBjMS4zOTktMy45NjcsMS42MTYtOC42ODQsMC42NDktMTQuMTVsLTAuNjQ5LTIuNUM3OC4wNjQsNTkuOTY3LDc3Ljc0OCw2MC4xNTEsNzcuMzgxLDYwLjI1eiBNNDAuMjgxLDU2Ljk1MiAgYy0wLjYzNC0xLjcwMS0xLjEwMS0zLjMxNi0xLjQtNC44NWMtMSwxLjAzMy0yLjcsMi4xMTUtNS4xLDMuMjVjLTYuMzY3LDMuMS0xMS41LDYuMDQ5LTE1LjQsOC44NSAgYy0yLjQ2NywxLjktNC40MTcsMy42MzMtNS44NSw1LjE5OWMtMS43NjgsMi4wNjYtMi45MTcsNC4wMzMtMy40NSw1LjljLTAuNjAxLDIuMDY2LTAuNTE3LDQuMDUxLDAuMjUsNS45NDkgIGMwLjUzMywxLjU2OCwxLjU4MywzLjI1LDMuMTQ5LDUuMDUxYzEuNzMzLDEuODAxLDMuMTg0LDMuMDY2LDQuMzUxLDMuODAxYzEuNiwxLDMuMTMzLDEuNTQ5LDQuNiwxLjY0OCAgYzEuNDY3LDAuMDMzLDIuODUxLTAuMzMyLDQuMTUtMS4xYzEuMTMzLTAuNjY2LDIuMjUtMS42MTcsMy4zNS0yLjg1YzEuNjAxLTEuOTY3LDMuMDUtNC4yODMsNC4zNTEtNi45NDkgIGMxLjYzMy0zLjMzNCwzLjExNi03LjI2OCw0LjQ0OS0xMS44MDFjMS4wMzMtMy45LDEuODg0LTcuOSwyLjU1MS0xMlY1Ni45NTJ6Ij48L3BhdGg+PC9nPjwvc3ZnPg==\" alt=\"\" />"
+            },
+            "name": "beeceptor.productCategory:all",
+            "position": {
+                "x": 395,
+                "y": 975
+            }
         },
         {
+            "type": "flow",
+            "id": "ce4c2561e0ec02cb",
+            "label": "Batch",
+            "shape": "square",
+            "property": null,
             "action": {
                 "app": "mysql",
                 "name": "get-product-list-sql-batch-connector",
                 "type": "batch",
                 "worker": "node-sdk"
             },
-            "id": "ce4c2561e0ec02cb",
-            "label": "Batch",
             "name": null,
             "position": {
-                "x": 610,
-                "y": 304
-            },
-            "property": null,
-            "shape": "square",
-            "type": "flow"
+                "x": 615,
+                "y": 295
+            }
         },
         {
+            "type": "flow",
+            "id": "58be76fbb90bacbd",
+            "label": "Custom Action",
+            "shape": "square",
+            "property": null,
             "action": {
                 "app": "mysql",
                 "name": "mysql-product-find-id",
                 "type": "custom",
                 "worker": "node-sdk"
             },
-            "id": "58be76fbb90bacbd",
-            "label": "Custom Action",
             "name": null,
             "position": {
-                "x": 805,
-                "y": 304
-            },
-            "property": null,
-            "shape": "square",
-            "type": "flow"
+                "x": 815,
+                "y": 295
+            }
         },
         {
+            "type": "flow",
+            "id": "bbf3120d3a7c7d68",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
             "action": {
                 "app": "beeceptor",
                 "name": "beeceptor-post-product-connector",
                 "type": "connector",
                 "worker": "node-sdk"
             },
-            "id": "bbf3120d3a7c7d68",
-            "label": "Connector",
             "name": null,
             "position": {
-                "x": 988,
-                "y": 304
-            },
-            "property": null,
-            "shape": "square",
-            "type": "flow"
+                "x": 995,
+                "y": 295
+            }
         },
         {
+            "type": "flow",
+            "id": "f0d3814c1e9611b6",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
             "action": {
                 "app": "beeceptor",
                 "name": "beeceptor-put-product-connector",
                 "type": "connector",
                 "worker": "node-sdk"
             },
-            "id": "f0d3814c1e9611b6",
-            "label": "Connector",
             "name": null,
             "position": {
-                "x": 988,
-                "y": 478
-            },
-            "property": null,
-            "shape": "square",
-            "type": "flow"
+                "x": 995,
+                "y": 475
+            }
         },
         {
+            "type": "flow",
+            "id": "2d7d48f22ad6acd9",
+            "label": "Custom Action",
+            "shape": "square",
+            "property": null,
             "action": {
                 "app": "mysql",
                 "name": "mysql-product-store-id",
                 "type": "custom",
                 "worker": "node-sdk"
             },
-            "id": "2d7d48f22ad6acd9",
-            "label": "Custom Action",
             "name": null,
             "position": {
                 "x": 1195,
-                "y": 304
-            },
-            "property": null,
-            "shape": "square",
-            "type": "flow"
+                "y": 295
+            }
         },
         {
+            "type": "flow",
+            "id": "bafdc1bff566d22e",
+            "label": "Batch",
+            "shape": "square",
+            "property": null,
             "action": {
                 "app": "mysql",
                 "name": "get-product-category-list-sql-batch-connector",
                 "type": "batch",
                 "worker": "node-sdk"
             },
-            "id": "bafdc1bff566d22e",
-            "label": "Batch",
             "name": null,
             "position": {
-                "x": 610,
-                "y": 797
-            },
-            "property": null,
-            "shape": "square",
-            "type": "flow"
+                "x": 615,
+                "y": 795
+            }
         },
         {
+            "type": "flow",
+            "id": "c417121b5fe897ec",
+            "label": "Custom Action",
+            "shape": "square",
+            "property": null,
             "action": {
                 "app": "mysql",
                 "name": "mysql-product-category-find-id",
                 "type": "custom",
                 "worker": "node-sdk"
             },
-            "id": "c417121b5fe897ec",
-            "label": "Custom Action",
             "name": null,
             "position": {
-                "x": 805,
-                "y": 797
-            },
-            "property": null,
-            "shape": "square",
-            "type": "flow"
+                "x": 815,
+                "y": 795
+            }
         },
         {
+            "type": "flow",
+            "id": "b13563f0d3dad9e3",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
             "action": {
                 "app": "beeceptor",
                 "name": "beeceptor-put-product-categories-connector",
                 "type": "connector",
                 "worker": "node-sdk"
             },
-            "id": "b13563f0d3dad9e3",
-            "label": "Connector",
             "name": null,
             "position": {
-                "x": 988,
-                "y": 797
-            },
-            "property": null,
-            "shape": "square",
-            "type": "flow"
+                "x": 995,
+                "y": 795
+            }
+        }
+    ],
+    "connections": [
+        {
+            "id": "98d82933e6453f39",
+            "from": "a22949f71e32eda5",
+            "to": "ce4c2561e0ec02cb",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "dffac931ef5ab635",
+            "from": "ce4c2561e0ec02cb",
+            "to": "58be76fbb90bacbd",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "97a0b5d173b88be7",
+            "from": "58be76fbb90bacbd",
+            "to": "bbf3120d3a7c7d68",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "67efb8eca530fc52",
+            "from": "58be76fbb90bacbd",
+            "to": "f0d3814c1e9611b6",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "d8ff7e8a8ca1e3b3",
+            "from": "bbf3120d3a7c7d68",
+            "to": "2d7d48f22ad6acd9",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "2fb078696457b8da",
+            "from": "26b0b8c8d05301f8",
+            "to": "ce4c2561e0ec02cb",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "8f5256f3ffa88d11",
+            "from": "5c9d09682a2b8667",
+            "to": "ce4c2561e0ec02cb",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "d88b08daa6c38b3d",
+            "from": "92edba2a3a159b4c",
+            "to": "bafdc1bff566d22e",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "e631b5f3e3dab3a3",
+            "from": "bafdc1bff566d22e",
+            "to": "c417121b5fe897ec",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "b61af097bc7f08c9",
+            "from": "c417121b5fe897ec",
+            "to": "b13563f0d3dad9e3",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "371744989822a1d7",
+            "from": "be4c4c416efd4c9a",
+            "to": "bafdc1bff566d22e",
+            "sourceOutput": "output",
+            "targetInput": "input"
         }
     ]
 }

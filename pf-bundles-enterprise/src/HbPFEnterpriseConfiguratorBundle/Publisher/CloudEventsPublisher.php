@@ -42,10 +42,10 @@ final class CloudEventsPublisher
      * by `event_type` + `severity` and apply per-preset throttling so messages
      * vs. storage are throttled independently.
      *
-     * @param string  $resource e.g. "messages" / "storage"
-     * @param string  $band     "warning" | "critical" | "exceeded"
-     * @param int|float $current
-     * @param int|float $limit
+     * @param string     $resource e.g. "messages" / "storage"
+     * @param string     $band     "warning" | "critical" | "exceeded"
+     * @param int|float  $current
+     * @param int|float  $limit
      * @param float|null $percent
      */
     public function publishLimitThreshold(
@@ -59,19 +59,19 @@ final class CloudEventsPublisher
         $severity = $band === 'warning' ? 'warning' : 'critical';
 
         $payload = [
-            'event_id'    => self::generateUuid(),
-            'event_type'  => self::EVENT_TYPE_CLOUD_LIMIT_THRESHOLD,
-            'occurred_at' => (new DateTimeImmutable())->format(DATE_ATOM),
-            'tenant_id'   => '',
-            'severity'    => $severity,
             'context'     => [
-                'resource' => $resource,
                 'band'     => $band,
-                'percent'  => $percent,
                 'current'  => $current,
                 'limit'    => $limit,
+                'percent'  => $percent,
+                'resource' => $resource,
             ],
+            'event_id'    => self::generateUuid(),
+            'event_type'  => self::EVENT_TYPE_CLOUD_LIMIT_THRESHOLD,
             'message'     => self::buildMessage($resource, $band, $percent),
+            'occurred_at' => (new DateTimeImmutable())->format(DATE_ATOM),
+            'severity'    => $severity,
+            'tenant_id'   => '',
         ];
 
         try {
@@ -97,6 +97,13 @@ final class CloudEventsPublisher
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
 
+    /**
+     * @param string     $resource
+     * @param string     $band
+     * @param float|null $percent
+     *
+     * @return string
+     */
     private static function buildMessage(string $resource, string $band, ?float $percent): string
     {
         $resourceLabel = $resource === 'messages' ? 'messages-in-flight' : 'storage';

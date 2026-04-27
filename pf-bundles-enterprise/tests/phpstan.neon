@@ -40,3 +40,4 @@ parameters:
 			- Hanaboso\PipesFrameworkEnterprise\Mcp\Document\AuditDataField
 			- Hanaboso\PipesFrameworkEnterprise\Mcp\Document\AuditEntity
 			- Hanaboso\PipesFrameworkEnterprise\Mcp\Document\AuditEntityField
+			- Hanaboso\PipesFrameworkEnterprise\TraceReport\Document\TraceReport

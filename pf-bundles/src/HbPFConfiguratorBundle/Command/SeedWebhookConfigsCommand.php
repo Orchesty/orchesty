@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\PipesFramework\Application\Document\Webhook;
 use Hanaboso\PipesFramework\Application\Document\WebhookConfig;
 use Hanaboso\PipesFramework\Application\Repository\WebhookConfigRepository;
@@ -13,6 +14,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
 /**
+ * Class SeedWebhookConfigsCommand
+ *
+ * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command
+ *
  * Backfills WebhookConfig records from existing live Webhook documents so the
  * UI-driven webhook flow has the same intent visible as before the migration.
  *
@@ -24,11 +29,26 @@ final class SeedWebhookConfigsCommand extends Command
 
     private const string CMD_NAME = 'webhook:seed-configs';
 
+    /**
+     * @var ObjectRepository<WebhookConfig>&WebhookConfigRepository
+     */
+    private WebhookConfigRepository $configRepository;
+
+    /**
+     * SeedWebhookConfigsCommand constructor.
+     *
+     * @param DocumentManager $dm
+     */
     public function __construct(private readonly DocumentManager $dm)
     {
         parent::__construct(self::CMD_NAME);
+
+        $this->configRepository = $this->dm->getRepository(WebhookConfig::class);
     }
 
+    /**
+     * @return void
+     */
     protected function configure(): void
     {
         $this
@@ -42,13 +62,17 @@ final class SeedWebhookConfigsCommand extends Command
             );
     }
 
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return int
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $dryRun = (bool) $input->getOption('dry-run');
 
         try {
-            /** @var WebhookConfigRepository $configRepo */
-            $configRepo = $this->dm->getRepository(WebhookConfig::class);
             $webhookRepo = $this->dm->getRepository(Webhook::class);
 
             $webhooks = $webhookRepo->findAll();
@@ -67,19 +91,21 @@ final class SeedWebhookConfigsCommand extends Command
                             $webhook->getApplication(),
                         ),
                     );
+
                     continue;
                 }
 
-                $existing = $configRepo->findOneBy([
-                    'topologyName' => $webhook->getTopology(),
-                    'nodeName'     => $webhook->getNode(),
+                $existing = $this->configRepository->findOneBy([
                     'application'  => $webhook->getApplication(),
-                    'user'         => $webhook->getUser(),
+                    'nodeName'     => $webhook->getNode(),
                     'sdk'          => $webhook->getSdk(),
+                    'topologyName' => $webhook->getTopology(),
+                    'user'         => $webhook->getUser(),
                 ]);
 
                 if ($existing) {
                     $skipped++;
+
                     continue;
                 }
 
@@ -120,6 +146,7 @@ final class SeedWebhookConfigsCommand extends Command
             return 0;
         } catch (Throwable $e) {
             $output->writeln(sprintf(' FAIL (%s)', $e->getMessage()));
+
             return 1;
         }
     }

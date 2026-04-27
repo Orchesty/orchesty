@@ -11,6 +11,7 @@ use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\ProcessHandler;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
 use Hanaboso\PipesFrameworkEnterprise\Mcp\Model\MetricsAggregator;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
@@ -24,9 +25,13 @@ use PHPUnit\Framework\TestCase;
  * @package PipesFrameworkEnterpriseTests\Integration\Mcp\Model
  */
 #[CoversClass(MetricsAggregator::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class MetricsAggregatorTest extends TestCase
 {
 
+    /**
+     * Verifies that the processes timeseries response carries the expected shape and totals.
+     */
     public function testProcessesTimeseriesShape(): void
     {
         $processHandler = $this->createMock(ProcessHandler::class);
@@ -61,6 +66,9 @@ final class MetricsAggregatorTest extends TestCase
         self::assertStringContainsString('all topologies', $result['title']);
     }
 
+    /**
+     * Verifies that the topology id and bucket count are forwarded to the underlying handler.
+     */
     public function testProcessesTimeseriesPassesTopologyAndBuckets(): void
     {
         $processHandler = $this->createMock(ProcessHandler::class);
@@ -77,8 +85,8 @@ final class MetricsAggregatorTest extends TestCase
         );
 
         $result = $aggregator->getProcessesTimeseries([
-            'period'      => 'today',
             'buckets'     => 6,
+            'period'      => 'today',
             'topology_id' => 'topo-1',
         ]);
 
@@ -88,6 +96,9 @@ final class MetricsAggregatorTest extends TestCase
         self::assertSame(0, $result['total']);
     }
 
+    /**
+     * Verifies that an out-of-range bucket count is clamped to the maximum value.
+     */
     public function testBucketsCappedToMax(): void
     {
         $processHandler = $this->createMock(ProcessHandler::class);
@@ -106,6 +117,9 @@ final class MetricsAggregatorTest extends TestCase
         $aggregator->getProcessesTimeseries(['period' => 'last_30d', 'buckets' => 999]);
     }
 
+    /**
+     * Verifies that failing connectors are ranked by failure count and the list is capped to the limit.
+     */
     public function testFailingConnectorsRanksAndCapsList(): void
     {
         $items = [
@@ -139,16 +153,19 @@ final class MetricsAggregatorTest extends TestCase
         self::assertSame(15, $result['items'][1]['failed']);
     }
 
+    /**
+     * Verifies that the failing connectors limit argument is honoured (and clamped to MAX_LIMIT).
+     */
     public function testFailingConnectorsRespectsLimit(): void
     {
         $items = [];
         for ($i = 0; $i < 25; $i++) {
             $items[] = [
-                'nodeId'     => 'n-' . $i,
-                'topologyId' => 't-1',
                 'count'      => 10,
+                'nodeId'     => sprintf('n-%d', $i),
                 'status400'  => 1,
                 'status500'  => 0,
+                'topologyId' => 't-1',
             ];
         }
 
@@ -170,6 +187,9 @@ final class MetricsAggregatorTest extends TestCase
         self::assertCount(3, $explicit['items']);
     }
 
+    /**
+     * Verifies that recent error items are built from connector metrics rows.
+     */
     public function testRecentErrorsBuildsItemsFromConnectorMetrics(): void
     {
         $rows = [
@@ -244,6 +264,9 @@ final class MetricsAggregatorTest extends TestCase
         self::assertSame(502, $result['items'][1]['httpStatus']);
     }
 
+    /**
+     * Verifies that the topology_id post-filter is applied to the recent errors result set.
+     */
     public function testRecentErrorsRespectsTopologyPostFilter(): void
     {
         $rows = [
@@ -265,9 +288,9 @@ final class MetricsAggregatorTest extends TestCase
         );
 
         $result = $aggregator->getRecentErrors([
+            'limit'       => 999,
             'period'      => 'today',
             'topology_id' => 't-target',
-            'limit'       => 999,
         ]);
 
         self::assertCount(2, $result['items']);
@@ -276,14 +299,17 @@ final class MetricsAggregatorTest extends TestCase
         self::assertStringContainsString('t-target', $result['title']);
     }
 
+    /**
+     * Verifies that the recent errors limit argument is honoured.
+     */
     public function testRecentErrorsRespectsLimit(): void
     {
         $rows = [];
         for ($i = 0; $i < 15; $i++) {
             $rows[] = [
-                'correlationId' => 'cid-' . $i,
+                'correlationId' => sprintf('cid-%d', $i),
                 'created'       => sprintf('2026-04-26T20:%02d:00Z', $i),
-                'message'       => 'err ' . $i,
+                'message'       => sprintf('err %d', $i),
                 'nodeId'        => 'n',
                 'status'        => 500,
                 'topologyId'    => 't-1',
@@ -304,6 +330,9 @@ final class MetricsAggregatorTest extends TestCase
         self::assertCount(3, $result['items']);
     }
 
+    /**
+     * Verifies that recent errors returns an empty list when the metrics handler yields no rows.
+     */
     public function testRecentErrorsEmptyWhenNoMetrics(): void
     {
         $metricsHandler = $this->createMock(MetricsHandler::class);
@@ -321,6 +350,9 @@ final class MetricsAggregatorTest extends TestCase
         self::assertSame([], $result['items']);
     }
 
+    /**
+     * @return DocumentManager
+     */
     private function mockDmWithoutDocs(): DocumentManager
     {
         $repo = $this->createMock(ObjectRepository::class);

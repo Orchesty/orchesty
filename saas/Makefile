@@ -1,5 +1,5 @@
-DCS=docker-compose exec -T console-api
-DCB=docker-compose exec -T applinth-billing-processor
+DCS=docker compose exec -T console-api
+DCB=docker compose exec -T applinth-billing-processor
 
 .env:
 	sed -e "s/{DEV_UID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -u); else echo '1001'; fi)/g" \
@@ -7,8 +7,8 @@ DCB=docker-compose exec -T applinth-billing-processor
 		.env.dist > .env; \
 
 docker-up-force: .env
-	docker-compose pull --ignore-pull-failures
-	docker-compose up -d --force-recreate --remove-orphans
+	docker compose pull --ignore-pull-failures
+	docker compose up -d --force-recreate --remove-orphans
 
 docker-down-clean: .env
 

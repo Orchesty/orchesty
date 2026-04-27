@@ -99,15 +99,15 @@ export default class CloudLimitThresholdEmailMapper extends ACommonNode {
             </tr>
             <tr>
               <td style="padding:12px 16px;background-color:#f9fafb;border-bottom:1px solid #e5e7eb;color:#6b7280;font-size:13px">Utilization</td>
-              <td style="padding:12px 16px;border-bottom:1px solid #e5e7eb;color:${accentColor};font-size:14px;font-weight:600">${percent ? `${Number(percent).toFixed(1)}%` : '—'}</td>
+              <td style="padding:12px 16px;border-bottom:1px solid #e5e7eb;color:${accentColor};font-size:14px;font-weight:600">${percent ? `${Number(percent).toFixed(1) /* eslint-disable-line @typescript-eslint/no-unnecessary-type-conversion */}%` : '—'}</td>
             </tr>
             <tr>
               <td style="padding:12px 16px;background-color:#f9fafb;border-bottom:1px solid #e5e7eb;color:#6b7280;font-size:13px">Current</td>
-              <td style="padding:12px 16px;border-bottom:1px solid #e5e7eb;color:#111827;font-size:14px">${Number(current).toLocaleString()}</td>
+              <td style="padding:12px 16px;border-bottom:1px solid #e5e7eb;color:#111827;font-size:14px">${Number(current).toLocaleString() /* eslint-disable-line @typescript-eslint/no-unnecessary-type-conversion */}</td>
             </tr>
             <tr>
               <td style="padding:12px 16px;background-color:#f9fafb;color:#6b7280;font-size:13px">Limit</td>
-              <td style="padding:12px 16px;color:#111827;font-size:14px">${Number(limit).toLocaleString()}</td>
+              <td style="padding:12px 16px;color:#111827;font-size:14px">${Number(limit).toLocaleString() /* eslint-disable-line @typescript-eslint/no-unnecessary-type-conversion */}</td>
             </tr>
           </table>
           <p style="margin:0 0 8px;color:#6b7280;font-size:13px">Occurred at: <strong>${esc(occurredAt)}</strong></p>

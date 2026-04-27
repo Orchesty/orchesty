@@ -8,6 +8,8 @@ use Exception;
 use LogicException;
 
 /**
+ * Class DateRangeResolver
+ *
  * Resolves user-friendly date inputs (`day`, `from`/`to`, `period`) emitted by
  * the Trace LLM into a `[start, end?]` tuple of `DateTimeImmutable`.
  *
@@ -59,9 +61,7 @@ final class DateRangeResolver
 
         $provided = array_filter([$day !== NULL, ($from !== NULL || $to !== NULL), $period !== NULL]);
         if (count($provided) > 1) {
-            throw new LogicException(
-                'Provide at most one of day / from+to / period when specifying a date range.',
-            );
+            throw new LogicException('Provide at most one of day / from+to / period when specifying a date range.');
         }
 
         if ($day !== NULL) {
@@ -81,6 +81,9 @@ final class DateRangeResolver
 
     /**
      * @param mixed[] $args
+     * @param string  $key
+     *
+     * @return string|null
      */
     private static function stringOrNull(array $args, string $key): ?string
     {
@@ -101,6 +104,8 @@ final class DateRangeResolver
     }
 
     /**
+     * @param string $day
+     *
      * @return array{0: DateTimeImmutable, 1: DateTimeImmutable}
      */
     private static function resolveDay(string $day): array
@@ -112,7 +117,7 @@ final class DateRangeResolver
         }
 
         try {
-            $start = new DateTimeImmutable($day . 'T00:00:00', new DateTimeZone('UTC'));
+            $start = new DateTimeImmutable(sprintf('%sT00:00:00', $day), new DateTimeZone('UTC'));
         } catch (Exception $e) {
             throw new LogicException(sprintf('Invalid "day" value "%s": %s', $day, $e->getMessage()));
         }
@@ -121,6 +126,9 @@ final class DateRangeResolver
     }
 
     /**
+     * @param string|null $from
+     * @param string|null $to
+     *
      * @return array{0: DateTimeImmutable, 1: DateTimeImmutable}
      */
     private static function resolveFromTo(?string $from, ?string $to): array
@@ -144,6 +152,9 @@ final class DateRangeResolver
     }
 
     /**
+     * @param string            $period
+     * @param DateTimeImmutable $now
+     *
      * @return array{0: DateTimeImmutable, 1: DateTimeImmutable}
      */
     private static function resolvePeriod(string $period, DateTimeImmutable $now): array

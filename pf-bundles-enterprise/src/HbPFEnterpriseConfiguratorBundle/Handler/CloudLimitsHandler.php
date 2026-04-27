@@ -51,8 +51,8 @@ final class CloudLimitsHandler
     /**
      * CloudLimitsHandler constructor.
      *
-     * @param DocumentManager $dm        main DocumentManager (Topology, Limiter, snapshot)
-     * @param DocumentManager $metricsDm metrics DocumentManager (rabbit/storage/loki/limiter history)
+     * @param DocumentManager $dm                 main DocumentManager (Topology, Limiter, snapshot)
+     * @param DocumentManager $metricsDm          metrics DocumentManager (rabbit/storage/loki/limiter history)
      * @param int             $limitMessages
      * @param int             $limitStorageGb
      * @param int             $limitTopologySlots
@@ -87,9 +87,9 @@ final class CloudLimitsHandler
             ->count()
             ->getQuery()
             ->execute();
-        $limiterCount = is_int($limiterCount) ? $limiterCount : (int) $limiterCount;
+        $limiterCount = is_int($limiterCount) ? $limiterCount : 0;
 
-        $messagesUsed = $limiterCount + (int) ($rabbit['total_messages'] ?? 0);
+        $messagesUsed  = $limiterCount + (int) ($rabbit['total_messages'] ?? 0);
         $storageMbUsed = (float) ($storage['storage_size_mb'] ?? 0)
             + (float) ($rabbit['total_disk_mb'] ?? 0)
             + (float) ($loki['total_data_size_mb'] ?? 0);
@@ -98,30 +98,30 @@ final class CloudLimitsHandler
         // Disabling a topology does NOT free the slot - only decommission /
         // unpublish / delete does. Same source as the Resources page bridge
         // grid so the two surfaces always agree.
-        $slotsUsed = $topologyRepo->getPublishedCount();
-        $storageMbLimit = $this->limitStorageGb > 0 ? $this->limitStorageGb * 1024.0 : 0.0;
+        $slotsUsed      = $topologyRepo->getPublishedCount();
+        $storageMbLimit = $this->limitStorageGb > 0 ? $this->limitStorageGb * 1_024.0 : 0.0;
 
         return [
+            'band'      => [
+                'messages' => self::band($messagesUsed, $this->limitMessages),
+                'storage'  => self::band($storageMbUsed, $storageMbLimit),
+            ],
             'limits'    => [
                 'messages'      => $this->limitMessages,
                 'storageGb'     => $this->limitStorageGb,
                 'topologySlots' => $this->limitTopologySlots,
             ],
+            'percent'   => [
+                'messages' => self::percent($messagesUsed, $this->limitMessages),
+                'slots'    => self::percent($slotsUsed, $this->limitTopologySlots),
+                'storage'  => self::percent($storageMbUsed, $storageMbLimit),
+            ],
+            'updatedAt' => (new DateTime())->format(DATE_ATOM),
             'usage'     => [
                 'messages'      => $messagesUsed,
                 'storageMb'     => round($storageMbUsed, 2),
                 'topologySlots' => $slotsUsed,
             ],
-            'percent'   => [
-                'messages' => self::percent($messagesUsed, $this->limitMessages),
-                'storage'  => self::percent($storageMbUsed, $storageMbLimit),
-                'slots'    => self::percent($slotsUsed, $this->limitTopologySlots),
-            ],
-            'band'      => [
-                'messages' => self::band($messagesUsed, $this->limitMessages),
-                'storage'  => self::band($storageMbUsed, $storageMbLimit),
-            ],
-            'updatedAt' => (new DateTime())->format(DATE_ATOM),
         ];
     }
 
@@ -141,7 +141,7 @@ final class CloudLimitsHandler
             return $this->computeUsage();
         }
 
-        $arr = (array) $doc;
+        $arr     = (array) $doc;
         $payload = $arr['payload'] ?? NULL;
         if (!is_array($payload) && !is_object($payload)) {
             return $this->computeUsage();
@@ -181,6 +181,10 @@ final class CloudLimitsHandler
      * messages-in-flight (RabbitMQ total_messages + Limiter doc count) and
      * storage MB (Mongo + RabbitMQ disk + Loki retention).
      *
+     * @param string $from
+     * @param string $to
+     * @param int    $buckets
+     *
      * @return mixed[]
      */
     public function getHistory(string $from, string $to, int $buckets): array
@@ -192,9 +196,9 @@ final class CloudLimitsHandler
         $binSize = max(60_000, (int) ceil($rangeMs / max(1, $buckets)));
 
         return [
+            'binMs'    => $binSize,
             'messages' => $this->aggregateMessagesHistory($dateFrom, $dateTo, $binSize),
             'storage'  => $this->aggregateStorageHistory($dateFrom, $dateTo, $binSize),
-            'binMs'    => $binSize,
         ];
     }
 
@@ -215,15 +219,15 @@ final class CloudLimitsHandler
                 continue;
             }
             $out[] = [
-                'resource' => $resource,
                 'band'     => $band,
-                'percent'  => $usage['percent'][$resource] ?? NULL,
                 'current'  => $resource === 'messages'
                     ? ($usage['usage']['messages'] ?? 0)
                     : ($usage['usage']['storageMb'] ?? 0),
                 'limit'    => $resource === 'messages'
                     ? ($usage['limits']['messages'] ?? 0)
-                    : (($usage['limits']['storageGb'] ?? 0) * 1024.0),
+                    : ($usage['limits']['storageGb'] ?? 0) * 1_024.0,
+                'percent'  => $usage['percent'][$resource] ?? NULL,
+                'resource' => $resource,
             ];
         }
 
@@ -231,6 +235,9 @@ final class CloudLimitsHandler
     }
 
     /**
+     * @param int|float $current
+     * @param int|float $limit
+     *
      * @return float|null Percentage (0..N) or null when the limit is unset/<=0 (unlimited).
      */
     public static function percent(int|float $current, int|float $limit): ?float
@@ -239,15 +246,21 @@ final class CloudLimitsHandler
             return NULL;
         }
 
-        return round(((float) $current / (float) $limit) * 100, 1);
+        return round((float) $current / (float) $limit * 100, 1);
     }
 
+    /**
+     * @param int|float $current
+     * @param int|float $limit
+     *
+     * @return string
+     */
     public static function band(int|float $current, int|float $limit): string
     {
         if ($limit <= 0) {
             return self::BAND_NONE;
         }
-        $pct = ((float) $current / (float) $limit) * 100;
+        $pct = (float) $current / (float) $limit * 100;
 
         if ($pct >= 100) {
             return self::BAND_EXCEEDED;
@@ -263,6 +276,8 @@ final class CloudLimitsHandler
     }
 
     /**
+     * @param string $collection
+     *
      * @return mixed[]
      */
     private function fetchLatestMetric(string $collection): array
@@ -282,6 +297,11 @@ final class CloudLimitsHandler
         return [];
     }
 
+    /**
+     * @param string $collection
+     *
+     * @return Collection
+     */
     private function metricsCollection(string $collection): Collection
     {
         // LimiterMetrics is mapped to the metrics DB - we re-use its database
@@ -291,24 +311,60 @@ final class CloudLimitsHandler
     }
 
     /**
+     * @param UTCDateTime $from
+     * @param UTCDateTime $to
+     * @param int         $binSize
+     *
      * @return mixed[]
      */
     private function aggregateMessagesHistory(UTCDateTime $from, UTCDateTime $to, int $binSize): array
     {
-        $rabbit  = $this->aggregateLatestNumeric(self::COLLECTION_RABBIT_METRICS, 'total_messages', 'timestamp', $from, $to, $binSize);
+        $rabbit  = $this->aggregateLatestNumeric(
+            self::COLLECTION_RABBIT_METRICS,
+            'total_messages',
+            'timestamp',
+            $from,
+            $to,
+            $binSize,
+        );
         $limiter = $this->aggregateLatestNumeric('limiter', 'fields.messages', 'fields.created', $from, $to, $binSize);
 
         return $this->mergeSeries($rabbit, $limiter);
     }
 
     /**
+     * @param UTCDateTime $from
+     * @param UTCDateTime $to
+     * @param int         $binSize
+     *
      * @return mixed[]
      */
     private function aggregateStorageHistory(UTCDateTime $from, UTCDateTime $to, int $binSize): array
     {
-        $rabbit = $this->aggregateLatestNumeric(self::COLLECTION_RABBIT_METRICS, 'total_disk_mb', 'timestamp', $from, $to, $binSize);
-        $mongo  = $this->aggregateLatestNumeric(self::COLLECTION_DB_STORAGE_METRICS, 'storage_size_mb', 'timestamp', $from, $to, $binSize);
-        $loki   = $this->aggregateLatestNumeric(self::COLLECTION_LOKI_METRICS, 'total_data_size_mb', 'timestamp', $from, $to, $binSize);
+        $rabbit = $this->aggregateLatestNumeric(
+            self::COLLECTION_RABBIT_METRICS,
+            'total_disk_mb',
+            'timestamp',
+            $from,
+            $to,
+            $binSize,
+        );
+        $mongo  = $this->aggregateLatestNumeric(
+            self::COLLECTION_DB_STORAGE_METRICS,
+            'storage_size_mb',
+            'timestamp',
+            $from,
+            $to,
+            $binSize,
+        );
+        $loki   = $this->aggregateLatestNumeric(
+            self::COLLECTION_LOKI_METRICS,
+            'total_data_size_mb',
+            'timestamp',
+            $from,
+            $to,
+            $binSize,
+        );
 
         return $this->mergeSeries($rabbit, $mongo, $loki);
     }
@@ -317,6 +373,13 @@ final class CloudLimitsHandler
      * Per-bucket "latest sample" for a numeric scalar field on a `timestamp`-keyed
      * metrics collection. Returns `[ ['created' => ISO, 'value' => float], ... ]`
      * sorted ascending by bucket start.
+     *
+     * @param string      $collection
+     * @param string      $valueField
+     * @param string      $timeField
+     * @param UTCDateTime $from
+     * @param UTCDateTime $to
+     * @param int         $binSize
      *
      * @return mixed[]
      */
@@ -336,15 +399,13 @@ final class CloudLimitsHandler
             $pipeline = [
                 ['$match' => [$timeField => ['$gte' => $from, '$lt' => $to]]],
                 ['$project' => [
-                    'time'   => '$' . $timeField,
-                    'value'  => ['$ifNull' => ['$' . $valueField, 0]],
                     'bucket' => [
                         '$add' => [
                             $fromMs,
                             ['$multiply' => [
                                 ['$floor' => [
                                     ['$divide' => [
-                                        ['$subtract' => [['$toLong' => '$' . $timeField], $fromMs]],
+                                        ['$subtract' => [['$toLong' => sprintf('$%s', $timeField)], $fromMs]],
                                         $binSize,
                                     ]],
                                 ]],
@@ -352,22 +413,27 @@ final class CloudLimitsHandler
                             ]],
                         ],
                     ],
+                    'time'   => sprintf('$%s', $timeField),
+                    'value'  => ['$ifNull' => [sprintf('$%s', $valueField), 0]],
                 ]],
                 ['$sort' => ['time' => 1]],
                 ['$group' => [
-                    '_id'   => '$bucket',
                     'value' => ['$last' => '$value'],
+                    '_id'   => '$bucket',
                 ]],
                 ['$sort' => ['_id' => 1]],
                 ['$project' => [
-                    '_id'     => 0,
-                    'created' => ['$dateToString' => ['format' => '%Y-%m-%dT%H:%M:%SZ', 'date' => ['$toDate' => '$_id']]],
+                    'created' => ['$dateToString' => ['date' => ['$toDate' => '$_id'], 'format' => '%Y-%m-%dT%H:%M:%SZ']],
                     'value'   => ['$round' => ['$value', 2]],
+                    '_id'     => 0,
                 ]],
             ];
 
             $out = [];
-            foreach ($coll->aggregate($pipeline, ['typeMap' => ['root' => 'array', 'document' => 'array', 'array' => 'array']]) as $row) {
+            foreach ($coll->aggregate(
+                $pipeline,
+                ['typeMap' => ['array' => 'array', 'document' => 'array', 'root' => 'array']],
+            ) as $row) {
                 $out[] = (array) $row;
             }
 

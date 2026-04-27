@@ -44,6 +44,9 @@ class TraceReport
     #[ODM\Field(type: 'date')]
     private DateTime $updatedAt;
 
+    /**
+     * TraceReport constructor.
+     */
     public function __construct()
     {
         $now             = new DateTime();
@@ -51,11 +54,19 @@ class TraceReport
         $this->updatedAt = $now;
     }
 
+    /**
+     * @return string
+     */
     public function getUserId(): string
     {
         return $this->userId;
     }
 
+    /**
+     * @param string $userId
+     *
+     * @return self
+     */
     public function setUserId(string $userId): self
     {
         $this->userId = $userId;
@@ -63,11 +74,19 @@ class TraceReport
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getTitle(): string
     {
         return $this->title;
     }
 
+    /**
+     * @param string $title
+     *
+     * @return self
+     */
     public function setTitle(string $title): self
     {
         $this->title     = $title;
@@ -76,11 +95,19 @@ class TraceReport
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getContentHtml(): string
     {
         return $this->contentHtml;
     }
 
+    /**
+     * @param string $contentHtml
+     *
+     * @return self
+     */
     public function setContentHtml(string $contentHtml): self
     {
         $this->contentHtml = $contentHtml;
@@ -89,11 +116,19 @@ class TraceReport
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getMessageId(): ?string
     {
         return $this->messageId;
     }
 
+    /**
+     * @param string|null $messageId
+     *
+     * @return self
+     */
     public function setMessageId(?string $messageId): self
     {
         $this->messageId = $messageId;
@@ -101,16 +136,25 @@ class TraceReport
         return $this;
     }
 
+    /**
+     * @return DateTime
+     */
     public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
 
+    /**
+     * @return DateTime
+     */
     public function getUpdatedAt(): DateTime
     {
         return $this->updatedAt;
     }
 
+    /**
+     * @return self
+     */
     public function touch(): self
     {
         $this->updatedAt = new DateTime();
@@ -124,13 +168,13 @@ class TraceReport
     public function toArray(): array
     {
         return [
-            self::ID           => $this->id,
-            self::TITLE        => $this->title,
-            self::CONTENT_HTML => $this->contentHtml,
-            self::MESSAGE_ID   => $this->messageId,
-            'userId'           => $this->userId,
             'createdAt'        => $this->createdAt->format('c'),
             'updatedAt'        => $this->updatedAt->format('c'),
+            'userId'           => $this->userId,
+            self::CONTENT_HTML => $this->contentHtml,
+            self::ID           => $this->id,
+            self::MESSAGE_ID   => $this->messageId,
+            self::TITLE        => $this->title,
         ];
     }
 

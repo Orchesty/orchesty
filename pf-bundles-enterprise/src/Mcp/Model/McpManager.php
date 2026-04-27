@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFrameworkEnterprise\Mcp\Model;
 
-use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
@@ -93,17 +93,17 @@ final class McpManager
             // to put exactly one of these alongside `audit`/`data`. They are
             // forwarded to topology_progress.startedAt and Loki query window
             // by McpManager::run().
-            $properties['day'] = [
+            $properties['day']    = [
                 'description' => 'Restrict to a single calendar day (UTC), e.g. "2026-03-12".',
                 'format'      => 'date',
                 'type'        => 'string',
             ];
-            $properties['from'] = [
+            $properties['from']   = [
                 'description' => 'ISO 8601 start of the date range (inclusive). Use together with "to".',
                 'format'      => 'date-time',
                 'type'        => 'string',
             ];
-            $properties['to'] = [
+            $properties['to']     = [
                 'description' => 'ISO 8601 end of the date range (exclusive). Use together with "from".',
                 'format'      => 'date-time',
                 'type'        => 'string',
@@ -118,18 +118,7 @@ final class McpManager
 
             return [
                 'description'   => sprintf(
-                    'Returns the audit history of a single %s entity: for every '
-                    . 'topology run that touched it, an `entry` snapshot (when '
-                    . 'business data entered the process), zero or more `steps` '
-                    . '(intermediate audit checkpoints, possibly from sibling '
-                    . 'entities of the same correlation), and an `exit` snapshot '
-                    . '(when the process delegated the data to its destination). '
-                    . 'Each snapshot carries a `time`, `nodeName` and the picked '
-                    . '`payload` (subset of fields declared in the audit node\'s '
-                    . 'allowlist). Snapshots are null when the topology has no '
-                    . 'AuditCheckpointNode with the corresponding role. Optional '
-                    . 'top-level `day` / `from`+`to` / `period` narrow the result '
-                    . 'to topology runs started in that window.',
+                    'Returns the audit history of a single %s entity: for every topology run that touched it, an `entry` snapshot (when business data entered the process), zero or more `steps` (intermediate audit checkpoints, possibly from sibling entities of the same correlation), and an `exit` snapshot (when the process delegated the data to its destination). Each snapshot carries a `time`, `nodeName` and the picked `payload` (subset of fields declared in the audit node\'s allowlist). Snapshots are null when the topology has no AuditCheckpointNode with the corresponding role. Optional top-level `day` / `from`+`to` / `period` narrow the result to topology runs started in that window.',
                     $entityName,
                 ),
                 'id'            => $entity->getKey(),
@@ -188,176 +177,6 @@ final class McpManager
     }
 
     /**
-     * Fixed actions the LLM can call for cross-cutting metrics questions.
-     * They sit alongside the per-entity audit history so the model can pick
-     * the right tool: entity-specific timelines go through `entity_history`,
-     * "how many processes" / "which connector fails most" go through these.
-     *
-     * @return mixed[]
-     */
-    private function getMetricsManifest(): array
-    {
-        $dateProperties = [
-            'from'   => [
-                'description' => 'ISO 8601 start of the range (inclusive). Use with "to".',
-                'format'      => 'date-time',
-                'type'        => 'string',
-            ],
-            'to'     => [
-                'description' => 'ISO 8601 end of the range (exclusive). Use with "from".',
-                'format'      => 'date-time',
-                'type'        => 'string',
-            ],
-            'period' => [
-                'description' => 'Named relative range: today, yesterday, this_week, last_7d, last_30d.',
-                'enum'        => ['today', 'yesterday', 'this_week', 'last_7d', 'last_30d'],
-                'type'        => 'string',
-            ],
-        ];
-
-        return [
-            [
-                'description'   => 'Aggregated process counts (success/failed) bucketed over a time '
-                    . 'range. Use for questions like "how many processes ran last week" or '
-                    . '"what is the failure rate today". Do NOT use for per-entity history; '
-                    . 'route those through the entity_history actions.',
-                'id'            => 'processes_timeseries',
-                'input_schema'  => [
-                    'properties' => [
-                        ...$dateProperties,
-                        'topology_id' => [
-                            'description' => 'Optional topology id to restrict the aggregation to one topology.',
-                            'type'        => 'string',
-                        ],
-                        'buckets'     => [
-                            'description' => 'Bucket count between 1 and 24 (default 12).',
-                            'maximum'     => 24,
-                            'minimum'     => 1,
-                            'type'        => 'integer',
-                        ],
-                    ],
-                    'type'       => 'object',
-                ],
-                'kind'          => 'timeseries',
-                'output_schema' => [
-                    'properties' => [
-                        'failed' => ['type' => 'integer'],
-                        'kind'   => ['type' => 'string'],
-                        'period' => ['type' => 'string'],
-                        'points' => [
-                            'items' => [
-                                'properties' => [
-                                    'failed'  => ['type' => 'integer'],
-                                    'success' => ['type' => 'integer'],
-                                    'time'    => ['type' => 'string'],
-                                ],
-                                'type'       => 'object',
-                            ],
-                            'type'  => 'array',
-                        ],
-                        'title'  => ['type' => 'string'],
-                        'total'  => ['type' => 'integer'],
-                    ],
-                    'type'       => 'object',
-                ],
-                'title'         => 'Process counts over time',
-            ],
-            [
-                'description'   => 'Top connectors by failure count over a time range. Use for '
-                    . '"which connector is failing", "show flaky connectors today" type questions. '
-                    . 'Returns a short list ranked by failure count (descending).',
-                'id'            => 'failing_connectors',
-                'input_schema'  => [
-                    'properties' => [
-                        ...$dateProperties,
-                        'limit' => [
-                            'description' => 'Maximum number of connectors to return (1-20, default 10).',
-                            'maximum'     => 20,
-                            'minimum'     => 1,
-                            'type'        => 'integer',
-                        ],
-                    ],
-                    'type'       => 'object',
-                ],
-                'kind'          => 'list',
-                'output_schema' => [
-                    'properties' => [
-                        'items'  => [
-                            'items' => [
-                                'properties' => [
-                                    'failed'       => ['type' => 'integer'],
-                                    'failureRate'  => ['type' => 'number'],
-                                    'nodeName'     => ['type' => 'string'],
-                                    'success'      => ['type' => 'integer'],
-                                    'topologyName' => ['type' => 'string'],
-                                ],
-                                'type'       => 'object',
-                            ],
-                            'type'  => 'array',
-                        ],
-                        'kind'   => ['type' => 'string'],
-                        'period' => ['type' => 'string'],
-                        'title'  => ['type' => 'string'],
-                    ],
-                    'type'       => 'object',
-                ],
-                'title'         => 'Top failing connectors',
-            ],
-            [
-                'description'   => 'Most recent failed connector calls over a time range, sourced from '
-                    . 'the same connector metrics that power the dashboard process detail. Use for '
-                    . '"show the last errors", "what failed today", "recent connector errors" type '
-                    . 'questions. Each item carries the failing node, topology, the truncated upstream '
-                    . 'response body (`resultMessage`) and the HTTP status the bridge observed. Soft '
-                    . 'SDK outcomes (repeat / limit / trashed without an HTTP call) are NOT included '
-                    . 'here — only real HTTP-level connector failures.',
-                'id'            => 'recent_errors',
-                'input_schema'  => [
-                    'properties' => [
-                        ...$dateProperties,
-                        'topology_id' => [
-                            'description' => 'Optional topology id to restrict the search to one topology.',
-                            'type'        => 'string',
-                        ],
-                        'limit'       => [
-                            'description' => 'Maximum number of error entries to return (1-20, default 10).',
-                            'maximum'     => 20,
-                            'minimum'     => 1,
-                            'type'        => 'integer',
-                        ],
-                    ],
-                    'type'       => 'object',
-                ],
-                'kind'          => 'list',
-                'output_schema' => [
-                    'properties' => [
-                        'items'  => [
-                            'items' => [
-                                'properties' => [
-                                    'correlationId' => ['type' => 'string'],
-                                    'finishedAt'    => ['type' => 'string'],
-                                    'httpStatus'    => ['type' => ['integer', 'null']],
-                                    'nodeName'      => ['type' => 'string'],
-                                    'resultMessage' => ['type' => 'string'],
-                                    'resultStatus'  => ['type' => 'string'],
-                                    'topologyName'  => ['type' => 'string'],
-                                ],
-                                'type'       => 'object',
-                            ],
-                            'type'  => 'array',
-                        ],
-                        'kind'   => ['type' => 'string'],
-                        'period' => ['type' => 'string'],
-                        'title'  => ['type' => 'string'],
-                    ],
-                    'type'       => 'object',
-                ],
-                'title'         => 'Recent errors',
-            ],
-        ];
-    }
-
-    /**
      * Per-entity Trace lookup. Returns entry/steps/exit snapshots for each
      * topology run that touched the requested entity.
      *
@@ -412,8 +231,8 @@ final class McpManager
         [$start, $end] = DateRangeResolver::resolve([
             DateRangeResolver::KEY_DAY    => $data[DateRangeResolver::KEY_DAY] ?? NULL,
             DateRangeResolver::KEY_FROM   => $data[DateRangeResolver::KEY_FROM] ?? NULL,
-            DateRangeResolver::KEY_TO     => $data[DateRangeResolver::KEY_TO] ?? NULL,
             DateRangeResolver::KEY_PERIOD => $data[DateRangeResolver::KEY_PERIOD] ?? NULL,
+            DateRangeResolver::KEY_TO     => $data[DateRangeResolver::KEY_TO] ?? NULL,
         ], 30);
 
         $emptyResponse = [
@@ -518,6 +337,165 @@ final class McpManager
     }
 
     /**
+     * Fixed actions the LLM can call for cross-cutting metrics questions.
+     * They sit alongside the per-entity audit history so the model can pick
+     * the right tool: entity-specific timelines go through `entity_history`,
+     * "how many processes" / "which connector fails most" go through these.
+     *
+     * @return mixed[]
+     */
+    private function getMetricsManifest(): array
+    {
+        $dateProperties = [
+            'from'   => [
+                'description' => 'ISO 8601 start of the range (inclusive). Use with "to".',
+                'format'      => 'date-time',
+                'type'        => 'string',
+            ],
+            'period' => [
+                'description' => 'Named relative range: today, yesterday, this_week, last_7d, last_30d.',
+                'enum'        => ['today', 'yesterday', 'this_week', 'last_7d', 'last_30d'],
+                'type'        => 'string',
+            ],
+            'to'     => [
+                'description' => 'ISO 8601 end of the range (exclusive). Use with "from".',
+                'format'      => 'date-time',
+                'type'        => 'string',
+            ],
+        ];
+
+        return [
+            [
+                'description'   => 'Aggregated process counts (success/failed) bucketed over a time range. Use for questions like "how many processes ran last week" or "what is the failure rate today". Do NOT use for per-entity history; route those through the entity_history actions.',
+                'id'            => 'processes_timeseries',
+                'input_schema'  => [
+                    'properties' => [
+                        ...$dateProperties,
+                        'buckets'     => [
+                            'description' => 'Bucket count between 1 and 24 (default 12).',
+                            'maximum'     => 24,
+                            'minimum'     => 1,
+                            'type'        => 'integer',
+                        ],
+                        'topology_id' => [
+                            'description' => 'Optional topology id to restrict the aggregation to one topology.',
+                            'type'        => 'string',
+                        ],
+                    ],
+                    'type'       => 'object',
+                ],
+                'kind'          => 'timeseries',
+                'output_schema' => [
+                    'properties' => [
+                        'failed' => ['type' => 'integer'],
+                        'kind'   => ['type' => 'string'],
+                        'period' => ['type' => 'string'],
+                        'points' => [
+                            'items' => [
+                                'properties' => [
+                                    'failed'  => ['type' => 'integer'],
+                                    'success' => ['type' => 'integer'],
+                                    'time'    => ['type' => 'string'],
+                                ],
+                                'type'       => 'object',
+                            ],
+                            'type'  => 'array',
+                        ],
+                        'title'  => ['type' => 'string'],
+                        'total'  => ['type' => 'integer'],
+                    ],
+                    'type'       => 'object',
+                ],
+                'title'         => 'Process counts over time',
+            ],
+            [
+                'description'   => 'Top connectors by failure count over a time range. Use for "which connector is failing", "show flaky connectors today" type questions. Returns a short list ranked by failure count (descending).',
+                'id'            => 'failing_connectors',
+                'input_schema'  => [
+                    'properties' => [
+                        ...$dateProperties,
+                        'limit' => [
+                            'description' => 'Maximum number of connectors to return (1-20, default 10).',
+                            'maximum'     => 20,
+                            'minimum'     => 1,
+                            'type'        => 'integer',
+                        ],
+                    ],
+                    'type'       => 'object',
+                ],
+                'kind'          => 'list',
+                'output_schema' => [
+                    'properties' => [
+                        'items'  => [
+                            'items' => [
+                                'properties' => [
+                                    'failed'       => ['type' => 'integer'],
+                                    'failureRate'  => ['type' => 'number'],
+                                    'nodeName'     => ['type' => 'string'],
+                                    'success'      => ['type' => 'integer'],
+                                    'topologyName' => ['type' => 'string'],
+                                ],
+                                'type'       => 'object',
+                            ],
+                            'type'  => 'array',
+                        ],
+                        'kind'   => ['type' => 'string'],
+                        'period' => ['type' => 'string'],
+                        'title'  => ['type' => 'string'],
+                    ],
+                    'type'       => 'object',
+                ],
+                'title'         => 'Top failing connectors',
+            ],
+            [
+                'description'   => 'Most recent failed connector calls over a time range, sourced from the same connector metrics that power the dashboard process detail. Use for "show the last errors", "what failed today", "recent connector errors" type questions. Each item carries the failing node, topology, the truncated upstream response body (`resultMessage`) and the HTTP status the bridge observed. Soft SDK outcomes (repeat / limit / trashed without an HTTP call) are NOT included here — only real HTTP-level connector failures.',
+                'id'            => 'recent_errors',
+                'input_schema'  => [
+                    'properties' => [
+                        ...$dateProperties,
+                        'limit'       => [
+                            'description' => 'Maximum number of error entries to return (1-20, default 10).',
+                            'maximum'     => 20,
+                            'minimum'     => 1,
+                            'type'        => 'integer',
+                        ],
+                        'topology_id' => [
+                            'description' => 'Optional topology id to restrict the search to one topology.',
+                            'type'        => 'string',
+                        ],
+                    ],
+                    'type'       => 'object',
+                ],
+                'kind'          => 'list',
+                'output_schema' => [
+                    'properties' => [
+                        'items'  => [
+                            'items' => [
+                                'properties' => [
+                                    'correlationId' => ['type' => 'string'],
+                                    'finishedAt'    => ['type' => 'string'],
+                                    'httpStatus'    => ['type' => ['integer', 'null']],
+                                    'nodeName'      => ['type' => 'string'],
+                                    'resultMessage' => ['type' => 'string'],
+                                    'resultStatus'  => ['type' => 'string'],
+                                    'topologyName'  => ['type' => 'string'],
+                                ],
+                                'type'       => 'object',
+                            ],
+                            'type'  => 'array',
+                        ],
+                        'kind'   => ['type' => 'string'],
+                        'period' => ['type' => 'string'],
+                        'title'  => ['type' => 'string'],
+                    ],
+                    'type'       => 'object',
+                ],
+                'title'         => 'Recent errors',
+            ],
+        ];
+    }
+
+    /**
      * Routes `{tool, args}` envelopes to the metrics aggregator. Kept private
      * so the public surface stays a single `run()` entry point regardless of
      * which envelope shape arrived.
@@ -604,18 +582,15 @@ final class McpManager
                 'correlationId'  => $progress->getId(),
                 'entry'          => NULL,
                 'exit'           => NULL,
+                'finishedAt'     => $finished?->format(DATE_ATOM),
+                'nok'            => $nok,
+                'ok'             => $ok,
+                'progressStatus' => $this->deriveProgressStatus($finished, $ok, $nok, $total),
+                'startedAt'      => $started->format(DATE_ATOM),
                 'steps'          => [],
                 'topologyId'     => $topologyId,
                 'topologyName'   => $topologyNames[$topologyId] ?? NULL,
-                'startedAt'      => $started->format(DATE_ATOM),
-                'finishedAt'     => $finished?->format(DATE_ATOM),
-                'ok'             => $ok,
-                'nok'            => $nok,
                 'total'          => $total,
-                // Derived from progress counters: gives the FE a meaningful
-                // status pill even when the topology emits no audit
-                // checkpoints (which is the common case today).
-                'progressStatus' => $this->deriveProgressStatus($finished, $ok, $nok, $total),
             ];
         }
 
@@ -631,15 +606,15 @@ final class McpManager
                     'correlationId'  => $cid,
                     'entry'          => NULL,
                     'exit'           => NULL,
+                    'finishedAt'     => NULL,
+                    'nok'            => 0,
+                    'ok'             => 0,
+                    'progressStatus' => 'unknown',
+                    'startedAt'      => NULL,
                     'steps'          => [],
                     'topologyId'     => $log['topologyId'] ?? NULL,
                     'topologyName'   => $log['topologyName'] ?? NULL,
-                    'startedAt'      => NULL,
-                    'finishedAt'     => NULL,
-                    'ok'             => 0,
-                    'nok'            => 0,
                     'total'          => 0,
-                    'progressStatus' => 'unknown',
                 ];
             } else {
                 if (($runs[$cid]['topologyId'] ?? NULL) === NULL && isset($log['topologyId'])) {
@@ -666,12 +641,15 @@ final class McpManager
                     if ($runs[$cid]['entry'] === NULL) {
                         $runs[$cid]['entry'] = $snapshot;
                     }
+
                     break;
                 case 'process_exit':
                     $runs[$cid]['exit'] = $snapshot;
+
                     break;
                 case 'process_step':
                     $runs[$cid]['steps'][] = $snapshot;
+
                     break;
             }
         }
@@ -723,8 +701,15 @@ final class McpManager
      * - `failed`  — finished and at least one step failed
      * - `running` — not finished yet
      * - `unknown` — no usable counters (defensive default)
+     *
+     * @param DateTimeInterface|null $finished
+     * @param int                    $ok
+     * @param int                    $nok
+     * @param int                    $total
+     *
+     * @return string
      */
-    private function deriveProgressStatus(?\DateTimeInterface $finished, int $ok, int $nok, int $total): string
+    private function deriveProgressStatus(?DateTimeInterface $finished, int $ok, int $nok, int $total): string
     {
         if ($finished === NULL) {
             return 'running';

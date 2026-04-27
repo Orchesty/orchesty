@@ -13,6 +13,8 @@ use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\ProcessHandler;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
 
 /**
+ * Class MetricsAggregator
+ *
  * Builds compact metrics summaries the Trace assistant can ask for via MCP.
  *
  * The aggregator intentionally keeps the response shape minimal — the LLM's
@@ -48,6 +50,13 @@ final class MetricsAggregator
      */
     private const int FAILED_FETCH_POOL = 200;
 
+    /**
+     * MetricsAggregator constructor.
+     *
+     * @param ProcessHandler  $processHandler
+     * @param MetricsHandler  $metricsHandler
+     * @param DocumentManager $dm
+     */
     public function __construct(
         private readonly ProcessHandler $processHandler,
         private readonly MetricsHandler $metricsHandler,
@@ -65,9 +74,13 @@ final class MetricsAggregator
     public function getProcessesTimeseries(array $args): array
     {
         [$start, $end] = DateRangeResolver::resolve($args, 7);
-        $end ??= new DateTimeImmutable('now');
+        $end         ??= new DateTimeImmutable('now');
 
-        $buckets = $this->clamp((int) ($args['buckets'] ?? self::DEFAULT_BUCKETS), self::MIN_BUCKETS, self::MAX_BUCKETS);
+        $buckets = $this->clamp(
+            (int) ($args['buckets'] ?? self::DEFAULT_BUCKETS),
+            self::MIN_BUCKETS,
+            self::MAX_BUCKETS,
+        );
 
         $filter = [
             [
@@ -88,8 +101,8 @@ final class MetricsAggregator
         $dto = new GridRequestDto([
             GridRequestDto::FILTER => $filter,
             GridRequestDto::PAGING => [
-                GridRequestDto::PAGE           => 1,
                 GridRequestDto::ITEMS_PER_PAGE => 1_000,
+                GridRequestDto::PAGE           => 1,
             ],
         ]);
 
@@ -108,7 +121,7 @@ final class MetricsAggregator
     public function getFailingConnectors(array $args): array
     {
         [$start, $end] = DateRangeResolver::resolve($args, 7);
-        $end ??= new DateTimeImmutable('now');
+        $end         ??= new DateTimeImmutable('now');
 
         $limit = $this->clamp((int) ($args['limit'] ?? self::DEFAULT_LIMIT), self::MIN_LIMIT, self::MAX_LIMIT);
 
@@ -124,8 +137,8 @@ final class MetricsAggregator
         $dto = new GridRequestDto([
             GridRequestDto::FILTER => $filter,
             GridRequestDto::PAGING => [
-                GridRequestDto::PAGE           => 1,
                 GridRequestDto::ITEMS_PER_PAGE => 200,
+                GridRequestDto::PAGE           => 1,
             ],
         ]);
 
@@ -156,7 +169,7 @@ final class MetricsAggregator
     public function getRecentErrors(array $args): array
     {
         [$start, $end] = DateRangeResolver::resolve($args, 7);
-        $end ??= new DateTimeImmutable('now');
+        $end         ??= new DateTimeImmutable('now');
 
         $limit      = $this->clamp((int) ($args['limit'] ?? self::DEFAULT_LIMIT), self::MIN_LIMIT, self::MAX_LIMIT);
         $topologyId = isset($args['topology_id']) && is_string($args['topology_id']) && $args['topology_id'] !== ''
@@ -181,12 +194,12 @@ final class MetricsAggregator
                     ],
                 ],
             ],
+            GridRequestDto::PAGING => [
+                GridRequestDto::ITEMS_PER_PAGE => self::FAILED_FETCH_POOL,
+                GridRequestDto::PAGE           => 1,
+            ],
             GridRequestDto::SORTER => [
                 [GridFilterAbstract::COLUMN => 'created', GridFilterAbstract::DIRECTION => GridFilterAbstract::DESCENDING],
-            ],
-            GridRequestDto::PAGING => [
-                GridRequestDto::PAGE           => 1,
-                GridRequestDto::ITEMS_PER_PAGE => self::FAILED_FETCH_POOL,
             ],
         ]);
 
@@ -222,15 +235,20 @@ final class MetricsAggregator
         }
 
         return [
+            'items'  => $items,
             'kind'   => 'list',
             'period' => sprintf('%s..%s', $start->format(DATE_ATOM), $end->format(DATE_ATOM)),
-            'items'  => $items,
             'title'  => $topologyId !== NULL
                 ? sprintf('Recent errors (topology %s)', $topologyId)
                 : 'Recent errors',
         ];
     }
 
+    /**
+     * @param string $message
+     *
+     * @return string
+     */
     private function truncate(string $message): string
     {
         if ($message === '') {
@@ -241,7 +259,7 @@ final class MetricsAggregator
             return $message;
         }
 
-        return mb_substr($message, 0, self::MESSAGE_TRUNCATE_AT - 1) . '…';
+        return sprintf('%s…', mb_substr($message, 0, self::MESSAGE_TRUNCATE_AT - 1));
     }
 
     /**
@@ -252,7 +270,12 @@ final class MetricsAggregator
      *
      * @return mixed[]
      */
-    private function buildProcessesTimeseries(array $items, DateTimeImmutable $start, DateTimeImmutable $end, ?string $topologyId): array
+    private function buildProcessesTimeseries(
+        array $items,
+        DateTimeImmutable $start,
+        DateTimeImmutable $end,
+        ?string $topologyId,
+    ): array
     {
         $byTime = [];
 
@@ -281,16 +304,16 @@ final class MetricsAggregator
         $totalFailed  = array_sum(array_column($points, 'failed'));
 
         return [
-            'kind'   => 'timeseries',
-            'period' => sprintf('%s..%s', $start->format(DATE_ATOM), $end->format(DATE_ATOM)),
-            'points' => $points,
-            'title'  => $topologyId !== NULL
+            'failed'     => $totalFailed,
+            'kind'       => 'timeseries',
+            'period'     => sprintf('%s..%s', $start->format(DATE_ATOM), $end->format(DATE_ATOM)),
+            'points'     => $points,
+            'success'    => $totalSuccess,
+            'title'      => $topologyId !== NULL
                 ? sprintf('Processes (topology %s)', $topologyId)
                 : 'Processes (all topologies)',
             'topologyId' => $topologyId,
-            'total'   => $totalSuccess + $totalFailed,
-            'failed'  => $totalFailed,
-            'success' => $totalSuccess,
+            'total'      => $totalSuccess + $totalFailed,
         ];
     }
 
@@ -302,7 +325,12 @@ final class MetricsAggregator
      *
      * @return mixed[]
      */
-    private function buildFailingConnectors(array $items, DateTimeImmutable $start, DateTimeImmutable $end, int $limit): array
+    private function buildFailingConnectors(
+        array $items,
+        DateTimeImmutable $start,
+        DateTimeImmutable $end,
+        int $limit,
+    ): array
     {
         $rows = [];
 
@@ -311,27 +339,27 @@ final class MetricsAggregator
                 continue;
             }
 
-            $count    = (int) ($row['count'] ?? 0);
-            $status4  = (int) ($row['status400'] ?? 0);
-            $status5  = (int) ($row['status500'] ?? 0);
-            $failed   = $status4 + $status5;
+            $count   = (int) ($row['count'] ?? 0);
+            $status4 = (int) ($row['status400'] ?? 0);
+            $status5 = (int) ($row['status500'] ?? 0);
+            $failed  = $status4 + $status5;
             if ($failed === 0) {
                 continue;
             }
 
-            $success      = max(0, $count - $failed);
-            $failureRate  = $count > 0 ? round($failed / $count, 4) : 0.0;
-            $nodeId       = (string) ($row['nodeId'] ?? '');
-            $topologyId   = (string) ($row['topologyId'] ?? '');
+            $success     = max(0, $count - $failed);
+            $failureRate = $count > 0 ? round($failed / $count, 4) : 0.0;
+            $nodeId      = (string) ($row['nodeId'] ?? '');
+            $topologyId  = (string) ($row['topologyId'] ?? '');
 
             $rows[] = [
-                'nodeId'       => $nodeId,
-                'nodeName'     => $this->resolveNodeName($nodeId) ?? $nodeId,
-                'topologyId'   => $topologyId,
-                'topologyName' => $this->resolveTopologyName($topologyId) ?? $topologyId,
-                'success'      => $success,
                 'failed'       => $failed,
                 'failureRate'  => $failureRate,
+                'nodeId'       => $nodeId,
+                'nodeName'     => $this->resolveNodeName($nodeId) ?? $nodeId,
+                'success'      => $success,
+                'topologyId'   => $topologyId,
+                'topologyName' => $this->resolveTopologyName($topologyId) ?? $topologyId,
             ];
         }
 
@@ -339,13 +367,18 @@ final class MetricsAggregator
         $rows = array_slice($rows, 0, $limit);
 
         return [
+            'items'  => $rows,
             'kind'   => 'list',
             'period' => sprintf('%s..%s', $start->format(DATE_ATOM), $end->format(DATE_ATOM)),
-            'items'  => $rows,
             'title'  => 'Top failing connectors',
         ];
     }
 
+    /**
+     * @param string $nodeId
+     *
+     * @return string|null
+     */
     private function resolveNodeName(string $nodeId): ?string
     {
         if ($nodeId === '') {
@@ -358,6 +391,11 @@ final class MetricsAggregator
         return $node?->getName();
     }
 
+    /**
+     * @param string $topologyId
+     *
+     * @return string|null
+     */
     private function resolveTopologyName(string $topologyId): ?string
     {
         if ($topologyId === '') {
@@ -370,6 +408,13 @@ final class MetricsAggregator
         return $topology?->getName();
     }
 
+    /**
+     * @param int $value
+     * @param int $min
+     * @param int $max
+     *
+     * @return int
+     */
     private function clamp(int $value, int $min, int $max): int
     {
         return max($min, min($max, $value));

@@ -395,7 +395,7 @@ services:
         working_dir: /var/www/app-ui
         environment:
             VITE_BACKEND_URL: ${BACKEND_URL}
-            VITE_STARTING_POINT_URL: ${DEV_IP}:82
+            VITE_STARTING_POINT_URL: http://${DEV_IP}:82
         ports:
             - ${DEV_IP}:80:3000
         volumes:
@@ -409,7 +409,7 @@ services:
         environment:
             CI: 'true'
             VITE_BACKEND_URL: ${BACKEND_URL}
-            VITE_STARTING_POINT_URL: ${DEV_IP}:82
+            VITE_STARTING_POINT_URL: http://${DEV_IP}:82
         ports:
             - ${DEV_IP}:84:3000
         volumes:
@@ -423,6 +423,7 @@ services:
         environment:
             CI: 'true'
             VITE_BACKEND_URL: ${BACKEND_ENTERPRISE_URL}
+            VITE_STARTING_POINT_URL: http://${DEV_IP}:82
             VITE_NOTIFIER_URL: http://${DEV_IP}:8086
             VITE_TRACE_URL: ws://${DEV_IP}:8082
             VITE_AUTH0_DOMAIN: dev-qsa0lopaqbhr0vmj.eu.auth0.com

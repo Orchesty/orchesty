@@ -1,4 +1,4 @@
-DC=docker-compose -f docker-compose.test.yml
+DC=docker compose -f docker-compose.test.yml
 DCU=$(DC) exec -T ui
 
 IMAGE=dkr.hanaboso.net/pipes/pipes/applinth-marketplace-ui:$(TAG)
@@ -17,16 +17,16 @@ init-test: .env
 	$(DCU) pnpm install
 
 init: .env
-	docker-compose up -d --force-recreate --build
+	docker compose up -d --force-recreate --build
 	sleep 5
-	docker-compose exec app bin/console service:install node-sdk node-sdk:8080
-	docker-compose exec app bin/console api-token:create --key "$(shell grep 'ORCHESTY_API_KEY' .env | cut -d "=" -f2)"
-	docker-compose cp ./exampleApplinthLogsData.json mongo:/tmp
-	docker-compose cp ./exampleApplinthTrashData.json mongo:/tmp
-	docker-compose cp ./exampleApplinthProcessData.json mongo:/tmp
-	docker-compose exec mongo mongoimport --db pipes --collection Logs --file /tmp/exampleApplinthLogsData.json --jsonArray
-	docker-compose exec mongo mongoimport --db pipes --collection UserTask --file /tmp/exampleApplinthTrashData.json --jsonArray
-	docker-compose exec mongo mongoimport --db pipes --collection MultiCounter --file /tmp/exampleApplinthProcessData.json --jsonArray
+	docker compose exec app bin/console service:install node-sdk node-sdk:8080
+	docker compose exec app bin/console api-token:create --key "$(shell grep 'ORCHESTY_API_KEY' .env | cut -d "=" -f2)"
+	docker compose cp ./exampleApplinthLogsData.json mongo:/tmp
+	docker compose cp ./exampleApplinthTrashData.json mongo:/tmp
+	docker compose cp ./exampleApplinthProcessData.json mongo:/tmp
+	docker compose exec mongo mongoimport --db pipes --collection Logs --file /tmp/exampleApplinthLogsData.json --jsonArray
+	docker compose exec mongo mongoimport --db pipes --collection UserTask --file /tmp/exampleApplinthTrashData.json --jsonArray
+	docker compose exec mongo mongoimport --db pipes --collection MultiCounter --file /tmp/exampleApplinthProcessData.json --jsonArray
 
 rebuild:
 	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) .

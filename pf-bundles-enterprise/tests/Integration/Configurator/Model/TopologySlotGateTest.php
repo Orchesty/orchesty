@@ -9,6 +9,7 @@ use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Database\Repository\TopologyRepository;
 use Hanaboso\PipesFrameworkEnterprise\Configurator\Model\TopologySlotGate;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
@@ -23,9 +24,13 @@ use PHPUnit\Framework\TestCase;
  * @package PipesFrameworkEnterpriseTests\Integration\Configurator\Model
  */
 #[CoversClass(TopologySlotGate::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class TopologySlotGateTest extends TestCase
 {
 
+    /**
+     * Verifies that an unlimited slot configuration always allows publishing without consulting the repository.
+     */
     public function testUnlimitedAlwaysPasses(): void
     {
         $repo = $this->createMock(TopologyRepository::class);
@@ -38,6 +43,9 @@ final class TopologySlotGateTest extends TestCase
         self::assertSame(0, $gate->getLimit());
     }
 
+    /**
+     * Verifies that a new topology below the configured slot limit is allowed to publish.
+     */
     public function testNewTopologyBelowLimitPasses(): void
     {
         $repo = $this->createMock(TopologyRepository::class);
@@ -48,6 +56,9 @@ final class TopologySlotGateTest extends TestCase
         );
     }
 
+    /**
+     * Verifies that publishing a new topology at the slot limit throws a SLOT_LIMIT_REACHED exception.
+     */
     public function testNewTopologyAtLimitThrowsConflict(): void
     {
         $repo = $this->createMock(TopologyRepository::class);
@@ -65,6 +76,9 @@ final class TopologySlotGateTest extends TestCase
         }
     }
 
+    /**
+     * Verifies that republishing an already-published, enabled topology bypasses the slot limit check.
+     */
     public function testRepublishOfPublicEnabledTopologyPasses(): void
     {
         $repo = $this->createMock(TopologyRepository::class);
@@ -75,6 +89,9 @@ final class TopologySlotGateTest extends TestCase
         $this->buildGate($repo, 1)->ensureCanPublish($topology);
     }
 
+    /**
+     * Verifies that republishing a disabled-but-public topology still bypasses the slot check (regression test).
+     */
     public function testRepublishOfPublicDisabledTopologyPasses(): void
     {
         // Regression: pre-fix this branch threw because the gate keyed off
@@ -87,6 +104,9 @@ final class TopologySlotGateTest extends TestCase
         $this->buildGate($repo, 1)->ensureCanPublish($topology);
     }
 
+    /**
+     * Verifies that a soft-deleted public topology is subject to the normal slot limit check on republish.
+     */
     public function testDeletedPublicRowDoesNotShortCircuit(): void
     {
         // A soft-deleted row does not occupy a slot anymore, so re-publishing
@@ -100,6 +120,12 @@ final class TopologySlotGateTest extends TestCase
         $this->buildGate($repo, 1)->ensureCanPublish($topology);
     }
 
+    /**
+     * @param TopologyRepository<Topology> $repo
+     * @param int                          $limit
+     *
+     * @return TopologySlotGate
+     */
     private function buildGate(TopologyRepository $repo, int $limit): TopologySlotGate
     {
         $dm = $this->createMock(DocumentManager::class);
@@ -111,6 +137,12 @@ final class TopologySlotGateTest extends TestCase
         return new TopologySlotGate($locator, $limit);
     }
 
+    /**
+     * @param string $visibility
+     * @param bool   $enabled
+     *
+     * @return Topology
+     */
     private function newTopology(string $visibility, bool $enabled = FALSE): Topology
     {
         $topology = new Topology();

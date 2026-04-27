@@ -117,8 +117,6 @@ import HubspotApplinthContactAddContactToListMapper
 import HubspotApplinthWhitePaperAddContactToListMapper
     from './ApplinthIo/CustomNode/HubspotApplinthWhitePaperAddContactToListMapper';
 import HubspotWhiterPaperToSesEmailMapper from './ApplinthIo/CustomNode/HubspotWhiterPaperToSesEmailMapper';
-import BeeceptorCreateWebhooks from './Beeceptor/Batch/BeeceptorCreateWebhooks';
-import BeeceptorDeleteWebhooks from './Beeceptor/Batch/BeeceptorDeleteWebhooks';
 import BeeceptorApplication from './Beeceptor/BeeceptorApplication';
 import BeeceptorPostCategoryConnector from './Beeceptor/Connector/BeeceptorPostCategoryConnector';
 import BeeceptorPostProductConnector from './Beeceptor/Connector/BeeceptorPostProductConnector';
@@ -410,7 +408,7 @@ export async function start(): Promise<void> {
     container.setApplication(githubApplication);
     container.setNode(new GitHubGetRepositoryConnector(), githubApplication);
 
-    const beeceptorApplication = new BeeceptorApplication(container.get(TopologyRunner));
+    const beeceptorApplication = new BeeceptorApplication();
     container.setApplication(beeceptorApplication);
     container.setNode(new BeeceptorSyncPostConnector(), beeceptorApplication);
     container.setNode(new BeeceptorPostCategoryConnector(), beeceptorApplication);
@@ -418,8 +416,6 @@ export async function start(): Promise<void> {
     container.setNode(new BeeceptorPostProductConnector(), beeceptorApplication);
     container.setNode(new BeeceptorPutProductConnector(), beeceptorApplication);
     container.setNode(new BeeceptorPutProductCategoriesConnector(), beeceptorApplication);
-    container.setNode(new BeeceptorCreateWebhooks(), beeceptorApplication);
-    container.setNode(new BeeceptorDeleteWebhooks(), beeceptorApplication);
 
     const wflowGetOrganizationsConnector = new WflowGetOrganizationsConnector(true).setSender(sender).setDb(mongoDb);
     const wflowGetDocumentTypesConnector = new WflowGetDocumentTypesConnector(true).setSender(sender).setDb(mongoDb);
@@ -726,3 +722,6 @@ export async function start(): Promise<void> {
 
     container.setNode(new RunTopology(runner, 'http-status-applinth', 'users-start'), httpStatusApplication);
 }
+
+
+

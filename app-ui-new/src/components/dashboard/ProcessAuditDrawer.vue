@@ -149,12 +149,6 @@ const moreActionsSections = computed<MoreActionsSection[]>(() => {
   const sections: MoreActionsSection[] = [
     {
       items: [
-        { type: 'button', label: 'Export PDF', onClick: () => {} },
-        { type: 'button', label: 'Get Payload', onClick: () => {} },
-      ],
-    },
-    {
-      items: [
         {
           type: 'button',
           label: 'Go to Topology',

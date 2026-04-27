@@ -148,16 +148,33 @@ export async function listWebhookEvents(application: string, sdk: string): Promi
   return Array.isArray(data) ? data : []
 }
 
+// Resolves the starting-point base URL the UI must use for any
+// `/topologies/.../run...` callback URL. We deliberately do NOT fall back
+// to VITE_BACKEND_URL: the PHP API gateway has no /topologies/.../run
+// handler and would silently 404 every time a user pastes the URL into
+// an external webhook provider.
+//
+// Throws a clear error when the env var is missing so the bug surfaces
+// loudly at copy time instead of silently producing a wrong-port URL.
+export function resolveStartingPointBase(): string {
+  const raw = (import.meta.env.VITE_STARTING_POINT_URL as string | undefined)?.trim()
+  if (!raw) {
+    throw new Error(
+      'VITE_STARTING_POINT_URL is not configured. Starting-point URLs must point at the starting-point service (e.g. http://127.0.0.66:82). Set the env var on the frontend container and rebuild.',
+    )
+  }
+  // Tolerate "127.0.0.66:82" (no scheme) the way docker-compose currently
+  // hands it to us; helm uses fully-qualified URLs already.
+  const withScheme = /^https?:\/\//i.test(raw) ? raw : `http://${raw}`
+  return withScheme.replace(/\/$/, '')
+}
+
 // Canonical name-based webhook callback URL. Format must match the
 // starting-point route `/topologies/{topology}/nodes/{node}/token/{token}/run`
 // (see starting-point/pkg/router/routes.go and orchesty-nodejs-sdk's
 // TopologyRunner.getWebhookUrl). The earlier `/webhook/topologies/...` prefix
 // without the `/run` suffix did not resolve to any backend handler.
 export function buildWebhookCallbackUrl(topologyName: string, nodeName: string, token: string): string {
-  const baseUrl = (import.meta.env.VITE_STARTING_POINT_URL as string | undefined)
-    || (import.meta.env.VITE_BACKEND_URL as string | undefined)
-    || ''
-  const trimmed = baseUrl.replace(/\/$/, '')
   const safeToken = token || '__missing-token__'
-  return `${trimmed}/topologies/${encodeURIComponent(topologyName)}/nodes/${encodeURIComponent(nodeName)}/token/${safeToken}/run`
+  return `${resolveStartingPointBase()}/topologies/${encodeURIComponent(topologyName)}/nodes/${encodeURIComponent(nodeName)}/token/${safeToken}/run`
 }

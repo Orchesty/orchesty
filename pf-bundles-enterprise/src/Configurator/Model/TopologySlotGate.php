@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFrameworkEnterprise\Configurator\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
@@ -37,23 +38,26 @@ final class TopologySlotGate implements PublishGuardInterface
 {
 
     /**
-     * @var TopologyRepository<Topology>
+     * @var ObjectRepository<Topology>&TopologyRepository
      */
     private TopologyRepository $topologyRepository;
 
-    public function __construct(
-        DatabaseManagerLocator $dml,
-        private readonly int $limitTopologySlots = 0,
-    )
+    /**
+     * TopologySlotGate constructor.
+     *
+     * @param DatabaseManagerLocator $dml
+     * @param int                    $limitTopologySlots
+     */
+    public function __construct(DatabaseManagerLocator $dml, private readonly int $limitTopologySlots = 0)
     {
         /** @var DocumentManager $dm */
-        $dm = $dml->getDm();
-        /** @var TopologyRepository<Topology> $repo */
-        $repo                     = $dm->getRepository(Topology::class);
-        $this->topologyRepository = $repo;
+        $dm                       = $dml->getDm();
+        $this->topologyRepository = $dm->getRepository(Topology::class);
     }
 
     /**
+     * @param Topology $topology
+     *
      * @throws MongoDBException
      * @throws TopologyException when publishing this topology would push the published count past the slot limit.
      */
@@ -85,11 +89,17 @@ final class TopologySlotGate implements PublishGuardInterface
         }
     }
 
+    /**
+     * @return bool
+     */
     public function isEnforced(): bool
     {
         return $this->limitTopologySlots > 0;
     }
 
+    /**
+     * @return int
+     */
     public function getLimit(): int
     {
         return $this->limitTopologySlots;

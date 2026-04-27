@@ -76,6 +76,18 @@ final class PlatformServiceProvider
     }
 
     /**
+     * @param string $serviceType
+     *
+     * @return bool
+     */
+    public function isConfigured(string $serviceType): bool
+    {
+        return $this->bindingRepository->findOneBy(
+            [ServiceBinding::SERVICE_TYPE => $serviceType],
+        ) !== NULL;
+    }
+
+    /**
      * Resolve the SDK name for a binding.
      *
      * - If the binding has no sdk yet (legacy record), auto-discover one and persist it back.
@@ -108,8 +120,7 @@ final class PlatformServiceProvider
         if (!$this->serviceLocator->isApplicationInstalledOnSdk($appKey, $sdk)) {
             throw new PlatformServiceException(
                 sprintf(
-                    'Application "%s" is no longer installed on worker "%s" for platform service "%s". '
-                    . 'Update the binding in Settings.',
+                    'Application "%s" is no longer installed on worker "%s" for platform service "%s". Update the binding in Settings.',
                     $appKey,
                     $sdk,
                     $binding->getServiceType(),
@@ -119,18 +130,6 @@ final class PlatformServiceProvider
         }
 
         return $sdk;
-    }
-
-    /**
-     * @param string $serviceType
-     *
-     * @return bool
-     */
-    public function isConfigured(string $serviceType): bool
-    {
-        return $this->bindingRepository->findOneBy(
-            [ServiceBinding::SERVICE_TYPE => $serviceType],
-        ) !== NULL;
     }
 
     /**

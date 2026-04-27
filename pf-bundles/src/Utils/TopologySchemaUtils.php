@@ -227,8 +227,12 @@ final class TopologySchemaUtils
                         $rawName = (string) ($action['name'] ?? '');
                         if ($rawName !== '' && str_contains($rawName, '.')) {
                             [$splitApp, $splitEvent] = explode('.', $rawName, 2);
-                            if ($app === '')       $app       = $splitApp;
-                            if ($eventName === '') $eventName = $splitEvent;
+                            if ($app === '') {
+                                $app = $splitApp;
+                            }
+                            if ($eventName === '') {
+                                $eventName = $splitEvent;
+                            }
                         } elseif ($eventName === '') {
                             $eventName = $rawName;
                         }

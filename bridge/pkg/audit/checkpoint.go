@@ -41,12 +41,12 @@ const MaxAuditMessageLength = 512
 // human-readable strings so the Trace UI can branch directly without
 // re-mapping.
 const (
-	AuditStatusSuccess  = "success"
-	AuditStatusFailed   = "failed"
-	AuditStatusRepeat   = "repeat"
-	AuditStatusTrashed  = "trashed"
-	AuditStatusLimit    = "limit"
-	AuditStatusUnknown  = "unknown"
+	AuditStatusSuccess = "success"
+	AuditStatusFailed  = "failed"
+	AuditStatusRepeat  = "repeat"
+	AuditStatusTrashed = "trashed"
+	AuditStatusLimit   = "limit"
+	AuditStatusUnknown = "unknown"
 )
 
 // ClassifyStatus folds the SDK ResultCode + transport HTTP status into a
@@ -188,8 +188,8 @@ func BuildPayload(reqBody []byte, spec *AuditSpec) (any, bool, error) {
 		encoded := base64.StdEncoding.EncodeToString(reqBody)
 		if len(encoded) > MaxAuditPayloadBytes {
 			return map[string]any{
-				"_invalidJson":      true,
-				"_truncated":        true,
+				"_invalidJson":       true,
+				"_truncated":         true,
 				"_originalSizeBytes": len(reqBody),
 			}, true, nil
 		}
@@ -212,7 +212,7 @@ func BuildPayload(reqBody []byte, spec *AuditSpec) (any, bool, error) {
 	encoded, err := json.Marshal(picked)
 	if err != nil {
 		return map[string]any{
-			"_invalidJson":      true,
+			"_invalidJson":       true,
 			"_originalSizeBytes": len(reqBody),
 		}, false, nil
 	}

@@ -15,6 +15,7 @@ import {
   deleteWebhookConfig,
   cascadeWebhookConfigs,
   buildWebhookCallbackUrl,
+  resolveStartingPointBase,
   type WebhookConfigItem,
 } from '@/services/webhookConfigService'
 import CopyValue from '@/components/ui/CopyValue.vue'
@@ -165,8 +166,7 @@ const resolveBackendId = (editorNodeId: string): string => {
 // when integrators want to lock a tester / cron to a single deployed build.
 const getStartingPointUrl = (editorNodeId: string): string => {
   const backendId = resolveBackendId(editorNodeId)
-  const baseUrl = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.66:8080'
-  return `${baseUrl}/topologies/${props.topologyId}/nodes/${backendId}/run`
+  return `${resolveStartingPointBase()}/topologies/${props.topologyId}/nodes/${backendId}/run`
 }
 
 // Name-based starting-point URL: matches the starting-point's
@@ -174,10 +174,9 @@ const getStartingPointUrl = (editorNodeId: string): string => {
 // currently active. This is the URL we want integrators to share by default
 // — copy actions in the editor expose it as the primary "Copy URL" action.
 const getStartingPointUrlByName = (node: EditorNode): string => {
-  const baseUrl = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.66:8080'
   const topology = encodeURIComponent(props.topologyName || '')
   const nodeName = encodeURIComponent(node.name || '')
-  return `${baseUrl}/topologies/${topology}/nodes/${nodeName}/run-by-name`
+  return `${resolveStartingPointBase()}/topologies/${topology}/nodes/${nodeName}/run-by-name`
 }
 
 
@@ -442,9 +441,13 @@ const eventNodeActions = {
           showToast('Event has no name yet — save the topology first', 'warning')
           return
         }
-        const url = getStartingPointUrlByName(n)
-        await navigator.clipboard.writeText(url)
-        showToast('URL copied to clipboard', 'success')
+        try {
+          const url = getStartingPointUrlByName(n)
+          await navigator.clipboard.writeText(url)
+          showToast('URL copied to clipboard', 'success')
+        } catch (e) {
+          showToast((e as Error).message, 'error')
+        }
       }
     })
     actions.push({
@@ -456,9 +459,13 @@ const eventNodeActions = {
       // expose it solely from the right-click dropdown.
       hideInLabel: true,
       onClick: async (n: EditorNode) => {
-        const url = getStartingPointUrl(n.id)
-        await navigator.clipboard.writeText(url)
-        showToast('Strict version URL copied to clipboard', 'success')
+        try {
+          const url = getStartingPointUrl(n.id)
+          await navigator.clipboard.writeText(url)
+          showToast('Strict version URL copied to clipboard', 'success')
+        } catch (e) {
+          showToast((e as Error).message, 'error')
+        }
       }
     })
     return actions
@@ -495,9 +502,13 @@ const handleWebhookCopyUrl = async (node: EditorNode) => {
     showToast('Subscribe the webhook first to generate a callback URL', 'warning')
     return
   }
-  const url = buildWebhookCallbackUrl(props.topologyName, node.name, cfg.token)
-  await navigator.clipboard.writeText(url)
-  showToast('URL copied to clipboard', 'success')
+  try {
+    const url = buildWebhookCallbackUrl(props.topologyName, node.name, cfg.token)
+    await navigator.clipboard.writeText(url)
+    showToast('URL copied to clipboard', 'success')
+  } catch (e) {
+    showToast((e as Error).message, 'error')
+  }
 }
 
 const handleWebhookUnsubscribe = async (node: EditorNode) => {

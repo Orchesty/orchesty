@@ -25,11 +25,18 @@ interface Props {
   sections: DropdownMenuSection[]
   width?: string
   placement?: 'bottom' | 'top' | 'left' | 'right'
+  /**
+   * When true, the trigger and its wrapper take full width of the parent
+   * container (useful for select-style dropdowns). Default keeps the
+   * historical `inline-flex` behaviour so existing call sites are untouched.
+   */
+  block?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   width: 'w-56',
   placement: 'bottom',
+  block: false,
 })
 
 onMounted(async () => {
@@ -52,13 +59,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="relative inline-flex items-center">
+  <div :class="['relative items-center', block ? 'flex w-full' : 'inline-flex']">
     <!-- Trigger Button -->
     <button
       :id="`${id}-button`"
       :data-dropdown-toggle="id"
       type="button"
-      class="inline-flex items-center"
+      :class="['items-center', block ? 'flex w-full' : 'inline-flex']"
     >
       <slot name="trigger"></slot>
     </button>

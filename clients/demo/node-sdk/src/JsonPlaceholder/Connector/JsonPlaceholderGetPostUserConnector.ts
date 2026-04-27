@@ -1,5 +1,7 @@
 import JsonPlaceholderGetUserConnector, { IOutput as IUser } from '@orchesty/connector-json-placeholder/dist/Connector/JsonPlaceholderGetUserConnector';
 import { NAME as JSON_PLACEHOLDER_APP_NAME } from '@orchesty/connector-json-placeholder/dist/JsonPlaceholderApplication';
+import AuditCheckpointRoleEnum from '@orchesty/nodejs-sdk/dist/lib/Commons/AuditCheckpointRoleEnum';
+import { IAuditCheckpoint } from '@orchesty/nodejs-sdk/dist/lib/Commons/IAuditCheckpoint';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import { IOutput as IInput } from '../Batch/JsonPlaceholderGetPostCommentListBatch';
 
@@ -9,6 +11,13 @@ export default class JsonPlaceholderGetPostUserConnector extends JsonPlaceholder
 
     public getName(): string {
         return NAME;
+    }
+
+    public getAuditCheckpoint(): IAuditCheckpoint {
+        return {
+            role: AuditCheckpointRoleEnum.PROCESS_STEP,
+            fields: ['id', 'user.id'],
+        };
     }
 
     public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto> {

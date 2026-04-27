@@ -15,6 +15,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
 /**
+ * Class ReconcileWebhookConfigsCommand
+ *
+ * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command
+ *
  * Reconciles WebhookConfig records from existing Webhook-typed Node documents.
  *
  * Use case: the schema-save cascade ({@see WebhookConfigManager::upsertFromNode})
@@ -27,6 +31,12 @@ final class ReconcileWebhookConfigsCommand extends Command
 
     private const string CMD_NAME = 'webhook:reconcile-configs';
 
+    /**
+     * ReconcileWebhookConfigsCommand constructor.
+     *
+     * @param DocumentManager      $dm
+     * @param WebhookConfigManager $webhookConfigManager
+     */
     public function __construct(
         private readonly DocumentManager $dm,
         private readonly WebhookConfigManager $webhookConfigManager,
@@ -35,13 +45,14 @@ final class ReconcileWebhookConfigsCommand extends Command
         parent::__construct(self::CMD_NAME);
     }
 
+    /**
+     * @return void
+     */
     protected function configure(): void
     {
         $this
             ->setName(self::CMD_NAME)
-            ->setDescription(
-                'Re-runs WebhookConfigManager::upsertFromNode for every Webhook-typed Node.',
-            )
+            ->setDescription('Re-runs WebhookConfigManager::upsertFromNode for every Webhook-typed Node.')
             ->addOption(
                 'topology',
                 NULL,
@@ -50,20 +61,27 @@ final class ReconcileWebhookConfigsCommand extends Command
             );
     }
 
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return int
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $topologyFilter = $input->getOption('topology');
 
-        $criteria = ['type' => TypeEnum::WEBHOOK->value, 'deleted' => FALSE];
+        $criteria   = ['type' => TypeEnum::WEBHOOK->value, 'deleted' => FALSE];
         $topologyId = NULL;
 
         if ($topologyFilter) {
             $topology = $this->dm->getRepository(Topology::class)->findOneBy(['name' => $topologyFilter]);
             if (!$topology) {
                 $output->writeln(sprintf('<error>Topology "%s" not found.</error>', $topologyFilter));
+
                 return 1;
             }
-            $topologyId = $topology->getId();
+            $topologyId           = $topology->getId();
             $criteria['topology'] = $topologyId;
         }
 
@@ -73,7 +91,7 @@ final class ReconcileWebhookConfigsCommand extends Command
 
         $created = 0;
         $skipped = 0;
-        $errors = 0;
+        $errors  = 0;
 
         foreach ($nodes as $node) {
             /** @var Topology|null $topology */
@@ -83,10 +101,11 @@ final class ReconcileWebhookConfigsCommand extends Command
                 $output->writeln(
                     sprintf('  SKIP node=%s: topology=%s missing', $node->getName(), $node->getTopology()),
                 );
+
                 continue;
             }
 
-            $app = $node->getApplication() ?? '';
+            $app   = $node->getApplication() ?? '';
             $event = $node->getEventName();
             if ($app === '' || $event === '') {
                 $skipped++;
@@ -99,6 +118,7 @@ final class ReconcileWebhookConfigsCommand extends Command
                         $event,
                     ),
                 );
+
                 continue;
             }
 
@@ -112,8 +132,13 @@ final class ReconcileWebhookConfigsCommand extends Command
                 if ($config === NULL) {
                     $skipped++;
                     $output->writeln(
-                        sprintf('  SKIP node=%s @ topology=%s: upsertFromNode returned NULL', $node->getName(), $topology->getName()),
+                        sprintf(
+                            '  SKIP node=%s @ topology=%s: upsertFromNode returned NULL',
+                            $node->getName(),
+                            $topology->getName(),
+                        ),
                     );
+
                     continue;
                 }
 

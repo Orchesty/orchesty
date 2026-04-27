@@ -18,6 +18,7 @@ use Hanaboso\Utils\Traits\LoggerTrait;
 use LogicException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
@@ -509,58 +510,6 @@ final class ServiceLocator implements LoggerAwareInterface
         return $n;
     }
 
-    /**
-     * Builds the per-SDK webhook bucket consumed by the editor's webhook
-     * picker — one entry per application that exposes any subscriptions via
-     * `AWebhookApplication::syncListWebhookEvents`.
-     *
-     * Errors per application are swallowed: an app that doesn't implement the
-     * sync action simply contributes nothing.
-     *
-     * @return array<int, array{application: string, name: string, logo: string, events: mixed[]}>
-     */
-    private function getWebhookCatalogForSdk(Sdk $sdk): array
-    {
-        $sdkName = $sdk->getName();
-        $catalog = [];
-
-        try {
-            $availableApplications = $this->doRequest('applications', $sdkName);
-        } catch (Throwable) {
-            return [];
-        }
-
-        foreach ($availableApplications[self::ITEMS] ?? [] as $application) {
-            $key = $application[self::KEY] ?? NULL;
-            if ($key === NULL) {
-                continue;
-            }
-
-            try {
-                $events = $this->doRequest(
-                    sprintf('applications/%s/sync/listWebhookEvents?user=%s&sdk=%s', $key, 'system', $sdkName),
-                    $sdkName,
-                );
-            } catch (Throwable) {
-                continue;
-            }
-
-            // Apps that don't extend AWebhookApplication respond with empty / scalar.
-            if (!is_array($events) || $events === []) {
-                continue;
-            }
-
-            $catalog[] = [
-                'application' => (string) $key,
-                'name'        => (string) ($application[self::NAME] ?? $key),
-                'logo'        => (string) ($application[self::LOGO] ?? ''),
-                'events'      => array_values($events),
-            ];
-        }
-
-        return $catalog;
-    }
-
     /*
      * -------------------------------------------- Webhooks -----------------------------------------
      */
@@ -570,6 +519,7 @@ final class ServiceLocator implements LoggerAwareInterface
      * @param string  $user
      * @param string  $sdk
      * @param mixed[] $body
+     * @param bool    $throw
      *
      * @return mixed[]
      */
@@ -591,6 +541,7 @@ final class ServiceLocator implements LoggerAwareInterface
      * @param string  $user
      * @param string  $sdk
      * @param mixed[] $body
+     * @param bool    $throw
      *
      * @return mixed[]
      */
@@ -636,6 +587,14 @@ final class ServiceLocator implements LoggerAwareInterface
         ) !== NULL;
     }
 
+    /**
+     * @return Sdk[]
+     */
+    public function getSdks(): array
+    {
+        return $this->sdkRepository->findAll();
+    }
+
     /*
      * --------------------------------------------- HELPERS -----------------------------------------
      */
@@ -676,10 +635,9 @@ final class ServiceLocator implements LoggerAwareInterface
             // bubbling up through the API gateway as a 502 with no clue
             // about the actual cause (a stale / misnamed SDK identifier
             // on a Node or WebhookConfig).
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 sprintf(
-                    'Unknown SDK "%s" — not registered in the Sdk catalogue. ' .
-                    'Available: %s',
+                    'Unknown SDK "%s" — not registered in the Sdk catalogue. Available: %s',
                     $sdkName,
                     implode(', ', array_map(static fn(Sdk $s): string => $s->getName(), $this->getSdks())) ?: '<none>',
                 ),
@@ -763,14 +721,57 @@ final class ServiceLocator implements LoggerAwareInterface
     }
 
     /**
-     * @return Sdk[]
+     * Builds the per-SDK webhook bucket consumed by the editor's webhook
+     * picker — one entry per application that exposes any subscriptions via
+     * `AWebhookApplication::syncListWebhookEvents`.
+     *
+     * Errors per application are swallowed: an app that doesn't implement the
+     * sync action simply contributes nothing.
+     *
+     * @param Sdk $sdk
+     *
+     * @return array<int, array{application: string, name: string, logo: string, events: mixed[]}>
      */
-    /**
-     * @return Sdk[]
-     */
-    public function getSdks(): array
+    private function getWebhookCatalogForSdk(Sdk $sdk): array
     {
-        return $this->sdkRepository->findAll();
+        $sdkName = $sdk->getName();
+        $catalog = [];
+
+        try {
+            $availableApplications = $this->doRequest('applications', $sdkName);
+        } catch (Throwable) {
+            return [];
+        }
+
+        foreach ($availableApplications[self::ITEMS] ?? [] as $application) {
+            $key = $application[self::KEY] ?? NULL;
+            if ($key === NULL) {
+                continue;
+            }
+
+            try {
+                $events = $this->doRequest(
+                    sprintf('applications/%s/sync/listWebhookEvents?user=%s&sdk=%s', $key, 'system', $sdkName),
+                    $sdkName,
+                );
+            } catch (Throwable) {
+                continue;
+            }
+
+            // Apps that don't extend AWebhookApplication respond with empty / scalar.
+            if ($events === []) {
+                continue;
+            }
+
+            $catalog[] = [
+                'application' => (string) $key,
+                'events'      => array_values($events),
+                'logo'        => (string) ($application[self::LOGO] ?? ''),
+                'name'        => (string) ($application[self::NAME] ?? $key),
+            ];
+        }
+
+        return $catalog;
     }
 
     /**

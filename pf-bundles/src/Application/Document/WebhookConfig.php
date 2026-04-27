@@ -10,6 +10,10 @@ use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
 
 /**
+ * Class WebhookConfig
+ *
+ * @package Hanaboso\PipesFramework\Application\Document
+ *
  * Stores the user-defined intent of a webhook subscription created in the
  * topology editor. It is kept separate from {@see Webhook}, which represents
  * the live registration with the external API (token, external `webhookId`).
@@ -68,6 +72,8 @@ class WebhookConfig
     private bool $enabled = FALSE;
 
     /**
+     * WebhookConfig constructor.
+     *
      * @throws DateTimeException
      */
     public function __construct()
@@ -76,11 +82,19 @@ class WebhookConfig
         $this->updated = DateTimeUtils::getUtcDateTime();
     }
 
+    /**
+     * @return string
+     */
     public function getTopologyName(): string
     {
         return $this->topologyName;
     }
 
+    /**
+     * @param string $topologyName
+     *
+     * @return WebhookConfig
+     */
     public function setTopologyName(string $topologyName): self
     {
         $this->topologyName = $topologyName;
@@ -88,11 +102,19 @@ class WebhookConfig
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getNodeName(): string
     {
         return $this->nodeName;
     }
 
+    /**
+     * @param string $nodeName
+     *
+     * @return WebhookConfig
+     */
     public function setNodeName(string $nodeName): self
     {
         $this->nodeName = $nodeName;
@@ -100,11 +122,19 @@ class WebhookConfig
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getApplication(): string
     {
         return $this->application;
     }
 
+    /**
+     * @param string $application
+     *
+     * @return WebhookConfig
+     */
     public function setApplication(string $application): self
     {
         $this->application = $application;
@@ -112,11 +142,19 @@ class WebhookConfig
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getUser(): string
     {
         return $this->user;
     }
 
+    /**
+     * @param string $user
+     *
+     * @return WebhookConfig
+     */
     public function setUser(string $user): self
     {
         $this->user = $user;
@@ -124,11 +162,19 @@ class WebhookConfig
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getSdk(): string
     {
         return $this->sdk;
     }
 
+    /**
+     * @param string $sdk
+     *
+     * @return WebhookConfig
+     */
     public function setSdk(string $sdk): self
     {
         $this->sdk = $sdk;
@@ -136,11 +182,19 @@ class WebhookConfig
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getEventName(): string
     {
         return $this->eventName;
     }
 
+    /**
+     * @param string $eventName
+     *
+     * @return WebhookConfig
+     */
     public function setEventName(string $eventName): self
     {
         $this->eventName = $eventName;
@@ -158,6 +212,8 @@ class WebhookConfig
 
     /**
      * @param array<string, string> $parameters
+     *
+     * @return WebhookConfig
      */
     public function setParameters(array $parameters): self
     {
@@ -166,11 +222,19 @@ class WebhookConfig
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     public function isEnabled(): bool
     {
         return $this->enabled;
     }
 
+    /**
+     * @param bool $enabled
+     *
+     * @return WebhookConfig
+     */
     public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
@@ -184,17 +248,17 @@ class WebhookConfig
     public function toArray(): array
     {
         return [
-            'id'           => $this->getId(),
-            'topologyName' => $this->topologyName,
-            'nodeName'     => $this->nodeName,
             'application'  => $this->application,
-            'user'         => $this->user,
-            'sdk'          => $this->sdk,
-            'eventName'    => $this->eventName,
-            'parameters'   => $this->parameters,
-            'enabled'      => $this->enabled,
             'created'      => $this->created->format(DATE_ATOM),
+            'enabled'      => $this->enabled,
+            'eventName'    => $this->eventName,
+            'id'           => $this->getId(),
+            'nodeName'     => $this->nodeName,
+            'parameters'   => $this->parameters,
+            'sdk'          => $this->sdk,
+            'topologyName' => $this->topologyName,
             'updated'      => $this->updated->format(DATE_ATOM),
+            'user'         => $this->user,
         ];
     }
 

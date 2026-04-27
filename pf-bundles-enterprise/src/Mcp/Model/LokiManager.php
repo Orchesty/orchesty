@@ -7,6 +7,8 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\Utils\String\Json;
+use JsonException;
 use RuntimeException;
 
 /**
@@ -98,9 +100,9 @@ final class LokiManager
      *   ]
      *
      * @param string[]               $correlationIds
-     * @param DateTimeImmutable|null $start When provided, restricts the query window's lower bound;
-     *                                      otherwise the manager falls back to a -30 day window.
-     * @param DateTimeImmutable|null $end   When provided, restricts the query window's upper bound.
+     * @param DateTimeImmutable|null $start          When provided, restricts the query window's lower bound;
+     *                                               otherwise the manager falls back to a -30 day window.
+     * @param DateTimeImmutable|null $end            When provided, restricts the query window's upper bound.
      *
      * @return array<int, array<string, mixed>>
      */
@@ -118,33 +120,32 @@ final class LokiManager
         $result  = [];
 
         foreach ($entries as [$time, $line]) {
-            $decoded = json_decode($line, TRUE);
-
-            if (!is_array($decoded)) {
+            try {
+                $decoded = Json::decode($line);
+            } catch (JsonException) {
                 continue;
             }
 
             $cp = $decoded['auditCheckpoint'] ?? NULL;
 
-            if (
-                !is_array($cp)
+            if (!is_array($cp)
                 || !in_array($cp['role'] ?? '', ['process_entry', 'process_step', 'process_exit'], TRUE)
             ) {
                 continue;
             }
 
             $result[] = [
-                'role'          => $cp['role'],
-                'payload'       => $cp['payload'] ?? NULL, // may be missing for fields:[] marker checkpoints
-                'resultCode'    => isset($cp['resultCode']) ? (int) $cp['resultCode'] : NULL,
-                'resultStatus'  => isset($cp['resultStatus']) ? (string) $cp['resultStatus'] : NULL,
-                'resultMessage' => isset($cp['resultMessage']) ? (string) $cp['resultMessage'] : NULL,
-                'httpStatus'    => isset($cp['httpStatus']) ? (int) $cp['httpStatus'] : NULL,
-                'time'          => $time,
                 'correlationId' => $decoded['correlationId'] ?? NULL,
+                'httpStatus'    => isset($cp['httpStatus']) ? (int) $cp['httpStatus'] : NULL,
+                'nodeName'      => $decoded['nodeName'] ?? NULL,
+                'payload'       => $cp['payload'] ?? NULL,
+                'resultCode'    => isset($cp['resultCode']) ? (int) $cp['resultCode'] : NULL,
+                'resultMessage' => isset($cp['resultMessage']) ? (string) $cp['resultMessage'] : NULL,
+                'resultStatus'  => isset($cp['resultStatus']) ? (string) $cp['resultStatus'] : NULL,
+                'role'          => $cp['role'],
+                'time'          => $time,
                 'topologyId'    => $decoded['topologyId'] ?? NULL,
                 'topologyName'  => $decoded['topologyName'] ?? NULL,
-                'nodeName'      => $decoded['nodeName'] ?? NULL,
             ];
         }
 
@@ -194,8 +195,8 @@ final class LokiManager
      * the Loki cursor forward until either the batch is drained or the
      * global MAX_ENTRIES cap is reached.
      *
-     * @param string[]          $correlationIds
-     * @param DateTimeImmutable $start
+     * @param string[]               $correlationIds
+     * @param DateTimeImmutable      $start
      * @param DateTimeImmutable|null $end
      *
      * @return array<int, array{string, string}>
@@ -238,7 +239,7 @@ final class LokiManager
                 // includes the actual problem ("max query series" / parse
                 // error / time range too long) instead of a bare status.
                 $body  = trim($response->getBody());
-                $short = $body === '' ? '' : ': ' . mb_substr($body, 0, 240);
+                $short = $body === '' ? '' : sprintf(': %s', mb_substr($body, 0, 240));
 
                 throw new RuntimeException(
                     sprintf(

@@ -6,6 +6,10 @@ use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 
 /**
+ * Interface PublishGuardInterface
+ *
+ * @package Hanaboso\PipesFramework\Configurator\Model\PublishGuard
+ *
  * Hook executed by {@see \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::publishTopology}
  * BEFORE the topology-generator is asked to build a bridge.
  *
@@ -18,6 +22,8 @@ interface PublishGuardInterface
 {
 
     /**
+     * @param Topology $topology
+     *
      * @throws TopologyException when the publish must be rejected.
      */
     public function ensureCanPublish(Topology $topology): void;

@@ -1,4 +1,4 @@
-DCS=docker-compose exec -T sdk
+DCS=docker compose exec -T sdk
 IMAGE=dkr.hanaboso.net/pipes/pipes/enterprise-system-worker:$(TAG)
 
 .env:
@@ -14,11 +14,11 @@ docker-compose.ci.yml:
 	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yaml > docker-compose.ci.yml
 
 docker-up-force: .env
-	docker-compose pull --ignore-pull-failures
-	docker-compose up -d --force-recreate --remove-orphans --build
+	docker compose pull --ignore-pull-failures
+	docker compose up -d --force-recreate --remove-orphans --build
 
 docker-down-clean: .env
-	docker-compose down -v
+	docker compose down -v
 
 start:
 	$(DCS) pnpm run start

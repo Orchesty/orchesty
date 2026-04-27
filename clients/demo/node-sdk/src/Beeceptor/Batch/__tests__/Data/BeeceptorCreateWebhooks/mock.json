@@ -1,7 +1,0 @@
-{
-    "http": "POST https://test.free.beeceptor.com/api/webhooks",
-    "code": 200,
-    "body": {
-        "id": "b61c67c7-a36b-4537-9d6b-4fbb0d5b1179"
-    }
-}

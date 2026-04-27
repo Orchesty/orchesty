@@ -13,6 +13,10 @@ use Symfony\Component\Routing\Attribute\Route;
 use Throwable;
 
 /**
+ * Class WebhookConfigController
+ *
+ * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
+ *
  * Endpoints driving the new UI-managed webhook flow.
  *
  * The previously-existing /webhook/applications/{key}/(un)subscribe endpoints
@@ -24,6 +28,12 @@ final class WebhookConfigController extends AbstractController
 
     // phpcs:disable SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing.IncorrectLinesCountBetweenAttributeAndTarget
 
+    /**
+     * WebhookConfigController constructor.
+     *
+     * @param WebhookConfigManager $manager
+     * @param ServiceLocator       $locator
+     */
     public function __construct(
         private readonly WebhookConfigManager $manager,
         private readonly ServiceLocator $locator,
@@ -31,6 +41,11 @@ final class WebhookConfigController extends AbstractController
     {
     }
 
+    /**
+     * @param string $topologyName
+     *
+     * @return Response
+     */
     #[Route('/topologies/by-name/{topologyName}/webhook-configs', methods: ['GET', 'OPTIONS'])]
     public function listAction(string $topologyName): Response
     {
@@ -39,6 +54,12 @@ final class WebhookConfigController extends AbstractController
 
     /**
      * Upsert the webhook configuration for (topology, node).
+     *
+     * @param Request $request
+     * @param string  $topologyName
+     * @param string  $nodeName
+     *
+     * @return Response
      */
     #[Route(
         '/topologies/by-name/{topologyName}/nodes/{nodeName}/webhook-config',
@@ -57,6 +78,12 @@ final class WebhookConfigController extends AbstractController
         return new JsonResponse($config->toArray());
     }
 
+    /**
+     * @param string $topologyName
+     * @param string $nodeName
+     *
+     * @return Response
+     */
     #[Route(
         '/topologies/by-name/{topologyName}/nodes/{nodeName}/webhook-config',
         methods: ['DELETE', 'OPTIONS'],
@@ -79,6 +106,12 @@ final class WebhookConfigController extends AbstractController
      * The endpoint is fully idempotent: a second subscribe against an
      * already-active webhook returns `200` with `payload.noop = true` rather
      * than re-issuing the upstream request.
+     *
+     * @param Request $request
+     * @param string  $topologyName
+     * @param string  $nodeName
+     *
+     * @return Response
      */
     #[Route(
         '/topologies/by-name/{topologyName}/nodes/{nodeName}/webhook-config/subscribe',
@@ -113,6 +146,11 @@ final class WebhookConfigController extends AbstractController
      * with no existing config or no live registration returns `200` with
      * `payload.noop = true` and never throws 4xx, matching the user-facing
      * intent ("turn this webhook off, regardless of current state").
+     *
+     * @param string $topologyName
+     * @param string $nodeName
+     *
+     * @return Response
      */
     #[Route(
         '/topologies/by-name/{topologyName}/nodes/{nodeName}/webhook-config/unsubscribe',
@@ -134,6 +172,11 @@ final class WebhookConfigController extends AbstractController
 
     /**
      * Cascade subscribe / unsubscribe for every webhook config attached to a topology.
+     *
+     * @param Request $request
+     * @param string  $topologyName
+     *
+     * @return Response
      */
     #[Route('/topologies/by-name/{topologyName}/webhook-configs/cascade', methods: ['POST', 'OPTIONS'])]
     public function cascadeAction(Request $request, string $topologyName): Response
@@ -147,21 +190,23 @@ final class WebhookConfigController extends AbstractController
         $enable = (bool) ($payload['enable'] ?? FALSE);
 
         return new JsonResponse([
-            'status' => 'ok',
             'items'  => $this->manager->cascadeForTopology($topologyName, $enable),
+            'status' => 'ok',
         ]);
     }
 
     /**
      * Returns the catalog of webhook events an application supports — used by
      * the UI to populate the event dropdown when configuring a Webhook node.
+     *
+     * @param Request $request
+     * @param string  $key
+     * @param string  $sdk
+     *
+     * @return Response
      */
     #[Route('/applications/{key}/webhook-events', methods: ['GET', 'OPTIONS'])]
-    public function listEventsAction(
-        Request $request,
-        string $key,
-        #[MapQueryParameter] string $sdk,
-    ): Response
+    public function listEventsAction(Request $request, string $key, #[MapQueryParameter] string $sdk): Response
     {
         $request->query->set('user', ApplicationController::SYSTEM_USER);
         $request->query->set('sdk', $sdk);

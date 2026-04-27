@@ -67,11 +67,11 @@ func prepareDto() ProcessMessage {
 func TestProcessDto_CopyBatchItem_StripsParentAuditHeaders(t *testing.T) {
 	parent := &ProcessMessage{
 		Headers: map[string]interface{}{
-			"correlation-id":                      "corr-1",
-			"node-id":                             "node-1",
-			enum.Header_AuditEntityHeader:         `{"order":{"key":"id","fields":[{"id":"ord-001"},{"id":"ord-002"}]}}`,
-			enum.Header_AuditEntityIdsHeader:      "order:ord-001:audit-1,order:ord-002:audit-2",
-			enum.Header_AuditEntityFieldsHeader:   "{}",
+			"correlation-id":                    "corr-1",
+			"node-id":                           "node-1",
+			enum.Header_AuditEntityHeader:       `{"order":{"key":"id","fields":[{"id":"ord-001"},{"id":"ord-002"}]}}`,
+			enum.Header_AuditEntityIdsHeader:    "order:ord-001:audit-1,order:ord-002:audit-2",
+			enum.Header_AuditEntityFieldsHeader: "{}",
 		},
 	}
 

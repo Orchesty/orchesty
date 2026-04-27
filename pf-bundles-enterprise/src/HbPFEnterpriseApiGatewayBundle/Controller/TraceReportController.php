@@ -63,7 +63,7 @@ final class TraceReportController
     {
         try {
             return $this->getResponse($this->handler->create($this->decodeBody($request)));
-        } catch (PipesFrameworkException | MongoDBException $e) {
+        } catch (MongoDBException | PipesFrameworkException $e) {
             return $this->getErrorResponse($e, 400);
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
@@ -83,7 +83,7 @@ final class TraceReportController
             return $this->getResponse($this->handler->update($id, $this->decodeBody($request)));
         } catch (InvalidArgumentException $e) {
             return $this->getErrorResponse($e, 404);
-        } catch (PipesFrameworkException | MongoDBException $e) {
+        } catch (MongoDBException | PipesFrameworkException $e) {
             return $this->getErrorResponse($e, 400);
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
@@ -115,14 +115,12 @@ final class TraceReportController
     private function decodeBody(Request $request): array
     {
         $content = $request->getContent();
-        if (!is_string($content) || $content === '') {
+        if ($content === '') {
             return $request->request->all();
         }
 
         try {
-            $decoded = Json::decode($content);
-
-            return is_array($decoded) ? $decoded : $request->request->all();
+            return Json::decode($content);
         } catch (JsonException) {
             return $request->request->all();
         }

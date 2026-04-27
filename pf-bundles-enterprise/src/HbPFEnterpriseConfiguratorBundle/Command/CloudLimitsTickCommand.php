@@ -33,6 +33,9 @@ final class CloudLimitsTickCommand extends Command
 
     /**
      * CloudLimitsTickCommand constructor.
+     *
+     * @param CloudLimitsHandler   $handler
+     * @param CloudEventsPublisher $publisher
      */
     public function __construct(
         private readonly CloudLimitsHandler $handler,
@@ -42,15 +45,32 @@ final class CloudLimitsTickCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * @return void
+     */
     protected function configure(): void
     {
         $this
             ->setName(self::NAME)
-            ->setDescription('Recompute cloud plan-limit usage every minute, persist a snapshot, and emit Notifier events when bands are crossed.')
+            ->setDescription(
+                'Recompute cloud plan-limit usage every minute, persist a snapshot, and emit Notifier events when bands are crossed.',
+            )
             ->addOption('once', NULL, InputOption::VALUE_NONE, 'Run a single tick and exit (used by tests/CI).')
-            ->addOption('interval', NULL, InputOption::VALUE_REQUIRED, 'Override tick interval in seconds.', (string) self::DEFAULT_INTERVAL_SECONDS);
+            ->addOption(
+                'interval',
+                NULL,
+                InputOption::VALUE_REQUIRED,
+                'Override tick interval in seconds.',
+                (string) self::DEFAULT_INTERVAL_SECONDS,
+            );
     }
 
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return int
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $once     = (bool) $input->getOption('once');
@@ -79,6 +99,11 @@ final class CloudLimitsTickCommand extends Command
         return self::SUCCESS;
     }
 
+    /**
+     * @param OutputInterface $output
+     *
+     * @return void
+     */
     private function tick(OutputInterface $output): void
     {
         $usage = $this->handler->computeUsage();

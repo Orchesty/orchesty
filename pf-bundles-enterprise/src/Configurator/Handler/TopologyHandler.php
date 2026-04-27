@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFrameworkEnterprise\Configurator\Handler;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
@@ -32,7 +33,7 @@ final class TopologyHandler extends BaseTopologyHandler
 {
 
     /**
-     * @var TopologyProgressRepository
+     * @var ObjectRepository<TopologyProgress>&TopologyProgressRepository
      */
     private TopologyProgressRepository $topologyProgressRepository;
 
@@ -46,6 +47,7 @@ final class TopologyHandler extends BaseTopologyHandler
      * @param UserTaskHandler            $userTaskHandler
      * @param TopologyTester             $topologyTester
      * @param class-string<BaseTopology> $topologyClass
+     * @param PublishGuardInterface      $publishGuard
      */
     public function __construct(
         DatabaseManagerLocator $dml,
@@ -69,8 +71,7 @@ final class TopologyHandler extends BaseTopologyHandler
             $publishGuard,
         );
 
-        $repo                             = $this->dm->getRepository(TopologyProgress::class);
-        $this->topologyProgressRepository = $repo;
+        $this->topologyProgressRepository = $this->dm->getRepository(TopologyProgress::class);
     }
 
     /**
