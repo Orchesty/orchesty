@@ -3,8 +3,7 @@ import { ref, watch, computed } from 'vue'
 import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
 import CopyValue from '@/components/ui/CopyValue.vue'
-import Confirm from '@/components/ui/Confirm.vue'
-import EditMessageModal from '@/components/trash/EditMessageModal.vue'
+import EditMessageForm from '@/components/trash/EditMessageForm.vue'
 import { useToast } from '@/composables/useToast'
 import { useDateFormat } from '@/composables/useDateFormat'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
@@ -42,13 +41,28 @@ const { showToast } = useToast()
 const { formatDateTime } = useDateFormat()
 const { getNodeName } = useTopologyNodeMappings()
 
+type Mode = 'detail' | 'edit' | 'confirm-reject' | 'confirm-reject-all'
+
 const currentItem = ref<TrashItem | null>(null)
 const totalCount = ref(0)
 const loading = ref(false)
 const actionLoading = ref(false)
-const editModalOpen = ref(false)
-const confirmRejectOpen = ref(false)
-const confirmRejectAllOpen = ref(false)
+const mode = ref<Mode>('detail')
+const editFormRef = ref<InstanceType<typeof EditMessageForm> | null>(null)
+
+const modalTitle = computed(() => {
+  switch (mode.value) {
+    case 'edit':
+      return 'Update message'
+    case 'confirm-reject':
+      return 'Reject message'
+    case 'confirm-reject-all':
+      return 'Reject all messages'
+    default:
+      return 'Failed Message'
+  }
+})
+const isEditFormValid = computed(() => editFormRef.value?.isValid ?? false)
 
 const resultMessage = computed(() => {
   if (!currentItem.value) return ''
@@ -87,10 +101,12 @@ watch(
   () => props.modelValue,
   (open) => {
     if (open) {
+      mode.value = 'detail'
       loadFirstItem()
     } else {
       currentItem.value = null
       totalCount.value = 0
+      mode.value = 'detail'
     }
   },
 )
@@ -112,12 +128,11 @@ const handleApprove = async () => {
 }
 
 const handleReject = () => {
-  confirmRejectOpen.value = true
+  mode.value = 'confirm-reject'
 }
 
 const handleConfirmReject = async () => {
   if (!currentItem.value) return
-  confirmRejectOpen.value = false
   actionLoading.value = true
   try {
     await rejectTrashItem(currentItem.value.id)
@@ -130,6 +145,10 @@ const handleConfirmReject = async () => {
   } finally {
     actionLoading.value = false
   }
+}
+
+const handleCancelConfirm = () => {
+  mode.value = 'detail'
 }
 
 const loadNextOrClose = async () => {
@@ -145,6 +164,7 @@ const loadNextOrClose = async () => {
   if (result.data.length > 0) {
     totalCount.value = result.pagination.total
     currentItem.value = result.data[0] ?? null
+    mode.value = 'detail'
   } else {
     handleClose()
   }
@@ -166,11 +186,10 @@ const handleApproveAll = async () => {
 }
 
 const handleRejectAllClick = () => {
-  confirmRejectAllOpen.value = true
+  mode.value = 'confirm-reject-all'
 }
 
 const handleConfirmRejectAll = async () => {
-  confirmRejectAllOpen.value = false
   actionLoading.value = true
   try {
     await rejectAllTrashItems(props.topologyId, props.nodeId, props.correlationId)
@@ -186,35 +205,49 @@ const handleConfirmRejectAll = async () => {
 }
 
 const handleEdit = () => {
-  editModalOpen.value = true
+  mode.value = 'edit'
 }
 
-const handleSave = async (data: { headers: Record<string, unknown>; body: Record<string, unknown> }) => {
+const handleEditCancel = () => {
+  mode.value = 'detail'
+}
+
+const handleEditSave = async () => {
   if (!currentItem.value) return
+  const data = editFormRef.value?.getPayload()
+  if (!data) return
+  actionLoading.value = true
   try {
     const updatedData = await updateTrashItem(currentItem.value.id, data)
     currentItem.value.headers = updatedData.headers
     currentItem.value.body = updatedData.body
     showToast('Message updated', 'success')
-    editModalOpen.value = false
+    mode.value = 'detail'
   } catch (err) {
     console.error('Failed to update:', err)
     showToast('Failed to update message', 'error')
+  } finally {
+    actionLoading.value = false
   }
 }
 
-const handleSaveAndApprove = async (data: { headers: Record<string, unknown>; body: Record<string, unknown> }) => {
+const handleEditSaveAndApprove = async () => {
   if (!currentItem.value) return
+  const data = editFormRef.value?.getPayload()
+  if (!data) return
+  actionLoading.value = true
   try {
     await updateTrashItem(currentItem.value.id, data)
     await approveTrashItem(currentItem.value.id)
     showToast('Message updated and approved', 'success')
-    editModalOpen.value = false
+    mode.value = 'detail'
     emit('update')
     await loadNextOrClose()
   } catch (err) {
     console.error('Failed to update and approve:', err)
     showToast('Failed to update and approve message', 'error')
+  } finally {
+    actionLoading.value = false
   }
 }
 
@@ -227,7 +260,7 @@ const handleClose = () => {
   <Modal
     :model-value="modelValue"
     :id="modalId"
-    title="Failed Message"
+    :title="modalTitle"
     size="xl"
     @update:model-value="$emit('update:modelValue', $event)"
   >
@@ -244,8 +277,8 @@ const handleClose = () => {
       </svg>
     </div>
 
-    <!-- Message content -->
-    <div v-else-if="currentItem" class="space-y-4">
+    <!-- Message content (DETAIL mode) -->
+    <div v-else-if="currentItem && mode === 'detail'" class="space-y-4">
       <!-- Counter + bulk actions -->
       <div v-if="!hideBulkActions" class="flex items-center gap-3">
         <div
@@ -326,95 +359,147 @@ const handleClose = () => {
       </div>
     </div>
 
+    <!-- EDIT mode: same modal frame, swapped content -->
+    <EditMessageForm
+      v-else-if="currentItem && mode === 'edit'"
+      ref="editFormRef"
+      :item="currentItem"
+    />
+
+    <!-- CONFIRM REJECT mode -->
+    <div
+      v-else-if="currentItem && mode === 'confirm-reject'"
+      class="py-6 text-center"
+    >
+      <svg
+        class="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-200"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 20 20"
+      >
+        <path
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+        />
+      </svg>
+      <h3 class="text-lg font-normal text-gray-500 dark:text-gray-400">
+        Are you sure you want to reject this message?
+      </h3>
+    </div>
+
+    <!-- CONFIRM REJECT ALL mode -->
+    <div
+      v-else-if="currentItem && mode === 'confirm-reject-all'"
+      class="py-6 text-center"
+    >
+      <svg
+        class="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-200"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 20 20"
+      >
+        <path
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+        />
+      </svg>
+      <h3 class="text-lg font-normal text-gray-500 dark:text-gray-400">
+        Are you sure you want to reject all {{ totalCount }} messages?
+      </h3>
+    </div>
+
     <template #footer-actions>
       <div v-if="currentItem && !loading" class="flex items-center justify-end gap-3">
-        <Button
-          variant="outline"
-          :disabled="actionLoading"
-          @click="handleApprove"
-        >
-          Approve
-        </Button>
-        <Button
-          variant="outline"
-          :disabled="actionLoading"
-          @click="handleEdit"
-        >
-          Edit
-        </Button>
-        <Button
-          variant="danger"
-          :disabled="actionLoading"
-          @click="handleReject"
-        >
-          Reject
-        </Button>
+        <template v-if="mode === 'detail'">
+          <Button
+            variant="outline"
+            :disabled="actionLoading"
+            @click="handleApprove"
+          >
+            Approve
+          </Button>
+          <Button
+            variant="outline"
+            :disabled="actionLoading"
+            @click="handleEdit"
+          >
+            Edit
+          </Button>
+          <Button
+            variant="danger"
+            :disabled="actionLoading"
+            @click="handleReject"
+          >
+            Reject
+          </Button>
+        </template>
+
+        <template v-else-if="mode === 'edit'">
+          <Button
+            variant="outline"
+            :disabled="actionLoading"
+            @click="handleEditCancel"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            :disabled="actionLoading || !isEditFormValid"
+            @click="handleEditSave"
+          >
+            Save
+          </Button>
+          <Button
+            variant="primary"
+            :disabled="actionLoading || !isEditFormValid"
+            @click="handleEditSaveAndApprove"
+          >
+            Save and Approve
+          </Button>
+        </template>
+
+        <template v-else-if="mode === 'confirm-reject'">
+          <Button
+            variant="outline"
+            :disabled="actionLoading"
+            @click="handleCancelConfirm"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            :loading="actionLoading"
+            @click="handleConfirmReject"
+          >
+            Yes, reject
+          </Button>
+        </template>
+
+        <template v-else-if="mode === 'confirm-reject-all'">
+          <Button
+            variant="outline"
+            :disabled="actionLoading"
+            @click="handleCancelConfirm"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            :loading="actionLoading"
+            @click="handleConfirmRejectAll"
+          >
+            Yes, reject all
+          </Button>
+        </template>
       </div>
     </template>
   </Modal>
-
-  <!-- Edit Message Modal -->
-  <EditMessageModal
-    v-if="currentItem"
-    v-model="editModalOpen"
-    :item="currentItem"
-    @save="handleSave"
-    @save-and-approve="handleSaveAndApprove"
-  />
-
-  <!-- Confirm Reject -->
-  <Confirm
-    v-model="confirmRejectOpen"
-    id="confirm-reject-failed-modal"
-    confirm-text="Yes, reject"
-    cancel-text="Cancel"
-    @confirm="handleConfirmReject"
-  >
-    <svg
-      class="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-200"
-      aria-hidden="true"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 20 20"
-    >
-      <path
-        stroke="currentColor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-      />
-    </svg>
-    <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-      Are you sure you want to reject this message?
-    </h3>
-  </Confirm>
-
-  <!-- Confirm Reject All -->
-  <Confirm
-    v-model="confirmRejectAllOpen"
-    id="confirm-reject-all-failed-modal"
-    confirm-text="Yes, reject all"
-    cancel-text="Cancel"
-    @confirm="handleConfirmRejectAll"
-  >
-    <svg
-      class="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-200"
-      aria-hidden="true"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 20 20"
-    >
-      <path
-        stroke="currentColor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-      />
-    </svg>
-    <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-      Are you sure you want to reject all {{ totalCount }} messages?
-    </h3>
-  </Confirm>
 </template>

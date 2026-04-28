@@ -168,7 +168,7 @@ function mapApiInstallToComponent(
     description: apiResponse.description,
     application_type: apiResponse.application_type,
     authorization_type: apiResponse.authorization_type,
-    authorized: apiResponse.authorized ?? false,
+    authorized: apiResponse.authorized,
     applicationSettings: flatSettings,
     worker: workerName,
     logo: apiResponse.logo,

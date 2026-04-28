@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, nextTick } from 'vue'
+import { onMounted, nextTick, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
 export interface DropdownMenuItem {
@@ -39,6 +39,9 @@ const props = withDefaults(defineProps<Props>(), {
   block: false,
 })
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const dropdownInstance = ref<any>(null)
+
 onMounted(async () => {
   await nextTick()
   
@@ -48,7 +51,7 @@ onMounted(async () => {
   if (dropdownElement && buttonElement) {
     const { Dropdown } = await import('flowbite')
     
-    new Dropdown(dropdownElement, buttonElement, {
+    dropdownInstance.value = new Dropdown(dropdownElement, buttonElement, {
       placement: props.placement,
       triggerType: 'click',
       offsetSkidding: 0,
@@ -56,6 +59,12 @@ onMounted(async () => {
     })
   }
 })
+
+const handleItemClick = (item: DropdownMenuItem) => {
+  item.onClick?.()
+  // Auto-close on selection — standard select-like UX
+  dropdownInstance.value?.hide()
+}
 </script>
 
 <template>
@@ -139,7 +148,7 @@ onMounted(async () => {
                 'block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white',
                 item.class
               ]"
-              @click="item.onClick"
+              @click="handleItemClick(item)"
             >
               <span v-if="item.icon" v-html="item.icon" class="mr-2 inline-block h-4 w-4"></span>
               {{ item.label }}

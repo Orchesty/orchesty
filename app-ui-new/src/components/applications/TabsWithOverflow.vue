@@ -97,9 +97,12 @@ const getTabButtonClasses = (tabId: string) => {
   const baseClasses = 'inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg whitespace-nowrap';
   const activeClasses = 'text-primary-600 border-primary-600 dark:text-primary-500 dark:border-primary-500';
   const inactiveClasses = 'text-gray-500 border-transparent hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300';
+  const disabledActiveClasses = 'text-primary-600/60 border-primary-600/60 cursor-not-allowed dark:text-primary-500/60 dark:border-primary-500/60';
   const disabledClasses = 'text-gray-300 border-transparent cursor-not-allowed dark:text-gray-600';
 
-  if (isTabDisabled(tabId)) return `${baseClasses} ${disabledClasses}`;
+  if (isTabDisabled(tabId)) {
+    return `${baseClasses} ${currentActiveTab.value === tabId ? disabledActiveClasses : disabledClasses}`;
+  }
   return `${baseClasses} ${currentActiveTab.value === tabId ? activeClasses : inactiveClasses}`;
 };
 

@@ -41,7 +41,7 @@ export interface ApplicationInstall {
   description: string;
   application_type: ApplicationType;
   authorization_type: AuthorizationType;
-  authorized: boolean;
+  authorized?: boolean;
   applicationSettings: ApplicationSetting[];
   webhookSettings?: WebhookSetting[];
   worker?: string; // Custom field for grouping by worker

@@ -83,11 +83,14 @@ final class CloudLimitsHandler
         $storage = $this->fetchLatestMetric(self::COLLECTION_DB_STORAGE_METRICS);
         $loki    = $this->fetchLatestMetric(self::COLLECTION_LOKI_METRICS);
 
-        $limiterCount = $this->dm->createQueryBuilder(Limiter::class)
-            ->count()
-            ->getQuery()
-            ->execute();
-        $limiterCount = is_int($limiterCount) ? $limiterCount : 0;
+        // Use raw countDocuments() to avoid Mongo's deprecated count() metadata
+        // fast-path, which can drift from reality (e.g. after unclean shutdown
+        // or orphan operations) and report a non-zero count for an empty
+        // collection. countDocuments() always reflects actual data.
+        $limiterCount = $this->dm
+            ->getDocumentDatabase(Limiter::class)
+            ->selectCollection('limiter')
+            ->countDocuments();
 
         $messagesUsed  = $limiterCount + (int) ($rabbit['total_messages'] ?? 0);
         $storageMbUsed = (float) ($storage['storage_size_mb'] ?? 0)

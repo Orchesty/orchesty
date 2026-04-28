@@ -722,6 +722,3 @@ export async function start(): Promise<void> {
 
     container.setNode(new RunTopology(runner, 'http-status-applinth', 'users-start'), httpStatusApplication);
 }
-
-
-

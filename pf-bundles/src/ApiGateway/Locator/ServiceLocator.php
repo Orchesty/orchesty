@@ -758,6 +758,13 @@ final class ServiceLocator implements LoggerAwareInterface
                 continue;
             }
 
+            // doRequest() merges a synthetic `host` key into single-call
+            // responses (see `runSyncActions` / non-multiple branch). Drop it
+            // before passing through `array_values`, otherwise the SDK base
+            // URL leaks into the events list as a stray string item — same
+            // pattern as the comment on the list-action path above.
+            unset($events['host']);
+
             // Apps that don't extend AWebhookApplication respond with empty / scalar.
             if ($events === []) {
                 continue;
