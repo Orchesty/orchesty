@@ -2,12 +2,15 @@ package kubernetes
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 
 	"cloud-controller/pkg/config"
 	"cloud-controller/pkg/models"
 
 	corev1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes/fake"
 )
@@ -193,6 +196,168 @@ func TestDeleteNamespace(t *testing.T) {
 
 	if _, err := client.clientSet.CoreV1().Namespaces().Get(t.Context(), "instance-test", metav1.GetOptions{}); err == nil {
 		t.Fatal("expected namespace to be deleted")
+	}
+}
+
+func TestDeleteNamespaceDeletesOwnedAlloyClusterRBAC(t *testing.T) {
+	alloyName := fmt.Sprintf(alloyClusterRoleNameFmt, "instance-test")
+	grafanaRole := fmt.Sprintf(grafanaClusterRoleNameFmt, "instance-test")
+	grafanaBinding := grafanaRole + rbacBindingSuffix
+	lokiRole := fmt.Sprintf(lokiClusterRoleNameFmt, "instance-test")
+	lokiBinding := lokiRole + rbacBindingSuffix
+
+	client := &Client{clientSet: fake.NewSimpleClientset(
+		&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "instance-test"}},
+		&rbacv1.ClusterRole{ObjectMeta: metav1.ObjectMeta{
+			Name: alloyName,
+			Annotations: map[string]string{
+				helmReleaseNameAnnotation: orchestyRepo,
+				helmReleaseNSAnnotation:   "instance-test",
+			},
+		}},
+		&rbacv1.ClusterRoleBinding{ObjectMeta: metav1.ObjectMeta{
+			Name: alloyName,
+			Annotations: map[string]string{
+				helmReleaseNameAnnotation: orchestyRepo,
+				helmReleaseNSAnnotation:   "instance-test",
+			},
+		}},
+		&rbacv1.ClusterRole{ObjectMeta: metav1.ObjectMeta{
+			Name: grafanaRole,
+			Annotations: map[string]string{
+				helmReleaseNameAnnotation: orchestyRepo,
+				helmReleaseNSAnnotation:   "instance-test",
+			},
+		}},
+		&rbacv1.ClusterRoleBinding{ObjectMeta: metav1.ObjectMeta{
+			Name: grafanaBinding,
+			Annotations: map[string]string{
+				helmReleaseNameAnnotation: orchestyRepo,
+				helmReleaseNSAnnotation:   "instance-test",
+			},
+		}},
+		&rbacv1.ClusterRole{ObjectMeta: metav1.ObjectMeta{
+			Name: lokiRole,
+			Annotations: map[string]string{
+				helmReleaseNameAnnotation: orchestyRepo,
+				helmReleaseNSAnnotation:   "instance-test",
+			},
+		}},
+		&rbacv1.ClusterRoleBinding{ObjectMeta: metav1.ObjectMeta{
+			Name: lokiBinding,
+			Annotations: map[string]string{
+				helmReleaseNameAnnotation: orchestyRepo,
+				helmReleaseNSAnnotation:   "instance-test",
+			},
+		}},
+	)}
+
+	ok, err := client.DeleteNamespace("instance-test")
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	if !ok {
+		t.Fatal("expected true result")
+	}
+
+	if _, err := client.clientSet.RbacV1().ClusterRoles().Get(t.Context(), alloyName, metav1.GetOptions{}); !apierrors.IsNotFound(err) {
+		t.Fatalf("expected ClusterRole to be deleted, got err %v", err)
+	}
+	if _, err := client.clientSet.RbacV1().ClusterRoleBindings().Get(t.Context(), alloyName, metav1.GetOptions{}); !apierrors.IsNotFound(err) {
+		t.Fatalf("expected ClusterRoleBinding to be deleted, got err %v", err)
+	}
+	if _, err := client.clientSet.RbacV1().ClusterRoles().Get(t.Context(), grafanaRole, metav1.GetOptions{}); !apierrors.IsNotFound(err) {
+		t.Fatalf("expected Grafana ClusterRole to be deleted, got err %v", err)
+	}
+	if _, err := client.clientSet.RbacV1().ClusterRoleBindings().Get(t.Context(), grafanaBinding, metav1.GetOptions{}); !apierrors.IsNotFound(err) {
+		t.Fatalf("expected Grafana ClusterRoleBinding to be deleted, got err %v", err)
+	}
+	if _, err := client.clientSet.RbacV1().ClusterRoles().Get(t.Context(), lokiRole, metav1.GetOptions{}); !apierrors.IsNotFound(err) {
+		t.Fatalf("expected Loki ClusterRole to be deleted, got err %v", err)
+	}
+	if _, err := client.clientSet.RbacV1().ClusterRoleBindings().Get(t.Context(), lokiBinding, metav1.GetOptions{}); !apierrors.IsNotFound(err) {
+		t.Fatalf("expected Loki ClusterRoleBinding to be deleted, got err %v", err)
+	}
+}
+
+func TestDeleteNamespaceKeepsForeignOwnedAlloyClusterRBAC(t *testing.T) {
+	alloyName := fmt.Sprintf(alloyClusterRoleNameFmt, "instance-test")
+	grafanaRole := fmt.Sprintf(grafanaClusterRoleNameFmt, "instance-test")
+	grafanaBinding := grafanaRole + rbacBindingSuffix
+	lokiRole := fmt.Sprintf(lokiClusterRoleNameFmt, "instance-test")
+	lokiBinding := lokiRole + rbacBindingSuffix
+
+	client := &Client{clientSet: fake.NewSimpleClientset(
+		&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "instance-test"}},
+		&rbacv1.ClusterRole{ObjectMeta: metav1.ObjectMeta{
+			Name: alloyName,
+			Annotations: map[string]string{
+				helmReleaseNameAnnotation: orchestyRepo,
+				helmReleaseNSAnnotation:   "instance-other",
+			},
+		}},
+		&rbacv1.ClusterRoleBinding{ObjectMeta: metav1.ObjectMeta{
+			Name: alloyName,
+			Annotations: map[string]string{
+				helmReleaseNameAnnotation: orchestyRepo,
+				helmReleaseNSAnnotation:   "instance-other",
+			},
+		}},
+		&rbacv1.ClusterRole{ObjectMeta: metav1.ObjectMeta{
+			Name: grafanaRole,
+			Annotations: map[string]string{
+				helmReleaseNameAnnotation: orchestyRepo,
+				helmReleaseNSAnnotation:   "instance-other",
+			},
+		}},
+		&rbacv1.ClusterRoleBinding{ObjectMeta: metav1.ObjectMeta{
+			Name: grafanaBinding,
+			Annotations: map[string]string{
+				helmReleaseNameAnnotation: orchestyRepo,
+				helmReleaseNSAnnotation:   "instance-other",
+			},
+		}},
+		&rbacv1.ClusterRole{ObjectMeta: metav1.ObjectMeta{
+			Name: lokiRole,
+			Annotations: map[string]string{
+				helmReleaseNameAnnotation: orchestyRepo,
+				helmReleaseNSAnnotation:   "instance-other",
+			},
+		}},
+		&rbacv1.ClusterRoleBinding{ObjectMeta: metav1.ObjectMeta{
+			Name: lokiBinding,
+			Annotations: map[string]string{
+				helmReleaseNameAnnotation: orchestyRepo,
+				helmReleaseNSAnnotation:   "instance-other",
+			},
+		}},
+	)}
+
+	ok, err := client.DeleteNamespace("instance-test")
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	if !ok {
+		t.Fatal("expected true result")
+	}
+
+	if _, err := client.clientSet.RbacV1().ClusterRoles().Get(t.Context(), alloyName, metav1.GetOptions{}); err != nil {
+		t.Fatalf("expected ClusterRole to stay, got %v", err)
+	}
+	if _, err := client.clientSet.RbacV1().ClusterRoleBindings().Get(t.Context(), alloyName, metav1.GetOptions{}); err != nil {
+		t.Fatalf("expected ClusterRoleBinding to stay, got %v", err)
+	}
+	if _, err := client.clientSet.RbacV1().ClusterRoles().Get(t.Context(), grafanaRole, metav1.GetOptions{}); err != nil {
+		t.Fatalf("expected Grafana ClusterRole to stay, got %v", err)
+	}
+	if _, err := client.clientSet.RbacV1().ClusterRoleBindings().Get(t.Context(), grafanaBinding, metav1.GetOptions{}); err != nil {
+		t.Fatalf("expected Grafana ClusterRoleBinding to stay, got %v", err)
+	}
+	if _, err := client.clientSet.RbacV1().ClusterRoles().Get(t.Context(), lokiRole, metav1.GetOptions{}); err != nil {
+		t.Fatalf("expected Loki ClusterRole to stay, got %v", err)
+	}
+	if _, err := client.clientSet.RbacV1().ClusterRoleBindings().Get(t.Context(), lokiBinding, metav1.GetOptions{}); err != nil {
+		t.Fatalf("expected Loki ClusterRoleBinding to stay, got %v", err)
 	}
 }
 

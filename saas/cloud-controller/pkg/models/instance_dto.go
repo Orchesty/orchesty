@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"math/big"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -21,6 +22,15 @@ const charsetFull = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456
 const charsetLower = "abcdefghijklmnopqrstuvwxyz0123456789"
 
 const defaultUserName = "orchesty@hanaboso.com"
+
+const reservedCpu = 2000    // in millicores
+const reservedMemory = 1024 // in MiB
+
+const reservedCpuForLogs = 2000    // in millicores
+const reservedMemoryForLogs = 4096 // in MiB
+
+const reservedCpuForGrafana = 1000    // in millicores
+const reservedMemoryForGrafana = 1024 // in MiB
 
 var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 
@@ -39,7 +49,7 @@ type Worker struct {
 }
 
 type ValkeyLimit struct {
-	CPU     int `json:"cpu"`     // in millicores, e.g. "500"
+	CPU     int `json:"cpu"`     // in millicores
 	Memory  int `json:"memory"`  // in Gi
 	Storage int `json:"storage"` // in Gi
 }
@@ -66,7 +76,7 @@ type Applinth struct {
 
 type ResourceLimits struct {
 	Enabled          bool   `json:"enabled"`
-	Cpu              string `json:"cpu"`    // in millicores, e.g. "500"
+	Cpu              string `json:"cpu"`    // in millicores
 	Memory           string `json:"memory"` // in Gi
 	TopologySlots    int    `json:"topologySlots"`
 	Messages         int    `json:"messages"`
@@ -250,6 +260,11 @@ func NewInstanceDTO(instanceInfo RequestInstanceInfo, instanceCredentials Reques
 		return nil, ErrInvalidUserName
 	}
 
+	customizations, err = ProcessCustomizations(customizations)
+	if err != nil {
+		return nil, fmt.Errorf("failed to process customizations: %w", err)
+	}
+
 	return &InstanceDTO{
 		Instance:            InstancePrefix + instanceId,
 		InstanceId:          instanceId,
@@ -269,6 +284,42 @@ func NewInstanceDTO(instanceInfo RequestInstanceInfo, instanceCredentials Reques
 		ApplinthPublicKey:   applinthPubKey,
 		Customizations:      customizations,
 	}, nil
+}
+
+func ProcessCustomizations(customizations Customizations) (Customizations, error) {
+	customizations.ResourceLimits.Cpu = strings.TrimSpace(customizations.ResourceLimits.Cpu)
+	customizations.ResourceLimits.Memory = strings.TrimSpace(customizations.ResourceLimits.Memory)
+
+	cpu, err := strconv.Atoi(customizations.ResourceLimits.Cpu)
+	if err != nil && customizations.ResourceLimits.Cpu != "" {
+		return Customizations{}, fmt.Errorf("resourceLimits.cpu must be integer: %w", err)
+	}
+
+	memory, err := strconv.Atoi(customizations.ResourceLimits.Memory)
+	if err != nil && customizations.ResourceLimits.Memory != "" {
+		return Customizations{}, fmt.Errorf("resourceLimits.memory must be integer: %w", err)
+	}
+
+	customizations.ResourceLimits.Cpu = strconv.Itoa(cpu + reservedCpu)
+	customizations.ResourceLimits.Memory = strconv.Itoa(memory + reservedMemory)
+
+	if customizations.Logs.Enabled {
+		cpu, _ := strconv.Atoi(customizations.ResourceLimits.Cpu)
+		memory, _ := strconv.Atoi(customizations.ResourceLimits.Memory)
+
+		customizations.ResourceLimits.Cpu = strconv.Itoa(cpu + reservedCpuForLogs)
+		customizations.ResourceLimits.Memory = strconv.Itoa(memory + reservedMemoryForLogs)
+	}
+
+	if customizations.Logs.GrafanaEnabled {
+		cpu, _ := strconv.Atoi(customizations.ResourceLimits.Cpu)
+		memory, _ := strconv.Atoi(customizations.ResourceLimits.Memory)
+
+		customizations.ResourceLimits.Cpu = strconv.Itoa(cpu + reservedCpuForGrafana)
+		customizations.ResourceLimits.Memory = strconv.Itoa(memory + reservedMemoryForGrafana)
+	}
+
+	return customizations, nil
 }
 
 func NewInstanceDTOFromExistingData(data ExistingInstanceData) (*InstanceDTO, error) {

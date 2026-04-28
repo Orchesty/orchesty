@@ -212,7 +212,11 @@ func (s *InstanceService) UpdateInstance(request UpdateInstanceRequest) (models.
 	}
 
 	if request.Customizations != nil {
-		dto.Customizations = *request.Customizations
+		customizations, err := models.ProcessCustomizations(*request.Customizations)
+		if err != nil {
+			return models.InstanceInfo{}, fmt.Errorf("failed to process customizations: %w", err)
+		}
+		dto.Customizations = customizations
 	}
 
 	if config.GCS.Enabled && request.Customizations != nil {

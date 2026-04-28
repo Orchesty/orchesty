@@ -1,7 +1,6 @@
 package config
 
 import (
-	"net/url"
 	"strings"
 
 	"github.com/hanaboso/go-log/pkg/zap"
@@ -106,9 +105,26 @@ type cloud struct {
 }
 
 func (g *gcs) S3Endpoint() string {
-	parsed, _ := url.Parse(strings.TrimRight(g.Endpoint, "/"))
+	endpoint := strings.TrimRight(g.Endpoint, "/")
 
-	return parsed.Host
+	if endpoint == "" {
+		return "https://storage.googleapis.com/storage/v1"
+	}
+
+	// If endpoint already contains a scheme, respect it
+	if strings.HasPrefix(endpoint, "http://") || strings.HasPrefix(endpoint, "https://") {
+		if strings.Contains(endpoint, "/storage/v1") {
+			return endpoint
+		}
+		return endpoint + "/storage/v1"
+	}
+
+	// No scheme provided — assume HTTPS
+	if strings.Contains(endpoint, "/storage/v1") {
+		return "https://" + endpoint
+	}
+
+	return "https://" + endpoint + "/storage/v1"
 }
 
 var (
@@ -133,6 +149,7 @@ var (
 		Orchesty: &Orchesty,
 		Applinth: &Applinth,
 		Kong:     &Kong,
+		GCS:      &GCS,
 		Cloud:    &Cloud,
 	}
 )

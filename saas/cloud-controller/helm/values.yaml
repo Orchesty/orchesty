@@ -49,7 +49,7 @@ cloud:
     clientId: "1XIsyOq2kpTDt4qOlop2rEAQzPcE2Q5p"
 
 gcs:
-  enabled: false
+  enabled: true
   projectId: "orchesty-cloud-prod"
   credentialsSecretName: "gcs-credentials"
   serviceAccountEmail: "cloud-control@orchesty-cloud-prod.iam.gserviceaccount.com"

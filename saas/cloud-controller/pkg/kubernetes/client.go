@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -25,6 +26,12 @@ const requestTimeout = 20 * time.Second
 const (
 	orchestySecretsName       = "orchesty-secrets"
 	defaultSecretDisplayLabel = "oc-instance-displayname"
+	alloyClusterRoleNameFmt   = "orchesty-alloy-%s"
+	grafanaClusterRoleNameFmt = "orchesty-grafana-%s-clusterrole"
+	lokiClusterRoleNameFmt    = "orchesty-loki-%s-clusterrole"
+	rbacBindingSuffix         = "binding"
+	helmReleaseNameAnnotation = "meta.helm.sh/release-name"
+	helmReleaseNSAnnotation   = "meta.helm.sh/release-namespace"
 )
 
 type Client struct {
@@ -320,12 +327,89 @@ func (c *Client) DeleteNamespace(instance string) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
 	defer cancel()
 
+	var deleteErrs []error
+
+	if err = c.deleteAlloyClusterRBAC(ctx, clientSet, instance); err != nil {
+		deleteErrs = append(deleteErrs, err)
+	}
+
 	err = clientSet.CoreV1().Namespaces().Delete(ctx, instance, metav1.DeleteOptions{})
-	if err != nil {
-		return false, err
+	if err != nil && !apierrors.IsNotFound(err) {
+		deleteErrs = append(deleteErrs, err)
+	}
+
+	if len(deleteErrs) > 0 {
+		return false, errors.Join(deleteErrs...)
 	}
 
 	return true, nil
+}
+
+func (c *Client) deleteAlloyClusterRBAC(ctx context.Context, clientSet kubernetes.Interface, instance string) error {
+	var deleteErrs []error
+
+	for _, resource := range clusterRBACResources(instance) {
+		role, err := clientSet.RbacV1().ClusterRoles().Get(ctx, resource.roleName, metav1.GetOptions{})
+		if err != nil {
+			if !apierrors.IsNotFound(err) {
+				deleteErrs = append(deleteErrs, fmt.Errorf("get clusterrole %s: %w", resource.roleName, err))
+			}
+		} else if shouldDeleteOwnedHelmResource(role.ObjectMeta, instance) {
+			if err = clientSet.RbacV1().ClusterRoles().Delete(ctx, resource.roleName, metav1.DeleteOptions{}); err != nil && !apierrors.IsNotFound(err) {
+				deleteErrs = append(deleteErrs, fmt.Errorf("delete clusterrole %s: %w", resource.roleName, err))
+			}
+		}
+
+		binding, err := clientSet.RbacV1().ClusterRoleBindings().Get(ctx, resource.bindingName, metav1.GetOptions{})
+		if err != nil {
+			if !apierrors.IsNotFound(err) {
+				deleteErrs = append(deleteErrs, fmt.Errorf("get clusterrolebinding %s: %w", resource.bindingName, err))
+			}
+		} else if shouldDeleteOwnedHelmResource(binding.ObjectMeta, instance) {
+			if err = clientSet.RbacV1().ClusterRoleBindings().Delete(ctx, resource.bindingName, metav1.DeleteOptions{}); err != nil && !apierrors.IsNotFound(err) {
+				deleteErrs = append(deleteErrs, fmt.Errorf("delete clusterrolebinding %s: %w", resource.bindingName, err))
+			}
+		}
+	}
+
+	if len(deleteErrs) > 0 {
+		return errors.Join(deleteErrs...)
+	}
+
+	return nil
+}
+
+func shouldDeleteOwnedHelmResource(meta metav1.ObjectMeta, instance string) bool {
+	releaseNamespace := strings.TrimSpace(meta.Annotations[helmReleaseNSAnnotation])
+	releaseName := strings.TrimSpace(meta.Annotations[helmReleaseNameAnnotation])
+
+	if releaseNamespace == "" && releaseName == "" {
+		return true
+	}
+
+	return releaseNamespace == instance && releaseName == orchestyRepo
+}
+
+type clusterRBACResource struct {
+	roleName    string
+	bindingName string
+}
+
+func clusterRBACResources(instance string) []clusterRBACResource {
+	instance = strings.TrimSpace(instance)
+	if instance == "" {
+		return nil
+	}
+
+	alloyName := fmt.Sprintf(alloyClusterRoleNameFmt, instance)
+	grafanaRole := fmt.Sprintf(grafanaClusterRoleNameFmt, instance)
+	lokiRole := fmt.Sprintf(lokiClusterRoleNameFmt, instance)
+
+	return []clusterRBACResource{
+		{roleName: alloyName, bindingName: alloyName},
+		{roleName: grafanaRole, bindingName: grafanaRole + rbacBindingSuffix},
+		{roleName: lokiRole, bindingName: lokiRole + rbacBindingSuffix},
+	}
 }
 
 func sanitizeK8sLabelValue(value string) (string, error) {

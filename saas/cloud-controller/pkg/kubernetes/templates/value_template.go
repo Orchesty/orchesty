@@ -83,6 +83,7 @@ global:
 	LogsBlockOrchestyTemplate = `
   grafana:
     enabled: {{grafanaEnabled}}
+    fullnameOverride: orchesty-grafana-{{instance}}
     service:
       type: LoadBalancer
     persistence:
@@ -91,6 +92,7 @@ global:
       existingSecret: orchesty-secrets
   loki:
     enabled: true
+    fullnameOverride: orchesty-loki-{{instance}}
     loki:
       limits_config:
         retention_period: {{retentionPeriod}}h
@@ -121,10 +123,11 @@ global:
               key: s3-secret-key
   alloy:
     enabled: true
+    fullnameOverride: orchesty-alloy-{{instance}}
 `
 	LogsBlockGlobalTemplate = `
   logs:
-    lokiHostname: orchesty-loki-gateway.{{instance}}.svc.cluster.local
+    lokiHostname: orchesty-loki-{{instance}}-gateway.{{instance}}.svc.cluster.local
     filter:
       namespaces:
         include: ["{{instance}}"]

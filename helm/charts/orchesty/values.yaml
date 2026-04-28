@@ -381,6 +381,16 @@ grafana:
     enabled: true
     size: 2Gi
     storageClassName: local-path
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  
+  initChownData:
+    enabled: false
   
   # Use existing secret for admin credentials
   admin:
@@ -465,7 +475,46 @@ loki:
     enabled: false
 
   chunksCache:
-    allocatedMemory: 1024
+    allocatedMemory: 200
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+  memcachedExporter:
+    enabled: false
+
+  gateway:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+  resultsCache:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+  ruler:
+    enabled: true
+    sidecar: false
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
 
   singleBinary:
     replicas: 1
@@ -473,6 +522,13 @@ loki:
       enabled: true
       size: 8Gi
       storageClass: local-path
+    resources:
+      requests:
+        cpu: 100m
+        memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
     
     extraArgs:
       - '-config.expand-env=true'
@@ -525,9 +581,30 @@ loki:
   bloomGateway:
     replicas: 0
 
+  # Sidecar settings for subchart (overrides subchart .Values.sidecar)
+  sidecar:
+    rules:
+      enabled: false
+    resources:
+      requests:
+        cpu: 10m
+        memory: 16Mi
+      limits:
+        cpu: 100m
+        memory: 64Mi
+
 # --- Alloy (Grafana Alloy) Configuration ---
 alloy:
   enabled: false # Enable it, if you want use Alloy
+
+  configReloader:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 16Mi
+      limits:
+        cpu: 100m
+        memory: 64Mi
 
   alloy:
     mounts:
@@ -540,6 +617,13 @@ alloy:
       privileged: true
       runAsUser: 0
       runAsGroup: 0
+    resources:
+      requests:
+        cpu: 10m
+        memory: 50Mi
+      limits:
+        cpu: 100m
+        memory: 256Mi
     
     configMap:
       create: false
