@@ -43,10 +43,6 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '%alpha_instance_id%'
             - '%instance_url_prefix%'
-            - '%instance_tunnel_proxy_url%'
-            - '%instance_backend_url%'
-            - '%instance_starting_point_url%'
-            - '%instance_worker_api_url%'
 
     hbpf.configurator.handler.topology_progress:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyProgressHandler
