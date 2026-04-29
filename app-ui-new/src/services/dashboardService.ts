@@ -11,6 +11,7 @@ import type {
   LimiterGraphApiResponse,
   LimiterTableApiResponse,
   LimiterTotalApiResponse,
+  LimiterApplicationApiResponse,
   AppLimiterSetting,
   TrashApiFilter,
   TrashGraphApiResponse,
@@ -243,10 +244,18 @@ export async function fetchLimiterData(params: {
   const page = params.page || 1
   const itemsPerPage = params.limit || 5
   const buckets = params.buckets || 40
-  const sortColumn = 'count'
+  // The grid is now sorted by the per-node peak hold within the window.
+  // The "actual" sort key used to be `count` (last record within 90s); that
+  // signal moved to the live snapshot, which is merged into rows after
+  // this query runs and cannot be sorted at the API layer.
+  const sortColumn = 'maximumCount'
 
+  // Single time window for everything that is "in the selected period" —
+  // graph, headline Max and per-row Max all share `normalRange`. The old
+  // implementation mixed `normalRange` (graph + card max) with a fixed
+  // 30d `maxRange` (card actual + grid), which is precisely what made
+  // card numbers and grid numbers diverge and the grid hard to read.
   const normalRange = convertTimeFilterToDateTimeRangeWithMultiplier(params.timeFilter, 1)
-  const maxRange = convertTimeFilterToDateTimeRangeWithMultiplier('30d', 1)
 
   // Build filters
   const graphFilter: LimiterApiFilter = {
@@ -258,27 +267,20 @@ export async function fetchLimiterData(params: {
 
   const timeTotalFilter: LimiterApiFilter = {
     search: null,
-    filter: [[{ column: 'created', operator: 'GTE', value: [normalRange.from] }]],
-    sorter: [],
-    paging: { itemsPerPage: 1, page: 1 }
-  }
-
-  const currentTotalFilter: LimiterApiFilter = {
-    search: null,
-    filter: [[{ column: 'created', operator: 'GTE', value: [maxRange.from] }]],
+    filter: [[{ column: 'created', operator: 'BETWEEN', value: [normalRange.from, normalRange.to] }]],
     sorter: [],
     paging: { itemsPerPage: 1, page: 1 }
   }
 
   const tableFilter: LimiterApiFilter = {
     search: null,
-    filter: [[{ column: 'created', operator: 'GTE', value: [maxRange.from] }]],
+    filter: [[{ column: 'created', operator: 'BETWEEN', value: [normalRange.from, normalRange.to] }]],
     sorter: [{ column: sortColumn, direction: (params.sortOrder || 'desc').toUpperCase() }],
     paging: { itemsPerPage, page }
   }
 
   // Run all queries in parallel
-  const [graphResponse, timeTotalResponse, currentTotalResponse, tableResponse] = await Promise.all([
+  const [graphResponse, timeTotalResponse, tableResponse] = await Promise.all([
     api.get<LimiterGraphApiResponse>(
       '/api/metrics/limits/graph',
       { params: { filter: JSON.stringify(graphFilter), buckets } }
@@ -286,16 +288,12 @@ export async function fetchLimiterData(params: {
     api.get<LimiterTotalApiResponse>(
       `/api/metrics/limits/total?filter=${encodeURIComponent(JSON.stringify(timeTotalFilter))}`
     ),
-    api.get<LimiterTotalApiResponse>(
-      `/api/metrics/limits/total?filter=${encodeURIComponent(JSON.stringify(currentTotalFilter))}`
-    ),
     api.get<LimiterTableApiResponse>(
       `/api/metrics/limits?filter=${encodeURIComponent(JSON.stringify(tableFilter))}`
     ),
   ])
 
-  const totalMessages = currentTotalResponse.data.items[0]?.count || 0
-  const maxMessages = Math.max(timeTotalResponse.data.items[0]?.maximumCount || 0, totalMessages)
+  const maxMessages = timeTotalResponse.data.items[0]?.maximumCount || 0
 
   const chartData = {
     categories: graphResponse.data.items.map(item => item.created),
@@ -306,9 +304,6 @@ export async function fetchLimiterData(params: {
     chartData.series.pop()
     chartData.categories.pop()
   }
-
-  chartData.categories.push(new Date().toISOString())
-  chartData.series.push(totalMessages)
 
   const tableData: LimiterTableRow[] = tableResponse.data.items.map(item => {
     const appKey = item.applicationId || ''
@@ -322,13 +317,11 @@ export async function fetchLimiterData(params: {
       topology: item.topologyId,
       application: appKey || '-',
       limitSetting: formatLimiterSetting(appSetting),
-      messages: item.count,
       maxMessages: item.maximumCount,
     }
   })
 
   return {
-    totalMessages,
     maxMessages,
     chartData,
     tableData,
@@ -339,6 +332,40 @@ export async function fetchLimiterData(params: {
       itemsPerPage: tableResponse.data.paging.itemsPerPage
     }
   }
+}
+
+/**
+ * Per-application "Max" rollup, computed by the backend with the same
+ * per-(group, minute) → max-per-minute algorithm as the headline. Use this
+ * instead of summing per-node maxes from `LimiterTableRow.maxMessages`,
+ * which double-counts because individual nodes peak in different minutes
+ * and the sum can therefore exceed the cross-app peak (the headline).
+ */
+export interface LimiterApplicationRow {
+  applicationId: string
+  maxMessages: number
+}
+
+export async function fetchLimiterApplications(
+  timeFilter: TimeFilter,
+): Promise<LimiterApplicationRow[]> {
+  const range = convertTimeFilterToDateTimeRangeWithMultiplier(timeFilter, 1)
+
+  const filterObj = {
+    search: null,
+    filter: [[{ column: 'created', operator: 'BETWEEN', value: [range.from, range.to] }]],
+    sorter: [{ column: 'maximumCount', direction: 'DESC' }],
+    paging: { itemsPerPage: 9999, page: 1 },
+  }
+
+  const response = await api.get<LimiterApplicationApiResponse>(
+    `/api/metrics/limits/applications?filter=${encodeURIComponent(JSON.stringify(filterObj))}`,
+  )
+
+  return response.data.items.map(item => ({
+    applicationId: item.applicationId || '',
+    maxMessages: item.maximumCount,
+  }))
 }
 
 /**

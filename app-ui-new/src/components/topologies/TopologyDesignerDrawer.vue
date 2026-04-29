@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { Drawer } from 'flowbite'
 import type { DrawerInterface } from 'flowbite'
 import Button from '@/components/ui/Button.vue'
@@ -34,6 +34,13 @@ const editorConfig = ref<EditorConfig | null>(null)
 const webhookWarningOpen = ref(false)
 const webhookWarningMissing = ref<WebhookConfigItem[]>([])
 let pendingSavePayload: ReturnType<EditorCore['exportGraph']> | null = null
+
+// Blocking validation modal shown when the schema can't be saved as-is.
+// We open it in place of the previous error toast so the user can't dismiss
+// it accidentally and so we can spell out exactly which fix is needed for
+// each node kind.
+const validationErrorOpen = ref(false)
+const validationOffenders = ref<UnnamedNode[]>([])
 
 const saving = ref(false)
 
@@ -74,16 +81,44 @@ const findUnnamedRequiredNodes = (): UnnamedNode[] => {
   return offenders
 }
 
-const formatUnnamedSummary = (offenders: UnnamedNode[]): string => {
-  // Group by base label so the toast reads like
-  // "1 Event, 2 Webhooks" rather than dumping ids.
+// Per-label remediation copy shown in the validation modal. Each kind has
+// its own UX path: Event / Cron names are typed inline in the node header,
+// Webhook names come from the subscription picker (double-click on the
+// node or right-click → "Pick subscription"). Anything else falls back to
+// the generic "set a name" hint.
+const labelInstruction = (label: string): string => {
+  switch (label.toLowerCase()) {
+    case 'event':
+      return 'Click the node header and type a name (used to build the start-event URL).'
+    case 'cron':
+      return 'Click the node header and type a name (used to identify the schedule).'
+    case 'webhook':
+      return 'Double-click the node (or right-click → Pick subscription) and choose an event from the picker.'
+    default:
+      return 'Set a name on the node.'
+  }
+}
+
+interface OffenderGroup {
+  label: string
+  count: number
+  instruction: string
+}
+
+const validationOffenderGroups = computed<OffenderGroup[]>(() => {
   const counts = new Map<string, number>()
-  for (const o of offenders) {
+  for (const o of validationOffenders.value) {
     counts.set(o.label, (counts.get(o.label) ?? 0) + 1)
   }
-  return Array.from(counts.entries())
-    .map(([label, count]) => `${count} ${label}${count > 1 ? 's' : ''}`)
-    .join(', ')
+  return Array.from(counts.entries()).map(([label, count]) => ({
+    label,
+    count,
+    instruction: labelInstruction(label),
+  }))
+})
+
+const dismissValidationError = () => {
+  validationErrorOpen.value = false
 }
 
 const initEditorConfig = async () => {
@@ -162,16 +197,14 @@ const handleSave = async () => {
   // Reject saves that contain Event / Cron / Webhook nodes without a
   // name. Cron and Event names are typed inline; Webhook names come from
   // the subscription picker (double-click on the node or right-click →
-  // "Pick subscription"). The toast points the user to whichever flow
-  // applies so they can fix it before re-saving.
+  // "Pick subscription"). We surface this as a blocking modal (rather
+  // than a toast) because the user must take a concrete action on the
+  // canvas before saving is possible — a transient toast was easy to
+  // miss and gave no per-node-kind guidance.
   const unnamed = findUnnamedRequiredNodes()
   if (unnamed.length > 0) {
-    showToast(
-      `Cannot save: ${formatUnnamedSummary(unnamed)} without a name. ` +
-        'Set a name for each Event / Cron node and pick a subscription for each Webhook.',
-      'error',
-      6000,
-    )
+    validationOffenders.value = unnamed
+    validationErrorOpen.value = true
     return
   }
 
@@ -332,6 +365,51 @@ watch(
       <Button variant="outline" @click="cancelSaveWithWebhookWarning">Cancel</Button>
       <Button variant="primary" @click="confirmSaveWithWebhookWarning">
         Save anyway
+      </Button>
+    </template>
+  </Modal>
+
+  <Modal
+    :model-value="validationErrorOpen"
+    id="topology-validation-error-modal"
+    title="Topology can't be saved yet"
+    size="md"
+    @update:model-value="(v) => v ? validationErrorOpen = true : dismissValidationError()"
+  >
+    <div class="space-y-4">
+      <div class="flex items-start gap-3 rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-800 dark:border-red-700 dark:bg-red-900/30 dark:text-red-200">
+        <svg class="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
+        </svg>
+        <p>
+          Some required start nodes are missing a name. Fix every item below before saving the topology.
+        </p>
+      </div>
+
+      <ul class="space-y-3">
+        <li
+          v-for="group in validationOffenderGroups"
+          :key="group.label"
+          class="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-900/40"
+        >
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-sm font-semibold text-gray-900 dark:text-white">
+              {{ group.label }}
+            </span>
+            <span class="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/60 dark:text-red-200">
+              {{ group.count }} unnamed
+            </span>
+          </div>
+          <p class="mt-1.5 text-sm text-gray-600 dark:text-gray-300">
+            {{ group.instruction }}
+          </p>
+        </li>
+      </ul>
+    </div>
+
+    <template #footer-actions>
+      <Button variant="primary" @click="dismissValidationError">
+        Got it
       </Button>
     </template>
   </Modal>

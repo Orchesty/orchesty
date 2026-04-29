@@ -178,6 +178,17 @@ final readonly class MetricsHandler
      * @return mixed[]
      * @throws Exception
      */
+    public function getMetricsLimitsApplications(GridRequestDtoInterface $dto): array
+    {
+        return $this->getGridResponse($dto, $this->manager->getMetricsLimitsApplications($dto));
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return mixed[]
+     * @throws Exception
+     */
     public function getMetricsLimitsTotal(GridRequestDtoInterface $dto): array
     {
         return $this->getGridResponse($dto, $this->manager->getMetricsLimitsTotal($dto));

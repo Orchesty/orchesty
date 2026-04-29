@@ -25,6 +25,7 @@ services:
             - '@hbpf.metric-request.aggregation-filter'
             - '@hbpf.metric-process.aggregation-filter'
             - '@hbpf.metric-limit.aggregation-filter'
+            - '@hbpf.metric-limit-application.aggregation-filter'
             - '@hbpf.metric-limit-total.aggregation-filter'
             - '@hbpf.metric-limit-graph.aggregation-filter'
             - '@hbpf.metric-user-task.aggregation-filter'
@@ -61,6 +62,11 @@ services:
 
     hbpf.metric-limit.aggregation-filter:
         class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-limit-application.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitApplicationAggregationFilter
         arguments:
             - '@doctrine_mongodb.odm.metrics_document_manager'
 

@@ -181,6 +181,20 @@ final class MetricsController extends AbstractController
      *
      * @return Response
      */
+    #[Route('/metrics/limits/applications', methods: [Request::METHOD_GET])]
+    public function getLimitsApplicationsAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::getMetricsLimitsApplicationsAction',
+            ['request' => $request],
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
     #[Route('/metrics/limits/total', methods: [Request::METHOD_GET])]
     public function getLimitsTotalAction(Request $request): Response
     {

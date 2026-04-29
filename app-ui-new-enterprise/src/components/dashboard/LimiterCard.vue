@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onActivated, nextTick, watch } from 'vue'
+import { ref, onMounted, onActivated, nextTick, watch } from 'vue'
 import { useApexChart, getChartColors, getBaseChartOptions } from '@/composables/useApexChart'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useDateFormat } from '@/composables/useDateFormat'
@@ -40,14 +40,6 @@ const limiterData = ref<LimiterData | null>(null)
 const chartEl = ref<HTMLElement | null>(null)
 const chartMounted = ref(false)
 
-// Compute % difference: how much max is above current (positive = decrease from peak)
-const maxDiffPercent = computed(() => {
-  if (!limiterData.value || limiterData.value.totalMessages === 0) return 0
-  const { totalMessages, maxMessages } = limiterData.value
-  if (maxMessages === totalMessages) return 0
-  return Math.round(((maxMessages - totalMessages) / totalMessages) * 100)
-})
-
 const { initChart, isDarkMode } = useApexChart({
   onDarkModeChange: () => {
     if (chartMounted.value && chartEl.value) {
@@ -59,7 +51,9 @@ const { initChart, isDarkMode } = useApexChart({
 const columns: TableColumn[] = [
   { key: 'connector', label: 'Connector', sortable: false, className: 'w-[35%] truncate' },
   { key: 'topology', label: 'Topology', sortable: false, className: 'w-[35%] truncate' },
-  { key: 'messages', label: 'Max (actual)', sortable: true, className: 'w-[30%] whitespace-nowrap' },
+  // Sort key matches the backend column (`maximumCount`) so the grid sort
+  // stays in sync with what the cell actually shows.
+  { key: 'maximumCount', label: 'Max', sortable: true, className: 'w-[30%] whitespace-nowrap' },
 ]
 
 // Load data function
@@ -104,7 +98,7 @@ const {
   handlePerPageChange,
   handleSort,
 } = useDataGrid({
-  defaultSort: { field: 'messages', direction: 'desc' },
+  defaultSort: { field: 'maximumCount', direction: 'desc' },
   defaultPerPage: 5,
   onDataLoad: loadData,
 })
@@ -258,50 +252,11 @@ const getColumnChartOptions = () => {
       <!-- Header with total count -->
       <div class="mb-4 flex items-center justify-between">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Limiter</h3>
-        <div class="flex items-center gap-6">
-          <div class="flex flex-col items-center">
-            <span class="text-xs text-gray-500 dark:text-gray-400">max</span>
-            <span class="text-2xl font-bold text-gray-900 dark:text-white">
-              {{ limiterData.maxMessages }}
-            </span>
-          </div>
-          <div class="flex flex-col items-center">
-            <span class="text-xs text-gray-500 dark:text-gray-400">actual</span>
-            <div class="flex items-center gap-1">
-              <!-- Arrow down = actual below max (green = decrease), Arrow up = at/above max (red) -->
-              <svg
-                v-if="maxDiffPercent > 0"
-                class="h-6 w-6 text-green-600 dark:text-green-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 14-4-4m4 4 4-4"/>
-              </svg>
-              <svg
-                v-else-if="maxDiffPercent < 0"
-                class="h-6 w-6 text-red-600 dark:text-red-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0-14 4 4m-4-4-4 4"/>
-              </svg>
-              <span
-                class="text-2xl font-bold"
-                :class="maxDiffPercent > 0
-                  ? 'text-green-600 dark:text-green-400'
-                  : maxDiffPercent < 0
-                    ? 'text-red-600 dark:text-red-400'
-                    : 'text-gray-900 dark:text-white'"
-              >
-                {{ limiterData.totalMessages }}
-                <span v-if="maxDiffPercent !== 0" class="text-sm font-medium">{{ Math.abs(maxDiffPercent) }}%</span>
-              </span>
-            </div>
-          </div>
+        <div class="flex flex-col items-center">
+          <span class="text-xs text-gray-500 dark:text-gray-400">max</span>
+          <span class="text-2xl font-bold text-gray-900 dark:text-white">
+            {{ limiterData.maxMessages }}
+          </span>
         </div>
       </div>
 
@@ -329,8 +284,8 @@ const getColumnChartOptions = () => {
             {{ getTopologyName(row.topologyId) }}
           </GridLink>
         </template>
-        <template #cell-messages="{ row }">
-          <LimiterMessagesCell :messages="row.messages" :max-messages="row.maxMessages" />
+        <template #cell-maximumCount="{ row }">
+          <LimiterMessagesCell :max-messages="row.maxMessages" />
         </template>
       </DataGrid>
 

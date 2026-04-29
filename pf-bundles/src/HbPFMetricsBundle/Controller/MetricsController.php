@@ -222,6 +222,22 @@ final class MetricsController
      * @return Response
      * @throws Exception
      */
+    #[Route('/metrics/limits/applications', methods: [Request::METHOD_GET])]
+    public function getMetricsLimitsApplicationsAction(Request $request): Response
+    {
+        return $this->getResponse(
+            $this->handler->getMetricsLimitsApplications(
+                new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+            ),
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     * @throws Exception
+     */
     #[Route('/metrics/limits/total', methods: [Request::METHOD_GET])]
     public function getMetricsLimitsTotalAction(Request $request): Response
     {

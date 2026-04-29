@@ -1,11 +1,22 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onActivated, onDeactivated, nextTick, watch } from 'vue'
+// Notes on the headline numbers:
+//   - "Max" = peak per-minute summed messages across all nodes within the
+//     selected time filter (metrics-derived, MetricLimitTotalAggregationFilter).
+//   - "Live" = real-time count of messages currently held in the limiter
+//     queue (limiter Mongo snapshot via /api/resources/limiter/snapshot).
+//   - The grid mirrors "Max" per-node using the same aggregation algorithm
+//     in MetricLimitAggregationFilter, with the same time filter applied.
+//   - The previous "Actual" headline (last per-minute sum within 90s) was
+//     removed because Live is more accurate and Actual confused users with
+//     its 90s validity quirk and densify-related zeroing.
 import { useApexChart, getChartColors, getBaseChartOptions } from '@/composables/useApexChart'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useDateFormat } from '@/composables/useDateFormat'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
-import { fetchLimiterData, fetchApplicationLimiterSettings } from '@/services/dashboardService'
+import { fetchLimiterData, fetchApplicationLimiterSettings, fetchLimiterApplications } from '@/services/dashboardService'
+import type { LimiterApplicationRow } from '@/services/dashboardService'
 import { fetchLimiterSnapshot } from '@/services/resourcesService'
 import type { LimiterSnapshotItem } from '@/services/resourcesService'
 import type { LimiterData, TableColumn, TimeFilter, AppLimiterSetting } from '@/types/dashboard'
@@ -44,17 +55,17 @@ const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 const limiterData = ref<LimiterData | null>(null)
 const appSettings = ref<Map<string, AppLimiterSetting>>(new Map())
+// Per-application "Max" computed by the backend with the same per-(group,
+// minute) → max-per-minute algorithm as the headline. Populated from
+// /api/metrics/limits/applications. Used directly in `summaryData` instead
+// of summing per-node maxes (which over-counts).
+const applicationMax = ref<Map<string, number>>(new Map())
+// Per-application live hold derived from the limiter snapshot
+// (sum of `messages` for snapshot items grouped by `applicationId`).
+const applicationLive = ref<Map<string, number>>(new Map())
 const snapshotLoaded = ref(false)
 const chartEl = ref<HTMLElement | null>(null)
 const chartMounted = ref(false)
-
-// Compute % difference: how much max is above current (positive = decrease from peak)
-const maxDiffPercent = computed(() => {
-  if (!limiterData.value || limiterData.value.totalMessages === 0) return 0
-  const { totalMessages, maxMessages } = limiterData.value
-  if (maxMessages === totalMessages) return 0
-  return Math.round(((maxMessages - totalMessages) / totalMessages) * 100)
-})
 
 const { initChart, isDarkMode } = useApexChart({
   onDarkModeChange: () => {
@@ -67,7 +78,7 @@ const { initChart, isDarkMode } = useApexChart({
 const summaryColumns: TableColumn[] = [
   { key: 'application', label: 'Application', sortable: false },
   { key: 'limitSetting', label: 'Limit', sortable: false },
-  { key: 'messages', label: 'Max (actual)', sortable: true },
+  { key: 'maximumCount', label: 'Max', sortable: false },
   { key: 'liveMessages', label: 'Live', sortable: false },
   { key: 'remainingTime', label: 'Remaining time', sortable: false },
   { key: 'actions', label: '', className: 'text-right w-16' },
@@ -91,47 +102,46 @@ const getTopologyIdsForApp = (applicationId: string): string[] => {
   return topologyIds
 }
 
+// Per-application summary. `maxMessages` is now read from the dedicated
+// /api/metrics/limits/applications endpoint, which runs the same
+// per-(group, minute) → max-per-minute algorithm as the headline (just
+// grouped by `applicationId` instead of `nodeName`). This guarantees
+//   app.max ≤ headline.max
+// — no more "summary larger than headline" surprises that came from naively
+// summing per-node maxes (which overcounted because nodes peak in
+// different minutes).
+//
+// `liveMessages` is summed from the limiter snapshot grouped by
+// `applicationId`, which IS a meaningful sum: `messages held *right now* by
+// every node belonging to the app`.
 const summaryData = computed(() => {
-  if (!limiterData.value) return []
+  // Union of apps that have *actual data* in the queried window — either a
+  // historical max from metrics or a live entry from the snapshot. Apps
+  // that only have a limit configured but never produced a record are
+  // intentionally hidden, otherwise the summary fills up with empty rows
+  // for every installed app, which the user found confusing.
+  const appKeys = new Set<string>()
+  applicationMax.value.forEach((_, key) => appKeys.add(key))
+  applicationLive.value.forEach((_, key) => appKeys.add(key))
 
-  const byApp = new Map<
-    string,
-    { applicationId: string; messages: number; maxMessages: number; liveMessages: number }
-  >()
-
-  for (const row of limiterData.value.tableData) {
-    const key = row.applicationId || '-'
-    const existing = byApp.get(key)
-    if (existing) {
-      existing.messages += row.messages
-      existing.maxMessages += row.maxMessages
-      existing.liveMessages += row.liveMessages ?? 0
-    } else {
-      byApp.set(key, {
-        applicationId: key,
-        messages: row.messages,
-        maxMessages: row.maxMessages,
-        liveMessages: row.liveMessages ?? 0,
-      })
-    }
-  }
-
-  return [...byApp.values()]
-    .map(row => {
-      const setting = appSettings.value.get(row.applicationId)
+  return [...appKeys]
+    .map(applicationId => {
+      const maxMessages = applicationMax.value.get(applicationId) ?? 0
+      const liveMessages = applicationLive.value.get(applicationId) ?? 0
+      const setting = appSettings.value.get(applicationId)
       const limitSetting = setting && setting.useLimit && setting.value && setting.time
         ? `${setting.value} / ${setting.time}s`
         : 'off'
 
       let remainingTime = '-'
-      if (row.liveMessages > 0 && setting?.useLimit && setting.value && setting.time) {
+      if (liveMessages > 0 && setting?.useLimit && setting.value && setting.time) {
         const rate = setting.value / setting.time
-        remainingTime = formatDurationSeconds(row.liveMessages / rate)
+        remainingTime = formatDurationSeconds(liveMessages / rate)
       }
 
-      return { ...row, limitSetting, remainingTime }
+      return { applicationId, maxMessages, liveMessages, limitSetting, remainingTime }
     })
-    .sort((a, b) => (b.liveMessages - a.liveMessages) || (b.messages - a.messages))
+    .sort((a, b) => (b.liveMessages - a.liveMessages) || (b.maxMessages - a.maxMessages))
 })
 
 const columns: TableColumn[] = [
@@ -139,7 +149,7 @@ const columns: TableColumn[] = [
   { key: 'connector', label: 'Connector', sortable: false },
   { key: 'topology', label: 'Topology', sortable: false },
   { key: 'limitSetting', label: 'Limit', sortable: false },
-  { key: 'messages', label: 'Max (actual)', sortable: true },
+  { key: 'maximumCount', label: 'Max', sortable: true },
   { key: 'liveMessages', label: 'Live', sortable: false },
 ]
 
@@ -148,7 +158,7 @@ const loadData = async () => {
   loading.value = true
 
   try {
-    const [response, snapshot] = await Promise.all([
+    const [response, applications, snapshot] = await Promise.all([
       fetchLimiterData({
         page: currentPage.value,
         limit: itemsPerPage.value,
@@ -158,16 +168,25 @@ const loadData = async () => {
         appSettings: appSettings.value,
         buckets: 40,
       }),
+      fetchLimiterApplications(props.timeFilter).catch((err) => {
+        console.error('Limiter applications fetch failed:', err)
+        return [] as LimiterApplicationRow[]
+      }),
       fetchLimiterSnapshot().catch((err) => {
         console.error('Limiter snapshot failed:', err)
         return null
       }),
     ])
 
+    applicationMax.value = new Map(
+      applications.map(row => [row.applicationId || '-', row.maxMessages]),
+    )
+
     if (snapshot) {
       applySnapshot(response, snapshot.totalMessages, snapshot.items)
       snapshotLoaded.value = true
     } else {
+      applicationLive.value = new Map()
       snapshotLoaded.value = false
     }
 
@@ -188,15 +207,21 @@ const loadData = async () => {
 }
 
 function applySnapshot(data: LimiterData, totalMessages: number, items: LimiterSnapshotItem[]): void {
-  // Live (current) values from the limiter service. Historical values from the
-  // metrics API are kept untouched so the page shows both "actual in window"
-  // and "actual right now" side by side.
+  // Live values from the limiter service.
+  // - liveTotalMessages: cross-app sum (matches the headline "live" pill).
+  // - per-row liveMessages: filled by nodeId for the per-node detail grid.
+  // - applicationLive map: filled by applicationId for the per-app summary.
   data.liveTotalMessages = totalMessages
 
   const snapshotByNode = new Map<string, number>()
+  const liveByApp = new Map<string, number>()
   for (const item of items) {
     snapshotByNode.set(item.nodeId, item.messages)
+    const appKey = item.applicationId || '-'
+    liveByApp.set(appKey, (liveByApp.get(appKey) ?? 0) + item.messages)
   }
+
+  applicationLive.value = liveByApp
 
   for (const row of data.tableData) {
     row.liveMessages = snapshotByNode.get(row.nodeId) ?? 0
@@ -216,7 +241,7 @@ const {
   handlePerPageChange,
   handleSort,
 } = useDataGrid({
-  defaultSort: { field: 'messages', direction: 'desc' },
+  defaultSort: { field: 'maximumCount', direction: 'desc' },
   defaultPerPage: 10,
   onDataLoad: loadData,
 })
@@ -401,42 +426,6 @@ const getChartOptions = () => {
                 {{ limiterData.maxMessages }}
               </span>
             </div>
-            <div class="flex flex-col items-center">
-              <span class="text-xs text-gray-500 dark:text-gray-400">actual</span>
-              <div class="flex items-center gap-1">
-                <svg
-                  v-if="maxDiffPercent > 0"
-                  class="h-6 w-6 text-green-600 dark:text-green-400"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 14-4-4m4 4 4-4"/>
-                </svg>
-                <svg
-                  v-else-if="maxDiffPercent < 0"
-                  class="h-6 w-6 text-red-600 dark:text-red-400"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0-14 4 4m-4-4-4 4"/>
-                </svg>
-                <span
-                  class="text-2xl font-bold"
-                  :class="maxDiffPercent > 0
-                    ? 'text-green-600 dark:text-green-400'
-                    : maxDiffPercent < 0
-                      ? 'text-red-600 dark:text-red-400'
-                      : 'text-gray-900 dark:text-white'"
-                >
-                  {{ limiterData.totalMessages }}
-                  <span v-if="maxDiffPercent !== 0" class="text-sm font-medium">{{ Math.abs(maxDiffPercent) }}%</span>
-                </span>
-              </div>
-            </div>
             <div v-if="snapshotLoaded" class="flex flex-col items-center">
               <span class="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                 <span
@@ -494,8 +483,8 @@ const getChartOptions = () => {
             {{ value }}
           </span>
         </template>
-        <template #cell-messages="{ row }">
-          <LimiterMessagesCell :messages="row.messages" :max-messages="row.maxMessages" />
+        <template #cell-maximumCount="{ row }">
+          <LimiterMessagesCell :max-messages="row.maxMessages" />
         </template>
         <template #cell-liveMessages="{ row }">
           <span
@@ -578,8 +567,8 @@ const getChartOptions = () => {
             {{ value }}
           </span>
         </template>
-        <template #cell-messages="{ row }">
-          <LimiterMessagesCell :messages="row.messages" :max-messages="row.maxMessages" />
+        <template #cell-maximumCount="{ row }">
+          <LimiterMessagesCell :max-messages="row.maxMessages" />
         </template>
         <template #cell-liveMessages="{ row }">
           <span
