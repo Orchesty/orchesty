@@ -5,6 +5,7 @@ export const NAME = 'cloud-notification-mapper';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 interface IInput {
+    instance_id: string;
     preset_id: string;
     tenant_id: string;
     channel: string;
@@ -21,7 +22,6 @@ interface IInput {
 
 interface IOutput {
     instanceId: string;
-    instanceSecret: string;
     notification: {
         event_type: string;
         severity: string;
@@ -41,14 +41,11 @@ export default class CloudNotificationMapper extends ACommonNode {
     }
 
     public processAction(dto: ProcessDto<IInput>): ProcessDto<IOutput> {
-        const { event } = dto.getJsonData();
-
-        const instanceId = process.env.ORCHESTY_CLOUD_INSTANCE_ID ?? '';
-        const instanceSecret = process.env.ORCHESTY_CLOUD_INSTANCE_SECRET ?? '';
+        const data = dto.getJsonData();
+        const { event } = data;
 
         return dto.setNewJsonData<IOutput>({
-            instanceId,
-            instanceSecret,
+            instanceId: data.instance_id,
             /* eslint-disable @typescript-eslint/naming-convention */
             notification: {
                 event_type: event.event_type,

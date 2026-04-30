@@ -53,3 +53,25 @@ services:
             - '@hbpp.service.locator'
         tags:
             - { name: console.command }
+
+    hbpf.command.webhook_seed_configs:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\SeedWebhookConfigsCommand
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+        tags:
+            - { name: console.command }
+
+    hbpf.command.webhook_reconcile_configs:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\ReconcileWebhookConfigsCommand
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpp.application.webhook_config_manager'
+        tags:
+            - { name: console.command }
+
+    hbpf.command.webhook_subscribe_config:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\SubscribeWebhookConfigCommand
+        arguments:
+            - '@hbpp.application.webhook_config_manager'
+        tags:
+            - { name: console.command }

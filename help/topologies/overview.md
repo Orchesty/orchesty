@@ -43,8 +43,12 @@ Each topology can have multiple versions. The **Version History** drawer (clock 
 ### Lifecycle
 
 1. **Draft** -- design the flow in the Designer.
-2. **Publish** -- validates the flow and makes the version available for activation. Requires at least one starting node connected to processing nodes.
+2. **Publish** -- validates the flow and deploys a dedicated **bridge** container that orchestrates messages between nodes. Requires at least one starting node connected to processing nodes.
 3. **Enable / Disable** -- only one version can be enabled at a time. Enabling a new version automatically disables the currently active one.
+
+### Topology slots
+
+Publishing a topology consumes one **topology slot** from your plan -- one bridge per published version. Disabling the topology does **not** free the slot: the bridge keeps running, only its start nodes stop accepting new events. To free a slot, **decommission** (or delete) the topology version on the [Resources](resources/overview) page. Publishing past the slot limit is blocked with a clear error.
 
 ## Topology detail tabs
 

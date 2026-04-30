@@ -13,9 +13,15 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  * @package Hanaboso\PipesFrameworkEnterprise\Mcp\Document
  */
 #[ODM\Document(repositoryClass: 'Hanaboso\PipesFrameworkEnterprise\Mcp\Repository\AuditDataRepository')]
+// Case-insensitive collation: MCP value lookups (`sku-002` matches `SKU-002`)
+// must hit the same audit-data row. Index carries the collation so queries
+// using the same collation can use it (otherwise Mongo falls back to a
+// collection scan). User scoping stays strict — userId is a UUID/email, no
+// case normalisation desired.
 #[ODM\Index(
     keys: ['entity' => 'asc', 'fields.key' => 'asc', 'fields.value' => 'asc', 'user' => 'asc'],
     name: 'IK_audit_data_entity_fields_user',
+    options: ['collation' => ['locale' => 'en', 'strength' => 2]],
 )]
 class AuditData
 {

@@ -1,0 +1,180 @@
+import api from '@/services/api'
+
+export interface WebhookEvent {
+  name: string
+  parameters: Record<string, string>
+  description?: string
+}
+
+export interface WebhookCatalogApp {
+  application: string
+  name: string
+  logo: string
+  events: WebhookEvent[]
+}
+
+export interface WebhookCatalogEntry extends WebhookCatalogApp {
+  sdk: string
+}
+
+export interface WebhookConfigItem {
+  id?: string
+  topologyName: string
+  nodeName: string
+  application: string
+  user: string
+  sdk: string
+  eventName: string
+  parameters: Record<string, string>
+  enabled: boolean
+  registered: boolean
+  webhookId: string
+  token: string
+  unsubscribeFailed: boolean
+  orphan?: boolean
+  created?: string
+  updated?: string
+}
+
+export interface CascadeResultItem {
+  topologyName: string
+  nodeName: string
+  status: 'ok' | 'error'
+  message?: string
+  payload?: unknown
+}
+
+export async function listWebhookConfigs(topologyName: string): Promise<WebhookConfigItem[]> {
+  const { data } = await api.get<{ items: WebhookConfigItem[] }>(
+    `/api/topologies/by-name/${encodeURIComponent(topologyName)}/webhook-configs`,
+  )
+  return data.items ?? []
+}
+
+export async function upsertWebhookConfig(
+  topologyName: string,
+  nodeName: string,
+  payload: {
+    application: string
+    user: string
+    sdk: string
+    eventName: string
+    parameters?: Record<string, string>
+    enabled?: boolean
+  },
+): Promise<WebhookConfigItem> {
+  const { data } = await api.put<WebhookConfigItem>(
+    `/api/topologies/by-name/${encodeURIComponent(topologyName)}/nodes/${encodeURIComponent(nodeName)}/webhook-config`,
+    payload,
+  )
+  return data
+}
+
+export async function deleteWebhookConfig(topologyName: string, nodeName: string): Promise<void> {
+  await api.delete(
+    `/api/topologies/by-name/${encodeURIComponent(topologyName)}/nodes/${encodeURIComponent(nodeName)}/webhook-config`,
+  )
+}
+
+// Subscribe a webhook node to its external API. The optional `parameters`
+// argument is forwarded to the SDK's webhook subscribe call (filters, source,
+// etc. — fully application specific). The backend creates the underlying
+// WebhookConfig document on first call; the user never sees that detail.
+export async function subscribeWebhookConfig(
+  topologyName: string,
+  nodeName: string,
+  parameters?: Record<string, unknown>,
+): Promise<{ status: string; payload: unknown }> {
+  const body = parameters !== undefined ? { parameters } : {}
+  const { data } = await api.post<{ status: string; payload: unknown }>(
+    `/api/topologies/by-name/${encodeURIComponent(topologyName)}/nodes/${encodeURIComponent(nodeName)}/webhook-config/subscribe`,
+    body,
+  )
+  return data
+}
+
+// Unsubscribe a webhook node. Idempotent on the backend — calling against an
+// already-off webhook returns success with `payload.noop = true`.
+export async function unsubscribeWebhookConfig(
+  topologyName: string,
+  nodeName: string,
+): Promise<{ status: string; payload: unknown }> {
+  const { data } = await api.post<{ status: string; payload: unknown }>(
+    `/api/topologies/by-name/${encodeURIComponent(topologyName)}/nodes/${encodeURIComponent(nodeName)}/webhook-config/unsubscribe`,
+  )
+  return data
+}
+
+export async function cascadeWebhookConfigs(
+  topologyName: string,
+  enable: boolean,
+): Promise<CascadeResultItem[]> {
+  const { data } = await api.post<{ status: string; items: CascadeResultItem[] }>(
+    `/api/topologies/by-name/${encodeURIComponent(topologyName)}/webhook-configs/cascade`,
+    { enable },
+  )
+  return data.items ?? []
+}
+
+/**
+ * Returns the webhook catalog used by the editor's picker, flattened to one
+ * entry per (sdk, application). The endpoint serving this data is
+ * `/api/nodes/list/name`, which already returns the standard
+ * batch / connector / custom buckets per SDK; we extend it with a `webhook`
+ * bucket containing `[{ application, name, logo, events: [...] }]`.
+ */
+export async function listWebhookCatalog(): Promise<WebhookCatalogEntry[]> {
+  const { data } = await api.get<Record<string, Record<string, unknown>>>('/api/nodes/list/name')
+  const out: WebhookCatalogEntry[] = []
+
+  for (const [sdkName, buckets] of Object.entries(data ?? {})) {
+    const webhookBucket = buckets?.webhook
+    if (!Array.isArray(webhookBucket)) continue
+
+    for (const entry of webhookBucket as WebhookCatalogApp[]) {
+      if (!entry?.application || !Array.isArray(entry?.events) || entry.events.length === 0) continue
+      out.push({ ...entry, sdk: sdkName })
+    }
+  }
+
+  return out
+}
+
+export async function listWebhookEvents(application: string, sdk: string): Promise<WebhookEvent[]> {
+  const { data } = await api.get<WebhookEvent[]>(
+    `/api/applications/${encodeURIComponent(application)}/webhook-events`,
+    { params: { sdk } },
+  )
+  return Array.isArray(data) ? data : []
+}
+
+// Resolves the starting-point base URL the UI must use for any
+// `/topologies/.../run...` callback URL. We deliberately do NOT fall back
+// to VITE_BACKEND_URL: the PHP API gateway has no /topologies/.../run
+// handler and would silently 404 every time a user pastes the URL into
+// an external webhook provider.
+//
+// Throws a clear error when the env var is missing so the bug surfaces
+// loudly at copy time instead of silently producing a wrong-port URL.
+export function resolveStartingPointBase(): string {
+  const raw = (import.meta.env.VITE_STARTING_POINT_URL as string | undefined)?.trim()
+  if (!raw) {
+    throw new Error(
+      'VITE_STARTING_POINT_URL is not configured. Starting-point URLs must point at the starting-point service (e.g. http://127.0.0.66:82). Set the env var on the frontend container and rebuild.',
+    )
+  }
+  // Tolerate "127.0.0.66:82" (no scheme) the way docker-compose currently
+  // hands it to us; helm uses fully-qualified URLs already.
+  const withScheme = /^https?:\/\//i.test(raw) ? raw : `http://${raw}`
+  return withScheme.replace(/\/$/, '')
+}
+
+// Canonical name-based webhook callback URL. Format must match the
+// starting-point route `/topologies/{topology}/nodes/{node}/token/{token}/run`
+// (see starting-point/pkg/router/routes.go and orchesty-nodejs-sdk's
+// TopologyRunner.getWebhookUrl). The earlier `/webhook/topologies/...` prefix
+// without the `/run` suffix did not resolve to any backend handler.
+export function buildWebhookCallbackUrl(topologyName: string, nodeName: string, token: string): string {
+  const safeToken = token || '__missing-token__'
+  return `${resolveStartingPointBase()}/topologies/${encodeURIComponent(topologyName)}/nodes/${encodeURIComponent(nodeName)}/token/${safeToken}/run`
+}

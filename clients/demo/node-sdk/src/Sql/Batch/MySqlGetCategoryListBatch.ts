@@ -1,6 +1,7 @@
 import ASqlBatchConnector from '@orchesty/connector-sql/dist/Common/ASqlBatchConnector';
+import AuditCheckpointRoleEnum from '@orchesty/nodejs-sdk/dist/lib/Commons/AuditCheckpointRoleEnum';
+import { IAuditCheckpoint } from '@orchesty/nodejs-sdk/dist/lib/Commons/IAuditCheckpoint';
 import BatchProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/BatchProcessDto';
-import { AUDIT_ENTITY } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
 import { WebhookType } from '../../Beeceptor/BeeceptorApplication';
 
 const LAST_RUN = 'lastRun';
@@ -9,6 +10,13 @@ const BATCH_SIZE = 100;
 export default class MySqlGetCategoryListBatch extends ASqlBatchConnector {
 
     protected name = 'get-category-list';
+
+    public getAuditCheckpoint(): IAuditCheckpoint {
+        return {
+            role: AuditCheckpointRoleEnum.PROCESS_ENTRY,
+            fields: ['id', 'name'],
+        };
+    }
 
     protected async processResult(res: IResult, dto: BatchProcessDto): Promise<BatchProcessDto> {
         const appInstall = await this.getApplicationInstallFromProcess(dto);
@@ -28,9 +36,7 @@ export default class MySqlGetCategoryListBatch extends ASqlBatchConnector {
         }
 
         for (const row of rows) {
-            dto.addItem(row, undefined, undefined, {
-                [AUDIT_ENTITY]: JSON.stringify({ category: { key: 'id', fields: [{ id: String(row.id) }] } }),
-            });
+            dto.addItemWithAudit(row, 'category', 'id', [{ id: String(row.id) }]);
         }
 
         return dto;

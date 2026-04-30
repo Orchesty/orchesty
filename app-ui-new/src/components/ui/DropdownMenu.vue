@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, nextTick } from 'vue'
+import { onMounted, nextTick, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
 export interface DropdownMenuItem {
@@ -25,12 +25,22 @@ interface Props {
   sections: DropdownMenuSection[]
   width?: string
   placement?: 'bottom' | 'top' | 'left' | 'right'
+  /**
+   * When true, the trigger and its wrapper take full width of the parent
+   * container (useful for select-style dropdowns). Default keeps the
+   * historical `inline-flex` behaviour so existing call sites are untouched.
+   */
+  block?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   width: 'w-56',
   placement: 'bottom',
+  block: false,
 })
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const dropdownInstance = ref<any>(null)
 
 onMounted(async () => {
   await nextTick()
@@ -41,7 +51,7 @@ onMounted(async () => {
   if (dropdownElement && buttonElement) {
     const { Dropdown } = await import('flowbite')
     
-    new Dropdown(dropdownElement, buttonElement, {
+    dropdownInstance.value = new Dropdown(dropdownElement, buttonElement, {
       placement: props.placement,
       triggerType: 'click',
       offsetSkidding: 0,
@@ -49,16 +59,22 @@ onMounted(async () => {
     })
   }
 })
+
+const handleItemClick = (item: DropdownMenuItem) => {
+  item.onClick?.()
+  // Auto-close on selection — standard select-like UX
+  dropdownInstance.value?.hide()
+}
 </script>
 
 <template>
-  <div class="relative inline-flex items-center">
+  <div :class="['relative items-center', block ? 'flex w-full' : 'inline-flex']">
     <!-- Trigger Button -->
     <button
       :id="`${id}-button`"
       :data-dropdown-toggle="id"
       type="button"
-      class="inline-flex items-center"
+      :class="['items-center', block ? 'flex w-full' : 'inline-flex']"
     >
       <slot name="trigger"></slot>
     </button>
@@ -132,7 +148,7 @@ onMounted(async () => {
                 'block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white',
                 item.class
               ]"
-              @click="item.onClick"
+              @click="handleItemClick(item)"
             >
               <span v-if="item.icon" v-html="item.icon" class="mr-2 inline-block h-4 w-4"></span>
               {{ item.label }}

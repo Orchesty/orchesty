@@ -2,8 +2,9 @@ import JsonPlaceholderGetCommentListBatch from '@orchesty/connector-json-placeho
 import { IOutput as IComment } from '@orchesty/connector-json-placeholder/dist/Connector/JsonPlaceholderGetCommentConnector';
 import { IOutput as IInput } from '@orchesty/connector-json-placeholder/dist/Connector/JsonPlaceholderGetPostConnector';
 import { NAME as JSON_PLACEHOLDER_APP_NAME } from '@orchesty/connector-json-placeholder/dist/JsonPlaceholderApplication';
+import AuditCheckpointRoleEnum from '@orchesty/nodejs-sdk/dist/lib/Commons/AuditCheckpointRoleEnum';
+import { IAuditCheckpoint } from '@orchesty/nodejs-sdk/dist/lib/Commons/IAuditCheckpoint';
 import BatchProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/BatchProcessDto';
-import { AUDIT_ENTITY } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
 
 export const NAME = `${JSON_PLACEHOLDER_APP_NAME}-get-post-comment-list-batch`;
 
@@ -17,6 +18,13 @@ export default class JsonPlaceholderGetPostCommentListBatch extends JsonPlacehol
         return NAME;
     }
 
+    public getAuditCheckpoint(): IAuditCheckpoint {
+        return {
+            role: AuditCheckpointRoleEnum.PROCESS_STEP,
+            fields: ['id'],
+        };
+    }
+
     public async processAction(
         dto: BatchProcessDto<IInput>,
     ): Promise<BatchProcessDto> {
@@ -28,15 +36,12 @@ export default class JsonPlaceholderGetPostCommentListBatch extends JsonPlacehol
 
         dto.setMessages([]);
 
-        return dto.addItem({ ...post, comments }, undefined, undefined, {
-            [AUDIT_ENTITY]: JSON.stringify({
-                ...JSON.parse(dto.getHeader(AUDIT_ENTITY) ?? '{}'),
-                comment: {
-                    key: 'id',
-                    fields: comments.map((comment) => ({ id: String(comment.id) })),
-                },
-            }),
-        });
+        return dto.addItemWithAudit(
+            { ...post, comments },
+            'comment',
+            'id',
+            comments.map((comment) => ({ id: String(comment.id) })),
+        );
     }
 
 }

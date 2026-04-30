@@ -244,6 +244,7 @@ const handleMoveTopology = () => {
 const enableDisableConfirmOpen = ref(false)
 const pendingToggleAction = ref<'enable' | 'disable' | null>(null)
 const enabledSiblingVersion = ref<{ id: string; version: string } | null>(null)
+const togglingEnabled = ref(false)
 
 const deleteTopologyModalOpen = ref(false)
 
@@ -453,6 +454,7 @@ const handleToggleEnabled = async () => {
 
 const executeToggleEnabled = async (newEnabled: boolean) => {
   if (!topology.value) return
+  togglingEnabled.value = true
   try {
     await toggleTopologyEnabled(topology.value._id, newEnabled)
     showToast(`Topology ${newEnabled ? 'enabled' : 'disabled'} successfully`, 'success')
@@ -464,16 +466,19 @@ const executeToggleEnabled = async (newEnabled: boolean) => {
   } catch (error) {
     console.error('Failed to toggle topology:', error)
     showToast('Failed to toggle topology state', 'error')
+  } finally {
+    togglingEnabled.value = false
   }
 }
 
-const handleConfirmToggle = () => {
-  enableDisableConfirmOpen.value = false
-  if (pendingToggleAction.value === 'enable') {
-    executeToggleEnabled(true)
-  } else if (pendingToggleAction.value === 'disable') {
-    executeToggleEnabled(false)
+const handleConfirmToggle = async () => {
+  const action = pendingToggleAction.value
+  if (action === 'enable') {
+    await executeToggleEnabled(true)
+  } else if (action === 'disable') {
+    await executeToggleEnabled(false)
   }
+  enableDisableConfirmOpen.value = false
   pendingToggleAction.value = null
 }
 
@@ -705,9 +710,12 @@ onMounted(async () => {
           <Button
             v-if="topology.visibility !== 'draft' && canRun"
             :variant="topology.enabled ? 'outline' : 'success'"
+            :loading="togglingEnabled"
             @click="handleToggleEnabled"
           >
-            {{ topology.enabled ? 'Disable' : 'Enable' }}
+            {{ togglingEnabled
+              ? (topology.enabled ? 'Disabling...' : 'Enabling...')
+              : (topology.enabled ? 'Disable' : 'Enable') }}
           </Button>
           <Button v-if="canWrite" variant="outline" @click="handleOpenDesigner">
             <svg class="w-5 h-5 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
@@ -753,7 +761,7 @@ onMounted(async () => {
     <div v-show="activeTopologyTab === 'topology'" class="flex-1 min-h-0 mt-4">
       <div class="h-full dark:bg-gray-800 dark:shadow-sm dark:rounded-lg">
         <div class="h-full bg-gray-50 dark:bg-gray-900 dark:rounded-lg overflow-hidden">
-          <TopologyEditor ref="topologyEditorRef" :topology-id="topology._id" :topology-enabled="topology.enabled" :refresh-key="refreshKey" @process-run="handleProcessRun" />
+          <TopologyEditor ref="topologyEditorRef" :topology-id="topology._id" :topology-name="topology.name" :topology-enabled="topology.enabled" :refresh-key="refreshKey" @process-run="handleProcessRun" />
         </div>
       </div>
     </div>
@@ -923,8 +931,11 @@ onMounted(async () => {
   <Confirm
     v-model="enableDisableConfirmOpen"
     id="enable-disable-confirm"
-    :confirm-text="pendingToggleAction === 'enable' ? 'Yes, switch' : 'Yes, disable'"
+    :confirm-text="togglingEnabled
+      ? (pendingToggleAction === 'enable' ? 'Switching...' : 'Disabling...')
+      : (pendingToggleAction === 'enable' ? 'Yes, switch' : 'Yes, disable')"
     :confirm-variant="pendingToggleAction === 'enable' ? 'primary' : 'danger'"
+    :loading="togglingEnabled"
     @confirm="handleConfirmToggle"
     @cancel="pendingToggleAction = null"
   >

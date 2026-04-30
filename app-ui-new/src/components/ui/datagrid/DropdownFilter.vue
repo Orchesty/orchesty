@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, nextTick } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, nextTick } from 'vue'
 
 interface DropdownFilterOption {
   value: string | null
@@ -36,6 +36,7 @@ const displayLabel = computed(() => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const dropdownInstanceRef = ref<any>(null)
+let resizeObserver: ResizeObserver | null = null
 
 const handleSelect = async (value: string | null) => {
   // First emit the value change
@@ -69,7 +70,20 @@ onMounted(async () => {
       offsetSkidding: 0,
       offsetDistance: 10,
     })
+
+    // Keep menu at least as wide as the trigger button. Popper handles
+    // positioning, but the menu's width is fixed via Tailwind by default.
+    const syncWidth = () => {
+      dropdownElement.style.minWidth = `${buttonElement.offsetWidth}px`
+    }
+    syncWidth()
+    resizeObserver = new ResizeObserver(syncWidth)
+    resizeObserver.observe(buttonElement)
   }
+})
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect()
 })
 </script>
 

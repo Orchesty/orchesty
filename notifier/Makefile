@@ -1,6 +1,6 @@
-DC=docker-compose
-DE=docker-compose exec -T app
-DB=docker-compose exec -T bruno
+DC=docker compose
+DE=docker compose exec -T app
+DB=docker compose exec -T bruno
 IMAGE=dkr.hanaboso.net/pipes/pipes/notifier:$(TAG)
 
 .env:

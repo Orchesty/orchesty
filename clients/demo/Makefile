@@ -178,8 +178,28 @@ init-more: init
 		printf "\033[32mNotification subscriptions were successfully created.\033[0m\n" && \
 		curl -s -X PUT "http://localhost/api/platform-services/trace-ai-provider" \
 			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
-			-d "{\"applicationKey\":\"open-ai\"}" > /dev/null && \
-		printf "\033[32mPlatform service trace-ai-provider was successfully bound to open-ai.\033[0m\n"'
+			-d "{\"applicationKey\":\"open-ai\",\"sdk\":\"sys-worker\"}" > /dev/null && \
+		printf "\033[32mPlatform service trace-ai-provider was successfully bound to open-ai.\033[0m\n" && \
+		curl -s -X POST "http://localhost/api/topologies/by-name/mysql-to-beeceptor-categories/nodes/beeceptor.category%3Acreated/webhook-config/subscribe" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{}" > /dev/null && \
+		printf "\033[32mWebhook beeceptor.category:created on mysql-to-beeceptor-categories subscribed.\033[0m\n" && \
+		curl -s -X POST "http://localhost/api/topologies/by-name/mysql-to-beeceptor-categories/nodes/beeceptor.category%3Aupdated/webhook-config/subscribe" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{}" > /dev/null && \
+		printf "\033[32mWebhook beeceptor.category:updated on mysql-to-beeceptor-categories subscribed.\033[0m\n" && \
+		curl -s -X POST "http://localhost/api/topologies/by-name/mysql-to-beeceptor-products/nodes/beeceptor.product%3Acreated/webhook-config/subscribe" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{}" > /dev/null && \
+		printf "\033[32mWebhook beeceptor.product:created on mysql-to-beeceptor-products subscribed.\033[0m\n" && \
+		curl -s -X POST "http://localhost/api/topologies/by-name/mysql-to-beeceptor-products/nodes/beeceptor.product%3Aupdated/webhook-config/subscribe" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{}" > /dev/null && \
+		printf "\033[32mWebhook beeceptor.product:updated on mysql-to-beeceptor-products subscribed.\033[0m\n" && \
+		curl -s -X POST "http://localhost/api/topologies/by-name/mysql-to-beeceptor-products/nodes/beeceptor.productCategory%3Aall/webhook-config/subscribe" \
+			-H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: $$TOKEN" \
+			-d "{}" > /dev/null && \
+		printf "\033[32mWebhook beeceptor.productCategory:all on mysql-to-beeceptor-products subscribed.\033[0m\n"'
 	$(DCBE) sh -c '\
 		curl -s -X POST "http://starting-point:8080/topologies/http-status/nodes/start/run-by-name" > /dev/null && \
 		printf "\033[32mTopology http-status was successfully triggered.\033[0m\n" && \

@@ -17,6 +17,8 @@ use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
+use Hanaboso\PipesFramework\Configurator\Model\PublishGuard\NullPublishGuard;
+use Hanaboso\PipesFramework\Configurator\Model\PublishGuard\PublishGuardInterface;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyTester;
@@ -69,6 +71,7 @@ class TopologyHandler
      * @param UserTaskHandler         $userTaskHandler
      * @param TopologyTester          $topologyTester
      * @param class-string<Topology>  $topologyClass
+     * @param PublishGuardInterface   $publishGuard
      */
     public function __construct(
         DatabaseManagerLocator $dml,
@@ -78,15 +81,13 @@ class TopologyHandler
         protected UserTaskHandler $userTaskHandler,
         protected TopologyTester $topologyTester,
         protected string $topologyClass = Topology::class,
+        protected PublishGuardInterface $publishGuard = new NullPublishGuard(),
     )
     {
         /** @var DocumentManager $dm */
-        $dm       = $dml->getDm();
-        $this->dm = $dm;
-
-        /** @var TopologyRepository<Topology> $repo */
-        $repo                     = $this->dm->getRepository($this->topologyClass);
-        $this->topologyRepository = $repo;
+        $dm                       = $dml->getDm();
+        $this->dm                 = $dm;
+        $this->topologyRepository = $this->dm->getRepository($this->topologyClass);
     }
 
     /**
@@ -324,6 +325,7 @@ class TopologyHandler
     public function publishTopology(string $id): ResponseDto
     {
         $topology = $this->getTopologyById($id);
+        $this->publishGuard->ensureCanPublish($topology);
         $topology = $this->topologyManager->publishTopology($topology);
         $data     = $this->getTopologyData($topology);
 
@@ -357,8 +359,112 @@ class TopologyHandler
                 [],
             );
         } else {
+            $topology->setBridgeOutOfSync(FALSE);
+            $this->dm->flush();
+            $data['bridgeOutOfSync'] = FALSE;
+
             return new ResponseDto(200, '', Json::encode($data), []);
         }
+    }
+
+    /**
+     * Regenerates and restarts the bridge for an already-published topology.
+     * Used after API-driven config changes (prefetch settings, etc.) that
+     * persist into Mongo immediately but only take effect on the running
+     * consumer once the bridge is rebuilt. The corresponding
+     * `topology.bridgeOutOfSync` flag is cleared on success.
+     *
+     * @param string $id
+     *
+     * @return ResponseDto
+     * @throws MongoDBException
+     * @throws TopologyException
+     */
+    public function republishTopology(string $id): ResponseDto
+    {
+        $topology = $this->getTopologyById($id);
+
+        if ($topology->getVisibility() !== TopologyStatusEnum::PUBLIC->value) {
+            return new ResponseDto(
+                409,
+                '',
+                Json::encode(['message' => 'Topology must be published before it can be republished.']),
+                [],
+            );
+        }
+
+        try {
+            $this->generatorBridge->stopTopology($id, FALSE);
+        } catch (Throwable) {
+            // stopTopology already logs warnings; ignore so we still attempt regenerate+run.
+        }
+
+        try {
+            $generateResult = $this->generatorBridge->generateTopology($id);
+            $runResult      = $this->generatorBridge->runTopology($id);
+        } catch (Throwable $e) {
+            return new ResponseDto(
+                400,
+                '',
+                Json::encode(['message' => $e->getMessage()]),
+                [],
+            );
+        }
+
+        if ($generateResult->getStatusCode() !== 200 || $runResult->getStatusCode() !== 200) {
+            return new ResponseDto(
+                400,
+                '',
+                Json::encode(
+                    [
+                        'generate_result' => $generateResult->getBody(),
+                        'run_result'      => $runResult->getBody(),
+                    ],
+                ),
+                [],
+            );
+        }
+
+        $topology->setBridgeOutOfSync(FALSE);
+        $this->dm->flush();
+
+        return new ResponseDto(200, '', Json::encode($this->getTopologyData($topology)), []);
+    }
+
+    /**
+     * Stops the running bridge and flips the topology back to draft. Mirrors
+     * the inverse of `publishTopology` so the UI can offer a one-click
+     * "stop & unpublish" without having to hop through the resources screen.
+     *
+     * @param string $id
+     *
+     * @return ResponseDto
+     * @throws MongoDBException
+     * @throws TopologyException
+     */
+    public function unpublishTopology(string $id): ResponseDto
+    {
+        $topology = $this->getTopologyById($id);
+
+        if ($topology->getVisibility() !== TopologyStatusEnum::PUBLIC->value) {
+            return new ResponseDto(200, '', Json::encode($this->getTopologyData($topology)), []);
+        }
+
+        try {
+            $this->generatorBridge->stopTopology($id, TRUE);
+        } catch (Throwable) {
+        }
+
+        try {
+            $this->generatorBridge->deleteTopology($id);
+        } catch (Throwable) {
+        }
+
+        $this->topologyManager->unPublishTopology($topology);
+        $topology->setBridgeOutOfSync(FALSE);
+        $this->dm->flush();
+
+        return new ResponseDto(200, '', Json::encode($this->getTopologyData($topology)), []);
     }
 
     /**
@@ -458,16 +564,17 @@ class TopologyHandler
         }
 
         return [
-            'category'     => $topology->getCategory(),
-            'cronSettings' => $settings,
-            'description'  => $topology->getDescr(),
-            'enabled'      => $topology->isEnabled(),
-            'name'         => $topology->getName(),
-            'status'       => $topology->getStatus(),
-            'type'         => count($cronNodes) >= 1 ? TypeEnum::CRON->value : TypeEnum::WEBHOOK->value,
-            'version'      => $topology->getVersion(),
-            'visibility'   => $topology->getVisibility(),
-            '_id'          => $topology->getId(),
+            'bridgeOutOfSync' => $topology->isBridgeOutOfSync(),
+            'category'        => $topology->getCategory(),
+            'cronSettings'    => $settings,
+            'description'     => $topology->getDescr(),
+            'enabled'         => $topology->isEnabled(),
+            'name'            => $topology->getName(),
+            'status'          => $topology->getStatus(),
+            'type'            => count($cronNodes) >= 1 ? TypeEnum::CRON->value : TypeEnum::WEBHOOK->value,
+            'version'         => $topology->getVersion(),
+            'visibility'      => $topology->getVisibility(),
+            '_id'             => $topology->getId(),
         ];
     }
 

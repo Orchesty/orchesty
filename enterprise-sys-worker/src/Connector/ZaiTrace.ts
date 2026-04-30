@@ -12,7 +12,11 @@ export default class ZaiTrace extends AConnector {
     }
 
     public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto<IOutput>> {
-        const { request } = dto.getJsonData();
+        const { system, messages } = dto.getJsonData();
+
+        const chat = system
+            ? [{ role: 'system', content: system }, ...messages]
+            : messages;
 
         const requestDto = await this.getApplication().getRequestDto(
             dto,
@@ -21,7 +25,7 @@ export default class ZaiTrace extends AConnector {
             '/api/coding/paas/v4/chat/completions',
             {
                 model: 'glm-5-turbo',
-                messages: [{ role: 'user', content: request }],
+                messages: chat,
                 stream: false,
             },
         );
@@ -37,7 +41,8 @@ export default class ZaiTrace extends AConnector {
 }
 
 interface IInput {
-    request: string;
+    messages: { role: string; content: string }[];
+    system?: string;
 }
 
 export interface IOutput {

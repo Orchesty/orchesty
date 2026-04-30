@@ -51,13 +51,21 @@ export interface LimiterTableRow {
   topology: string
   application: string
   limitSetting: string
-  messages: number
+  // Per-node peak per-minute hold within the selected time window.
+  // Same algorithm as `LimiterData.maxMessages`, just per-node.
   maxMessages: number
+  // Live snapshot of the limiter queue right now (filled in by the
+  // component after merging the snapshot response).
+  liveMessages?: number
 }
 
 export interface LimiterData {
-  totalMessages: number
+  // Cross-node peak per-minute hold within the selected time window.
   maxMessages: number
+  // Live snapshot total — sum of all per-node holds in the limiter queue
+  // right now. Optional because snapshot fetch can fail independently of
+  // the metrics queries.
+  liveTotalMessages?: number
   chartData: {
     categories: string[]
     series: number[]
@@ -117,7 +125,12 @@ export interface ProcessesExternalFilters {
 
 // Limiter API Types
 export interface LimiterTotalApiItem {
+  // Last per-minute sum within the 90s validity window. Not surfaced in the
+  // UI anymore (used to back the "actual" pill), but kept in the type so
+  // ad-hoc consumers can still read it from the raw response.
   count: number
+  // Peak per-minute sum across the selected time window — drives the
+  // "Max" headline in `LimiterCard` / `LimiterTab`.
   maximumCount: number
 }
 
@@ -160,8 +173,32 @@ export interface LimiterTableApiItem {
   nodeId: string
   topologyId: string
   applicationId: string
-  count: number
+  // Per-node peak per-minute hold within the selected time window
+  // (same algorithm as LimiterTotalApiItem.maximumCount, just per-node).
   maximumCount: number
+}
+
+export interface LimiterApplicationApiItem {
+  applicationId: string
+  // Per-application peak per-minute hold within the selected time window.
+  // Same algorithm as LimiterTotalApiItem.maximumCount, just grouped by
+  // applicationId — guaranteed to be ≤ headline `maximumCount`.
+  maximumCount: number
+}
+
+export interface LimiterApplicationApiResponse {
+  filter: unknown[]
+  items: LimiterApplicationApiItem[]
+  paging: {
+    itemsPerPage: number
+    lastPage: number
+    nextPage: number
+    page: number
+    previousPage: number
+    total: number
+  }
+  search: string | null
+  sorter: Array<{ column: string; direction: string }>
 }
 
 export interface LimiterTableApiResponse {

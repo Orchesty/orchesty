@@ -12,6 +12,7 @@ use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorGraphAggregatio
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorHeatmapAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorOverviewAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitApplicationAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitGraphAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitTotalAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricProcessAggregationFilter;
@@ -101,6 +102,10 @@ trait MongoTestTrait
         $metricProcessAggregationFilter = self::getContainer()->get('hbpf.metric-process.aggregation-filter');
         /** @var MetricLimitAggregationFilter $metricLimitAggregationFilter */
         $metricLimitAggregationFilter = self::getContainer()->get('hbpf.metric-limit.aggregation-filter');
+        /** @var MetricLimitApplicationAggregationFilter $metricLimitApplicationAggregationFilter */
+        $metricLimitApplicationAggregationFilter = self::getContainer()->get(
+            'hbpf.metric-limit-application.aggregation-filter',
+        );
         /** @var MetricLimitTotalAggregationFilter $metricLimitTotalAggregationFilter */
         $metricLimitTotalAggregationFilter = self::getContainer()->get('hbpf.metric-limit-total.aggregation-filter');
         /** @var MetricLimitGraphAggregationFilter $metricLimitGraphAggregationFilter */
@@ -135,6 +140,7 @@ trait MongoTestTrait
             $metricRequestAggregationFilter,
             $metricProcessAggregationFilter,
             $metricLimitAggregationFilter,
+            $metricLimitApplicationAggregationFilter,
             $metricLimitTotalAggregationFilter,
             $metricLimitGraphAggregationFilter,
             $metricUserTaskAggregationFilter,

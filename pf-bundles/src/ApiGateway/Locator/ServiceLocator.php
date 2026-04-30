@@ -18,6 +18,7 @@ use Hanaboso\Utils\Traits\LoggerTrait;
 use LogicException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
@@ -432,10 +433,17 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function listSyncActions(string $key, string $sdk): array
     {
-        return $this->doRequest(
+        $raw = $this->doRequest(
             sprintf('applications/%s/sync/list', $key),
             $sdk,
         );
+
+        // SDK returns a plain JSON list (e.g. ["trace"]); doRequest however
+        // always merges a `host` key into the response, which corrupts list
+        // shapes into objects. Strip the artifact and return values only.
+        unset($raw['host']);
+
+        return array_values($raw);
     }
 
     /**
@@ -491,6 +499,8 @@ final class ServiceLocator implements LoggerAwareInterface
                         $n[$name][$type] = [];
                     }
                 }
+
+                $n[$name][NodeImplementationEnum::WEBHOOK->value] = $this->getWebhookCatalogForSdk($sdk);
             } catch (Throwable $t) {
                 $this->logger->error($t->getMessage(), ['Exception' => $t, 'Sdk' => $sdk]);
             }
@@ -509,16 +519,20 @@ final class ServiceLocator implements LoggerAwareInterface
      * @param string  $user
      * @param string  $sdk
      * @param mixed[] $body
+     * @param bool    $throw
      *
      * @return mixed[]
      */
-    public function subscribeWebhook(string $key, string $user, string $sdk, array $body): array
+    public function subscribeWebhook(string $key, string $user, string $sdk, array $body, bool $throw = FALSE): array
     {
         return $this->doRequest(
             sprintf('webhook/applications/%s/users/%s/sdk/%s/subscribe', $key, $user, $sdk),
             $sdk,
             CurlManager::METHOD_POST,
             $body,
+            FALSE,
+            [],
+            $throw,
         );
     }
 
@@ -527,16 +541,20 @@ final class ServiceLocator implements LoggerAwareInterface
      * @param string  $user
      * @param string  $sdk
      * @param mixed[] $body
+     * @param bool    $throw
      *
      * @return mixed[]
      */
-    public function unSubscribeWebhook(string $key, string $user, string $sdk, array $body): array
+    public function unSubscribeWebhook(string $key, string $user, string $sdk, array $body, bool $throw = FALSE): array
     {
         return $this->doRequest(
             sprintf('webhook/applications/%s/users/%s/sdk/%s/unsubscribe', $key, $user, $sdk),
             $sdk,
             CurlManager::METHOD_POST,
             $body,
+            FALSE,
+            [],
+            $throw,
         );
     }
 
@@ -547,17 +565,34 @@ final class ServiceLocator implements LoggerAwareInterface
     public function getSdkNameByInstalledApplication(string $key): string
     {
         foreach ($this->getSdks() as $sdk) {
-            $hasApplication = array_find(
-                $this->doRequest('applications', $sdk->getName())['items'] ?? [],
-                static fn(array $application): bool => $application['key'] === $key,
-            ) !== NULL;
-
-            if ($hasApplication) {
+            if ($this->isApplicationInstalledOnSdk($key, $sdk->getName())) {
                 return $sdk->getName();
             }
         }
 
         return $this->getSdks()[0]->getName();
+    }
+
+    /**
+     * @param string $key
+     * @param string $sdk
+     *
+     * @return bool
+     */
+    public function isApplicationInstalledOnSdk(string $key, string $sdk): bool
+    {
+        return array_find(
+            $this->doRequest('applications', $sdk)['items'] ?? [],
+            static fn(array $application): bool => $application['key'] === $key,
+        ) !== NULL;
+    }
+
+    /**
+     * @return Sdk[]
+     */
+    public function getSdks(): array
+    {
+        return $this->sdkRepository->findAll();
     }
 
     /*
@@ -588,11 +623,28 @@ final class ServiceLocator implements LoggerAwareInterface
         bool $allowOriginalResponse = FALSE,
     ): array
     {
-        $out = [];
-        $sdk = array_values(array_filter(
+        $out  = [];
+        $sdks = array_values(array_filter(
             $this->getSdks(),
             static fn(Sdk $sdk): bool => $sdk->getName() === $sdkName,
-        ))[0];
+        ));
+
+        if ($sdks === []) {
+            // Surface a useful error instead of letting `[0]` raise
+            // "Undefined array key 0" — that warning was previously
+            // bubbling up through the API gateway as a 502 with no clue
+            // about the actual cause (a stale / misnamed SDK identifier
+            // on a Node or WebhookConfig).
+            throw new RuntimeException(
+                sprintf(
+                    'Unknown SDK "%s" — not registered in the Sdk catalogue. Available: %s',
+                    $sdkName,
+                    implode(', ', array_map(static fn(Sdk $s): string => $s->getName(), $this->getSdks())) ?: '<none>',
+                ),
+            );
+        }
+
+        $sdk = $sdks[0];
         try {
             $requestUrl = $this->buildSdkUrl($sdk, $url);
 
@@ -669,11 +721,64 @@ final class ServiceLocator implements LoggerAwareInterface
     }
 
     /**
-     * @return Sdk[]
+     * Builds the per-SDK webhook bucket consumed by the editor's webhook
+     * picker — one entry per application that exposes any subscriptions via
+     * `AWebhookApplication::syncListWebhookEvents`.
+     *
+     * Errors per application are swallowed: an app that doesn't implement the
+     * sync action simply contributes nothing.
+     *
+     * @param Sdk $sdk
+     *
+     * @return array<int, array{application: string, name: string, logo: string, events: mixed[]}>
      */
-    private function getSdks(): array
+    private function getWebhookCatalogForSdk(Sdk $sdk): array
     {
-        return $this->sdkRepository->findAll();
+        $sdkName = $sdk->getName();
+        $catalog = [];
+
+        try {
+            $availableApplications = $this->doRequest('applications', $sdkName);
+        } catch (Throwable) {
+            return [];
+        }
+
+        foreach ($availableApplications[self::ITEMS] ?? [] as $application) {
+            $key = $application[self::KEY] ?? NULL;
+            if ($key === NULL) {
+                continue;
+            }
+
+            try {
+                $events = $this->doRequest(
+                    sprintf('applications/%s/sync/listWebhookEvents?user=%s&sdk=%s', $key, 'system', $sdkName),
+                    $sdkName,
+                );
+            } catch (Throwable) {
+                continue;
+            }
+
+            // doRequest() merges a synthetic `host` key into single-call
+            // responses (see `runSyncActions` / non-multiple branch). Drop it
+            // before passing through `array_values`, otherwise the SDK base
+            // URL leaks into the events list as a stray string item — same
+            // pattern as the comment on the list-action path above.
+            unset($events['host']);
+
+            // Apps that don't extend AWebhookApplication respond with empty / scalar.
+            if ($events === []) {
+                continue;
+            }
+
+            $catalog[] = [
+                'application' => (string) $key,
+                'events'      => array_values($events),
+                'logo'        => (string) ($application[self::LOGO] ?? ''),
+                'name'        => (string) ($application[self::NAME] ?? $key),
+            ];
+        }
+
+        return $catalog;
     }
 
     /**

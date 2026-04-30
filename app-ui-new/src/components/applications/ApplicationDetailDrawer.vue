@@ -43,10 +43,20 @@ const emit = defineEmits<{
 
 const { showToast } = useToast();
 
-function stripEmpty<T extends Record<string, unknown>>(obj: T): Partial<T> {
-  return Object.fromEntries(
-    Object.entries(obj).filter(([, v]) => v !== undefined && v !== null && v !== ''),
-  ) as Partial<T>;
+/**
+ * Merge backend response onto previous detail state without losing already-known fields.
+ * Only keys explicitly present (i.e. not `undefined`) in `incoming` overwrite `previous`,
+ * so e.g. a PUT that omits `authorized` keeps the previously loaded value.
+ */
+function mergeInstall(
+  previous: ApplicationInstall,
+  incoming: ApplicationInstall,
+): ApplicationInstall {
+  const merged: Record<string, unknown> = { ...previous };
+  for (const [key, value] of Object.entries(incoming)) {
+    if (value !== undefined) merged[key] = value;
+  }
+  return merged as unknown as ApplicationInstall;
 }
 
 const loading = ref(false);
@@ -97,7 +107,11 @@ const authTabId = computed<string | null>(() => {
   return null;
 });
 
-const isAuthorized = computed(() => applicationInstall.value?.authorized ?? false);
+const isAuthorized = computed(() =>
+  (applicationInstall.value?.authorized ?? false)
+  || currentStatus.value === 'authorized'
+  || currentStatus.value === 'activated',
+);
 
 const isAuthTab = (tabId: string) => tabId === authTabId.value;
 
@@ -267,10 +281,7 @@ const handleTabSave = async (tabId: string) => {
       tabSettings,
     );
 
-    applicationInstall.value = {
-      ...previousData,
-      ...stripEmpty(updatedInstall as unknown as Record<string, unknown>),
-    } as ApplicationInstall;
+    applicationInstall.value = mergeInstall(previousData, updatedInstall);
 
     const initialValues: Record<string, unknown> = {};
     updatedInstall.applicationSettings.forEach((setting) => {
@@ -308,6 +319,12 @@ const handleChangeState = async (enabled: boolean) => {
   try {
     await changeApplicationState(props.applicationKey, props.worker, enabled);
     currentStatus.value = enabled ? 'activated' : 'authorized';
+    if (applicationInstall.value) {
+      applicationInstall.value = {
+        ...applicationInstall.value,
+        authorized: true,
+      };
+    }
     showToast(
       enabled ? 'Application activated successfully' : 'Application deactivated successfully',
       'success',

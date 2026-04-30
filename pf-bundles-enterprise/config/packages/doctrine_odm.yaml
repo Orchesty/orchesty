@@ -103,6 +103,11 @@ doctrine_mongodb:
                   is_bundle: false
                   dir: "%kernel.project_dir%/src/PlatformServices/Document"
                   prefix: Hanaboso\PipesFrameworkEnterprise\PlatformServices\Document
+                TraceReportDocument:
+                  type: attribute
+                  is_bundle: false
+                  dir: "%kernel.project_dir%/src/TraceReport/Document"
+                  prefix: Hanaboso\PipesFrameworkEnterprise\TraceReport\Document
         metrics:
             connection: metrics
             database: "%env(string:METRICS_DB)%"

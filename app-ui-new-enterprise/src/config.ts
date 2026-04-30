@@ -4,6 +4,7 @@ function env(value: string | undefined, placeholder: string): string {
 
 export const BACKEND_URL = env(import.meta.env.VITE_BACKEND_URL, '%VITE_BACKEND_URL%')
 export const NOTIFIER_URL = env(import.meta.env.VITE_NOTIFIER_URL, '%VITE_NOTIFIER_URL%')
+export const TRACE_URL = env(import.meta.env.VITE_TRACE_URL, '%VITE_TRACE_URL%')
 export const TITLE = env(import.meta.env.VITE_TITLE, '%VITE_TITLE%')
 export const AUTH0_DOMAIN = env(import.meta.env.VITE_AUTH0_DOMAIN, '%VITE_AUTH0_DOMAIN%')
 export const AUTH0_CLIENT_ID = env(import.meta.env.VITE_AUTH0_CLIENT_ID, '%VITE_AUTH0_CLIENT_ID%')
@@ -17,4 +18,5 @@ export const STORAGE_KEYS = {
   CLOUD_HANDOFF_FAILED: 'cloud_handoff_failed',
   PENDING_INVITE_TOKEN: 'pending_invite_token',
   AUTH0_LOGIN_FAILED: 'auth0_login_failed',
+  TRACE_HISTORY: 'trace_history',
 } as const

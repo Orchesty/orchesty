@@ -1,5 +1,5 @@
-DC=docker-compose
-DE=docker-compose exec -T app
+DC=docker compose
+DE=docker compose exec -T app
 IMAGE=orchesty/topology-api:$(TAG)
 
 .env:

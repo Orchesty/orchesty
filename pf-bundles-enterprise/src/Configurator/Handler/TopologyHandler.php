@@ -3,11 +3,14 @@
 namespace Hanaboso\PipesFrameworkEnterprise\Configurator\Handler;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
+use Hanaboso\PipesFramework\Configurator\Model\PublishGuard\NullPublishGuard;
+use Hanaboso\PipesFramework\Configurator\Model\PublishGuard\PublishGuardInterface;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyTester;
@@ -30,7 +33,7 @@ final class TopologyHandler extends BaseTopologyHandler
 {
 
     /**
-     * @var TopologyProgressRepository
+     * @var ObjectRepository<TopologyProgress>&TopologyProgressRepository
      */
     private TopologyProgressRepository $topologyProgressRepository;
 
@@ -44,6 +47,7 @@ final class TopologyHandler extends BaseTopologyHandler
      * @param UserTaskHandler            $userTaskHandler
      * @param TopologyTester             $topologyTester
      * @param class-string<BaseTopology> $topologyClass
+     * @param PublishGuardInterface      $publishGuard
      */
     public function __construct(
         DatabaseManagerLocator $dml,
@@ -53,6 +57,7 @@ final class TopologyHandler extends BaseTopologyHandler
         UserTaskHandler $userTaskHandler,
         TopologyTester $topologyTester,
         string $topologyClass = Topology::class,
+        PublishGuardInterface $publishGuard = new NullPublishGuard(),
     )
     {
         parent::__construct(
@@ -63,10 +68,10 @@ final class TopologyHandler extends BaseTopologyHandler
             $userTaskHandler,
             $topologyTester,
             $topologyClass,
+            $publishGuard,
         );
 
-        $repo                             = $this->dm->getRepository(TopologyProgress::class);
-        $this->topologyProgressRepository = $repo;
+        $this->topologyProgressRepository = $this->dm->getRepository(TopologyProgress::class);
     }
 
     /**
@@ -125,7 +130,9 @@ final class TopologyHandler extends BaseTopologyHandler
             'items'   => $items,
             'summary' => [
                 'reducible' => $reducible,
-                'total'     => count($topologies),
+                // Same source as the Overview card and the publish gate:
+                // 1 published topology row = 1 occupied slot.
+                'total'     => $this->topologyRepository->getPublishedCount(),
             ],
         ];
     }

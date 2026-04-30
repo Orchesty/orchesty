@@ -72,7 +72,7 @@ func NewBridge(rabbitClient *rabbitmq.Client, mongodb *mongo.MongoDb, topology m
 
 func (b *Bridge) start(ctx context.Context) {
 	go worker.StartCleanup(ctx)
-	go StartLimitsChecker(ctx, b.mongodb, b.events)
+	go StartLimitsChecker(ctx, b.mongodb, b.events, b.topology.ID)
 	initTrashDedup(b.events)
 	go StartTrashDedupCleanup(ctx)
 

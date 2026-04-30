@@ -502,6 +502,15 @@ paths:
                 "500":
                     $ref: '#/components/responses/InternalServerError'
 
+    /api/metrics/limits/applications:
+        get:
+            tags: [ Metrics ]
+            responses:
+                "200":
+                    $ref: '#/components/responses/MetricsLimitsApplications'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
     /api/metrics/limits/total:
         get:
             tags: [ Metrics ]
@@ -1740,6 +1749,13 @@ components:
                     schema:
                         $ref: '#/components/schemas/MetricsLimits'
 
+        MetricsLimitsApplications:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsLimitsApplications'
+
         MetricsLimitsTotal:
             description: ''
             content:
@@ -2473,11 +2489,27 @@ components:
                                         type: string
                                     topologyId:
                                         type: string
-                                    count:
+                                    applicationId:
+                                        type: string
+                                    maximumCount:
                                         type: integer
-                                    previousCount:
+                                        description: Per-node peak per-minute summed messages within the queried time window.
+                -   $ref: '#/components/schemas/GridMetadata'
+
+        MetricsLimitsApplications:
+            allOf:
+                -   type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    applicationId:
+                                        type: string
+                                    maximumCount:
                                         type: integer
-                                        nullable: true
+                                        description: Per-application peak per-minute summed messages within the queried time window.
                 -   $ref: '#/components/schemas/GridMetadata'
 
         MetricsLimitsTotal:

@@ -54,12 +54,13 @@ final class PlatformServicesController extends AbstractController
     {
         try {
             $data = $request->request->all();
-            ControllerUtils::checkParameters(['applicationKey'], $data);
+            ControllerUtils::checkParameters(['applicationKey', 'sdk'], $data);
 
             return $this->getResponse(
                 $this->handler->setBinding(
                     $serviceType,
                     $request->request->getString('applicationKey'),
+                    $request->request->getString('sdk'),
                     $request->request->getString('user', 'system'),
                 ),
             );

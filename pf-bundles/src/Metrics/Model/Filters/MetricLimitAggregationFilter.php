@@ -39,7 +39,7 @@ final class MetricLimitAggregationFilter extends GridAggregationFilterAbstract
     protected function getSortations(): array
     {
         return [
-            'count' => 'count',
+            'maximumCount' => 'maximumCount',
         ];
     }
 
@@ -67,33 +67,52 @@ final class MetricLimitAggregationFilter extends GridAggregationFilterAbstract
     ): void {
         $addConditionsCallback();
 
+        // Mirror the per-minute aggregation used by MetricLimitTotalAggregationFilter
+        // so that the per-node "Max" in the grid is computed by the exact same
+        // algorithm as the "Max" headline above the chart, only without the
+        // cross-node sum. Concretely: bucket every metric record into the
+        // minute it belongs to, sum `fields.messages` within that bucket, and
+        // then take the per-node max across those minute buckets. This makes
+        // SUM(grid.max per node) >= card.max (different peak minutes per node)
+        // a documented expectation, not a bug.
+        //
+        // Implementation note: Doctrine ODM doesn't expose `dateTrunc` on the
+        // expression builder (only on a stage/field accumulator), so we materialise
+        // the truncated minute via `$addFields` first and only then build the
+        // composite `_id` from plain field references — which is well-supported.
         $builder
-            ->sort(['fields.created' => 'asc'])
+            ->addFields()
+            ->field('minute')
+            ->dateTrunc('$fields.created', 'minute')
             ->group()
             ->field('_id')
-            ->expression('$tags.nodeName')
+            ->expression(
+                $builder
+                    ->expr()
+                    ->field('nodeName')
+                    ->expression('$tags.nodeName')
+                    ->field('minute')
+                    ->expression('$minute'),
+            )
+            ->field('countAtMinute')
+            ->sum('$fields.messages')
             ->field('nodeId')
             ->first('$tags.nodeId')
             ->field('topologyId')
             ->first('$tags.topologyId')
             ->field('applicationId')
             ->first('$tags.applicationId')
-            ->field('count')
-            ->last(
-                $builder->expr()->cond(
-                    $builder->expr()->gt(
-                        $builder->expr()->subtract('$$NOW', '$fields.created'),
-                        90_000,
-                    ),
-                    0,
-                    '$fields.messages',
-                ),
-            )
+            ->group()
+            ->field('_id')
+            ->expression('$_id.nodeName')
             ->field('maximumCount')
-            ->max('$fields.messages')
-            ->match()
-            ->field('count')
-            ->gt(0);
+            ->max('$countAtMinute')
+            ->field('nodeId')
+            ->first('$nodeId')
+            ->field('topologyId')
+            ->first('$topologyId')
+            ->field('applicationId')
+            ->first('$applicationId');
 
         $addSortationsCallback();
         $addPaginationCallback();
@@ -108,8 +127,6 @@ final class MetricLimitAggregationFilter extends GridAggregationFilterAbstract
             ->expression('$topologyId')
             ->field('applicationId')
             ->expression('$applicationId')
-            ->field('count')
-            ->ifNull('$count', 0)
             ->field('maximumCount')
             ->ifNull('$maximumCount', 0);
     }
@@ -124,25 +141,13 @@ final class MetricLimitAggregationFilter extends GridAggregationFilterAbstract
     {
         $addConditionsCallback();
 
+        // Count aggregation only needs the cardinality of distinct nodes — the
+        // per-minute summation step would just inflate the work, so collapse
+        // straight to one document per nodeName.
         $builder
-            ->sort(['fields.created' => 'asc'])
             ->group()
             ->field('_id')
-            ->expression('$tags.nodeName')
-            ->field('count')
-            ->last(
-                $builder->expr()->cond(
-                    $builder->expr()->gt(
-                        $builder->expr()->subtract('$$NOW', '$fields.created'),
-                        90_000,
-                    ),
-                    0,
-                    '$fields.messages',
-                ),
-            )
-            ->match()
-            ->field('count')
-            ->gt(0);
+            ->expression('$tags.nodeName');
     }
 
 }

@@ -4,6 +4,7 @@ import Tabs, { type Tab } from '@/components/ui/Tabs.vue'
 import WorkersTab from '@/components/settings/WorkersTab.vue'
 import TokensTab from '@/components/settings/TokensTab.vue'
 import AuditEntitiesTab from '@/components/settings/AuditEntitiesTab.vue'
+import TraceTab from '@/components/settings/TraceTab.vue'
 import { useFeatures } from '@/composables/useFeatures'
 
 const { traceAuditing } = useFeatures()
@@ -32,6 +33,13 @@ const settingsTabs = computed<Tab[]>(() => {
       label: 'Audit entities',
       target: 'audit-entities-content',
       icon: 'M160-120q-33 0-56.5-23.5T80-200v-440q0-33 23.5-56.5T160-720h160v-80q0-33 23.5-56.5T400-880h160q33 0 56.5 23.5T640-800v80h160q33 0 56.5 23.5T880-640v440q0 33-23.5 56.5T800-120H160Zm0-80h640v-440H160v440Zm240-520h160v-80H400v80ZM160-200v-440 440Z',
+      iconViewBox: '0 -960 960 960'
+    })
+    tabs.push({
+      id: 'trace',
+      label: 'Trace',
+      target: 'trace-content',
+      icon: 'M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Zm-40 200h80v-200h-80v200Zm40-280q17 0 28.5-11.5T520-600q0-17-11.5-28.5T480-640q-17 0-28.5 11.5T440-600q0 17 11.5 28.5T480-560Z',
       iconViewBox: '0 -960 960 960'
     })
   }
@@ -76,6 +84,17 @@ const settingsTabs = computed<Tab[]>(() => {
         class="hidden"
       >
         <AuditEntitiesTab />
+      </div>
+
+      <!-- Trace Tab -->
+      <div
+        v-if="traceAuditing"
+        id="trace-content"
+        role="tabpanel"
+        aria-labelledby="trace-tab"
+        class="hidden"
+      >
+        <TraceTab />
       </div>
     </Tabs>
   </div></main>

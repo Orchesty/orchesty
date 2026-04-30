@@ -77,6 +77,27 @@ final  class TopologyRepository extends DocumentRepository
     }
 
     /**
+     * Count topologies that currently occupy a topology slot. A "slot" is
+     * consumed by every published row (bridge), regardless of `enabled` -
+     * disabling a topology only stops the start nodes, the bridge keeps
+     * running and holds infrastructure. The slot is only freed by
+     * decommission / unpublish / delete.
+     *
+     * @throws MongoDBException
+     */
+    public function getPublishedCount(): int
+    {
+        /** @var int $result */
+        $result = $this->createQueryBuilder()
+            ->field('deleted')->equals(FALSE)
+            ->field('visibility')->equals(TopologyStatusEnum::PUBLIC->value)
+            ->count()
+            ->getQuery()->execute();
+
+        return $result;
+    }
+
+    /**
      * @param string $name
      *
      * @return int

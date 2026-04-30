@@ -49,13 +49,19 @@ final class PlatformServicesHandler
     /**
      * @param string $serviceType
      * @param string $applicationKey
+     * @param string $sdk
      * @param string $user
      *
      * @return mixed[]
      *
      * @throws MongoDBException
      */
-    public function setBinding(string $serviceType, string $applicationKey, string $user = 'system'): array
+    public function setBinding(
+        string $serviceType,
+        string $applicationKey,
+        string $sdk,
+        string $user = 'system',
+    ): array
     {
         /** @var ServiceBinding|null $binding */
         $binding = $this->repository->findOneBy([ServiceBinding::SERVICE_TYPE => $serviceType]);
@@ -67,6 +73,7 @@ final class PlatformServicesHandler
         }
 
         $binding->setApplicationKey($applicationKey);
+        $binding->setSdk($sdk);
         $binding->setUser($user);
 
         $this->dm->flush();

@@ -3,6 +3,8 @@ import { ref, onActivated, onDeactivated, watch } from 'vue'
 import ProcessesChart from './ProcessesChart.vue'
 import LimiterCard from './LimiterCard.vue'
 import TrashCard from './TrashCard.vue'
+import ResourceLimitCards from './ResourceLimitCards.vue'
+import { useCloudMode } from '@/composables/useCloudMode'
 import type { ProcessesChartData, ProcessFilter, TimeFilter, HeatmapClickData } from '@/types/dashboard'
 import { fetchProcessesTotalCounts, fetchProcessesGraphData } from '@/services/dashboardService'
 import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
@@ -29,6 +31,7 @@ const emit = defineEmits<{
 // Use topology/node mappings composable
 const { topologyNameWithVersionMap } = useTopologyNodeMappings()
 const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
+const { cloudMode } = useCloudMode()
 
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -126,6 +129,9 @@ onDeactivated(() => {
   </div>
 
   <div v-else-if="!loading && !error && processesData" class="space-y-6">
+    <!-- Cloud plan resource limits (cloud mode only) -->
+    <ResourceLimitCards v-if="cloudMode" />
+
     <!-- Processes Heatmap -->
     <ProcessesChart
       chart-id="overview"

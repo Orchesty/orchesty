@@ -27,6 +27,14 @@ security:
         unsecured_cloud_metrics:
             pattern: ^/api/orchesty/metrics
             security: false
+        # Internal endpoint called by the Go bridge when its global limit
+        # checker transitions to over-limit. Same trust model as /api/status:
+        # backend lives on the private docker network, public access is gated
+        # by a reverse proxy. The route validates the topologyId format
+        # ([a-f0-9]{24}) at the controller level.
+        unsecured_internal_terminate:
+            pattern: ^/api/resources/bridges/[a-f0-9]{24}/terminate$
+            security: false
 
         secured_usage_stats_events:
             pattern: ^/api/usage-stats/.*

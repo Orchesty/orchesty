@@ -1,4 +1,4 @@
-DC=docker-compose -f docker-compose.test.yml
+DC=docker compose -f docker-compose.test.yml
 DCU=$(DC) exec -T ui
 
 IMAGE=dkr.hanaboso.net/pipes/pipes/applinth-admin-ui:$(TAG)
@@ -17,20 +17,20 @@ init-test: .env
 	$(DCU) pnpm install
 
 init: .env
-	docker-compose pull --ignore-pull-failures
-	docker-compose up -d --force-recreate --remove-orphans
+	docker compose pull --ignore-pull-failures
+	docker compose up -d --force-recreate --remove-orphans
 
 start-mock: init
-	docker-compose exec applinth-admin-ui pnpm run api:mock
+	docker compose exec applinth-admin-ui pnpm run api:mock
 
 down:
-	docker-compose down -v
+	docker compose down -v
 
 rebuild:
 	docker buildx build --platform=linux/amd64 -f Dockerfile -t ${IMAGE} --pull --push .
 
 generate-fixture-data: init
-	docker-compose exec console-api pnpm run create-fixture-data
+	docker compose exec console-api pnpm run create-fixture-data
 
 test:
 	$(DCU) pnpm run validate

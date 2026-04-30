@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/hanaboso/pipes/bridge/pkg/config"
+	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"github.com/hanaboso/pipes/bridge/pkg/mongo"
 	"github.com/rs/zerolog/log"
 )
@@ -30,6 +31,7 @@ type limitsChecker struct {
 	mongodb                  *mongo.MongoDb
 	metricsReader            *mongo.MetricsReader
 	events                   events
+	topologyId               string
 	mu                       sync.Mutex
 	resourceExceeded         atomic.Bool
 	messageIntegrityExceeded atomic.Bool
@@ -124,7 +126,50 @@ func fetchLimitsFromBackend() {
 		Msg("fetched limits from backend")
 }
 
-func StartLimitsChecker(ctx context.Context, mongodb *mongo.MongoDb, ev events) {
+// terminateInFlightProcesses asks the backend to mark every TopologyProgress
+// document for `topologyId` that is still in flight as `terminated` and to drop
+// any of its messages still queued in the limiter / repeater. Called on the
+// OK->exceeded transition so that the multi-counter does not wait forever for
+// counter messages that the bridge will now discard. The endpoint is
+// idempotent (UpdateMany on `{finished: null}`), so re-firing is safe.
+func terminateInFlightProcesses(topologyId string) {
+	if topologyId == "" {
+		return
+	}
+	url := fmt.Sprintf(
+		"%s/api/resources/bridges/%s/terminate",
+		strings.TrimRight(config.App.BackendUrl, "/"),
+		topologyId,
+	)
+
+	req, err := http.NewRequest(http.MethodPost, url, strings.NewReader("{}"))
+	if err != nil {
+		log.Warn().Err(err).Str("url", url).Msg("failed to build terminate request")
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := limitsHTTPClient.Do(req)
+	if err != nil {
+		log.Warn().Err(err).Str("url", url).Msg("failed to call terminate endpoint")
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 300 {
+		log.Warn().
+			Int("status_code", resp.StatusCode).
+			Str("url", url).
+			Msg("terminate endpoint returned non-2xx")
+		return
+	}
+
+	log.Info().
+		Str(enum.LogHeader_TopologyId, topologyId).
+		Msg("in-flight processes terminated due to limit overflow")
+}
+
+func StartLimitsChecker(ctx context.Context, mongodb *mongo.MongoDb, ev events, topologyId string) {
 	if config.App.BackendUrl == "" {
 		log.Info().Msg("BACKEND_URL not set, limits checker disabled")
 		return
@@ -136,6 +181,7 @@ func StartLimitsChecker(ctx context.Context, mongodb *mongo.MongoDb, ev events) 
 		mongodb:       mongodb,
 		metricsReader: metricsReader,
 		events:        ev,
+		topologyId:    topologyId,
 	}
 	globalLimits.Store(lc)
 
@@ -218,6 +264,7 @@ func (lc *limitsChecker) checkResourceLimit() {
 			Msg("storage limit exceeded, discarding all incoming messages")
 
 		lc.sendLimitNotifications("storage", totalMB, float64(limit), 0)
+		go terminateInFlightProcesses(lc.topologyId)
 	} else if !exceeded && wasExceeded {
 		lc.resourceExceeded.Store(false)
 		lc.mu.Lock()
@@ -287,6 +334,7 @@ func (lc *limitsChecker) checkMessageLimit() {
 			Msg("message limit exceeded, discarding all incoming messages")
 
 		lc.sendLimitNotifications("message", float64(totalCount), float64(limit), 0)
+		go terminateInFlightProcesses(lc.topologyId)
 	} else if !exceeded && wasExceeded {
 		lc.messageIntegrityExceeded.Store(false)
 		lc.mu.Lock()

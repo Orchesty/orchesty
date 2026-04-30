@@ -1,8 +1,8 @@
 IMAGE=orchesty/bridge:$(TAG)
 
-DC=docker-compose
-DE=docker-compose exec -T app
-DR=docker-compose exec -T rabbitmq
+DC=docker compose
+DE=docker compose exec -T app
+DR=docker compose exec -T rabbitmq
 
 TEST_IMAGE = bridge:test
 NEW_UI_IMAGE = dkr.hanaboso.net/pipes/pipes/pf-bridge:new-ui

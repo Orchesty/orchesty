@@ -7,34 +7,30 @@
   "scripts": {
     "test": "jest --coverage --detectOpenHandles --passWithNoTests",
     "lint": "eslint src --fix",
+    "typecheck": "tsc --noEmit",
     "start": "nodemon src/server.ts",
     "build": "rm -rf dist && tsc -p tsconfig.prod.json && copyfiles -u 1 \"src/**/*.html\" \"src/**/*.md\" dist/src/"
   },
   "keywords": [],
   "dependencies": {
-    "@orchesty/connector-open-ai": "^1.0.1",
-    "@orchesty/connector-slack": "^1.0.1",
-    "@orchesty/connector-smtp": "^1.0.1",
-    "@orchesty/nodejs-sdk": "^5.0.7",
-    "dotenv": "^16.6.1"
-  },
-  "pnpm": {
-    "overrides": {
-      "@orchesty/nodejs-sdk": "^5.0.3"
-    }
+    "@orchesty/connector-open-ai": "^2.0.0",
+    "@orchesty/connector-slack": "^2.0.0",
+    "@orchesty/connector-smtp": "^2.0.0",
+    "@orchesty/nodejs-sdk": "^5.0.9",
+    "dotenv": "^17.4.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
-    "@eslint/js": "^9.39.4",
+    "@eslint/js": "^10.0.1",
     "@hanaboso/eslint-plugin": "^1.2.5",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.6.0",
     "copyfiles": "^2.4.1",
-    "eslint": "^9.39.4",
+    "eslint": "^10.2.1",
     "jest": "^30.3.0",
     "nodemon": "^3.1.14",
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   }
 }

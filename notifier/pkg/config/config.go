@@ -38,10 +38,15 @@ type (
 	}
 
 	throttle struct {
-		Window              int    `env:"THROTTLE_WINDOW" default:"60"`
-		BufferWindow        int    `env:"BUFFER_WINDOW" default:"60"`
-		InAppThrottleWindow int    `env:"INAPP_THROTTLE_WINDOW" default:"60"`
-		Mode                string `env:"THROTTLE_MODE" default:"per_topology_per_preset"`
+		Window              int `env:"THROTTLE_WINDOW" default:"60"`
+		BufferWindow        int `env:"BUFFER_WINDOW" default:"60"`
+		InAppThrottleWindow int `env:"INAPP_THROTTLE_WINDOW" default:"60"`
+		// CloudLimitWindow throttles cloud_limit_threshold notifications per
+		// resource (messages/storage) so a tenant approaching its plan ceiling
+		// receives at most one warning every two hours rather than once a
+		// minute (matches the limits:tick cadence).
+		CloudLimitWindow int    `env:"CLOUD_LIMIT_THROTTLE_WINDOW" default:"7200"`
+		Mode             string `env:"THROTTLE_MODE" default:"per_topology_per_preset"`
 	}
 )
 

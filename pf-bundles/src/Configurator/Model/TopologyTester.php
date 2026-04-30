@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Persistence\ObjectRepository;
 use Generator;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -24,7 +25,7 @@ final class TopologyTester
 {
 
     /**
-     * @var NodeRepository
+     * @var ObjectRepository<Node>&NodeRepository
      */
     private NodeRepository $nodeRepository;
 

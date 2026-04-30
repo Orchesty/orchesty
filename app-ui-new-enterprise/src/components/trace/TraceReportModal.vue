@@ -58,8 +58,15 @@ const handleExportPdf = () => {
     :title="report?.title || 'Report'"
     size="4xl"
   >
-    <!-- Report Content -->
-    <div v-if="report" class="prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-headings:my-3" v-html="report.content"></div>
+    <!-- Report Content. The stored HTML is the styled audit report
+         (auditReportRenderer output) — its root element carries both
+         light and dark Tailwind variants, so we just opt out of prose
+         styling here and let the report render itself. -->
+    <div
+      v-if="report"
+      class="not-prose rounded-lg overflow-hidden"
+      v-html="report.content"
+    ></div>
     
     <!-- Footer Actions -->
     <template #footer-actions>

@@ -3,8 +3,10 @@ import { ref, watch, nextTick, computed } from 'vue'
 import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
 import FormInput from '@/components/ui/FormInput.vue'
+import WorkerRemapStep from '@/components/topologies/WorkerRemapStep.vue'
 import { createTopology, saveTopologySchema } from '@/services/topologiesService'
 import { useToast } from '@/composables/useToast'
+import { applyWorkerMapping, extractWorkers } from '@/utils/topologyWorkerMapping'
 
 interface Props {
   modelValue: boolean
@@ -22,16 +24,33 @@ const emit = defineEmits<{
 
 const { showToast } = useToast()
 
+type Step = 'upload' | 'remap'
+
 const formData = ref({ name: '' })
 const saving = ref(false)
 const selectedFile = ref<File | null>(null)
 const parsedSchema = ref<Record<string, unknown> | null>(null)
 const fileError = ref('')
 const isDragging = ref(false)
+const step = ref<Step>('upload')
+const sourceWorkers = ref<string[]>([])
+const workerMapping = ref<Record<string, string>>({})
+const mappingValid = ref(false)
 
-const canSubmit = computed(() =>
-  formData.value.name.trim() && parsedSchema.value && !fileError.value && !saving.value,
+const canContinue = computed(() =>
+  Boolean(formData.value.name.trim() && parsedSchema.value && !fileError.value && !saving.value),
 )
+
+const canSubmit = computed(() => {
+  if (!parsedSchema.value || saving.value) return false
+  if (sourceWorkers.value.length === 0) return true
+  return mappingValid.value
+})
+
+const submitLabel = computed(() => {
+  if (saving.value) return 'Importing...'
+  return 'Import'
+})
 
 const extractNameFromFile = (filename: string): string => {
   return filename.replace(/\.tplg\.json$/, '').replace(/\.json$/, '')
@@ -46,6 +65,9 @@ const validateSchema = (data: unknown): data is Record<string, unknown> => {
 const processFile = (file: File) => {
   fileError.value = ''
   parsedSchema.value = null
+  sourceWorkers.value = []
+  workerMapping.value = {}
+  mappingValid.value = false
 
   if (!file.name.endsWith('.json')) {
     fileError.value = 'File must be a .json or .tplg.json file'
@@ -65,6 +87,7 @@ const processFile = (file: File) => {
         return
       }
       parsedSchema.value = data
+      sourceWorkers.value = extractWorkers(data)
     } catch {
       fileError.value = 'Invalid JSON file'
     }
@@ -94,15 +117,38 @@ const resetState = () => {
   parsedSchema.value = null
   fileError.value = ''
   isDragging.value = false
+  step.value = 'upload'
+  sourceWorkers.value = []
+  workerMapping.value = {}
+  mappingValid.value = false
+}
+
+const handleContinue = () => {
+  if (!canContinue.value || !parsedSchema.value) return
+
+  if (sourceWorkers.value.length === 0) {
+    void handleImport()
+    return
+  }
+
+  step.value = 'remap'
+}
+
+const handleBack = () => {
+  step.value = 'upload'
 }
 
 const handleImport = async () => {
-  if (!canSubmit.value || !parsedSchema.value) return
+  if (!parsedSchema.value || saving.value) return
+  if (sourceWorkers.value.length > 0 && !mappingValid.value) return
 
   saving.value = true
   try {
+    const finalSchema = sourceWorkers.value.length > 0
+      ? applyWorkerMapping(parsedSchema.value, workerMapping.value)
+      : parsedSchema.value
     const result = await createTopology(formData.value.name.trim(), props.categoryId ?? null)
-    await saveTopologySchema(result._id, parsedSchema.value)
+    await saveTopologySchema(result._id, finalSchema)
     showToast('Topology imported successfully', 'success')
     emit('created', result._id)
     handleClose()
@@ -134,12 +180,12 @@ watch(() => props.modelValue, (newValue) => {
   <Modal
     :model-value="modelValue"
     id="import-topology-modal"
-    title="Import Topology"
+    :title="step === 'remap' ? 'Map workers' : 'Import Topology'"
     size="md"
     @update:model-value="emit('update:modelValue', $event)"
     @shown="handleShown"
   >
-    <div class="space-y-4">
+    <div v-if="step === 'upload'" class="space-y-4">
       <!-- Drop zone / file picker -->
       <div>
         <label class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
@@ -215,13 +261,30 @@ watch(() => props.modelValue, (newValue) => {
       </div>
     </div>
 
+    <WorkerRemapStep
+      v-else
+      v-model="workerMapping"
+      :source-workers="sourceWorkers"
+      @update:valid="mappingValid = $event"
+    />
+
     <template #footer-actions>
-      <Button variant="outline" @click="handleClose">
-        Cancel
-      </Button>
-      <Button variant="primary" :disabled="!canSubmit" :loading="saving" @click="handleImport">
-        {{ saving ? 'Importing...' : 'Import' }}
-      </Button>
+      <template v-if="step === 'upload'">
+        <Button variant="outline" @click="handleClose">
+          Cancel
+        </Button>
+        <Button variant="primary" :disabled="!canContinue" @click="handleContinue">
+          {{ sourceWorkers.length === 0 && parsedSchema ? 'Import' : 'Continue' }}
+        </Button>
+      </template>
+      <template v-else>
+        <Button variant="outline" @click="handleBack" :disabled="saving">
+          Back
+        </Button>
+        <Button variant="primary" :disabled="!canSubmit" :loading="saving" @click="handleImport">
+          {{ submitLabel }}
+        </Button>
+      </template>
     </template>
   </Modal>
 </template>

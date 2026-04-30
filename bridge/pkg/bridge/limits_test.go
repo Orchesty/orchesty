@@ -102,7 +102,7 @@ func TestStartLimitsChecker_DisabledWhenNoBackendUrl(t *testing.T) {
 
 	done := make(chan struct{})
 	go func() {
-		StartLimitsChecker(context.TODO(), nil, events{publisher: testPublisher{}})
+		StartLimitsChecker(context.TODO(), nil, events{publisher: testPublisher{}}, "topo-id")
 		close(done)
 	}()
 

@@ -29,6 +29,7 @@ use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorGraphAggregatio
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorHeatmapAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorOverviewAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitApplicationAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitGraphAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitTotalAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricProcessAggregationFilter;
@@ -67,6 +68,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      * @param MetricRequestAggregationFilter           $metricRequestAggregationFilter
      * @param MetricProcessAggregationFilter           $metricProcessAggregationFilter
      * @param MetricLimitAggregationFilter             $metricLimitAggregationFilter
+     * @param MetricLimitApplicationAggregationFilter  $metricLimitApplicationAggregationFilter
      * @param MetricLimitTotalAggregationFilter        $metricLimitTotalAggregationFilter
      * @param MetricLimitGraphAggregationFilter        $metricLimitGraphAggregationFilter
      * @param MetricUserTaskAggregationFilter          $metricUserTaskAggregationFilter
@@ -89,6 +91,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         private readonly MetricRequestAggregationFilter $metricRequestAggregationFilter,
         private readonly MetricProcessAggregationFilter $metricProcessAggregationFilter,
         private readonly MetricLimitAggregationFilter $metricLimitAggregationFilter,
+        private readonly MetricLimitApplicationAggregationFilter $metricLimitApplicationAggregationFilter,
         private readonly MetricLimitTotalAggregationFilter $metricLimitTotalAggregationFilter,
         private readonly MetricLimitGraphAggregationFilter $metricLimitGraphAggregationFilter,
         private readonly MetricUserTaskAggregationFilter $metricUserTaskAggregationFilter,
@@ -441,6 +444,17 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     public function getMetricsLimits(GridRequestDtoInterface $dto): array
     {
         return $this->metricLimitAggregationFilter->getData($dto)->toArray();
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return array<mixed>
+     * @throws Exception
+     */
+    public function getMetricsLimitsApplications(GridRequestDtoInterface $dto): array
+    {
+        return $this->metricLimitApplicationAggregationFilter->getData($dto)->toArray();
     }
 
     /**

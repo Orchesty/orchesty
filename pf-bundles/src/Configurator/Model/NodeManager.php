@@ -11,7 +11,9 @@ use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
+use Hanaboso\PipesFramework\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
 
 /**
@@ -21,6 +23,9 @@ use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
  */
 final class NodeManager
 {
+
+    private const int PREFETCH_MIN = 1;
+    private const int PREFETCH_MAX = 20;
 
     /**
      * @var DocumentManager
@@ -80,6 +85,8 @@ final class NodeManager
                 ->setCron($data['cron']['time'] ?? '');
 
             $this->cronManager->upsert($node);
+        } else if (array_key_exists('prefetch', $data)) {
+            $this->applyPrefetch($node, (int) $data['prefetch']);
         } else {
             $node
                 ->setName($data['name'])
@@ -145,6 +152,61 @@ final class NodeManager
         }
 
         return $res;
+    }
+
+    /**
+     * Persists a new RabbitMQ consumer prefetch on the given node and marks
+     * the parent topology as out-of-sync so the UI can prompt for republish.
+     * Prefetch is stored inside the Node.systemConfigs JSON blob, which is
+     * then read back by `TopologyConfigFactory` and pushed to the bridge via
+     * `topology-generator`. The bridge only re-reads the config on republish,
+     * which is why we flag the topology here.
+     *
+     * @param Node $node
+     * @param int  $prefetch
+     *
+     * @throws NodeException
+     */
+    private function applyPrefetch(Node $node, int $prefetch): void
+    {
+        if ($prefetch < self::PREFETCH_MIN || $prefetch > self::PREFETCH_MAX) {
+            throw new NodeException(
+                sprintf(
+                    'Prefetch must be an integer between %d and %d, got %d',
+                    self::PREFETCH_MIN,
+                    self::PREFETCH_MAX,
+                    $prefetch,
+                ),
+                NodeException::DISALLOWED_ACTION_ON_NON_EVENT_NODE,
+            );
+        }
+
+        $allowedTypes = [
+            TypeEnum::CONNECTOR->value,
+            TypeEnum::BATCH->value,
+            TypeEnum::BATCH_CONNECTOR->value,
+            TypeEnum::CUSTOM->value,
+        ];
+
+        if (!in_array($node->getType(), $allowedTypes, TRUE)) {
+            throw new NodeException(
+                sprintf('Prefetch is not configurable for node type "%s"', $node->getType()),
+                NodeException::DISALLOWED_ACTION_ON_NON_EVENT_NODE,
+            );
+        }
+
+        $configs = $node->getSystemConfigs() ?? new SystemConfigDto();
+        $configs->setPrefetch($prefetch);
+        $node->setSystemConfigs($configs);
+
+        $topologyId = $node->getTopology();
+        if ($topologyId !== '') {
+            /** @var Topology|null $topology */
+            $topology = $this->dm->getRepository(Topology::class)->find($topologyId);
+            if ($topology) {
+                $topology->setBridgeOutOfSync(TRUE);
+            }
+        }
     }
 
 }

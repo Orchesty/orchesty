@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch, nextTick, onMounted } from 'vue'
 
 interface Props {
   loading?: boolean
@@ -40,6 +40,33 @@ const handleKeydown = (event: KeyboardEvent) => {
     handleSend()
   }
 }
+
+// Disabling the textarea (during the assistant's "thinking…" + typewriter
+// phase) makes the browser drop focus, so the user has to click back into
+// the input before the next prompt. We restore focus once the input is
+// re-enabled, but only when the user has not actively moved focus elsewhere
+// in the meantime — checked via document.activeElement: a disabled-blur
+// leaves focus on document.body, while clicking another control points
+// activeElement at that control and we leave it alone.
+onMounted(() => {
+  void nextTick().then(() => textareaRef.value?.focus())
+})
+
+watch(
+  () => props.loading,
+  (next, prev) => {
+    if (!(prev === true && next === false)) return
+    void nextTick().then(() => {
+      const el = textareaRef.value
+      if (!el) return
+      const active = document.activeElement
+      const focusedElsewhere =
+        active !== null && active !== document.body && active !== el
+      if (focusedElsewhere) return
+      el.focus()
+    })
+  },
+)
 </script>
 
 <template>

@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\UserTask\Model;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\Persistence\ObjectRepository;
 use Exception;
 use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
 use Hanaboso\PipesFramework\Database\Document\Node;
@@ -32,17 +33,17 @@ final readonly class UserTaskManager
     private const string STATE_REJECT = 'reject';
 
     /**
-     * @var UserTaskRepository
+     * @var ObjectRepository<UserTask>&UserTaskRepository
      */
     private UserTaskRepository $userTaskRepository;
 
     /**
-     * @var TopologyRepository
+     * @var ObjectRepository<Topology>&TopologyRepository
      */
     private TopologyRepository $topologyRepository;
 
     /**
-     * @var NodeRepository
+     * @var ObjectRepository<Node>&NodeRepository
      */
     private NodeRepository $nodeRepository;
 
@@ -61,14 +62,9 @@ final readonly class UserTaskManager
         private Publisher $publisher,
     )
     {
-        $userTaskRepository       = $dm->getRepository(UserTask::class);
-        $this->userTaskRepository = $userTaskRepository;
-
-        $topologyRepository       = $dm->getRepository(Topology::class);
-        $this->topologyRepository = $topologyRepository;
-
-        $nodeRepository       = $dm->getRepository(Node::class);
-        $this->nodeRepository = $nodeRepository;
+        $this->userTaskRepository = $dm->getRepository(UserTask::class);
+        $this->topologyRepository = $dm->getRepository(Topology::class);
+        $this->nodeRepository     = $dm->getRepository(Node::class);
     }
 
     /**

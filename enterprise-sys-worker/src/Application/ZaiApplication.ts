@@ -65,11 +65,16 @@ export default class ZaiApplication extends ABasicApplication {
     }
 
     public async syncTrace(req: Request): Promise<IOutput> {
-        const { request, user, sdk } = JSON.parse(String(req.body));
+        const { system, messages, user, sdk } = JSON.parse(String(req.body)) as {
+            system?: string;
+            messages?: { role: string; content: string }[];
+            user: string;
+            sdk: string;
+        };
 
         const processDto = ProcessDto
             .createForFormRequest(this.getName(), user, sdk, crypto.randomUUID())
-            .setNewJsonData({ request });
+            .setNewJsonData({ system: system ?? '', messages: messages ?? [] });
 
         return (await this.zaiTrace.processAction(processDto)).getJsonData();
     }

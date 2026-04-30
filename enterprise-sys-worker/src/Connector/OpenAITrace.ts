@@ -4,6 +4,11 @@ import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 
 export const NAME = `${OPEN_AI_NAME}-trace-connector`;
 
+interface ITraceInput {
+    messages: { role: string; content: string }[];
+    system?: string;
+}
+
 export default class OpenAITrace extends OpenAIPostResponseConnector {
 
     public getName(): string {
@@ -12,12 +17,18 @@ export default class OpenAITrace extends OpenAIPostResponseConnector {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public async processAction(dto: ProcessDto<any>): Promise<ProcessDto<any>> {
-        const { request } = dto.getJsonData() as IInput;
+        const { system, messages } = dto.getJsonData() as ITraceInput;
 
-        dto.setJsonData({
+        const body: Record<string, unknown> = {
             model: 'gpt-5.4-mini',
-            input: [{ role: 'user', content: [{ type: 'input_text', text: request }] }],
-        });
+            input: messages.map(({ role, content }) => ({ role, content })),
+        };
+
+        if (system) {
+            body.instructions = system;
+        }
+
+        dto.setJsonData(body);
 
         return dto.setNewJsonData({
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,8 +36,4 @@ export default class OpenAITrace extends OpenAIPostResponseConnector {
         });
     }
 
-}
-
-interface IInput {
-    request: string;
 }

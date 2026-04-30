@@ -25,15 +25,16 @@ func Load() error {
 		Timeout: time.Duration(config.Backend.Timeout) * time.Second,
 	}, config.Logger)
 
+	authService := NewAuthService(httpSender, config.Backend.URL, config.Logger)
 	manifestService := NewManifestService(httpSender, config.Backend.URL, config.Logger)
 	aiService := NewAIService(httpSender, config.Backend.URL, config.Logger)
 
 	Container = container{
 		StatusService:   NewStatusService(httpSender, config.Backend.URL),
-		AuthService:     NewAuthService(httpSender, config.Backend.URL, config.Logger),
+		AuthService:     authService,
 		ManifestService: manifestService,
 		AIService:       aiService,
-		TraceService:    NewTraceService(manifestService, aiService, config.Logger),
+		TraceService:    NewTraceService(authService, manifestService, aiService, config.Logger),
 	}
 
 	shutdown = func() {}

@@ -1,7 +1,7 @@
-DC=docker-compose
-DE=docker-compose exec -T app
-DB=docker-compose exec -T bruno
-DM=docker-compose exec -T mongo
+DC=docker compose
+DE=docker compose exec -T app
+DB=docker compose exec -T bruno
+DM=docker compose exec -T mongo
 IMAGE=dkr.hanaboso.net/pipes/pipes/trace:$(TAG)
 
 .env:

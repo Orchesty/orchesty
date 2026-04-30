@@ -1,51 +1,64 @@
-import type { TraceReport, ChatMessage } from '@/types/trace'
-import reportsData from '@/assets/mock-data/trace-reports-data.json'
+import api from '@/services/api'
+import type { EntityHistoryResponse, TraceReport } from '@/types/trace'
 
-// WebSocket mock - simuluje odpověď AI
-export const sendChatMessage = async (message: string): Promise<ChatMessage> => {
-  // Simulace delay pro WebSocket odpověď
-  await new Promise(resolve => setTimeout(resolve, 1500))
-  
-  // Mock odpověď - v produkci bude nahrazeno WebSocket komunikací
-  const mockResponse = `I received your message: "${message}". This is a mock response from the AI assistant. In production, this will be replaced with actual WebSocket communication.`
-  
-  return {
-    id: `msg-${Date.now()}`,
-    role: 'assistant',
-    content: `<p>${mockResponse}</p>`,
-    timestamp: new Date(),
-    status: 'sent',
-    canSave: true // Všechny assistant odpovědi mohou být uloženy jako report
-  }
+interface TraceReportApiItem {
+  id: string
+  title: string
+  contentHtml: string
+  messageId?: string | null
+  createdAt: string
+  updatedAt: string
+  userId: string
 }
 
-// Reports management
+interface TraceReportListResponse {
+  items: TraceReportApiItem[]
+  page: number
+  limit: number
+  total: number
+}
+
+const toReport = (item: TraceReportApiItem): TraceReport => ({
+  id: item.id,
+  title: item.title,
+  content: item.contentHtml,
+  timestamp: new Date(item.createdAt),
+  messageId: item.messageId ?? '',
+})
+
 export const fetchReports = async (): Promise<TraceReport[]> => {
-  await new Promise(resolve => setTimeout(resolve, 300))
-  
-  // Konverze timestamp stringů na Date objekty
-  return reportsData.map(report => ({
-    ...report,
-    timestamp: new Date(report.timestamp)
-  })) as TraceReport[]
+  const response = await api.get<TraceReportListResponse>('/api/trace-reports', {
+    params: { page: 1, limit: 200 },
+  })
+  return response.data.items.map(toReport)
 }
 
 export const saveReport = async (report: Omit<TraceReport, 'id'>): Promise<TraceReport> => {
-  await new Promise(resolve => setTimeout(resolve, 300))
-  
-  const newReport: TraceReport = {
-    id: `report-${Date.now()}`,
-    ...report
-  }
-  
-  return newReport
+  const response = await api.post<TraceReportApiItem>('/api/trace-reports', {
+    title: report.title,
+    contentHtml: report.content,
+    messageId: report.messageId || null,
+  })
+  return toReport(response.data)
 }
 
 export const updateReportTitle = async (id: string, title: string): Promise<void> => {
-  await new Promise(resolve => setTimeout(resolve, 300))
+  await api.patch(`/api/trace-reports/${id}`, { title })
 }
 
 export const deleteReport = async (id: string): Promise<void> => {
-  await new Promise(resolve => setTimeout(resolve, 300))
+  await api.delete(`/api/trace-reports/${id}`)
 }
 
+/**
+ * Per-entity audit history. Bypasses the AI chat and queries the MCP run
+ * endpoint directly so callers (e.g. EntityHistoryPanel) get the structured
+ * `{ entity, identifier, runs: [{ input, output }] }` response.
+ */
+export const fetchEntityHistory = async (
+  audit: string,
+  data: Record<string, string>,
+): Promise<EntityHistoryResponse> => {
+  const response = await api.post<EntityHistoryResponse>('/mcp/run', { audit, data })
+  return response.data
+}

@@ -191,9 +191,25 @@ func (pm *ProcessMessage) Copy() *ProcessMessage {
 	}
 }
 
+// CopyBatchItem builds a child ProcessMessage from a single batch item.
+//
+// Audit headers (audit-entity, audit-entity-ids, audit-entity-fields) are
+// intentionally NOT copied from the parent batch DTO: the parent header
+// describes ALL N items in the batch, while each child message only carries a
+// single item in its body. Propagating the parent audit headers would attach
+// the same N-entity union to every one of N child messages, which is both
+// redundant and breaks per-entity Trace queries.
+//
+// Per-item audit data must come from `item.Headers` (set in the SDK via
+// BatchProcessDto.addItemWithAudit) — those overlay onto `copied` below.
 func (pm *ProcessMessage) CopyBatchItem(item MessageDto) *ProcessMessage {
 	copied := make(map[string]interface{}, len(pm.Headers))
 	for i, j := range pm.Headers {
+		if i == enum.Header_AuditEntityHeader ||
+			i == enum.Header_AuditEntityIdsHeader ||
+			i == enum.Header_AuditEntityFieldsHeader {
+			continue
+		}
 		copied[i] = j
 	}
 	for key, value := range item.Headers {

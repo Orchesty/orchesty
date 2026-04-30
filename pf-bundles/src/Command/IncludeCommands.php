@@ -28,6 +28,7 @@ final class IncludeCommands extends BundleApplication
         'user:delete',
         'user:list',
         'user:password:change',
+        'webhook:seed-configs',
     ];
 
     /**
