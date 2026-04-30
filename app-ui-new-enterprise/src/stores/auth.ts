@@ -10,7 +10,7 @@ import { STORAGE_KEYS } from '@/config'
 
 const CHECK_INTERVAL_MS = 30_000
 const REFRESH_IF_OLDER_THAN_MS = 2 * 60_000
-const INACTIVITY_LIMIT_MS = 30 * 60_000
+const INACTIVITY_LIMIT_MS = 90 * 60_000
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(null)
@@ -149,6 +149,9 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem(STORAGE_KEYS.CLOUD_HANDOFF_SESSION)
     localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
     localStorage.removeItem(STORAGE_KEYS.AUTH_USER)
+    // Drop the persisted Trace conversation on logout so user A's chat does
+    // not leak to user B on a shared browser.
+    localStorage.removeItem(STORAGE_KEYS.TRACE_HISTORY)
     token.value = null
     user.value = null
 

@@ -118,6 +118,78 @@ func TestBuildSummariserPrompt_UnknownTool(t *testing.T) {
 	}
 }
 
+func TestBuildSystemPrompt_DocsSearchExamplesWhenRegistered(t *testing.T) {
+	actions := []ManifestAction{
+		{ID: "processes_timeseries", Title: "Process counts", Kind: "timeseries"},
+		{ID: "docs_search", Title: "Search docs", Kind: "docs"},
+	}
+
+	prompt := BuildSystemPrompt(actions)
+
+	for _, marker := range []string{
+		`"tool":"docs_search"`,
+		`"how do I get started"`,
+		`"jak nastavím OAuth2 aplikaci"`,
+		"prefer the docs_search tool over",
+	} {
+		if !strings.Contains(prompt, marker) {
+			t.Fatalf("expected docs_search example %q in prompt, got:\n%s", marker, prompt)
+		}
+	}
+}
+
+func TestBuildSystemPrompt_NoDocsSearchExamplesWhenAbsent(t *testing.T) {
+	actions := []ManifestAction{
+		{ID: "processes_timeseries", Title: "Process counts", Kind: "timeseries"},
+	}
+
+	prompt := BuildSystemPrompt(actions)
+
+	if strings.Contains(prompt, `"tool":"docs_search"`) {
+		t.Fatalf("did not expect docs_search examples when tool is not registered, got:\n%s", prompt)
+	}
+	if strings.Contains(prompt, "prefer the docs_search tool over") {
+		t.Fatalf("did not expect docs_search routing instructions when tool is not registered, got:\n%s", prompt)
+	}
+}
+
+func TestBuildSummariserPrompt_DocsSearchSpecifics(t *testing.T) {
+	prompt := BuildSummariserPrompt("docs_search")
+
+	for _, marker := range []string{
+		"DOCS_SEARCH SPECIFICS",
+		"https://orchesty.io",
+		"results is empty",
+		"Reply in the same language",
+	} {
+		if !strings.Contains(prompt, marker) {
+			t.Fatalf("expected docs_search summariser rule %q, got:\n%s", marker, prompt)
+		}
+	}
+}
+
+func TestBuildSummariserPrompt_NoDocsSpecificsForOtherTools(t *testing.T) {
+	prompt := BuildSummariserPrompt("processes_timeseries")
+
+	if strings.Contains(prompt, "DOCS_SEARCH SPECIFICS") {
+		t.Fatalf("did not expect docs-specific summariser rules for processes_timeseries, got:\n%s", prompt)
+	}
+}
+
+func TestContainsActionID(t *testing.T) {
+	actions := []ManifestAction{{ID: "a"}, {ID: "b"}, {ID: "docs_search"}}
+
+	if !containsActionID(actions, "docs_search") {
+		t.Fatalf("expected containsActionID to find docs_search")
+	}
+	if containsActionID(actions, "missing") {
+		t.Fatalf("expected containsActionID to miss unknown id")
+	}
+	if containsActionID(nil, "docs_search") {
+		t.Fatalf("expected containsActionID to return false for nil slice")
+	}
+}
+
 func TestSplitActionsByKind(t *testing.T) {
 	entities, tools := splitActionsByKind([]ManifestAction{
 		{ID: "a", Kind: ""},

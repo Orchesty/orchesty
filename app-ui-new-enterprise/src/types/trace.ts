@@ -9,6 +9,10 @@ export interface ChatMessage {
   timestamp: Date
   status?: MessageStatus
   canSave?: boolean  // Only assistant messages with reports can be saved
+  // True while the typewriter animation is still appending characters. The
+  // chat view uses it to hide save/copy/export action buttons until the
+  // assistant message is fully written so the user cannot save half a report.
+  streaming?: boolean
 }
 
 // Report types

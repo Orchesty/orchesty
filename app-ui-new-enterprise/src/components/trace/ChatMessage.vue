@@ -59,8 +59,9 @@ const handleExportPdf = () => {
     <div class="flex-1 min-w-0">
       <div class="prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-headings:my-3" v-html="message.content"></div>
       
-      <!-- Action Buttons (only for assistant messages) -->
-      <div v-if="isAssistant && message.canSave" class="space-x-2 flex items-center mt-3">
+      <!-- Action Buttons (only for assistant messages, hidden while the
+           typewriter animation is still streaming) -->
+      <div v-if="isAssistant && message.canSave && !message.streaming" class="space-x-2 flex items-center mt-3">
         <!-- Save Button -->
         <button 
           type="button" 

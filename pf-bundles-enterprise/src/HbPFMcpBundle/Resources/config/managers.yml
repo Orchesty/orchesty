@@ -14,6 +14,14 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.mcp.manager.loki'
             - '@hbpf.mcp.manager.metrics_aggregator'
+            - '@hbpf.mcp.manager.docs_search_client'
+
+    hbpf.mcp.manager.docs_search_client:
+        class: Hanaboso\PipesFrameworkEnterprise\Mcp\Model\DocsSearchClient
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '%docsSearchUrl%'
+            - '%docsSearchToken%'
 
     hbpf.mcp.manager.metrics_aggregator:
         class: Hanaboso\PipesFrameworkEnterprise\Mcp\Model\MetricsAggregator

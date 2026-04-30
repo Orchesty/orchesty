@@ -203,6 +203,8 @@ services:
             STARTING_POINT_URL: ${STARTING_POINT_DSN}
             NOTIFIER_DSN: ${NOTIFIER_DSN}
             LOKI_DSN: ${LOKI_DSN}
+            DOCS_SEARCH_URL: ${DOCS_SEARCH_URL:-https://orchesty.io}
+            DOCS_SEARCH_TOKEN: ${DOCS_SEARCH_TOKEN:-}
             WORKER_API: http://worker-api:8080/
             TOPOLOGY_API_DSN: topology-api:8080
             #DOCKER_PF_BRIDGE_IMAGE: orchesty/bridge:${VERSION}

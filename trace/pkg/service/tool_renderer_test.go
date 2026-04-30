@@ -142,6 +142,54 @@ func TestRenderToolResult_RecentErrorsEmpty(t *testing.T) {
 	}
 }
 
+func TestRenderToolResult_TopologiesActivity(t *testing.T) {
+	raw := []byte(`{
+		"kind": "list",
+		"title": "Topologies active in range",
+		"period": "today",
+		"items": [
+			{"topologyId": "t-1", "topologyName": "order-sync", "runs": 12, "success": 10, "failed": 2, "running": 0, "lastRunAt": "2026-04-30T01:14:00+00:00", "firstRunAt": "2026-04-30T00:02:00+00:00"},
+			{"topologyId": "t-2", "topologyName": "shipping", "runs": 1, "success": 1, "failed": 0, "running": 0, "lastRunAt": "2026-04-30T00:42:00+00:00"},
+			{"topologyId": "t-3", "topologyName": "etl", "runs": 3, "success": 0, "failed": 0, "running": 3, "lastRunAt": "2026-04-30T01:30:00+00:00"}
+		]
+	}`)
+
+	out, ok := renderToolResult(raw)
+	if !ok {
+		t.Fatalf("expected renderer to recognise list kind")
+	}
+
+	for _, want := range []string{
+		"Topologies active in range (today):",
+		"order-sync — 12 runs (10 succeeded, 2 failed), last at 2026-04-30T01:14:00+00:00",
+		"shipping — 1 run (1 succeeded), last at 2026-04-30T00:42:00+00:00",
+		"etl — 3 runs (3 running), last at 2026-04-30T01:30:00+00:00",
+	} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("missing %q in output:\n%s", want, out)
+		}
+	}
+}
+
+func TestRenderToolResult_TopologiesActivityFallsBackToTopologyId(t *testing.T) {
+	raw := []byte(`{
+		"kind": "list",
+		"title": "Topologies active in range",
+		"items": [{"topologyId": "t-orphan", "runs": 0, "success": 0, "failed": 0, "running": 0}]
+	}`)
+
+	out, _ := renderToolResult(raw)
+
+	// `topologyName` missing → renderer should fall back to topologyId, and a
+	// zero-run row should still print without an empty parenthesis tail.
+	if !strings.Contains(out, "t-orphan — 0 runs") {
+		t.Fatalf("expected topology id fallback with 0 runs, got:\n%s", out)
+	}
+	if strings.Contains(out, "()") {
+		t.Fatalf("renderer should suppress empty parens when no breakdown, got:\n%s", out)
+	}
+}
+
 func TestRenderToolResult_TimeseriesWithPoints(t *testing.T) {
 	raw := []byte(`{
 		"kind": "timeseries",

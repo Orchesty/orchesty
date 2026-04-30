@@ -20,6 +20,7 @@ func BuildSystemPrompt(actions []ManifestAction) string {
 	var sb strings.Builder
 
 	entityActions, toolActions := splitActionsByKind(actions)
+	hasDocsSearch := containsActionID(toolActions, "docs_search")
 
 	sb.WriteString("You are the Orchesty Trace assistant. Your sole purpose is to help users navigate ")
 	sb.WriteString("the platform's audit logs and process metrics by mapping their natural-language ")
@@ -86,12 +87,31 @@ func BuildSystemPrompt(actions []ManifestAction) string {
 	sb.WriteString("   Examples:\n")
 	sb.WriteString("   - \"how many processes ran last week\" → ")
 	sb.WriteString("{\"tool\":\"processes_timeseries\",\"args\":{\"period\":\"last_7d\"}}\n")
+	sb.WriteString("   - \"which topologies were running today\" → ")
+	sb.WriteString("{\"tool\":\"topologies_activity\",\"args\":{\"period\":\"today\"}}\n")
+	sb.WriteString("   - \"jaké topologie běžely tento týden\" → ")
+	sb.WriteString("{\"tool\":\"topologies_activity\",\"args\":{\"period\":\"this_week\"}}\n")
 	sb.WriteString("   - \"which connector fails most today\" → ")
 	sb.WriteString("{\"tool\":\"failing_connectors\",\"args\":{\"period\":\"today\"}}\n")
 	sb.WriteString("   - \"process counts on 2026-03-12\" → ")
 	sb.WriteString("{\"tool\":\"processes_timeseries\",\"args\":{\"day\":\"2026-03-12\"}}\n")
 	sb.WriteString("   - \"show me the last errors\" → ")
 	sb.WriteString("{\"tool\":\"recent_errors\",\"args\":{\"period\":\"last_7d\"}}\n")
+	sb.WriteString("   Pick processes_timeseries when the user asks about MESSAGE volumes over time ")
+	sb.WriteString("(\"how many processes\", \"failure rate\"); pick topologies_activity when the user ")
+	sb.WriteString("asks WHICH topologies were active (\"which topologies\", \"what was running\", ")
+	sb.WriteString("\"jaké topologie\").\n")
+	if hasDocsSearch {
+		sb.WriteString("   - \"how do I get started\" → ")
+		sb.WriteString("{\"tool\":\"docs_search\",\"args\":{\"query\":\"how do I get started\",\"locale\":\"en\"}}\n")
+		sb.WriteString("   - \"jak nastavím OAuth2 aplikaci\" → ")
+		sb.WriteString("{\"tool\":\"docs_search\",\"args\":{\"query\":\"jak nastavím OAuth2 aplikaci\",\"locale\":\"cs\"}}\n")
+		sb.WriteString("   - \"what is a topology\" → ")
+		sb.WriteString("{\"tool\":\"docs_search\",\"args\":{\"query\":\"what is a topology\",\"locale\":\"en\"}}\n")
+		sb.WriteString("   For docs_search ALWAYS forward the user's wording verbatim as `query` ")
+		sb.WriteString("and pick `locale` from the language they wrote in. Use it for any ")
+		sb.WriteString("\"how do I…\" / \"what is…\" / \"jak…\" platform-usage question.\n")
+	}
 	sb.WriteString("   Do NOT use the tool envelope for entity history — those go through shape 1.\n\n")
 	sb.WriteString("3. Reply — for greetings, clarifications, capability questions, or when you ")
 	sb.WriteString("cannot map the request:\n")
@@ -100,11 +120,29 @@ func BuildSystemPrompt(actions []ManifestAction) string {
 	sb.WriteString("what you can search. If the request is ambiguous, ask one targeted follow-up ")
 	sb.WriteString("question and remind them which actions/attributes you support. Never apologise ")
 	sb.WriteString("with a stack-trace, never expose internal field names you did not list above.\n\n")
+	if hasDocsSearch {
+		sb.WriteString("For platform-usage / how-to questions, ALWAYS prefer the docs_search tool over ")
+		sb.WriteString("the Reply shape. Only fall back to Reply when the question is genuinely off-topic ")
+		sb.WriteString("(weather, unrelated code help, etc.).\n")
+	}
 	sb.WriteString("If the user asks about anything outside this catalogue (the weather, code help, ")
 	sb.WriteString("Orchesty configuration, ...), use the Reply shape and politely redirect them to ")
 	sb.WriteString("the audit-log searches and metrics tools you can perform.")
 
 	return sb.String()
+}
+
+// containsActionID reports whether the given action list contains an action
+// with the matching id. Used to gate prompt sections that only make sense
+// when a particular optional tool is wired in.
+func containsActionID(actions []ManifestAction, id string) bool {
+	for _, a := range actions {
+		if a.ID == id {
+			return true
+		}
+	}
+
+	return false
 }
 
 // BuildSummariserPrompt instructs the model to turn a compact JSON tool result
@@ -134,6 +172,19 @@ func BuildSummariserPrompt(toolID string) string {
 	sb.WriteString("- If the result is empty (no items / no points / total = 0), say so explicitly ")
 	sb.WriteString("in one sentence.\n")
 	sb.WriteString("- Keep the answer under 6 short sentences.\n")
+
+	if toolID == "docs_search" {
+		sb.WriteString("\nDOCS_SEARCH SPECIFICS:\n")
+		sb.WriteString("- The JSON has shape {results: [{path, title, description, snippet, source}], latestVersion}.\n")
+		sb.WriteString("- For each result, write one line: \"<title> — <one-sentence excerpt taken or paraphrased ")
+		sb.WriteString("from snippet>\" followed by the URL \"https://orchesty.io<path>\".\n")
+		sb.WriteString("- Order results from most relevant (first in the array) to least.\n")
+		sb.WriteString("- Reply in the same language the user wrote in. If the user wrote in Czech, ")
+		sb.WriteString("translate the excerpt into natural Czech; the URL stays as-is.\n")
+		sb.WriteString("- If results is empty, say in one sentence that no documentation matched and ")
+		sb.WriteString("suggest rephrasing the question. Do not apologise.\n")
+		sb.WriteString("- Never invent paths, titles or URLs. Quote them only when they appear in `results`.\n")
+	}
 
 	return sb.String()
 }

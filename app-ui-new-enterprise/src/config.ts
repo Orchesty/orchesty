@@ -18,4 +18,5 @@ export const STORAGE_KEYS = {
   CLOUD_HANDOFF_FAILED: 'cloud_handoff_failed',
   PENDING_INVITE_TOKEN: 'pending_invite_token',
   AUTH0_LOGIN_FAILED: 'auth0_login_failed',
+  TRACE_HISTORY: 'trace_history',
 } as const

@@ -11,6 +11,13 @@ parameters:
   startingPointHost: "%env(string:STARTING_POINT_URL)%"
   notifierHost: "%env(string:NOTIFIER_DSN)%"
   lokiHost: "%env(string:LOKI_DSN)%"
+  # Trace docs_search MCP tool — public Orchesty docs site (Nuxt Content).
+  # When DOCS_SEARCH_URL is empty, McpManager omits docs_search from the
+  # manifest so the LLM never tries to call it (typical on-prem setup
+  # without internet access). DOCS_SEARCH_TOKEN must match the Nuxt-side
+  # NUXT_TRACE_SEARCH_TOKEN for the X-Trace-Token guard to pass.
+  docsSearchUrl: "%env(string:DOCS_SEARCH_URL)%"
+  docsSearchToken: "%env(string:DOCS_SEARCH_TOKEN)%"
   tunnelProxyHost: "%env(string:TUNNEL_PROXY_HOST)%"
   activateLink: '%backendHost%/user/%s/activate'
   passwordLink: 'reset-password/%s'
@@ -18,6 +25,8 @@ parameters:
   env(TUNNEL_PROXY_HOST): ''
   env(NOTIFIER_DSN): ''
   env(LOKI_DSN): ''
+  env(DOCS_SEARCH_URL): ''
+  env(DOCS_SEARCH_TOKEN): ''
   env(ORCHESTY_CLOUD_BACKEND_URL): ''
   env(ORCHESTY_CLOUD_FRONTEND_URL): ''
   env(ORCHESTY_CLOUD_INSTANCE_ID): ''

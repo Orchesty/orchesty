@@ -322,15 +322,22 @@ final class CloudLimitsHandler
      */
     private function aggregateMessagesHistory(UTCDateTime $from, UTCDateTime $to, int $binSize): array
     {
-        $rabbit  = $this->aggregateLatestNumeric(
-            self::COLLECTION_RABBIT_METRICS,
-            'total_messages',
-            'timestamp',
+        $rabbit = $this->aggregateLatestNumeric(self::COLLECTION_RABBIT_METRICS, 'total_messages', 'timestamp', $from, $to, $binSize);
+
+        // The limiter time-series is written by the `limiter` service once per minute,
+        // but as **N rows per tick** (one per active node/topology). A naive `$last`
+        // per bucket would pick a single node's count instead of the cluster-wide
+        // total. Sum across nodes per minute first, then take the latest per-bucket
+        // tick — that's the value comparable to the live `countDocuments()` headline.
+        $limiter = $this->aggregateLatestNumeric(
+            'limiter',
+            'fields.messages',
+            'fields.created',
             $from,
             $to,
             $binSize,
+            TRUE,
         );
-        $limiter = $this->aggregateLatestNumeric('limiter', 'fields.messages', 'fields.created', $from, $to, $binSize);
 
         return $this->mergeSeries($rabbit, $limiter);
     }
@@ -377,6 +384,13 @@ final class CloudLimitsHandler
      * metrics collection. Returns `[ ['created' => ISO, 'value' => float], ... ]`
      * sorted ascending by bucket start.
      *
+     * When the source collection writes **multiple rows per tick** (e.g. the
+     * limiter metrics, which are emitted per-node every minute), set
+     * `$sumAcrossSamples = true`. The pipeline then collapses all rows that
+     * fall into the same minute into a single per-tick sum first, and only
+     * takes `$last` of those per-tick sums per bucket. Without this, `$last`
+     * would return one node's count instead of the cluster-wide total.
+     *
      * @param string      $collection
      * @param string      $valueField
      * @param string      $timeField
@@ -393,50 +407,23 @@ final class CloudLimitsHandler
         UTCDateTime $from,
         UTCDateTime $to,
         int $binSize,
+        bool $sumAcrossSamples = FALSE,
     ): array
     {
         try {
-            $coll   = $this->metricsCollection($collection);
-            $fromMs = (int) (string) $from;
+            $coll = $this->metricsCollection($collection);
 
-            $pipeline = [
-                ['$match' => [$timeField => ['$gte' => $from, '$lt' => $to]]],
-                ['$project' => [
-                    'bucket' => [
-                        '$add' => [
-                            $fromMs,
-                            ['$multiply' => [
-                                ['$floor' => [
-                                    ['$divide' => [
-                                        ['$subtract' => [['$toLong' => sprintf('$%s', $timeField)], $fromMs]],
-                                        $binSize,
-                                    ]],
-                                ]],
-                                $binSize,
-                            ]],
-                        ],
-                    ],
-                    'time'   => sprintf('$%s', $timeField),
-                    'value'  => ['$ifNull' => [sprintf('$%s', $valueField), 0]],
-                ]],
-                ['$sort' => ['time' => 1]],
-                ['$group' => [
-                    'value' => ['$last' => '$value'],
-                    '_id'   => '$bucket',
-                ]],
-                ['$sort' => ['_id' => 1]],
-                ['$project' => [
-                    'created' => ['$dateToString' => ['date' => ['$toDate' => '$_id'], 'format' => '%Y-%m-%dT%H:%M:%SZ']],
-                    'value'   => ['$round' => ['$value', 2]],
-                    '_id'     => 0,
-                ]],
-            ];
+            $pipeline = self::buildLatestNumericPipeline(
+                $valueField,
+                $timeField,
+                $from,
+                $to,
+                $binSize,
+                $sumAcrossSamples,
+            );
 
             $out = [];
-            foreach ($coll->aggregate(
-                $pipeline,
-                ['typeMap' => ['array' => 'array', 'document' => 'array', 'root' => 'array']],
-            ) as $row) {
+            foreach ($coll->aggregate($pipeline, ['typeMap' => ['root' => 'array', 'document' => 'array', 'array' => 'array']]) as $row) {
                 $out[] = (array) $row;
             }
 
@@ -444,6 +431,81 @@ final class CloudLimitsHandler
         } catch (Throwable) {
             return [];
         }
+    }
+
+    /**
+     * Pure pipeline builder for {@see aggregateLatestNumeric}. Extracted as a
+     * static helper so the shape can be asserted in unit tests without a live
+     * Mongo connection.
+     *
+     * @return mixed[]
+     */
+    public static function buildLatestNumericPipeline(
+        string $valueField,
+        string $timeField,
+        UTCDateTime $from,
+        UTCDateTime $to,
+        int $binSize,
+        bool $sumAcrossSamples,
+    ): array
+    {
+        $fromMs = (int) (string) $from;
+
+        $pipeline = [
+            ['$match' => [$timeField => ['$gte' => $from, '$lt' => $to]]],
+            ['$project' => [
+                'time'   => '$' . $timeField,
+                'value'  => ['$ifNull' => ['$' . $valueField, 0]],
+                'bucket' => [
+                    '$add' => [
+                        $fromMs,
+                        ['$multiply' => [
+                            ['$floor' => [
+                                ['$divide' => [
+                                    ['$subtract' => [['$toLong' => '$' . $timeField], $fromMs]],
+                                    $binSize,
+                                ]],
+                            ]],
+                            $binSize,
+                        ]],
+                    ],
+                ],
+            ]],
+        ];
+
+        if ($sumAcrossSamples) {
+            // Truncate per-row time to the minute so per-node samples emitted
+            // within the same tick collapse into one composite key, then sum
+            // their values. The collector writes one row per node per tick,
+            // so this yields the cluster-wide total per minute.
+            $pipeline[] = ['$group' => [
+                '_id'   => [
+                    'bucket' => '$bucket',
+                    'tick'   => ['$dateTrunc' => ['date' => '$time', 'unit' => 'minute']],
+                ],
+                'value' => ['$sum' => '$value'],
+            ]];
+            $pipeline[] = ['$sort' => ['_id.tick' => 1]];
+            $pipeline[] = ['$group' => [
+                '_id'   => '$_id.bucket',
+                'value' => ['$last' => '$value'],
+            ]];
+        } else {
+            $pipeline[] = ['$sort' => ['time' => 1]];
+            $pipeline[] = ['$group' => [
+                '_id'   => '$bucket',
+                'value' => ['$last' => '$value'],
+            ]];
+        }
+
+        $pipeline[] = ['$sort' => ['_id' => 1]];
+        $pipeline[] = ['$project' => [
+            '_id'     => 0,
+            'created' => ['$dateToString' => ['format' => '%Y-%m-%dT%H:%M:%SZ', 'date' => ['$toDate' => '$_id']]],
+            'value'   => ['$round' => ['$value', 2]],
+        ]];
+
+        return $pipeline;
     }
 
     /**

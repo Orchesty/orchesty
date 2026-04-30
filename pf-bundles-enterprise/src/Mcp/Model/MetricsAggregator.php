@@ -3,10 +3,15 @@
 namespace Hanaboso\PipesFrameworkEnterprise\Mcp\Model;
 
 use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MongoDB\BSON\UTCDateTime;
+use Doctrine\Persistence\ObjectRepository;
 use Exception;
 use Hanaboso\MongoDataGrid\GridFilterAbstract;
 use Hanaboso\MongoDataGrid\GridRequestDto;
+use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
+use Hanaboso\PipesFramework\Configurator\Repository\TopologyProgressRepository;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\ProcessHandler;
@@ -36,6 +41,14 @@ final class MetricsAggregator
     private const int MIN_LIMIT       = 1;
 
     /**
+     * `topologies_activity` is its own list because the aggregation collapses
+     * one row per topology, not per connector — we want a higher cap so the
+     * user can see the full picture of an active environment.
+     */
+    private const int TOPOLOGIES_DEFAULT_LIMIT = 10;
+    private const int TOPOLOGIES_MAX_LIMIT     = 50;
+
+    /**
      * Maximum length of `resultMessage` we ship back to the model. Connector
      * metrics already store the upstream `response_error` body verbatim, so
      * we trim aggressively to keep the renderer output (and any later LLM
@@ -51,6 +64,11 @@ final class MetricsAggregator
     private const int FAILED_FETCH_POOL = 200;
 
     /**
+     * @var ObjectRepository<TopologyProgress>&TopologyProgressRepository
+     */
+    private ObjectRepository $topologyProgressRepository;
+
+    /**
      * MetricsAggregator constructor.
      *
      * @param ProcessHandler  $processHandler
@@ -63,6 +81,7 @@ final class MetricsAggregator
         private readonly DocumentManager $dm,
     )
     {
+        $this->topologyProgressRepository = $dm->getRepository(TopologyProgress::class);
     }
 
     /**
@@ -242,6 +261,92 @@ final class MetricsAggregator
                 ? sprintf('Recent errors (topology %s)', $topologyId)
                 : 'Recent errors',
         ];
+    }
+
+    /**
+     * Lists topologies with at least one TopologyProgress run in the time
+     * window. The aggregation runs entirely on the `MultiCounter` collection
+     * (see TopologyProgressRepository::getActivityByTopology) and is index-
+     * served — the response is shaped here so the LLM can surface human
+     * topology names instead of raw ObjectIds.
+     *
+     * Items are pre-sorted by run count DESC, last-run DESC at the database
+     * level; we only slice to the requested `limit` after resolving names so
+     * the truncation respects the same ordering.
+     *
+     * @param mixed[] $args
+     *
+     * @return mixed[]
+     * @throws Exception
+     */
+    public function getTopologiesActivity(array $args): array
+    {
+        [$start, $end] = DateRangeResolver::resolve($args, 7);
+        $end ??= new DateTimeImmutable('now');
+
+        $limit = $this->clamp(
+            (int) ($args['limit'] ?? self::TOPOLOGIES_DEFAULT_LIMIT),
+            self::MIN_LIMIT,
+            self::TOPOLOGIES_MAX_LIMIT,
+        );
+
+        $rows = $this->topologyProgressRepository->getActivityByTopology($start, $end);
+
+        $items = [];
+        foreach ($rows as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+
+            $tid = (string) ($row['_id'] ?? '');
+            if ($tid === '') {
+                continue;
+            }
+
+            $items[] = [
+                'firstRunAt'   => $this->formatDate($row['firstRunAt'] ?? NULL),
+                'lastRunAt'    => $this->formatDate($row['lastRunAt'] ?? NULL),
+                'runs'         => (int) ($row['runs'] ?? 0),
+                'success'      => (int) ($row['success'] ?? 0),
+                'failed'       => (int) ($row['failed'] ?? 0),
+                'running'      => (int) ($row['running'] ?? 0),
+                'topologyId'   => $tid,
+                'topologyName' => $this->resolveTopologyName($tid) ?? $tid,
+            ];
+
+            if (count($items) >= $limit) {
+                break;
+            }
+        }
+
+        return [
+            'items'  => $items,
+            'kind'   => 'list',
+            'period' => sprintf('%s..%s', $start->format(DATE_ATOM), $end->format(DATE_ATOM)),
+            'title'  => 'Topologies active in range',
+        ];
+    }
+
+    /**
+     * Normalises a Mongo `$max` / `$min` aggregation result into an ISO 8601
+     * string. Aggregation pipelines do not hydrate fields against the ODM
+     * mapping, so date results come back as the raw BSON wrapper
+     * `MongoDB\BSON\UTCDateTime` (not a PHP DateTime). When the same data is
+     * fed in via tests we accept any DateTimeInterface as well. NULL passes
+     * through unchanged so a topology without a populated date renders as
+     * `null` rather than the unix epoch.
+     */
+    private function formatDate(mixed $value): ?string
+    {
+        if ($value instanceof UTCDateTime) {
+            return $value->toDateTime()->format(DATE_ATOM);
+        }
+
+        if ($value instanceof DateTimeInterface) {
+            return $value->format(DATE_ATOM);
+        }
+
+        return NULL;
     }
 
     /**

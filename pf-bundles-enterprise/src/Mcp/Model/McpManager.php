@@ -58,11 +58,13 @@ final class McpManager
      * @param DocumentManager   $dm
      * @param LokiManager       $lokiManager
      * @param MetricsAggregator $metricsAggregator
+     * @param DocsSearchClient  $docsSearchClient
      */
     public function __construct(
         DocumentManager $dm,
         private readonly LokiManager $lokiManager,
         private readonly MetricsAggregator $metricsAggregator,
+        private readonly DocsSearchClient $docsSearchClient,
     )
     {
         $this->auditEntityRepository      = $dm->getRepository(AuditEntity::class);
@@ -173,7 +175,300 @@ final class McpManager
      */
     public function getManifest(): array
     {
-        return [...$this->getTopologiesEntitiesManifest(), ...$this->getMetricsManifest()];
+        return [
+            ...$this->getTopologiesEntitiesManifest(),
+            ...$this->getMetricsManifest(),
+            ...$this->getDocsManifest(),
+        ];
+    }
+
+    /**
+     * Manifest entry for the docs_search tool. Only emitted when the
+     * DocsSearchClient is configured (DOCS_SEARCH_URL set) — otherwise the
+     * Trace LLM would see a tool that always errors out, which leads it to
+     * route platform-usage questions through the catch-all Reply shape and
+     * apologise to the user instead of either answering or staying silent.
+     *
+     * @return mixed[]
+     */
+    private function getDocsManifest(): array
+    {
+        if (!$this->docsSearchClient->isConfigured()) {
+            return [];
+        }
+
+        return [
+            [
+                'description'   => 'Search the public Orchesty documentation '
+                    . '(orchesty.io) for platform usage answers. Use for '
+                    . 'questions like "how do I get started", "how do I create '
+                    . 'a topology", "how does OAuth2 application setup work", '
+                    . '"what is a connector", any "how do I…" / "what is…" / '
+                    . '"jak nastavím…" question. Pass the user message verbatim '
+                    . 'as `query`. Do NOT use this tool for entity history or '
+                    . 'metrics — those have their own envelopes. Returns the '
+                    . 'top-K documentation snippets with title, excerpt and '
+                    . 'canonical path; the assistant then summarises them and '
+                    . 'links to the full pages on https://orchesty.io.',
+                'id'            => 'docs_search',
+                'input_schema'  => [
+                    'properties' => [
+                        'query'  => [
+                            'description' => 'Natural-language question about Orchesty platform usage. Pass the user message verbatim.',
+                            'type'        => 'string',
+                        ],
+                        'locale' => [
+                            'description' => 'Preferred reply language for the user. Hint only — corpus is single-language.',
+                            'enum'        => ['cs', 'en'],
+                            'type'        => 'string',
+                        ],
+                    ],
+                    'required'   => ['query'],
+                    'type'       => 'object',
+                ],
+                'kind'          => 'docs',
+                'output_schema' => [
+                    'properties' => [
+                        'latestVersion' => ['type' => 'string'],
+                        'query'         => ['type' => 'string'],
+                        'results'       => [
+                            'items' => [
+                                'properties' => [
+                                    'description' => ['type' => 'string'],
+                                    'path'        => ['type' => 'string'],
+                                    'score'       => ['type' => 'number'],
+                                    'snippet'     => ['type' => 'string'],
+                                    'source'      => ['enum' => ['docs', 'learn'], 'type' => 'string'],
+                                    'title'       => ['type' => 'string'],
+                                ],
+                                'type'       => 'object',
+                            ],
+                            'type'  => 'array',
+                        ],
+                    ],
+                    'type'       => 'object',
+                ],
+                'title'         => 'Search Orchesty documentation',
+            ],
+        ];
+    }
+
+    /**
+     * Fixed actions the LLM can call for cross-cutting metrics questions.
+     * They sit alongside the per-entity audit history so the model can pick
+     * the right tool: entity-specific timelines go through `entity_history`,
+     * "how many processes" / "which connector fails most" go through these.
+     *
+     * @return mixed[]
+     */
+    private function getMetricsManifest(): array
+    {
+        $dateProperties = [
+            'from'   => [
+                'description' => 'ISO 8601 start of the range (inclusive). Use with "to".',
+                'format'      => 'date-time',
+                'type'        => 'string',
+            ],
+            'to'     => [
+                'description' => 'ISO 8601 end of the range (exclusive). Use with "from".',
+                'format'      => 'date-time',
+                'type'        => 'string',
+            ],
+            'period' => [
+                'description' => 'Named relative range: today, yesterday, this_week, last_7d, last_30d.',
+                'enum'        => ['today', 'yesterday', 'this_week', 'last_7d', 'last_30d'],
+                'type'        => 'string',
+            ],
+        ];
+
+        return [
+            [
+                'description'   => 'Aggregated process counts (success/failed) bucketed over a time '
+                    . 'range. Use for questions like "how many processes ran last week" or '
+                    . '"what is the failure rate today". Do NOT use for per-entity history; '
+                    . 'route those through the entity_history actions.',
+                'id'            => 'processes_timeseries',
+                'input_schema'  => [
+                    'properties' => [
+                        ...$dateProperties,
+                        'topology_id' => [
+                            'description' => 'Optional topology id to restrict the aggregation to one topology.',
+                            'type'        => 'string',
+                        ],
+                        'buckets'     => [
+                            'description' => 'Bucket count between 1 and 24 (default 12).',
+                            'maximum'     => 24,
+                            'minimum'     => 1,
+                            'type'        => 'integer',
+                        ],
+                    ],
+                    'type'       => 'object',
+                ],
+                'kind'          => 'timeseries',
+                'output_schema' => [
+                    'properties' => [
+                        'failed' => ['type' => 'integer'],
+                        'kind'   => ['type' => 'string'],
+                        'period' => ['type' => 'string'],
+                        'points' => [
+                            'items' => [
+                                'properties' => [
+                                    'failed'  => ['type' => 'integer'],
+                                    'success' => ['type' => 'integer'],
+                                    'time'    => ['type' => 'string'],
+                                ],
+                                'type'       => 'object',
+                            ],
+                            'type'  => 'array',
+                        ],
+                        'title'  => ['type' => 'string'],
+                        'total'  => ['type' => 'integer'],
+                    ],
+                    'type'       => 'object',
+                ],
+                'title'         => 'Process counts over time',
+            ],
+            [
+                'description'   => 'Lists topologies that had at least one process run in the time '
+                    . 'range. Use for "which topologies were running today", "what topologies were '
+                    . 'active last week", "show me running topologies", "jaké topologie běžely". '
+                    . 'Each item carries the topology name, total run count and how many of those '
+                    . 'runs succeeded, failed or are still in flight, plus the first and last run '
+                    . 'timestamps in the window. Use processes_timeseries instead when the user '
+                    . 'asks about MESSAGE volumes over time, not which topologies executed.',
+                'id'            => 'topologies_activity',
+                'input_schema'  => [
+                    'properties' => [
+                        ...$dateProperties,
+                        'limit' => [
+                            'description' => 'Maximum number of topologies to return (1-50, default 10).',
+                            'maximum'     => 50,
+                            'minimum'     => 1,
+                            'type'        => 'integer',
+                        ],
+                    ],
+                    'type'       => 'object',
+                ],
+                'kind'          => 'list',
+                'output_schema' => [
+                    'properties' => [
+                        'items'  => [
+                            'items' => [
+                                'properties' => [
+                                    'failed'       => ['type' => 'integer'],
+                                    'firstRunAt'   => ['type' => ['string', 'null']],
+                                    'lastRunAt'    => ['type' => ['string', 'null']],
+                                    'running'      => ['type' => 'integer'],
+                                    'runs'         => ['type' => 'integer'],
+                                    'success'      => ['type' => 'integer'],
+                                    'topologyId'   => ['type' => 'string'],
+                                    'topologyName' => ['type' => 'string'],
+                                ],
+                                'type'       => 'object',
+                            ],
+                            'type'  => 'array',
+                        ],
+                        'kind'   => ['type' => 'string'],
+                        'period' => ['type' => 'string'],
+                        'title'  => ['type' => 'string'],
+                    ],
+                    'type'       => 'object',
+                ],
+                'title'         => 'Topologies active in range',
+            ],
+            [
+                'description'   => 'Top connectors by failure count over a time range. Use for '
+                    . '"which connector is failing", "show flaky connectors today" type questions. '
+                    . 'Returns a short list ranked by failure count (descending).',
+                'id'            => 'failing_connectors',
+                'input_schema'  => [
+                    'properties' => [
+                        ...$dateProperties,
+                        'limit' => [
+                            'description' => 'Maximum number of connectors to return (1-20, default 10).',
+                            'maximum'     => 20,
+                            'minimum'     => 1,
+                            'type'        => 'integer',
+                        ],
+                    ],
+                    'type'       => 'object',
+                ],
+                'kind'          => 'list',
+                'output_schema' => [
+                    'properties' => [
+                        'items'  => [
+                            'items' => [
+                                'properties' => [
+                                    'failed'       => ['type' => 'integer'],
+                                    'failureRate'  => ['type' => 'number'],
+                                    'nodeName'     => ['type' => 'string'],
+                                    'success'      => ['type' => 'integer'],
+                                    'topologyName' => ['type' => 'string'],
+                                ],
+                                'type'       => 'object',
+                            ],
+                            'type'  => 'array',
+                        ],
+                        'kind'   => ['type' => 'string'],
+                        'period' => ['type' => 'string'],
+                        'title'  => ['type' => 'string'],
+                    ],
+                    'type'       => 'object',
+                ],
+                'title'         => 'Top failing connectors',
+            ],
+            [
+                'description'   => 'Most recent failed connector calls over a time range, sourced from '
+                    . 'the same connector metrics that power the dashboard process detail. Use for '
+                    . '"show the last errors", "what failed today", "recent connector errors" type '
+                    . 'questions. Each item carries the failing node, topology, the truncated upstream '
+                    . 'response body (`resultMessage`) and the HTTP status the bridge observed. Soft '
+                    . 'SDK outcomes (repeat / limit / trashed without an HTTP call) are NOT included '
+                    . 'here — only real HTTP-level connector failures.',
+                'id'            => 'recent_errors',
+                'input_schema'  => [
+                    'properties' => [
+                        ...$dateProperties,
+                        'topology_id' => [
+                            'description' => 'Optional topology id to restrict the search to one topology.',
+                            'type'        => 'string',
+                        ],
+                        'limit'       => [
+                            'description' => 'Maximum number of error entries to return (1-20, default 10).',
+                            'maximum'     => 20,
+                            'minimum'     => 1,
+                            'type'        => 'integer',
+                        ],
+                    ],
+                    'type'       => 'object',
+                ],
+                'kind'          => 'list',
+                'output_schema' => [
+                    'properties' => [
+                        'items'  => [
+                            'items' => [
+                                'properties' => [
+                                    'correlationId' => ['type' => 'string'],
+                                    'finishedAt'    => ['type' => 'string'],
+                                    'httpStatus'    => ['type' => ['integer', 'null']],
+                                    'nodeName'      => ['type' => 'string'],
+                                    'resultMessage' => ['type' => 'string'],
+                                    'resultStatus'  => ['type' => 'string'],
+                                    'topologyName'  => ['type' => 'string'],
+                                ],
+                                'type'       => 'object',
+                            ],
+                            'type'  => 'array',
+                        ],
+                        'kind'   => ['type' => 'string'],
+                        'period' => ['type' => 'string'],
+                        'title'  => ['type' => 'string'],
+                    ],
+                    'type'       => 'object',
+                ],
+                'title'         => 'Recent errors',
+            ],
+        ];
     }
 
     /**
@@ -337,165 +632,6 @@ final class McpManager
     }
 
     /**
-     * Fixed actions the LLM can call for cross-cutting metrics questions.
-     * They sit alongside the per-entity audit history so the model can pick
-     * the right tool: entity-specific timelines go through `entity_history`,
-     * "how many processes" / "which connector fails most" go through these.
-     *
-     * @return mixed[]
-     */
-    private function getMetricsManifest(): array
-    {
-        $dateProperties = [
-            'from'   => [
-                'description' => 'ISO 8601 start of the range (inclusive). Use with "to".',
-                'format'      => 'date-time',
-                'type'        => 'string',
-            ],
-            'period' => [
-                'description' => 'Named relative range: today, yesterday, this_week, last_7d, last_30d.',
-                'enum'        => ['today', 'yesterday', 'this_week', 'last_7d', 'last_30d'],
-                'type'        => 'string',
-            ],
-            'to'     => [
-                'description' => 'ISO 8601 end of the range (exclusive). Use with "from".',
-                'format'      => 'date-time',
-                'type'        => 'string',
-            ],
-        ];
-
-        return [
-            [
-                'description'   => 'Aggregated process counts (success/failed) bucketed over a time range. Use for questions like "how many processes ran last week" or "what is the failure rate today". Do NOT use for per-entity history; route those through the entity_history actions.',
-                'id'            => 'processes_timeseries',
-                'input_schema'  => [
-                    'properties' => [
-                        ...$dateProperties,
-                        'buckets'     => [
-                            'description' => 'Bucket count between 1 and 24 (default 12).',
-                            'maximum'     => 24,
-                            'minimum'     => 1,
-                            'type'        => 'integer',
-                        ],
-                        'topology_id' => [
-                            'description' => 'Optional topology id to restrict the aggregation to one topology.',
-                            'type'        => 'string',
-                        ],
-                    ],
-                    'type'       => 'object',
-                ],
-                'kind'          => 'timeseries',
-                'output_schema' => [
-                    'properties' => [
-                        'failed' => ['type' => 'integer'],
-                        'kind'   => ['type' => 'string'],
-                        'period' => ['type' => 'string'],
-                        'points' => [
-                            'items' => [
-                                'properties' => [
-                                    'failed'  => ['type' => 'integer'],
-                                    'success' => ['type' => 'integer'],
-                                    'time'    => ['type' => 'string'],
-                                ],
-                                'type'       => 'object',
-                            ],
-                            'type'  => 'array',
-                        ],
-                        'title'  => ['type' => 'string'],
-                        'total'  => ['type' => 'integer'],
-                    ],
-                    'type'       => 'object',
-                ],
-                'title'         => 'Process counts over time',
-            ],
-            [
-                'description'   => 'Top connectors by failure count over a time range. Use for "which connector is failing", "show flaky connectors today" type questions. Returns a short list ranked by failure count (descending).',
-                'id'            => 'failing_connectors',
-                'input_schema'  => [
-                    'properties' => [
-                        ...$dateProperties,
-                        'limit' => [
-                            'description' => 'Maximum number of connectors to return (1-20, default 10).',
-                            'maximum'     => 20,
-                            'minimum'     => 1,
-                            'type'        => 'integer',
-                        ],
-                    ],
-                    'type'       => 'object',
-                ],
-                'kind'          => 'list',
-                'output_schema' => [
-                    'properties' => [
-                        'items'  => [
-                            'items' => [
-                                'properties' => [
-                                    'failed'       => ['type' => 'integer'],
-                                    'failureRate'  => ['type' => 'number'],
-                                    'nodeName'     => ['type' => 'string'],
-                                    'success'      => ['type' => 'integer'],
-                                    'topologyName' => ['type' => 'string'],
-                                ],
-                                'type'       => 'object',
-                            ],
-                            'type'  => 'array',
-                        ],
-                        'kind'   => ['type' => 'string'],
-                        'period' => ['type' => 'string'],
-                        'title'  => ['type' => 'string'],
-                    ],
-                    'type'       => 'object',
-                ],
-                'title'         => 'Top failing connectors',
-            ],
-            [
-                'description'   => 'Most recent failed connector calls over a time range, sourced from the same connector metrics that power the dashboard process detail. Use for "show the last errors", "what failed today", "recent connector errors" type questions. Each item carries the failing node, topology, the truncated upstream response body (`resultMessage`) and the HTTP status the bridge observed. Soft SDK outcomes (repeat / limit / trashed without an HTTP call) are NOT included here — only real HTTP-level connector failures.',
-                'id'            => 'recent_errors',
-                'input_schema'  => [
-                    'properties' => [
-                        ...$dateProperties,
-                        'limit'       => [
-                            'description' => 'Maximum number of error entries to return (1-20, default 10).',
-                            'maximum'     => 20,
-                            'minimum'     => 1,
-                            'type'        => 'integer',
-                        ],
-                        'topology_id' => [
-                            'description' => 'Optional topology id to restrict the search to one topology.',
-                            'type'        => 'string',
-                        ],
-                    ],
-                    'type'       => 'object',
-                ],
-                'kind'          => 'list',
-                'output_schema' => [
-                    'properties' => [
-                        'items'  => [
-                            'items' => [
-                                'properties' => [
-                                    'correlationId' => ['type' => 'string'],
-                                    'finishedAt'    => ['type' => 'string'],
-                                    'httpStatus'    => ['type' => ['integer', 'null']],
-                                    'nodeName'      => ['type' => 'string'],
-                                    'resultMessage' => ['type' => 'string'],
-                                    'resultStatus'  => ['type' => 'string'],
-                                    'topologyName'  => ['type' => 'string'],
-                                ],
-                                'type'       => 'object',
-                            ],
-                            'type'  => 'array',
-                        ],
-                        'kind'   => ['type' => 'string'],
-                        'period' => ['type' => 'string'],
-                        'title'  => ['type' => 'string'],
-                    ],
-                    'type'       => 'object',
-                ],
-                'title'         => 'Recent errors',
-            ],
-        ];
-    }
-
-    /**
      * Routes `{tool, args}` envelopes to the metrics aggregator. Kept private
      * so the public surface stays a single `run()` entry point regardless of
      * which envelope shape arrived.
@@ -509,8 +645,16 @@ final class McpManager
     {
         return match ($tool) {
             'processes_timeseries' => $this->metricsAggregator->getProcessesTimeseries($args),
+            'topologies_activity'  => $this->metricsAggregator->getTopologiesActivity($args),
             'failing_connectors'   => $this->metricsAggregator->getFailingConnectors($args),
             'recent_errors'        => $this->metricsAggregator->getRecentErrors($args),
+            'docs_search'          => $this->docsSearchClient->search(
+                (string) ($args['query'] ?? ''),
+                isset($args['topK']) && is_numeric($args['topK'])
+                    ? (int) $args['topK']
+                    : DocsSearchClient::DEFAULT_TOP_K,
+                isset($args['locale']) && is_string($args['locale']) ? $args['locale'] : NULL,
+            ),
             default                => throw new LogicException(sprintf('Unknown MCP tool "%s".', $tool)),
         };
     }

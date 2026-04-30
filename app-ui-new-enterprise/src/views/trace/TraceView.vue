@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { storeToRefs } from 'pinia'
 import { Bot } from 'lucide-vue-next'
 import Button from '@/components/ui/Button.vue'
 import ChatMessage from '@/components/trace/ChatMessage.vue'
@@ -16,9 +17,14 @@ import type { ChatMessage as ChatMessageType, EntityHistoryResponse, TraceReport
 import { fetchReports, saveReport, updateReportTitle, deleteReport } from '@/services/traceService'
 import { useTraceSocket } from '@/composables/useTraceSocket'
 import { useAuthStore } from '@/stores/auth'
+import { useTraceStore } from '@/stores/trace'
 
-// State
-const messages = ref<ChatMessageType[]>([])
+// Chat history is hoisted into a Pinia store backed by localStorage so it
+// survives route navigation and full reloads. The store owns trimming /
+// quota handling.
+const traceStore = useTraceStore()
+const { messages } = storeToRefs(traceStore)
+
 const reports = ref<TraceReport[]>([])
 const sending = ref(false)
 const reportsDrawerOpen = ref(false)
@@ -60,24 +66,123 @@ const connectionBadgeClass = computed(() => {
   }
 })
 
+// Typewriter streaming. The Trace backend currently returns the full
+// assistant text in a single WebSocket frame; we animate the rendering on the
+// client to match the "live" feel users expect from LLM chats. Tunables are
+// kept here so the cadence is easy to adjust without spelunking through the
+// helper.
+// ~30 words per second: one word every ~33 ms reads naturally without the
+// chunky feel you get from larger batches per tick.
+const STREAM_TICK_MS = 33
+const STREAM_WORDS_PER_TICK = 1
+let streamCleanup: (() => void) | null = null
+
+// Splits raw text into atoms of "non-space + trailing space(s)" so the
+// animation grows on word boundaries while preserving the original
+// whitespace (including newlines) needed by formatAssistantContent.
+const splitIntoStreamAtoms = (raw: string): string[] => {
+  const atoms = raw.match(/\S+\s*|\s+/g)
+  return atoms ?? []
+}
+
+const cancelActiveStream = () => {
+  if (streamCleanup) {
+    streamCleanup()
+    streamCleanup = null
+  }
+}
+
+// Drives the typewriter animation for a single assistant message. Renders an
+// initial empty placeholder, then progressively appends N atoms per tick and
+// re-runs the full formatter (escape -> linkify -> paragraphs) over the
+// growing prefix so partial URLs / tags never leak into v-html.
+const startStreaming = (id: string, raw: string) => {
+  cancelActiveStream()
+
+  const atoms = splitIntoStreamAtoms(raw)
+  if (atoms.length === 0) {
+    traceStore.updateMessage(id, {
+      content: formatAssistantContent(raw),
+      streaming: false,
+      canSave: true,
+    })
+    return
+  }
+
+  let cursor = 0
+  const finalize = () => {
+    traceStore.updateMessage(id, {
+      content: formatAssistantContent(raw),
+      streaming: false,
+      canSave: true,
+    })
+    void nextTick().then(scrollToBottom)
+  }
+
+  const handle = window.setInterval(() => {
+    cursor = Math.min(atoms.length, cursor + STREAM_WORDS_PER_TICK)
+    const prefix = atoms.slice(0, cursor).join('')
+    traceStore.updateMessage(id, {
+      content: formatAssistantContent(prefix),
+      streaming: cursor < atoms.length,
+    })
+    void nextTick().then(scrollToBottom)
+    if (cursor >= atoms.length) {
+      window.clearInterval(handle)
+      streamCleanup = null
+      finalize()
+    }
+  }, STREAM_TICK_MS)
+
+  streamCleanup = () => {
+    window.clearInterval(handle)
+    finalize()
+  }
+}
+
 // Lifecycle
 onMounted(async () => {
   socket.onResponse((data) => {
     sending.value = false
-    messages.value.push({
-      id: `msg-asst-${Date.now()}`,
+
+    // Structured audit reports (entity history HTML with tables / cards) read
+    // poorly when streamed character-by-character — the layout flickers as
+    // partial markup gets re-parsed. Detect them via the same parser the
+    // formatter uses and render in one shot.
+    const isStructured = tryParseEntityHistory(data.content) !== null
+
+    if (isStructured) {
+      cancelActiveStream()
+      traceStore.addMessage({
+        id: `msg-asst-${Date.now()}`,
+        role: 'assistant',
+        content: formatAssistantContent(data.content),
+        timestamp: new Date(),
+        status: 'sent',
+        canSave: true,
+      })
+      void nextTick().then(scrollToBottom)
+      return
+    }
+
+    const id = `msg-asst-${Date.now()}`
+    traceStore.addMessage({
+      id,
       role: 'assistant',
-      content: formatAssistantContent(data.content),
+      content: '<p></p>',
       timestamp: new Date(),
       status: 'sent',
-      canSave: true,
+      canSave: false,
+      streaming: true,
     })
     void nextTick().then(scrollToBottom)
+    startStreaming(id, data.content)
   })
 
   socket.onError((data) => {
     sending.value = false
-    messages.value.push({
+    cancelActiveStream()
+    traceStore.addMessage({
       id: `msg-err-${Date.now()}`,
       role: 'assistant',
       content: `<p class="text-red-600 dark:text-red-400"><strong>Error ${data.code}:</strong> ${escapeHtml(data.message)}</p>`,
@@ -98,6 +203,7 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
+  cancelActiveStream()
   socket.disconnect()
 })
 
@@ -142,9 +248,46 @@ const tryParseEntityHistory = (raw: string): EntityHistoryResponse | null => {
   return null
 }
 
-// Wrap raw assistant text into safe HTML so newlines render as paragraphs.
-// If the text contains a per-entity history payload, render the structured
-// audit-report template (shared with the saved-report modal and PDF view).
+// Turns an already-escaped string into HTML where Markdown links and bare
+// URLs are clickable <a> tags. Runs AFTER escapeHtml so any embedded HTML
+// from the LLM is already neutralised; we only re-introduce <a> tags whose
+// text/href we control. Trailing sentence punctuation on bare URLs is left
+// outside the link so "see https://orchesty.io/docs." doesn't link the dot.
+const LINK_ATTRS = 'target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline dark:text-primary-500"'
+const PLACEHOLDER_RE = /\u0000LINK(\d+)\u0000/g
+
+const linkifyEscapedHtml = (escaped: string): string => {
+  const tokens: string[] = []
+  const stash = (html: string): string => {
+    const idx = tokens.push(html) - 1
+    return `\u0000LINK${idx}\u0000`
+  }
+
+  // Markdown links first so bare-URL pass doesn't match the URL inside them.
+  let result = escaped.replace(
+    /\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)/g,
+    (_, text: string, url: string) =>
+      stash(`<a href="${url}" ${LINK_ATTRS}>${text}</a>`),
+  )
+
+  result = result.replace(/https?:\/\/[^\s<]+/g, (match: string) => {
+    let url = match
+    let trail = ''
+    while (/[.,;:!?)\]]$/.test(url)) {
+      trail = url.slice(-1) + trail
+      url = url.slice(0, -1)
+    }
+    if (!url) return match
+    return `${stash(`<a href="${url}" ${LINK_ATTRS}>${url}</a>`)}${trail}`
+  })
+
+  return result.replace(PLACEHOLDER_RE, (_, i: string) => tokens[Number(i)] ?? '')
+}
+
+// Wrap raw assistant text into safe HTML so newlines render as paragraphs
+// and any URLs become clickable links. If the text contains a per-entity
+// history payload, render the structured audit-report template (shared with
+// the saved-report modal and PDF view).
 const formatAssistantContent = (raw: string): string => {
   const history = tryParseEntityHistory(raw)
   if (history) {
@@ -155,7 +298,8 @@ const formatAssistantContent = (raw: string): string => {
   }
 
   const escaped = escapeHtml(raw)
-  const paragraphs = escaped
+  const linked = linkifyEscapedHtml(escaped)
+  const paragraphs = linked
     .split(/\n{2,}/)
     .map((p) => `<p>${p.replace(/\n/g, '<br>')}</p>`)
     .join('')
@@ -167,7 +311,7 @@ const handleSendMessage = async (messageText: string) => {
   const trimmed = messageText.trim()
   if (!trimmed) return
 
-  messages.value.push({
+  traceStore.addMessage({
     id: `msg-user-${Date.now()}`,
     role: 'user',
     content: escapeHtml(trimmed).replace(/\n/g, '<br>'),
@@ -180,6 +324,12 @@ const handleSendMessage = async (messageText: string) => {
 
   sending.value = true
   socket.send(trimmed)
+
+  // The "Thinking…" card is rendered conditionally on `sending`. Without an
+  // extra scroll pass it lands below the absolutely positioned ChatInput and
+  // looks like nothing is happening.
+  await nextTick()
+  scrollToBottom()
 }
 
 // Save report handler

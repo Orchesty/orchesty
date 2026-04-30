@@ -35,7 +35,7 @@ func renderToolResult(raw []byte) (string, bool) {
 	}
 }
 
-// renderListResult formats `kind: list` envelopes. Two item shapes are
+// renderListResult formats `kind: list` envelopes. Three item shapes are
 // supported today:
 //
 //   - Failing-connector ranking — items carry `failed` / `success` /
@@ -43,10 +43,16 @@ func renderToolResult(raw []byte) (string, bool) {
 //   - Recent errors — items carry `resultMessage` / `resultStatus` /
 //     `httpStatus` / `finishedAt`. Rendered as "node in topology —
 //     "<message>" (failed, HTTP 500, 2026-04-26T21:00…)".
+//   - Topologies activity — items carry `runs` plus `success` / `failed` /
+//     `running`. Rendered as "<topology> — N runs (S succeeded, F failed,
+//     R running), last at <time>".
 //
-// Both shapes share the title/period header and the empty-state message. The
+// All shapes share the title/period header and the empty-state message. The
 // shape is detected per-item rather than per-payload so a future tool can
 // safely mix shapes if needed (e.g. failing connectors with sample messages).
+// Detection ordering matters: `resultMessage` (recent errors) takes priority,
+// then `runs` (topologies activity) — failing connectors don't carry either,
+// so they fall through to the ranked-item branch.
 func renderListResult(payload map[string]interface{}) string {
 	title := stringOrDefault(payload, "title", "Result")
 	period := stringOrDefault(payload, "period", "")
@@ -72,9 +78,12 @@ func renderListResult(payload map[string]interface{}) string {
 		}
 
 		var line string
-		if _, hasMessage := item["resultMessage"]; hasMessage {
+		switch {
+		case hasKey(item, "resultMessage"):
 			line = renderErrorItem(item)
-		} else {
+		case hasKey(item, "runs"):
+			line = renderTopologyActivityItem(item)
+		default:
 			line = renderRankedItem(item)
 		}
 
@@ -87,6 +96,66 @@ func renderListResult(payload map[string]interface{}) string {
 	}
 
 	return sb.String()
+}
+
+// hasKey reports whether the JSON object literally carries the given key,
+// even when its value is null. Plain `_, ok := m[key]` is intentional — the
+// per-item shape detector only cares about presence, not nil-ness.
+func hasKey(item map[string]interface{}, key string) bool {
+	_, ok := item[key]
+
+	return ok
+}
+
+// renderTopologyActivityItem formats one row of the topologies-activity list.
+// The topology name is the headline, run count is the primary number; the
+// success / failed / running breakdown is appended only for parts that are
+// non-zero so single-shot topologies don't get noisy "(0 succeeded, 0 failed,
+// 0 running)" tails. The last-run timestamp anchors the row in time when the
+// caller asked for a long window.
+func renderTopologyActivityItem(item map[string]interface{}) string {
+	topologyName := stringOrDefault(item, "topologyName", stringOrDefault(item, "topologyId", "(unnamed topology)"))
+	runs := numberAsInt(item["runs"])
+	success := numberAsInt(item["success"])
+	failed := numberAsInt(item["failed"])
+	running := numberAsInt(item["running"])
+
+	var line strings.Builder
+	line.WriteString("- ")
+	line.WriteString(topologyName)
+	line.WriteString(" — ")
+	line.WriteString(fmt.Sprintf("%d run%s", runs, plural(runs)))
+
+	parts := make([]string, 0, 3)
+	if success > 0 {
+		parts = append(parts, fmt.Sprintf("%d succeeded", success))
+	}
+	if failed > 0 {
+		parts = append(parts, fmt.Sprintf("%d failed", failed))
+	}
+	if running > 0 {
+		parts = append(parts, fmt.Sprintf("%d running", running))
+	}
+	if len(parts) > 0 {
+		line.WriteString(" (")
+		line.WriteString(strings.Join(parts, ", "))
+		line.WriteString(")")
+	}
+
+	if lastRun := stringOrDefault(item, "lastRunAt", ""); lastRun != "" {
+		line.WriteString(", last at ")
+		line.WriteString(lastRun)
+	}
+
+	return line.String()
+}
+
+func plural(n int) string {
+	if n == 1 {
+		return ""
+	}
+
+	return "s"
 }
 
 // renderRankedItem formats one row of the failing-connector list.

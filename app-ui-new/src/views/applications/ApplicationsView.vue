@@ -11,11 +11,36 @@ import { useSystemWorkers } from '@/composables/useSystemWorkers';
 
 const FILTER_KEY = 'orchesty_apps_filter';
 const DRAWER_KEY = 'orchesty_apps_drawer';
+const WORKERS_EXPANDED_KEY = 'orchesty_apps_workers_expanded';
 
 const savedFilter = localStorage.getItem(FILTER_KEY) as ApplicationStatus | 'all' | 'all-installed' | null;
 const selectedFilter = ref<ApplicationStatus | 'all' | 'all-installed'>(savedFilter || 'all');
 const workers = ref<WorkerGroup[]>([]);
-const workersExpanded = ref<Record<string, boolean>>({});
+
+// Per-worker expanded/collapsed state, persisted across reloads. Workers not
+// present in the saved map default to expanded (= true) on first encounter.
+const loadWorkersExpanded = (): Record<string, boolean> => {
+  const raw = localStorage.getItem(WORKERS_EXPANDED_KEY);
+  if (!raw) return {};
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      const out: Record<string, boolean> = {};
+      for (const [k, v] of Object.entries(parsed)) {
+        if (typeof v === 'boolean') out[k] = v;
+      }
+      return out;
+    }
+  } catch {
+    // Corrupted entry — fall through to empty state.
+  }
+  return {};
+};
+const workersExpanded = ref<Record<string, boolean>>(loadWorkersExpanded());
+
+const persistWorkersExpanded = () => {
+  localStorage.setItem(WORKERS_EXPANDED_KEY, JSON.stringify(workersExpanded.value));
+};
 const loading = ref(false);
 const searchQuery = ref('');
 const { showToast } = useToast();
@@ -60,12 +85,18 @@ const loadApplications = async () => {
 
     workers.value = await fetchApplications(filterParam);
 
-    // Initialize all workers as expanded
+    // Initialize newly-seen workers as expanded. We deliberately keep entries
+    // for workers that aren't in the current response — different filters
+    // return different subsets, so dropping them here would lose the user's
+    // toggle preference when they switch filters back.
+    let mutated = false;
     workers.value.forEach(worker => {
       if (!(worker.name in workersExpanded.value)) {
         workersExpanded.value[worker.name] = true;
+        mutated = true;
       }
     });
+    if (mutated) persistWorkersExpanded();
   } catch (error) {
     console.error('Failed to load applications:', error);
   } finally {
@@ -81,6 +112,7 @@ const handleFilterChange = (newFilter: ApplicationStatus | 'all' | 'all-installe
 
 const toggleWorker = (workerName: string) => {
   workersExpanded.value[workerName] = !workersExpanded.value[workerName];
+  persistWorkersExpanded();
 };
 
 const saveDrawerState = () => {

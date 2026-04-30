@@ -2,10 +2,13 @@
 
 namespace PipesFrameworkEnterpriseTests\Integration\Mcp\Model;
 
+use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\MongoDataGrid\GridFilterAbstract;
 use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
+use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
+use Hanaboso\PipesFramework\Configurator\Repository\TopologyProgressRepository;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\ProcessHandler;
@@ -50,7 +53,7 @@ final class MetricsAggregatorTest extends TestCase
         $aggregator = new MetricsAggregator(
             $processHandler,
             $this->createMock(MetricsHandler::class),
-            $this->createMock(DocumentManager::class),
+            $this->mockDmWithoutDocs(),
         );
 
         $result = $aggregator->getProcessesTimeseries(['period' => 'last_7d']);
@@ -81,7 +84,7 @@ final class MetricsAggregatorTest extends TestCase
         $aggregator = new MetricsAggregator(
             $processHandler,
             $this->createMock(MetricsHandler::class),
-            $this->createMock(DocumentManager::class),
+            $this->mockDmWithoutDocs(),
         );
 
         $result = $aggregator->getProcessesTimeseries([
@@ -111,7 +114,7 @@ final class MetricsAggregatorTest extends TestCase
         $aggregator = new MetricsAggregator(
             $processHandler,
             $this->createMock(MetricsHandler::class),
-            $this->createMock(DocumentManager::class),
+            $this->mockDmWithoutDocs(),
         );
 
         $aggregator->getProcessesTimeseries(['period' => 'last_30d', 'buckets' => 999]);
@@ -350,6 +353,124 @@ final class MetricsAggregatorTest extends TestCase
         self::assertSame([], $result['items']);
     }
 
+    public function testTopologiesActivityShape(): void
+    {
+        $rows = [
+            [
+                '_id'        => 't-order',
+                'runs'       => 12,
+                'success'    => 10,
+                'failed'     => 2,
+                'running'    => 0,
+                'lastRunAt'  => new DateTimeImmutable('2026-04-30T01:14:00+00:00'),
+                'firstRunAt' => new DateTimeImmutable('2026-04-30T00:02:00+00:00'),
+            ],
+            [
+                '_id'        => 't-ship',
+                'runs'       => 1,
+                'success'    => 1,
+                'failed'     => 0,
+                'running'    => 0,
+                'lastRunAt'  => new DateTimeImmutable('2026-04-30T00:42:00+00:00'),
+                'firstRunAt' => new DateTimeImmutable('2026-04-30T00:42:00+00:00'),
+            ],
+        ];
+
+        $dm = $this->mockDmWithProgressRows($rows, [
+            't-order' => 'Order Sync',
+            't-ship'  => 'Shipping',
+        ]);
+
+        $aggregator = new MetricsAggregator(
+            $this->createMock(ProcessHandler::class),
+            $this->createMock(MetricsHandler::class),
+            $dm,
+        );
+
+        $result = $aggregator->getTopologiesActivity(['period' => 'today']);
+
+        self::assertSame('list', $result['kind']);
+        self::assertSame('Topologies active in range', $result['title']);
+        self::assertCount(2, $result['items']);
+
+        self::assertSame([
+            'firstRunAt'   => '2026-04-30T00:02:00+00:00',
+            'lastRunAt'    => '2026-04-30T01:14:00+00:00',
+            'runs'         => 12,
+            'success'      => 10,
+            'failed'       => 2,
+            'running'      => 0,
+            'topologyId'   => 't-order',
+            'topologyName' => 'Order Sync',
+        ], $result['items'][0]);
+
+        self::assertSame('Shipping', $result['items'][1]['topologyName']);
+    }
+
+    public function testTopologiesActivityFallsBackToTopologyIdWhenNameMissing(): void
+    {
+        $dm = $this->mockDmWithProgressRows([
+            ['_id' => 't-orphan', 'runs' => 3, 'success' => 0, 'failed' => 0, 'running' => 3, 'lastRunAt' => NULL, 'firstRunAt' => NULL],
+        ]);
+
+        $aggregator = new MetricsAggregator(
+            $this->createMock(ProcessHandler::class),
+            $this->createMock(MetricsHandler::class),
+            $dm,
+        );
+
+        $result = $aggregator->getTopologiesActivity(['period' => 'today']);
+
+        self::assertSame('t-orphan', $result['items'][0]['topologyName']);
+        self::assertNull($result['items'][0]['lastRunAt']);
+        self::assertNull($result['items'][0]['firstRunAt']);
+    }
+
+    public function testTopologiesActivityClampsLimit(): void
+    {
+        $rows = [];
+        for ($i = 0; $i < 20; $i++) {
+            $rows[] = [
+                '_id'        => sprintf('t-%02d', $i),
+                'runs'       => 20 - $i,
+                'success'    => 20 - $i,
+                'failed'     => 0,
+                'running'    => 0,
+                'lastRunAt'  => new DateTimeImmutable('2026-04-30T00:00:00+00:00'),
+                'firstRunAt' => new DateTimeImmutable('2026-04-30T00:00:00+00:00'),
+            ];
+        }
+
+        $aggregator = new MetricsAggregator(
+            $this->createMock(ProcessHandler::class),
+            $this->createMock(MetricsHandler::class),
+            $this->mockDmWithProgressRows($rows),
+        );
+
+        $explicit = $aggregator->getTopologiesActivity(['period' => 'today', 'limit' => 3]);
+        self::assertCount(3, $explicit['items']);
+        self::assertSame('t-00', $explicit['items'][0]['topologyName']);
+        self::assertSame('t-02', $explicit['items'][2]['topologyName']);
+
+        $clamped = $aggregator->getTopologiesActivity(['period' => 'today', 'limit' => 999]);
+        // Repository sort + 50-item hard cap for `topologies_activity`.
+        self::assertCount(20, $clamped['items']);
+    }
+
+    public function testTopologiesActivityEmpty(): void
+    {
+        $aggregator = new MetricsAggregator(
+            $this->createMock(ProcessHandler::class),
+            $this->createMock(MetricsHandler::class),
+            $this->mockDmWithProgressRows([]),
+        );
+
+        $result = $aggregator->getTopologiesActivity(['period' => 'today']);
+
+        self::assertSame('list', $result['kind']);
+        self::assertSame([], $result['items']);
+    }
+
     /**
      * @return DocumentManager
      */
@@ -358,12 +479,63 @@ final class MetricsAggregatorTest extends TestCase
         $repo = $this->createMock(ObjectRepository::class);
         $repo->method('find')->willReturn(NULL);
 
+        $progressRepo = $this->createMock(TopologyProgressRepository::class);
+        $progressRepo->method('getActivityByTopology')->willReturn([]);
+
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturnCallback(
-            static function (string $class) use ($repo) {
-                self::assertContains($class, [Node::class, Topology::class]);
+            static function (string $class) use ($repo, $progressRepo) {
+                self::assertContains($class, [Node::class, Topology::class, TopologyProgress::class]);
 
-                return $repo;
+                return $class === TopologyProgress::class ? $progressRepo : $repo;
+            },
+        );
+
+        return $dm;
+    }
+
+    /**
+     * Builds a DocumentManager whose `TopologyProgress` repository returns
+     * the supplied aggregation rows. `Topology` lookups use the supplied
+     * `topology_id => name` map so tests can assert that human topology
+     * names land in the response.
+     *
+     * @param array<int, array<string, mixed>> $progressRows aggregation rows
+     *                                                       returned by the
+     *                                                       repository
+     * @param array<string, string>            $topologyNames topology id =>
+     *                                                       name map
+     */
+    private function mockDmWithProgressRows(array $progressRows, array $topologyNames = []): DocumentManager
+    {
+        $progressRepo = $this->createMock(TopologyProgressRepository::class);
+        $progressRepo->method('getActivityByTopology')->willReturn($progressRows);
+
+        $topologyRepo = $this->createMock(ObjectRepository::class);
+        $topologyRepo->method('find')->willReturnCallback(
+            static function (string $id) use ($topologyNames): ?Topology {
+                if (!isset($topologyNames[$id])) {
+                    return NULL;
+                }
+                $topology = new Topology();
+                $topology->setName($topologyNames[$id]);
+
+                return $topology;
+            },
+        );
+
+        $nodeRepo = $this->createMock(ObjectRepository::class);
+        $nodeRepo->method('find')->willReturn(NULL);
+
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->method('getRepository')->willReturnCallback(
+            static function (string $class) use ($progressRepo, $topologyRepo, $nodeRepo) {
+                return match ($class) {
+                    TopologyProgress::class => $progressRepo,
+                    Topology::class         => $topologyRepo,
+                    Node::class             => $nodeRepo,
+                    default                 => throw new \LogicException(sprintf('Unexpected getRepository(%s) in test', $class)),
+                };
             },
         );
 
