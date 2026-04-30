@@ -206,6 +206,146 @@ final class CloudLimitsHandler
     }
 
     /**
+     * Latest snapshot with **per-source breakdown** (no merging). Mirrors
+     * {@see computeUsage()} but exposes each component separately so admin
+     * UIs can show "what is in Rabbit vs what is in Limiter" and "what
+     * storage is held by Mongo vs Rabbit vs Loki". Limits and bands are
+     * computed against the merged totals (consistent with
+     * {@see getUsage()}).
+     *
+     * @return mixed[]
+     * @throws MongoDBException
+     */
+    public function getUsageSplit(): array
+    {
+        /** @var TopologyRepository<Topology> $topologyRepo */
+        $topologyRepo = $this->dm->getRepository(Topology::class);
+
+        $rabbit  = $this->fetchLatestMetric(self::COLLECTION_RABBIT_METRICS);
+        $storage = $this->fetchLatestMetric(self::COLLECTION_DB_STORAGE_METRICS);
+        $loki    = $this->fetchLatestMetric(self::COLLECTION_LOKI_METRICS);
+
+        $limiterCount = $this->dm
+            ->getDocumentDatabase(Limiter::class)
+            ->selectCollection('limiter')
+            ->countDocuments([]);
+
+        $rabbitMessages = (int) ($rabbit['total_messages'] ?? 0);
+        $rabbitDiskMb   = (float) ($rabbit['total_disk_mb'] ?? 0);
+        $mongoStorageMb = (float) ($storage['storage_size_mb'] ?? 0);
+        $lokiStorageMb  = (float) ($loki['total_data_size_mb'] ?? 0);
+
+        $messagesUsed   = $limiterCount + $rabbitMessages;
+        $storageMbUsed  = $mongoStorageMb + $rabbitDiskMb + $lokiStorageMb;
+        $slotsUsed      = $topologyRepo->getPublishedCount();
+        $storageMbLimit = $this->limitStorageGb > 0 ? $this->limitStorageGb * 1_024.0 : 0.0;
+
+        return [
+            'band'      => [
+                'messages' => self::band($messagesUsed, $this->limitMessages),
+                'storage'  => self::band($storageMbUsed, $storageMbLimit),
+            ],
+            'limits'    => [
+                'messages'      => $this->limitMessages,
+                'storageGb'     => $this->limitStorageGb,
+                'topologySlots' => $this->limitTopologySlots,
+            ],
+            'percent'   => [
+                'messages' => self::percent($messagesUsed, $this->limitMessages),
+                'slots'    => self::percent($slotsUsed, $this->limitTopologySlots),
+                'storage'  => self::percent($storageMbUsed, $storageMbLimit),
+            ],
+            'split'     => [
+                'messages' => [
+                    'limiter' => $limiterCount,
+                    'rabbit'  => $rabbitMessages,
+                ],
+                'storage'  => [
+                    'lokiMb'   => round($lokiStorageMb, 2),
+                    'mongoMb'  => round($mongoStorageMb, 2),
+                    'rabbitMb' => round($rabbitDiskMb, 2),
+                ],
+            ],
+            'updatedAt' => (new DateTime())->format(DATE_ATOM),
+            'usage'     => [
+                'messages'      => $messagesUsed,
+                'storageMb'     => round($storageMbUsed, 2),
+                'topologySlots' => $slotsUsed,
+            ],
+        ];
+    }
+
+    /**
+     * Bucketed history with per-source breakdown. Returns parallel series for
+     * messages (rabbit + limiter) and storage (mongo + rabbit + loki). Each
+     * sub-series uses the same bucket alignment so the frontend can stack
+     * them or render side-by-side.
+     *
+     * @param string $from
+     * @param string $to
+     * @param int    $buckets
+     *
+     * @return mixed[]
+     */
+    public function getHistorySplit(string $from, string $to, int $buckets): array
+    {
+        $dateFrom = new UTCDateTime(new DateTime($from));
+        $dateTo   = new UTCDateTime(new DateTime($to));
+
+        $rangeMs = max(1, (int) (string) $dateTo - (int) (string) $dateFrom);
+        $binSize = max(60_000, (int) ceil($rangeMs / max(1, $buckets)));
+
+        return [
+            'binMs'    => $binSize,
+            'messages' => [
+                'limiter' => $this->aggregateLatestNumeric(
+                    'limiter',
+                    'fields.messages',
+                    'fields.created',
+                    $dateFrom,
+                    $dateTo,
+                    $binSize,
+                    TRUE,
+                ),
+                'rabbit'  => $this->aggregateLatestNumeric(
+                    self::COLLECTION_RABBIT_METRICS,
+                    'total_messages',
+                    'timestamp',
+                    $dateFrom,
+                    $dateTo,
+                    $binSize,
+                ),
+            ],
+            'storage'  => [
+                'loki'   => $this->aggregateLatestNumeric(
+                    self::COLLECTION_LOKI_METRICS,
+                    'total_data_size_mb',
+                    'timestamp',
+                    $dateFrom,
+                    $dateTo,
+                    $binSize,
+                ),
+                'mongo'  => $this->aggregateLatestNumeric(
+                    self::COLLECTION_DB_STORAGE_METRICS,
+                    'storage_size_mb',
+                    'timestamp',
+                    $dateFrom,
+                    $dateTo,
+                    $binSize,
+                ),
+                'rabbit' => $this->aggregateLatestNumeric(
+                    self::COLLECTION_RABBIT_METRICS,
+                    'total_disk_mb',
+                    'timestamp',
+                    $dateFrom,
+                    $dateTo,
+                    $binSize,
+                ),
+            ],
+        ];
+    }
+
+    /**
      * Map a usage payload to a list of resource bands that are currently >= warning,
      * suitable for triggering Notifier events. Returns one entry per affected resource.
      *
@@ -279,6 +419,88 @@ final class CloudLimitsHandler
     }
 
     /**
+     * Pure pipeline builder for {@see aggregateLatestNumeric}. Extracted as a
+     * static helper so the shape can be asserted in unit tests without a live
+     * Mongo connection.
+     *
+     * @param string      $valueField
+     * @param string      $timeField
+     * @param UTCDateTime $from
+     * @param UTCDateTime $to
+     * @param int         $binSize
+     * @param bool        $sumAcrossSamples
+     *
+     * @return mixed[]
+     */
+    public static function buildLatestNumericPipeline(
+        string $valueField,
+        string $timeField,
+        UTCDateTime $from,
+        UTCDateTime $to,
+        int $binSize,
+        bool $sumAcrossSamples,
+    ): array
+    {
+        $fromMs = (int) (string) $from;
+
+        $pipeline = [
+            ['$match' => [$timeField => ['$gte' => $from, '$lt' => $to]]],
+            ['$project' => [
+                'bucket' => [
+                    '$add' => [
+                        $fromMs,
+                        ['$multiply' => [
+                            ['$floor' => [
+                                ['$divide' => [
+                                    ['$subtract' => [['$toLong' => sprintf('$%s', $timeField)], $fromMs]],
+                                    $binSize,
+                                ]],
+                            ]],
+                            $binSize,
+                        ]],
+                    ],
+                ],
+                'time'   => sprintf('$%s', $timeField),
+                'value'  => ['$ifNull' => [sprintf('$%s', $valueField), 0]],
+            ]],
+        ];
+
+        if ($sumAcrossSamples) {
+            // Truncate per-row time to the minute so per-node samples emitted
+            // within the same tick collapse into one composite key, then sum
+            // their values. The collector writes one row per node per tick,
+            // so this yields the cluster-wide total per minute.
+            $pipeline[] = ['$group' => [
+                'value' => ['$sum' => '$value'],
+                '_id'   => [
+                    'bucket' => '$bucket',
+                    'tick'   => ['$dateTrunc' => ['date' => '$time', 'unit' => 'minute']],
+                ],
+            ]];
+            $pipeline[] = ['$sort' => ['_id.tick' => 1]];
+            $pipeline[] = ['$group' => [
+                'value' => ['$last' => '$value'],
+                '_id'   => '$_id.bucket',
+            ]];
+        } else {
+            $pipeline[] = ['$sort' => ['time' => 1]];
+            $pipeline[] = ['$group' => [
+                'value' => ['$last' => '$value'],
+                '_id'   => '$bucket',
+            ]];
+        }
+
+        $pipeline[] = ['$sort' => ['_id' => 1]];
+        $pipeline[] = ['$project' => [
+            'created' => ['$dateToString' => ['format' => '%Y-%m-%dT%H:%M:%SZ', 'date' => ['$toDate' => '$_id']]],
+            'value'   => ['$round' => ['$value', 2]],
+            '_id'     => 0,
+        ]];
+
+        return $pipeline;
+    }
+
+    /**
      * @param string $collection
      *
      * @return mixed[]
@@ -322,7 +544,14 @@ final class CloudLimitsHandler
      */
     private function aggregateMessagesHistory(UTCDateTime $from, UTCDateTime $to, int $binSize): array
     {
-        $rabbit = $this->aggregateLatestNumeric(self::COLLECTION_RABBIT_METRICS, 'total_messages', 'timestamp', $from, $to, $binSize);
+        $rabbit = $this->aggregateLatestNumeric(
+            self::COLLECTION_RABBIT_METRICS,
+            'total_messages',
+            'timestamp',
+            $from,
+            $to,
+            $binSize,
+        );
 
         // The limiter time-series is written by the `limiter` service once per minute,
         // but as **N rows per tick** (one per active node/topology). A naive `$last`
@@ -397,6 +626,7 @@ final class CloudLimitsHandler
      * @param UTCDateTime $from
      * @param UTCDateTime $to
      * @param int         $binSize
+     * @param bool        $sumAcrossSamples
      *
      * @return mixed[]
      */
@@ -423,7 +653,10 @@ final class CloudLimitsHandler
             );
 
             $out = [];
-            foreach ($coll->aggregate($pipeline, ['typeMap' => ['root' => 'array', 'document' => 'array', 'array' => 'array']]) as $row) {
+            foreach ($coll->aggregate(
+                $pipeline,
+                ['typeMap' => ['root' => 'array', 'document' => 'array', 'array' => 'array']],
+            ) as $row) {
                 $out[] = (array) $row;
             }
 
@@ -431,81 +664,6 @@ final class CloudLimitsHandler
         } catch (Throwable) {
             return [];
         }
-    }
-
-    /**
-     * Pure pipeline builder for {@see aggregateLatestNumeric}. Extracted as a
-     * static helper so the shape can be asserted in unit tests without a live
-     * Mongo connection.
-     *
-     * @return mixed[]
-     */
-    public static function buildLatestNumericPipeline(
-        string $valueField,
-        string $timeField,
-        UTCDateTime $from,
-        UTCDateTime $to,
-        int $binSize,
-        bool $sumAcrossSamples,
-    ): array
-    {
-        $fromMs = (int) (string) $from;
-
-        $pipeline = [
-            ['$match' => [$timeField => ['$gte' => $from, '$lt' => $to]]],
-            ['$project' => [
-                'time'   => '$' . $timeField,
-                'value'  => ['$ifNull' => ['$' . $valueField, 0]],
-                'bucket' => [
-                    '$add' => [
-                        $fromMs,
-                        ['$multiply' => [
-                            ['$floor' => [
-                                ['$divide' => [
-                                    ['$subtract' => [['$toLong' => '$' . $timeField], $fromMs]],
-                                    $binSize,
-                                ]],
-                            ]],
-                            $binSize,
-                        ]],
-                    ],
-                ],
-            ]],
-        ];
-
-        if ($sumAcrossSamples) {
-            // Truncate per-row time to the minute so per-node samples emitted
-            // within the same tick collapse into one composite key, then sum
-            // their values. The collector writes one row per node per tick,
-            // so this yields the cluster-wide total per minute.
-            $pipeline[] = ['$group' => [
-                '_id'   => [
-                    'bucket' => '$bucket',
-                    'tick'   => ['$dateTrunc' => ['date' => '$time', 'unit' => 'minute']],
-                ],
-                'value' => ['$sum' => '$value'],
-            ]];
-            $pipeline[] = ['$sort' => ['_id.tick' => 1]];
-            $pipeline[] = ['$group' => [
-                '_id'   => '$_id.bucket',
-                'value' => ['$last' => '$value'],
-            ]];
-        } else {
-            $pipeline[] = ['$sort' => ['time' => 1]];
-            $pipeline[] = ['$group' => [
-                '_id'   => '$bucket',
-                'value' => ['$last' => '$value'],
-            ]];
-        }
-
-        $pipeline[] = ['$sort' => ['_id' => 1]];
-        $pipeline[] = ['$project' => [
-            '_id'     => 0,
-            'created' => ['$dateToString' => ['format' => '%Y-%m-%dT%H:%M:%SZ', 'date' => ['$toDate' => '$_id']]],
-            'value'   => ['$round' => ['$value', 2]],
-        ]];
-
-        return $pipeline;
     }
 
     /**

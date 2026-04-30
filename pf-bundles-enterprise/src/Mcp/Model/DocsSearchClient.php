@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\Utils\String\Json;
 use Throwable;
 
 /**
@@ -120,7 +121,7 @@ final class DocsSearchClient
         $url = sprintf('%s%s', rtrim($this->baseUrl, '/'), self::SEARCH_PATH);
         $dto = (new RequestDto(new Uri($url), CurlManager::METHOD_POST, new ProcessDto()))
             ->setHeaders($headers)
-            ->setBody((string) json_encode($body, JSON_THROW_ON_ERROR));
+            ->setBody(Json::encode($body));
 
         try {
             // HTTP_ERRORS=false lets us inspect non-2xx ourselves so we can

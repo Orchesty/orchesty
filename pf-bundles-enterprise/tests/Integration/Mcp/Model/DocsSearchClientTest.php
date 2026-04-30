@@ -9,8 +9,9 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFrameworkEnterprise\Mcp\Model\DocsSearchClient;
-use PHPUnit\Framework\Attributes\CoversClass;
+use Hanaboso\Utils\String\Json;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -28,9 +29,16 @@ use PHPUnit\Framework\TestCase;
 final class DocsSearchClientTest extends TestCase
 {
 
+    /**
+     * Verifies that the client is only considered configured when a base URL is provided.
+     */
     public function testIsConfiguredOnlyWhenUrlIsPresent(): void
     {
-        $configured = new DocsSearchClient($this->createMock(CurlManagerInterface::class), 'https://orchesty.io', 'secret');
+        $configured = new DocsSearchClient(
+            $this->createMock(CurlManagerInterface::class),
+            'https://orchesty.io',
+            'secret',
+        );
         self::assertTrue($configured->isConfigured());
 
         $noUrl = new DocsSearchClient($this->createMock(CurlManagerInterface::class), '', 'secret');
@@ -42,6 +50,9 @@ final class DocsSearchClientTest extends TestCase
         self::assertTrue($noToken->isConfigured());
     }
 
+    /**
+     * Verifies that calling search on an unconfigured client returns a synthetic error envelope.
+     */
     public function testSearchReturnsErrorWhenUnconfigured(): void
     {
         $curl = $this->createMock(CurlManagerInterface::class);
@@ -55,6 +66,9 @@ final class DocsSearchClientTest extends TestCase
         self::assertSame('how do I get started', $result['query']);
     }
 
+    /**
+     * Verifies that a blank query short-circuits before any HTTP traffic.
+     */
     public function testSearchSkipsHttpForBlankQuery(): void
     {
         $curl = $this->createMock(CurlManagerInterface::class);
@@ -67,6 +81,9 @@ final class DocsSearchClientTest extends TestCase
         self::assertSame('', $result['query']);
     }
 
+    /**
+     * Verifies that the outgoing request URL, method, headers and JSON body match the expected shape.
+     */
     public function testSearchForwardsRequestShape(): void
     {
         $captured = NULL;
@@ -75,13 +92,13 @@ final class DocsSearchClientTest extends TestCase
         $curl
             ->expects(self::once())
             ->method('send')
-            ->willReturnCallback(function (RequestDto $dto) use (&$captured): ResponseDto {
+            ->willReturnCallback(static function (RequestDto $dto) use (&$captured): ResponseDto {
                 $captured = $dto;
 
                 return new ResponseDto(
                     200,
                     '',
-                    (string) json_encode([
+                    Json::encode([
                         'latestVersion' => '2.0',
                         'locale'        => 'cs',
                         'query'         => 'how do I get started',
@@ -95,7 +112,7 @@ final class DocsSearchClientTest extends TestCase
                                 'title'       => 'Get Started',
                             ],
                         ],
-                    ], JSON_THROW_ON_ERROR),
+                    ]),
                     [],
                 );
             });
@@ -111,7 +128,7 @@ final class DocsSearchClientTest extends TestCase
         self::assertSame('application/json', $headers['Content-Type']);
         self::assertSame('top-secret', $headers['X-Trace-Token']);
 
-        $body = json_decode($captured->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $body = Json::decode($captured->getBody());
         self::assertSame('how do I get started', $body['q']);
         self::assertSame(3, $body['topK']);
         self::assertSame('cs', $body['locale']);
@@ -121,6 +138,9 @@ final class DocsSearchClientTest extends TestCase
         self::assertSame('Get Started', $result['results'][0]['title']);
     }
 
+    /**
+     * Verifies that the X-Trace-Token header is omitted when the configured secret is blank.
+     */
     public function testSearchOmitsTokenHeaderWhenSecretIsBlank(): void
     {
         $captured = NULL;
@@ -128,10 +148,10 @@ final class DocsSearchClientTest extends TestCase
         $curl = $this->createMock(CurlManagerInterface::class);
         $curl
             ->method('send')
-            ->willReturnCallback(function (RequestDto $dto) use (&$captured): ResponseDto {
+            ->willReturnCallback(static function (RequestDto $dto) use (&$captured): ResponseDto {
                 $captured = $dto;
 
-                return new ResponseDto(200, '', (string) json_encode(['results' => []]), []);
+                return new ResponseDto(200, '', Json::encode(['results' => []]), []);
             });
 
         $client = new DocsSearchClient($curl, 'https://orchesty.io', '');
@@ -141,30 +161,37 @@ final class DocsSearchClientTest extends TestCase
         self::assertArrayNotHasKey('X-Trace-Token', $captured->getHeaders());
     }
 
-    public function testSearchClampsTopKBetween1And10(): void
+    /**
+     * Verifies that the topK argument is clamped to the supported minimum and maximum bounds.
+     */
+    public function testSearchClampsTopkBetweenMinAndMax(): void
     {
         $captured = NULL;
 
         $curl = $this->createMock(CurlManagerInterface::class);
         $curl
             ->method('send')
-            ->willReturnCallback(function (RequestDto $dto) use (&$captured): ResponseDto {
+            ->willReturnCallback(static function (RequestDto $dto) use (&$captured): ResponseDto {
                 $captured = $dto;
 
-                return new ResponseDto(200, '', (string) json_encode(['results' => []]), []);
+                return new ResponseDto(200, '', Json::encode(['results' => []]), []);
             });
 
         $client = new DocsSearchClient($curl, 'https://orchesty.io', 'secret');
         $client->search('q', 999);
 
-        $body = json_decode($captured->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
+        self::assertNotNull($captured);
+        $body = Json::decode($captured->getBody());
         self::assertSame(DocsSearchClient::MAX_TOP_K, $body['topK']);
 
         $client->search('q', 0);
-        $body = json_decode($captured->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $body = Json::decode($captured->getBody());
         self::assertSame(1, $body['topK']);
     }
 
+    /**
+     * Verifies that an unsupported locale is dropped from the outgoing payload.
+     */
     public function testSearchSkipsLocaleWhenInvalid(): void
     {
         $captured = NULL;
@@ -172,19 +199,23 @@ final class DocsSearchClientTest extends TestCase
         $curl = $this->createMock(CurlManagerInterface::class);
         $curl
             ->method('send')
-            ->willReturnCallback(function (RequestDto $dto) use (&$captured): ResponseDto {
+            ->willReturnCallback(static function (RequestDto $dto) use (&$captured): ResponseDto {
                 $captured = $dto;
 
-                return new ResponseDto(200, '', (string) json_encode(['results' => []]), []);
+                return new ResponseDto(200, '', Json::encode(['results' => []]), []);
             });
 
         $client = new DocsSearchClient($curl, 'https://orchesty.io', 'secret');
         $client->search('q', 5, 'fr');
 
-        $body = json_decode($captured->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
+        self::assertNotNull($captured);
+        $body = Json::decode($captured->getBody());
         self::assertArrayNotHasKey('locale', $body);
     }
 
+    /**
+     * Verifies that a non-2xx HTTP response is mapped to a synthetic error envelope.
+     */
     public function testSearchHandlesNon2xxAsErrorEnvelope(): void
     {
         $curl = $this->createMock(CurlManagerInterface::class);
@@ -200,12 +231,20 @@ final class DocsSearchClientTest extends TestCase
         self::assertSame('hello', $result['query']);
     }
 
+    /**
+     * Verifies that a thrown transport exception is mapped to a synthetic error envelope.
+     */
     public function testSearchHandlesTransportExceptionAsErrorEnvelope(): void
     {
         $curl = $this->createMock(CurlManagerInterface::class);
         $curl
             ->method('send')
-            ->willThrowException(new ConnectException('boom', new Request('POST', 'https://orchesty.io/api/docs/search')));
+            ->willThrowException(
+                new ConnectException(
+                    'boom',
+                    new Request('POST', 'https://orchesty.io/api/docs/search'),
+                ),
+            );
 
         $client = new DocsSearchClient($curl, 'https://orchesty.io', 'secret');
         $result = $client->search('hello');
@@ -214,12 +253,15 @@ final class DocsSearchClientTest extends TestCase
         self::assertStringContainsString('boom', $result['error']);
     }
 
+    /**
+     * Verifies that a missing results key is normalised to an empty list while other fields pass through.
+     */
     public function testSearchNormalisesResultsWhenAbsent(): void
     {
         $curl = $this->createMock(CurlManagerInterface::class);
         $curl
             ->method('send')
-            ->willReturn(new ResponseDto(200, '', (string) json_encode(['latestVersion' => '2.0']), []));
+            ->willReturn(new ResponseDto(200, '', Json::encode(['latestVersion' => '2.0']), []));
 
         $client = new DocsSearchClient($curl, 'https://orchesty.io', 'secret');
         $result = $client->search('hello');

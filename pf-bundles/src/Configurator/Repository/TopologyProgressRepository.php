@@ -114,7 +114,9 @@ final class TopologyProgressRepository extends DocumentRepository
     {
         $ab = $this->createAggregationBuilder();
 
-        $match = $ab->match()->field('created')->gte(DateTimeUtils::getUtcDateTime($from->format(DateTimeUtils::DATE_TIME_UTC)));
+        $match = $ab->match()->field('created')->gte(
+            DateTimeUtils::getUtcDateTime($from->format(DateTimeUtils::DATE_TIME_UTC)),
+        );
         if ($to !== NULL) {
             $match->field('created')->lt(DateTimeUtils::getUtcDateTime($to->format(DateTimeUtils::DATE_TIME_UTC)));
         }

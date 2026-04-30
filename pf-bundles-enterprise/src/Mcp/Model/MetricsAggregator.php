@@ -5,7 +5,6 @@ namespace Hanaboso\PipesFrameworkEnterprise\Mcp\Model;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use MongoDB\BSON\UTCDateTime;
 use Doctrine\Persistence\ObjectRepository;
 use Exception;
 use Hanaboso\MongoDataGrid\GridFilterAbstract;
@@ -16,6 +15,7 @@ use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\ProcessHandler;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
+use MongoDB\BSON\UTCDateTime;
 
 /**
  * Class MetricsAggregator
@@ -282,7 +282,7 @@ final class MetricsAggregator
     public function getTopologiesActivity(array $args): array
     {
         [$start, $end] = DateRangeResolver::resolve($args, 7);
-        $end ??= new DateTimeImmutable('now');
+        $end         ??= new DateTimeImmutable('now');
 
         $limit = $this->clamp(
             (int) ($args['limit'] ?? self::TOPOLOGIES_DEFAULT_LIMIT),
@@ -294,22 +294,18 @@ final class MetricsAggregator
 
         $items = [];
         foreach ($rows as $row) {
-            if (!is_array($row)) {
-                continue;
-            }
-
             $tid = (string) ($row['_id'] ?? '');
             if ($tid === '') {
                 continue;
             }
 
             $items[] = [
+                'failed'       => (int) ($row['failed'] ?? 0),
                 'firstRunAt'   => $this->formatDate($row['firstRunAt'] ?? NULL),
                 'lastRunAt'    => $this->formatDate($row['lastRunAt'] ?? NULL),
+                'running'      => (int) ($row['running'] ?? 0),
                 'runs'         => (int) ($row['runs'] ?? 0),
                 'success'      => (int) ($row['success'] ?? 0),
-                'failed'       => (int) ($row['failed'] ?? 0),
-                'running'      => (int) ($row['running'] ?? 0),
                 'topologyId'   => $tid,
                 'topologyName' => $this->resolveTopologyName($tid) ?? $tid,
             ];
@@ -335,6 +331,8 @@ final class MetricsAggregator
      * fed in via tests we accept any DateTimeInterface as well. NULL passes
      * through unchanged so a topology without a populated date renders as
      * `null` rather than the unix epoch.
+     *
+     * @param mixed $value
      */
     private function formatDate(mixed $value): ?string
     {

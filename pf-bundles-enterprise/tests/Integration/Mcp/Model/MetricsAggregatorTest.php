@@ -14,6 +14,7 @@ use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\ProcessHandler;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
 use Hanaboso\PipesFrameworkEnterprise\Mcp\Model\MetricsAggregator;
+use LogicException;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
@@ -353,26 +354,29 @@ final class MetricsAggregatorTest extends TestCase
         self::assertSame([], $result['items']);
     }
 
+    /**
+     * Verifies that the topologies activity response carries the expected shape, ordering and field set.
+     */
     public function testTopologiesActivityShape(): void
     {
         $rows = [
             [
-                '_id'        => 't-order',
+                'failed'     => 2,
+                'firstRunAt' => new DateTimeImmutable('2026-04-30T00:02:00+00:00'),
+                'lastRunAt'  => new DateTimeImmutable('2026-04-30T01:14:00+00:00'),
+                'running'    => 0,
                 'runs'       => 12,
                 'success'    => 10,
-                'failed'     => 2,
-                'running'    => 0,
-                'lastRunAt'  => new DateTimeImmutable('2026-04-30T01:14:00+00:00'),
-                'firstRunAt' => new DateTimeImmutable('2026-04-30T00:02:00+00:00'),
+                '_id'        => 't-order',
             ],
             [
-                '_id'        => 't-ship',
+                'failed'     => 0,
+                'firstRunAt' => new DateTimeImmutable('2026-04-30T00:42:00+00:00'),
+                'lastRunAt'  => new DateTimeImmutable('2026-04-30T00:42:00+00:00'),
+                'running'    => 0,
                 'runs'       => 1,
                 'success'    => 1,
-                'failed'     => 0,
-                'running'    => 0,
-                'lastRunAt'  => new DateTimeImmutable('2026-04-30T00:42:00+00:00'),
-                'firstRunAt' => new DateTimeImmutable('2026-04-30T00:42:00+00:00'),
+                '_id'        => 't-ship',
             ],
         ];
 
@@ -394,12 +398,12 @@ final class MetricsAggregatorTest extends TestCase
         self::assertCount(2, $result['items']);
 
         self::assertSame([
+            'failed'       => 2,
             'firstRunAt'   => '2026-04-30T00:02:00+00:00',
             'lastRunAt'    => '2026-04-30T01:14:00+00:00',
+            'running'      => 0,
             'runs'         => 12,
             'success'      => 10,
-            'failed'       => 2,
-            'running'      => 0,
             'topologyId'   => 't-order',
             'topologyName' => 'Order Sync',
         ], $result['items'][0]);
@@ -407,10 +411,13 @@ final class MetricsAggregatorTest extends TestCase
         self::assertSame('Shipping', $result['items'][1]['topologyName']);
     }
 
+    /**
+     * Verifies that the response falls back to the topology id when no human-readable name is registered.
+     */
     public function testTopologiesActivityFallsBackToTopologyIdWhenNameMissing(): void
     {
         $dm = $this->mockDmWithProgressRows([
-            ['_id' => 't-orphan', 'runs' => 3, 'success' => 0, 'failed' => 0, 'running' => 3, 'lastRunAt' => NULL, 'firstRunAt' => NULL],
+            ['_id' => 't-orphan', 'failed' => 0, 'firstRunAt' => NULL, 'lastRunAt' => NULL, 'running' => 3, 'runs' => 3, 'success' => 0],
         ]);
 
         $aggregator = new MetricsAggregator(
@@ -426,18 +433,21 @@ final class MetricsAggregatorTest extends TestCase
         self::assertNull($result['items'][0]['firstRunAt']);
     }
 
+    /**
+     * Verifies that an explicit limit truncates the list and that an out-of-range limit is clamped.
+     */
     public function testTopologiesActivityClampsLimit(): void
     {
         $rows = [];
         for ($i = 0; $i < 20; $i++) {
             $rows[] = [
-                '_id'        => sprintf('t-%02d', $i),
+                'failed'     => 0,
+                'firstRunAt' => new DateTimeImmutable('2026-04-30T00:00:00+00:00'),
+                'lastRunAt'  => new DateTimeImmutable('2026-04-30T00:00:00+00:00'),
+                'running'    => 0,
                 'runs'       => 20 - $i,
                 'success'    => 20 - $i,
-                'failed'     => 0,
-                'running'    => 0,
-                'lastRunAt'  => new DateTimeImmutable('2026-04-30T00:00:00+00:00'),
-                'firstRunAt' => new DateTimeImmutable('2026-04-30T00:00:00+00:00'),
+                '_id'        => sprintf('t-%02d', $i),
             ];
         }
 
@@ -457,6 +467,9 @@ final class MetricsAggregatorTest extends TestCase
         self::assertCount(20, $clamped['items']);
     }
 
+    /**
+     * Verifies that an empty repository result yields an empty list response.
+     */
     public function testTopologiesActivityEmpty(): void
     {
         $aggregator = new MetricsAggregator(
@@ -500,11 +513,11 @@ final class MetricsAggregatorTest extends TestCase
      * `topology_id => name` map so tests can assert that human topology
      * names land in the response.
      *
-     * @param array<int, array<string, mixed>> $progressRows aggregation rows
-     *                                                       returned by the
-     *                                                       repository
+     * @param array<int, array<string, mixed>> $progressRows  aggregation rows
+     *                                                        returned by the
+     *                                                        repository
      * @param array<string, string>            $topologyNames topology id =>
-     *                                                       name map
+     *                                                        name map
      */
     private function mockDmWithProgressRows(array $progressRows, array $topologyNames = []): DocumentManager
     {
@@ -529,13 +542,13 @@ final class MetricsAggregatorTest extends TestCase
 
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturnCallback(
-            static function (string $class) use ($progressRepo, $topologyRepo, $nodeRepo) {
-                return match ($class) {
-                    TopologyProgress::class => $progressRepo,
-                    Topology::class         => $topologyRepo,
-                    Node::class             => $nodeRepo,
-                    default                 => throw new \LogicException(sprintf('Unexpected getRepository(%s) in test', $class)),
-                };
+            static fn(string $class): ObjectRepository => match ($class) {
+                TopologyProgress::class => $progressRepo,
+                Topology::class         => $topologyRepo,
+                Node::class             => $nodeRepo,
+                default                 => throw new LogicException(
+                    sprintf('Unexpected getRepository(%s) in test', $class),
+                ),
             },
         );
 

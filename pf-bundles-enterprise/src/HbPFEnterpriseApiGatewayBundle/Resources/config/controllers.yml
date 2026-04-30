@@ -149,6 +149,7 @@ services:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\CloudMetricsController
         arguments:
             - '@hbpf.cloud.metrics_handler'
+            - '@hbpf.cloud.limits_handler'
             - '%orchesty_cloud_instance_id%'
             - '%orchesty_cloud_instance_secret%'
 
