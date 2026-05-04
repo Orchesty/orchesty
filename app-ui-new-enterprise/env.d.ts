@@ -3,6 +3,8 @@
 interface ImportMetaEnv {
   /** Backend API base URL */
   readonly VITE_BACKEND_URL: string
+  /** Starting-point service base URL */
+  readonly VITE_STARTING_POINT_URL: string
   /** Trace WebSocket service base URL (e.g. wss://trace.cloud.orchesty.io) */
   readonly VITE_TRACE_URL: string
   /** Auth0 tenant domain (e.g. dev-xxx.eu.auth0.com) */

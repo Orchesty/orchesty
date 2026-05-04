@@ -122,7 +122,7 @@ export const useTraceStore = defineStore('trace', () => {
   ): void => {
     const idx = messages.value.findIndex((m) => m.id === id)
     if (idx === -1) return
-    const current = messages.value[idx]
+    const current = messages.value[idx]!
     messages.value[idx] = { ...current, ...patch }
     if (patch.streaming !== false) return
     trimToFit(messages.value)
