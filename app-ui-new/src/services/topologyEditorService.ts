@@ -5,7 +5,7 @@ export type ActionOption = {
   name: string
   worker: string
   type: 'custom' | 'connector' | 'batch' | 'user' | 'webhook'
-  app?: string | null
+  app?: string
   icon?: string
   /** Webhook only: bare event name (`order.created`) without the app prefix. */
   event?: string
@@ -110,7 +110,7 @@ export const topologyEditorService = {
             name: item.name,
             worker: sdkGroup,
             type: type as ActionType,
-            app: item.app ?? null,
+            app: item.app ?? undefined,
             icon: item.app ? logoMap.get(item.app) : undefined,
           })
         }

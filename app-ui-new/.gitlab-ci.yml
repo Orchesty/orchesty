@@ -1,0 +1,21 @@
+.base-frontend:
+  variables:
+    DIR: app-ui-new
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}frontend
+
+frontend:test:
+  stage: test
+  extends:
+    - .base-test
+    - .base-frontend
+
+frontend:build:
+  stage: build
+  variables:
+    MAKE_TARGET: rebuild
+  needs:
+    - job: frontend:test
+      optional: false
+  extends:
+    - .base-dind-build
+    - .base-frontend
