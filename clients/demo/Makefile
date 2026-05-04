@@ -245,6 +245,7 @@ migrate-topology:
 #	$(DCM) mongorestore --gzip --noIndexRestore --numParallelCollections $$(($$(nproc)*2/3)) --numInsertionWorkersPerCollection $$(($$(nproc)*2/3)) --writeConcern '{w:0}' 'mongodb://localhost/demo' /tmp/export-import/$(INSTANCE)
 #	$(DCM) mongorestore --gzip --noIndexRestore --numParallelCollections $$(($$(nproc)*2/3)) --numInsertionWorkersPerCollection $$(($$(nproc)*2/3)) --writeConcern '{w:0}' 'mongodb://localhost/metrics' /tmp/export-import/$(INSTANCE)-metrics
 #	$(DCB) bin/console user:create "$(shell grep 'ORCHESTY_USER' .env | cut -d '=' -f2)" "$(shell grep 'ORCHESTY_PASSWORD' .env | cut -d '=' -f2)"
+#	$(DCM) mongosh demo --eval 'var u = db.User.findOne({email: "$(shell grep ORCHESTY_USER .env | cut -d= -f2)"}); if (u) { if (!db.Group.findOne({name: "super_admin"})) { db.Group.insertOne({name: "super_admin", level: NumberInt(0), users: []}); } db.Group.updateOne({name: "super_admin"}, {$$addToSet: {users: DBRef("User", u._id)}}); print("User added to super_admin group."); } else { print("User not found."); }'
 #	$(DCB) bin/console api-token:create --key "$(shell grep 'ORCHESTY_API_KEY' .env | cut -d '=' -f2)"
 #	$(DCB) bin/console service:install node-sdk node-sdk:8080
 #	$(DCN) node importedDatabaseFix.js
