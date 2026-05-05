@@ -62,3 +62,4 @@ rebuild-all:
 	cd notifier && make build TAG=$(TAG)
 	cd trace && make build TAG=$(TAG)
 	cd worker-api && make build TAG=$(TAG)
+	cd cloud-trace-llm-worker && make build TAG=$(TAG)

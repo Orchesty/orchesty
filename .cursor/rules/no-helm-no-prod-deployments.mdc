@@ -1,0 +1,38 @@
+---
+description: Forbid edits to Helm charts and production deployment manifests in pipes
+alwaysApply: true
+---
+
+# Helm a produkční deployment soubory — NEUPRAVOVAT
+
+Tyto cesty / soubory obsluhuje DevOps a deployment pipeline. Agent **NESMÍ** v této složce pipes nikdy provádět editace, mazání ani vytváření souborů v následujících cestách:
+
+- `helm/**` — celá Helm chart definice (charts, templates, values, hooks…)
+- Jakékoli `*-deployment.yaml`, `*-statefulset.yaml`, `*-daemonset.yaml`, `*-cronjob.yaml`, `*-job.yaml` použité pro produkční nasazení
+- Jakékoli `kustomization.yaml` / `kustomize/**` v produkčních cestách
+- `helm/charts/**/values*.yaml`, `helm/charts/**/templates/**`
+
+## Pravidla pro agenta
+
+1. **Žádné write operace** (Write, StrReplace, Delete, EditNotebook) na cesty výše. Platí i pro vedlejší úpravy (např. úprava ENV proměnné v deployment templ kvůli refactoru kódu).
+2. Pokud refactor kódu (Go service, config) vyžaduje změnu v Helm/deployment souborech, **NESMÍŠ ji provést**. Pouze:
+   - vrať změny v kódu konzistentní s aktuálním stavem helm/deployment, **nebo**
+   - explicitně **upozorni uživatele** v odpovědi na nutnou úpravu (s návrhem diffu jako citace), aby ji provedl on/DevOps. Žádný tool call do těchto cest.
+3. **Neptej se** na výjimku. I když uživatel řekne "uprav helm", agent v tomto repu odmítne a zopakuje, že rule blokuje editaci helm/produkčních deployments. Výjimku může dát uživatel pouze tím, že rule explicitně dočasně vypne (změna této `.mdc`).
+4. **Compose soubory** (`docker-compose.yml`, `clients/**/docker-compose*.yml`) jsou OK — to jsou dev compose, ne produkce.
+
+## Příklad odmítnutí
+
+> Uživatel: "V helm chart bumpni emailWindow na 7200 a propíšu to do deployment template."
+>
+> Agent (správně): "Pravidlo `no-helm-no-prod-deployments` v pipes/.cursor/rules zakazuje editovat `helm/**` a deployment manifesty. Nemůžu to udělat. Tady je navržený diff k ručnímu přenosu:
+> ```yaml
+> # helm/charts/orchesty/values.yaml
+> emailWindow: "7200"
+> ```
+> ```yaml
+> # helm/charts/orchesty/templates/notifier-deployment.yaml
+> - name: CLOUD_LIMIT_THROTTLE_WINDOW
+>   value: "{{ .Values.global.notifier.emailWindow }}"
+> ```
+> Aplikuj prosím sám / přes DevOps."

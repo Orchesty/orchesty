@@ -20,4 +20,10 @@ export const STORAGE_KEYS = {
   PENDING_INVITE_TOKEN: 'pending_invite_token',
   AUTH0_LOGIN_FAILED: 'auth0_login_failed',
   TRACE_HISTORY: 'trace_history',
+  // sessionStorage key — Trace onboarding stage memory, scoped to the
+  // current tab. Cleared when the user closes the tab so each new session
+  // is a clean slate (the LLM still has the chat history from
+  // localStorage, but the explicit "where you are in the wizard" hint
+  // resets).
+  TRACE_ONBOARDING_STAGE: 'trace_onboarding_stage',
 } as const

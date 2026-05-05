@@ -1,3 +1,10 @@
+parameters:
+    env(TRACE_DAILY_CAP): '100'
+    trace_daily_cap: '%env(int:TRACE_DAILY_CAP)%'
+    # Relay endpoint lives on the same cloud backend the instance already
+    # talks to for member sync etc. (`ORCHESTY_CLOUD_BACKEND_URL`). One env
+    # config fewer to keep in sync.
+
 services:
     _defaults:
         public: '%public.services%'
@@ -8,12 +15,36 @@ services:
         arguments:
             - Hanaboso\PipesFrameworkEnterprise\PlatformServices\Document\ServiceBinding
 
+    hbpf.platform_services.trace_quota_repository:
+        class: Hanaboso\PipesFrameworkEnterprise\PlatformServices\Repository\TraceQuotaUsageRepository
+        factory: ['@doctrine_mongodb.odm.default_document_manager', 'getRepository']
+        arguments:
+            - Hanaboso\PipesFrameworkEnterprise\PlatformServices\Document\TraceQuotaUsage
+
+    hbpf.platform_services.trace_quota:
+        class: Hanaboso\PipesFrameworkEnterprise\PlatformServices\Service\TraceQuotaService
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.platform_services.trace_quota_repository'
+            - '%trace_daily_cap%'
+
+    hbpf.platform_services.cloud_relay_client:
+        class: Hanaboso\PipesFrameworkEnterprise\PlatformServices\Provider\TraceCloudRelayClient
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '%orchesty_cloud_backend_url%'
+            - '%orchesty_cloud_instance_id%'
+            - '%orchesty_cloud_instance_secret%'
+
     hbpf.platform_services.provider:
         class: Hanaboso\PipesFrameworkEnterprise\PlatformServices\Provider\PlatformServiceProvider
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.platform_services.repository'
             - '@hbpp.service.locator'
+            - '@hbpf.platform_services.trace_quota'
+            - '@hbpf.platform_services.cloud_relay_client'
+            - '%feature_trace_auditing%'
 
     hbpf.platform_services.handler:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFPlatformServicesBundle\Handler\PlatformServicesHandler
@@ -21,3 +52,4 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.platform_services.repository'
             - '@hbpf.platform_services.provider'
+            - '@hbpf.platform_services.trace_quota'

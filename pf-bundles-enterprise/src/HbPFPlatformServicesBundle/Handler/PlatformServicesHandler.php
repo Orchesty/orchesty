@@ -8,6 +8,7 @@ use Hanaboso\PipesFrameworkEnterprise\PlatformServices\Document\ServiceBinding;
 use Hanaboso\PipesFrameworkEnterprise\PlatformServices\Exception\PlatformServiceException;
 use Hanaboso\PipesFrameworkEnterprise\PlatformServices\Provider\PlatformServiceProvider;
 use Hanaboso\PipesFrameworkEnterprise\PlatformServices\Repository\ServiceBindingRepository;
+use Hanaboso\PipesFrameworkEnterprise\PlatformServices\Service\TraceQuotaService;
 
 /**
  * Class PlatformServicesHandler
@@ -23,11 +24,13 @@ final class PlatformServicesHandler
      * @param DocumentManager          $dm
      * @param ServiceBindingRepository $repository
      * @param PlatformServiceProvider  $provider
+     * @param TraceQuotaService        $traceQuota
      */
     public function __construct(
         private readonly DocumentManager $dm,
         private readonly ServiceBindingRepository $repository,
         private readonly PlatformServiceProvider $provider,
+        private readonly TraceQuotaService $traceQuota,
     )
     {
     }
@@ -115,6 +118,29 @@ final class PlatformServicesHandler
     public function call(string $serviceType, string $method, array $data = []): array
     {
         return $this->provider->call($serviceType, $method, $data);
+    }
+
+    /**
+     * Snapshot of the Trace cloud-relay quota state for the UI badge.
+     *
+     * `mode`:
+     *   - "user"     — user has installed their own LLM and bound it as
+     *                  `trace-ai-provider`. Cap is not enforced.
+     *   - "system"   — no user binding, Trace feature flag enabled. Default
+     *                  LLM via cloud-relay applies, cap is enforced.
+     *   - "disabled" — Trace feature flag is off; UI should hide the tab.
+     *
+     * @return mixed[]
+     */
+    public function getTraceQuotaStatus(): array
+    {
+        $usage = $this->traceQuota->getCurrentUsage();
+        $mode  = $this->provider->getTraceProviderMode();
+
+        return [
+            'mode' => $mode,
+            ...$usage->toArray(),
+        ];
     }
 
 }

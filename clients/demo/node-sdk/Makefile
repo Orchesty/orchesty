@@ -29,6 +29,9 @@ install:
 update:
 	$(DCS) pnpm update
 
+outdated:
+	$(DCS) pnpm outdated
+
 lint:
 	$(DCS) pnpm run lint
 

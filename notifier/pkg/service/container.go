@@ -57,7 +57,7 @@ func Load() error {
 
 	bufferService := NewBufferService(redisClient)
 	recipientService := NewRecipientService(mongoStorage, config.Logger)
-	dispatcherService := NewDispatcherService(httpSender, config.Dispatch.URL, config.Logger)
+	dispatcherService := NewDispatcherService(httpSender, config.Dispatch.URL, config.App.InstanceID, config.Logger)
 	processorService := NewProcessorService(presets, helpers, store, bufferService, recipientService, dispatcherService, mongoStorage, sseBroadcaster, config.Logger)
 
 	msgs := rmq.Consume()

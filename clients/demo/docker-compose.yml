@@ -11,6 +11,7 @@ services:
             JEST_DOCKER: 1
             APP_ENV: debug
             APP_PORT: 8080
+            CI: "true"
             CRYPT_SECRET: ThisIsNotSoSecret
             BACKEND_URL: ${BACKEND_URL}
             STARTING_POINT_DSN: ${STARTING_POINT_DSN}
@@ -324,9 +325,10 @@ services:
             MONGO_DSN: ${MONGO_DSN}
             RABBITMQ_DSN: ${RABBITMQ_DSN}
             STARTING_POINT_URL: ${STARTING_POINT_DSN}
-            BUFFER_WINDOW: '60'
-            THROTTLE_WINDOW: '1'
+            BUFFER_WINDOW: '30'
+            CLOUD_LIMIT_THROTTLE_WINDOW: '120'
             INAPP_THROTTLE_WINDOW: '1'
+            ORCHESTY_CLOUD_INSTANCE_ID: ${ORCHESTY_CLOUD_INSTANCE_ID:-5d3e1061-5863-4292-8d95-9a238db8b48a}
         volumes:
             - ./../../notifier/:/app:cached
         ports:

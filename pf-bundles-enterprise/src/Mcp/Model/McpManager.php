@@ -55,16 +55,20 @@ final class McpManager
     /**
      * McpManager constructor.
      *
-     * @param DocumentManager   $dm
-     * @param LokiManager       $lokiManager
-     * @param MetricsAggregator $metricsAggregator
-     * @param DocsSearchClient  $docsSearchClient
+     * @param DocumentManager      $dm
+     * @param LokiManager          $lokiManager
+     * @param MetricsAggregator    $metricsAggregator
+     * @param DocsSearchClient     $docsSearchClient
+     * @param DocsReadClient       $docsReadClient
+     * @param OnboardingStepClient $onboardingStepClient
      */
     public function __construct(
         DocumentManager $dm,
         private readonly LokiManager $lokiManager,
         private readonly MetricsAggregator $metricsAggregator,
         private readonly DocsSearchClient $docsSearchClient,
+        private readonly DocsReadClient $docsReadClient,
+        private readonly OnboardingStepClient $onboardingStepClient,
     )
     {
         $this->auditEntityRepository      = $dm->getRepository(AuditEntity::class);
@@ -179,6 +183,7 @@ final class McpManager
             ...$this->getTopologiesEntitiesManifest(),
             ...$this->getMetricsManifest(),
             ...$this->getDocsManifest(),
+            ...$this->getOnboardingManifest(),
         ];
     }
 
@@ -343,6 +348,71 @@ final class McpManager
     }
 
     /**
+     * Manifest entry for the onboarding_step tool. Only emitted when the
+     * Nuxt origin is configured (DOCS_SEARCH_URL set) — same gating as the
+     * docs tools, since both rely on the public Orchesty site to host the
+     * source content.
+     *
+     * @return mixed[]
+     */
+    private function getOnboardingManifest(): array
+    {
+        if (!$this->onboardingStepClient->isConfigured()) {
+            return [];
+        }
+
+        return [
+            [
+                'description'   => 'Return a structured onboarding step (title, intro, prerequisites, next, actions[]) for guiding a new Orchesty user through scaffolding a worker, building their first topology, running it locally and verifying the result. ALWAYS prefer this tool over docs_search when the user expresses onboarding intent ("how do I start", "jak začít", "first time", "co je dál", "what\'s next"). Args: optional `stage` — when missing, returns the first step. After receiving a step, the assistant renders it as plain text with [shell] / [prompt] / [link] action blocks the FE detects and shows as copy-pasteable cards.',
+                'id'            => 'onboarding_step',
+                'input_schema'  => [
+                    'properties' => [
+                        'stage' => [
+                            'description' => 'Onboarding stage id (e.g. "overview", "choose-your-way", "clone-starter-ai", "clone-starter-manual", "build-components-ai", "build-components-manual", "run-locally", "test-and-debug", "verify", "add-a-node", "application", "connector-node", "batch-node", "custom-node", "webhook-trigger", "event-trigger", "cron-trigger"). Omit to start from the first stage.',
+                            'type'        => 'string',
+                        ],
+                    ],
+                    'required'   => [],
+                    'type'       => 'object',
+                ],
+                'kind'          => 'onboarding',
+                'output_schema' => [
+                    'properties' => [
+                        'actions'       => [
+                            'items' => [
+                                'properties' => [
+                                    'href'  => ['type' => 'string'],
+                                    'kind'  => ['enum' => ['shell', 'prompt', 'link'], 'type' => 'string'],
+                                    'label' => ['type' => 'string'],
+                                    'value' => ['type' => 'string'],
+                                ],
+                                'type'       => 'object',
+                            ],
+                            'type'  => 'array',
+                        ],
+                        'description'   => ['type' => 'string'],
+                        'intro'         => ['type' => 'string'],
+                        'next'          => ['type' => 'string'],
+                        'path'          => ['type' => 'string'],
+                        'prerequisites' => [
+                            'items' => ['type' => 'string'],
+                            'type'  => 'array',
+                        ],
+                        'stage'         => ['type' => 'string'],
+                        'stages'        => [
+                            'items' => ['type' => 'string'],
+                            'type'  => 'array',
+                        ],
+                        'title'         => ['type' => 'string'],
+                    ],
+                    'type'       => 'object',
+                ],
+                'title'         => 'Get an interactive onboarding step',
+            ],
+        ];
+    }
+
+    /**
      * Manifest entry for the docs_search tool. Only emitted when the
      * DocsSearchClient is configured (DOCS_SEARCH_URL set) — otherwise the
      * Trace LLM would see a tool that always errors out, which leads it to
@@ -357,50 +427,86 @@ final class McpManager
             return [];
         }
 
-        return [
-            [
-                'description'   => 'Search the public Orchesty documentation (orchesty.io) for platform usage answers. Use for questions like "how do I get started", "how do I create a topology", "how does OAuth2 application setup work", "what is a connector", any "how do I…" / "what is…" / "jak nastavím…" question. Pass the user message verbatim as `query`. Do NOT use this tool for entity history or metrics — those have their own envelopes. Returns the top-K documentation snippets with title, excerpt and canonical path; the assistant then summarises them and links to the full pages on https://orchesty.io.',
-                'id'            => 'docs_search',
+        $manifest = [];
+
+        $manifest[] = [
+            'description'   => 'Search the public Orchesty documentation (orchesty.io) for platform usage answers. Use for questions like "how do I get started", "how do I create a topology", "how does OAuth2 application setup work", "what is a connector", any "how do I…" / "what is…" / "jak nastavím…" question. Pass the user message verbatim as `query`. Do NOT use this tool for entity history or metrics — those have their own envelopes. The top 1–2 results carry a `bodyExcerpt` field (~3500 chars) so the assistant can ground its answer in actual page text rather than just listing links. If the excerpts do not answer the question, follow up with a single docs_read call against the most relevant `path`.',
+            'id'            => 'docs_search',
+            'input_schema'  => [
+                'properties' => [
+                    'locale' => [
+                        'description' => 'Preferred reply language for the user. Hint only — corpus is single-language.',
+                        'enum'        => ['cs', 'en'],
+                        'type'        => 'string',
+                    ],
+                    'query'  => [
+                        'description' => 'Natural-language question about Orchesty platform usage. Pass the user message verbatim.',
+                        'type'        => 'string',
+                    ],
+                ],
+                'required'   => ['query'],
+                'type'       => 'object',
+            ],
+            'kind'          => 'docs',
+            'output_schema' => [
+                'properties' => [
+                    'latestVersion' => ['type' => 'string'],
+                    'query'         => ['type' => 'string'],
+                    'results'       => [
+                        'items' => [
+                            'properties' => [
+                                'bodyExcerpt' => [
+                                    'description' => 'Up to ~3500 chars of actual page text, present only on the top 1–2 results. Use it verbatim or paraphrased to ground the answer.',
+                                    'type'        => 'string',
+                                ],
+                                'description' => ['type' => 'string'],
+                                'path'        => ['type' => 'string'],
+                                'score'       => ['type' => 'number'],
+                                'snippet'     => ['type' => 'string'],
+                                'source'      => ['enum' => ['docs', 'learn', 'onboarding'], 'type' => 'string'],
+                                'title'       => ['type' => 'string'],
+                            ],
+                            'type'       => 'object',
+                        ],
+                        'type'  => 'array',
+                    ],
+                ],
+                'type'       => 'object',
+            ],
+            'title'         => 'Search Orchesty documentation',
+        ];
+
+        if ($this->docsReadClient->isConfigured()) {
+            $manifest[] = [
+                'description'   => 'Fetch the full body text (up to ~12000 chars) of a single Orchesty documentation, learn or onboarding page. Use only as a follow-up to docs_search when the top result\'s `bodyExcerpt` is too thin to answer the user\'s question. Pass the canonical `path` returned by docs_search (e.g. "/docs/2.0/...", "/learn/...", "/onboarding/..."). Call this AT MOST ONCE per user turn.',
+                'id'            => 'docs_read',
                 'input_schema'  => [
                     'properties' => [
-                        'locale' => [
-                            'description' => 'Preferred reply language for the user. Hint only — corpus is single-language.',
-                            'enum'        => ['cs', 'en'],
-                            'type'        => 'string',
-                        ],
-                        'query'  => [
-                            'description' => 'Natural-language question about Orchesty platform usage. Pass the user message verbatim.',
+                        'path' => [
+                            'description' => 'Canonical page path returned by docs_search.',
                             'type'        => 'string',
                         ],
                     ],
-                    'required'   => ['query'],
+                    'required'   => ['path'],
                     'type'       => 'object',
                 ],
                 'kind'          => 'docs',
                 'output_schema' => [
                     'properties' => [
+                        'body'          => ['type' => 'string'],
+                        'description'   => ['type' => 'string'],
                         'latestVersion' => ['type' => 'string'],
-                        'query'         => ['type' => 'string'],
-                        'results'       => [
-                            'items' => [
-                                'properties' => [
-                                    'description' => ['type' => 'string'],
-                                    'path'        => ['type' => 'string'],
-                                    'score'       => ['type' => 'number'],
-                                    'snippet'     => ['type' => 'string'],
-                                    'source'      => ['enum' => ['docs', 'learn'], 'type' => 'string'],
-                                    'title'       => ['type' => 'string'],
-                                ],
-                                'type'       => 'object',
-                            ],
-                            'type'  => 'array',
-                        ],
+                        'path'          => ['type' => 'string'],
+                        'title'         => ['type' => 'string'],
+                        'truncated'     => ['type' => 'boolean'],
                     ],
                     'type'       => 'object',
                 ],
-                'title'         => 'Search Orchesty documentation',
-            ],
-        ];
+                'title'         => 'Read a single Orchesty documentation page',
+            ];
+        }
+
+        return $manifest;
     }
 
     /**
@@ -628,6 +734,10 @@ final class McpManager
                     : DocsSearchClient::DEFAULT_TOP_K,
                 isset($args['locale']) && is_string($args['locale']) ? $args['locale'] : NULL,
             ),
+            'docs_read'            => $this->docsReadClient->read((string) ($args['path'] ?? '')),
+            'onboarding_step'      => $this->onboardingStepClient->step(
+                isset($args['stage']) && is_string($args['stage']) ? $args['stage'] : NULL,
+            ),
             default                => throw new LogicException(sprintf('Unknown MCP tool "%s".', $tool)),
         };
     }
@@ -702,6 +812,9 @@ final class McpManager
                 'finishedAt'     => $finished?->format(DATE_ATOM),
                 'nok'            => $nok,
                 'ok'             => $ok,
+                // Derived from progress counters: gives the FE a meaningful
+                // status pill even when the topology emits no audit
+                // checkpoints (which is the common case today).
                 'progressStatus' => $this->deriveProgressStatus($finished, $ok, $nok, $total),
                 'startedAt'      => $started->format(DATE_ATOM),
                 'steps'          => [],

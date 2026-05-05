@@ -444,3 +444,67 @@ input[type="checkbox"]:indeterminate {
   @apply !h-0 !cursor-none !text-gray-500 dark:!text-gray-400;
 }
 
+/* Trace callouts — GFM-style alerts (`> [!NOTE]`, `> [!TIP]`, ...) emitted by
+ * the Trace assistant text formatter (assistantTextFormat.ts). The formatter
+ * promotes the marked-extension output to <blockquote class="trace-callout
+ * trace-callout-<type>"> so each callout gets a colour-coded left bar, a
+ * tinted background and a labelled title row. The styles override the
+ * default Tailwind `prose blockquote` look (italic + grey bar) which would
+ * otherwise wash out info / warning blocks. `!` keeps prose specificity from
+ * leaking back in. */
+.prose blockquote.trace-callout {
+  @apply !my-3 !border-l-4 !rounded-md !px-4 !py-3 !not-italic !font-normal;
+}
+
+.prose blockquote.trace-callout > p:first-child {
+  @apply !mt-0;
+}
+
+.prose blockquote.trace-callout > p:last-child {
+  @apply !mb-0;
+}
+
+.prose blockquote.trace-callout p.trace-callout-title {
+  @apply !mb-1 !mt-0 !font-semibold !text-sm !uppercase !tracking-wide;
+}
+
+/* Note / Info — neutral primary tone, matches Trace's link colour. */
+.prose blockquote.trace-callout-note,
+.prose blockquote.trace-callout-info {
+  @apply !border-primary-500 !bg-primary-50 dark:!bg-primary-950/40 !text-gray-800 dark:!text-gray-100;
+}
+
+.prose blockquote.trace-callout-note p.trace-callout-title,
+.prose blockquote.trace-callout-info p.trace-callout-title {
+  @apply !text-primary-700 dark:!text-primary-400;
+}
+
+/* Tip — slightly cooler primary shade. */
+.prose blockquote.trace-callout-tip {
+  @apply !border-primary-400 !bg-primary-50 dark:!bg-primary-950/40 !text-gray-800 dark:!text-gray-100;
+}
+
+.prose blockquote.trace-callout-tip p.trace-callout-title {
+  @apply !text-primary-600 dark:!text-primary-400;
+}
+
+/* Important — yellow accent for "don't skip this". */
+.prose blockquote.trace-callout-important {
+  @apply !border-yellow-500 !bg-yellow-50 dark:!bg-yellow-950/30 !text-gray-800 dark:!text-gray-100;
+}
+
+.prose blockquote.trace-callout-important p.trace-callout-title {
+  @apply !text-yellow-700 dark:!text-yellow-400;
+}
+
+/* Warning / Caution — red accent for failure / data-loss risks. */
+.prose blockquote.trace-callout-warning,
+.prose blockquote.trace-callout-caution {
+  @apply !border-red-500 !bg-red-50 dark:!bg-red-950/30 !text-gray-800 dark:!text-gray-100;
+}
+
+.prose blockquote.trace-callout-warning p.trace-callout-title,
+.prose blockquote.trace-callout-caution p.trace-callout-title {
+  @apply !text-red-700 dark:!text-red-400;
+}
+

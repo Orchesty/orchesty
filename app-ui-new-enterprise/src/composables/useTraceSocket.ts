@@ -12,8 +12,21 @@ export interface TraceErrorData {
   message: string
 }
 
+/**
+ * Payload of a `quota_exceeded` server frame. Mirrors the Go-side
+ * `QuotaData` struct, which itself round-trips the PHP
+ * `QuotaExceededException::toPayload()` body. All fields default to safe
+ * zero values so the FE can render a generic info card even if any field
+ * is missing.
+ */
+export interface TraceQuotaExceededData {
+  limit: number
+  used: number
+  resetAt: string
+}
+
 interface ServerMessage {
-  type: 'response' | 'error' | string
+  type: 'response' | 'error' | 'quota_exceeded' | string
   data: unknown
 }
 
@@ -42,9 +55,14 @@ export interface UseTraceSocketReturn {
   lastError: Ref<TraceErrorData | null>
   connect: (userID: string) => void
   disconnect: () => void
-  send: (content: string) => void
+  // Optional `extraContext` mirrors the Go-side RequestData.ExtraContext —
+  // a small whitelist-validated key/value bag the FE can use to surface
+  // client-side state (e.g. onboardingStage) so the LLM can disambiguate
+  // ambiguous prompts ("what's next") without a separate stateful service.
+  send: (content: string, extraContext?: Record<string, string>) => void
   onResponse: (cb: (data: TraceResponseData) => void) => void
   onError: (cb: (data: TraceErrorData) => void) => void
+  onQuotaExceeded: (cb: (data: TraceQuotaExceededData) => void) => void
 }
 
 /**
@@ -72,6 +90,7 @@ export function useTraceSocket(options: UseTraceSocketOptions = {}): UseTraceSoc
 
   const responseListeners = new Set<(data: TraceResponseData) => void>()
   const errorListeners = new Set<(data: TraceErrorData) => void>()
+  const quotaListeners = new Set<(data: TraceQuotaExceededData) => void>()
 
   let socket: WebSocket | null = null
   let userID = ''
@@ -239,6 +258,14 @@ export function useTraceSocket(options: UseTraceSocketOptions = {}): UseTraceSoc
       if (parsed.type === 'response') {
         const data = parsed.data as TraceResponseData
         responseListeners.forEach((cb) => cb(data))
+      } else if (parsed.type === 'quota_exceeded') {
+        const raw = (parsed.data ?? {}) as Partial<TraceQuotaExceededData>
+        const data: TraceQuotaExceededData = {
+          limit: typeof raw.limit === 'number' ? raw.limit : 0,
+          used: typeof raw.used === 'number' ? raw.used : 0,
+          resetAt: typeof raw.resetAt === 'string' ? raw.resetAt : '',
+        }
+        quotaListeners.forEach((cb) => cb(data))
       } else if (parsed.type === 'error') {
         const data = parsed.data as TraceErrorData
         lastError.value = data
@@ -315,8 +342,12 @@ export function useTraceSocket(options: UseTraceSocketOptions = {}): UseTraceSoc
     status.value = 'closed'
   }
 
-  const send = (content: string) => {
-    const msg: ClientMessage = { type: 'request', data: { content } }
+  const send = (content: string, extraContext?: Record<string, string>) => {
+    const data: { content: string; extraContext?: Record<string, string> } = { content }
+    if (extraContext && Object.keys(extraContext).length > 0) {
+      data.extraContext = extraContext
+    }
+    const msg: ClientMessage = { type: 'request', data }
     if (!authenticated || !sendRaw(msg)) {
       pendingMessages.push(msg)
     }
@@ -330,5 +361,9 @@ export function useTraceSocket(options: UseTraceSocketOptions = {}): UseTraceSoc
     errorListeners.add(cb)
   }
 
-  return { status, lastError, connect, disconnect, send, onResponse, onError }
+  const onQuotaExceeded = (cb: (data: TraceQuotaExceededData) => void) => {
+    quotaListeners.add(cb)
+  }
+
+  return { status, lastError, connect, disconnect, send, onResponse, onError, onQuotaExceeded }
 }

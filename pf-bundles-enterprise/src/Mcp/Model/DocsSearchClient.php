@@ -78,12 +78,16 @@ final class DocsSearchClient
      *
      * Always returns an array shaped roughly like:
      *   {
-     *     results: [{ path, title, description, snippet, score, source }],
+     *     results: [{ path, title, description, snippet, bodyExcerpt?, score, source }],
      *     latestVersion: '2.0',
      *     locale: 'en',
      *     query: '...',
      *     error?: '...'
      *   }
+     *
+     * `bodyExcerpt` is present only on the top 1–2 results and carries
+     * up to ~3500 chars of actual page text. The Trace summariser uses it
+     * to ground the answer instead of paraphrasing the 240-char snippet.
      *
      * @param string      $query  natural-language query, passed verbatim to the LLM
      * @param int         $topK   max results to return (capped at MAX_TOP_K)

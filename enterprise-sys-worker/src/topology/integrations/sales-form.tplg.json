@@ -1,0 +1,118 @@
+{
+    "nodes": [
+        {
+            "type": "flow",
+            "id": "start-sales-form",
+            "label": "Start",
+            "shape": "circle",
+            "property": null,
+            "action": null,
+            "name": "start",
+            "position": { "x": -200, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "pipedrive-add-sales-organization",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "pipedrive-add-sales-organization",
+                "worker": "sys-worker",
+                "type": "connector",
+                "app": "pipedrive",
+                "icon": "<img src=\"data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IlZyc3R2YV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTAwIDEwMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiNGREZGRkY7fQo8L3N0eWxlPgo8Zz4KCTxwYXRoIGQ9Ik0xNC44LTAuMWg3MC40YzguMiwwLDE0LjksNi43LDE0LjksMTQuOXY3MC40YzAsOC4yLTYuNywxNC45LTE0LjksMTQuOUgxNC44Yy04LjIsMC0xNC45LTYuNy0xNC45LTE0LjlWMTQuOAoJCUMtMC4xLDYuNiw2LjYtMC4xLDE0LjgtMC4xeiIvPgoJPHBhdGggY2xhc3M9InN0MCIgZD0iTTU1LjEsMTYuOGMtNy40LDAtMTEuNywzLjMtMTMuNyw1LjZjLTAuMi0yLTEuNi00LjUtNi42LTQuNUgyMy43djExLjVoNC41YzAuNywwLDEsMC4yLDEsMXY1Mi44aDEzLjFWNjIKCQljMiwxLjksNiw0LjUsMTIuMSw0LjVjMTIuOCwwLDIxLjgtMTAuMiwyMS44LTI0LjhDNzYuNCwyNi44LDY3LjgsMTYuOCw1NS4xLDE2Ljh6IE01Mi41LDU1Yy03LjEsMC0xMC4zLTYuOC0xMC4zLTEzLjEKCQljMC05LjksNS40LTEzLjUsMTAuNS0xMy41YzYuMiwwLDEwLjQsNS4zLDEwLjQsMTMuM0M2Myw1MC45LDU3LjcsNTUsNTIuNSw1NXoiLz4KPC9nPgo8L3N2Zz4K\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 0, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "pipedrive-add-sales-person",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "pipedrive-add-sales-person",
+                "worker": "sys-worker",
+                "type": "connector",
+                "app": "pipedrive",
+                "icon": "<img src=\"data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IlZyc3R2YV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTAwIDEwMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiNGREZGRkY7fQo8L3N0eWxlPgo8Zz4KCTxwYXRoIGQ9Ik0xNC44LTAuMWg3MC40YzguMiwwLDE0LjksNi43LDE0LjksMTQuOXY3MC40YzAsOC4yLTYuNywxNC45LTE0LjksMTQuOUgxNC44Yy04LjIsMC0xNC45LTYuNy0xNC45LTE0LjlWMTQuOAoJCUMtMC4xLDYuNiw2LjYtMC4xLDE0LjgtMC4xeiIvPgoJPHBhdGggY2xhc3M9InN0MCIgZD0iTTU1LjEsMTYuOGMtNy40LDAtMTEuNywzLjMtMTMuNyw1LjZjLTAuMi0yLTEuNi00LjUtNi42LTQuNUgyMy43djExLjVoNC41YzAuNywwLDEsMC4yLDEsMXY1Mi44aDEzLjFWNjIKCQljMiwxLjksNiw0LjUsMTIuMSw0LjVjMTIuOCwwLDIxLjgtMTAuMiwyMS44LTI0LjhDNzYuNCwyNi44LDY3LjgsMTYuOCw1NS4xLDE2Ljh6IE01Mi41LDU1Yy03LjEsMC0xMC4zLTYuOC0xMC4zLTEzLjEKCQljMC05LjksNS40LTEzLjUsMTAuNS0xMy41YzYuMiwwLDEwLjQsNS4zLDEwLjQsMTMuM0M2Myw1MC45LDU3LjcsNTUsNTIuNSw1NXoiLz4KPC9nPgo8L3N2Zz4K\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 200, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "pipedrive-add-sales-lead",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "pipedrive-add-sales-lead",
+                "worker": "sys-worker",
+                "type": "connector",
+                "app": "pipedrive",
+                "icon": "<img src=\"data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IlZyc3R2YV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTAwIDEwMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiNGREZGRkY7fQo8L3N0eWxlPgo8Zz4KCTxwYXRoIGQ9Ik0xNC44LTAuMWg3MC40YzguMiwwLDE0LjksNi43LDE0LjksMTQuOXY3MC40YzAsOC4yLTYuNywxNC45LTE0LjksMTQuOUgxNC44Yy04LjIsMC0xNC45LTYuNy0xNC45LTE0LjlWMTQuOAoJCUMtMC4xLDYuNiw2LjYtMC4xLDE0LjgtMC4xeiIvPgoJPHBhdGggY2xhc3M9InN0MCIgZD0iTTU1LjEsMTYuOGMtNy40LDAtMTEuNywzLjMtMTMuNyw1LjZjLTAuMi0yLTEuNi00LjUtNi42LTQuNUgyMy43djExLjVoNC41YzAuNywwLDEsMC4yLDEsMXY1Mi44aDEzLjFWNjIKCQljMiwxLjksNiw0LjUsMTIuMSw0LjVjMTIuOCwwLDIxLjgtMTAuMiwyMS44LTI0LjhDNzYuNCwyNi44LDY3LjgsMTYuOCw1NS4xLDE2Ljh6IE01Mi41LDU1Yy03LjEsMC0xMC4zLTYuOC0xMC4zLTEzLjEKCQljMC05LjksNS40LTEzLjUsMTAuNS0xMy41YzYuMiwwLDEwLjQsNS4zLDEwLjQsMTMuM0M2Myw1MC45LDU3LjcsNTUsNTIuNSw1NXoiLz4KPC9nPgo8L3N2Zz4K\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 400, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "pipedrive-add-sales-note",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "pipedrive-add-sales-note",
+                "worker": "sys-worker",
+                "type": "connector",
+                "app": "pipedrive",
+                "icon": "<img src=\"data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IlZyc3R2YV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTAwIDEwMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiNGREZGRkY7fQo8L3N0eWxlPgo8Zz4KCTxwYXRoIGQ9Ik0xNC44LTAuMWg3MC40YzguMiwwLDE0LjksNi43LDE0LjksMTQuOXY3MC40YzAsOC4yLTYuNywxNC45LTE0LjksMTQuOUgxNC44Yy04LjIsMC0xNC45LTYuNy0xNC45LTE0LjlWMTQuOAoJCUMtMC4xLDYuNiw2LjYtMC4xLDE0LjgtMC4xeiIvPgoJPHBhdGggY2xhc3M9InN0MCIgZD0iTTU1LjEsMTYuOGMtNy40LDAtMTEuNywzLjMtMTMuNyw1LjZjLTAuMi0yLTEuNi00LjUtNi42LTQuNUgyMy43djExLjVoNC41YzAuNywwLDEsMC4yLDEsMXY1Mi44aDEzLjFWNjIKCQljMiwxLjksNiw0LjUsMTIuMSw0LjVjMTIuOCwwLDIxLjgtMTAuMiwyMS44LTI0LjhDNzYuNCwyNi44LDY3LjgsMTYuOCw1NS4xLDE2Ljh6IE01Mi41LDU1Yy03LjEsMC0xMC4zLTYuOC0xMC4zLTEzLjEKCQljMC05LjksNS40LTEzLjUsMTAuNS0xMy41YzYuMiwwLDEwLjQsNS4zLDEwLjQsMTMuM0M2Myw1MC45LDU3LjcsNTUsNTIuNSw1NXoiLz4KPC9nPgo8L3N2Zz4K\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 600, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "ecomail-send-sales-business-notification",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "ecomail-send-sales-business-notification",
+                "worker": "sys-worker",
+                "type": "connector",
+                "app": "ecomail",
+                "icon": "<img src=\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzc4NDhGNCIgZD0iTTIyIDZjMC0xLjEtLjktMi0yLTJINGMtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmgxNmMxLjEgMCAyLS45IDItMlY2em0tMiAwbC04IDUtOC01aDE2em0wIDEySDRWOGw4IDUgOC01djEweiIvPjwvc3ZnPg==\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 800, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "ecomail-send-sales-customer-confirmation",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "ecomail-send-sales-customer-confirmation",
+                "worker": "sys-worker",
+                "type": "connector",
+                "app": "ecomail",
+                "icon": "<img src=\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzc4NDhGNCIgZD0iTTIyIDZjMC0xLjEtLjktMi0yLTJINGMtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmgxNmMxLjEgMCAyLS45IDItMlY2em0tMiAwbC04IDUtOC01aDE2em0wIDEySDRWOGw4IDUgOC01djEweiIvPjwvc3ZnPg==\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 1000, "y": 0 }
+        }
+    ],
+    "connections": [
+        { "id": "c1", "from": "start-sales-form", "to": "pipedrive-add-sales-organization", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c2", "from": "pipedrive-add-sales-organization", "to": "pipedrive-add-sales-person", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c3", "from": "pipedrive-add-sales-person", "to": "pipedrive-add-sales-lead", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c4", "from": "pipedrive-add-sales-lead", "to": "pipedrive-add-sales-note", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c5", "from": "pipedrive-add-sales-note", "to": "ecomail-send-sales-business-notification", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c6", "from": "ecomail-send-sales-business-notification", "to": "ecomail-send-sales-customer-confirmation", "sourceOutput": "output", "targetInput": "input" }
+    ]
+}

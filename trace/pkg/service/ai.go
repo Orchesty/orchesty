@@ -75,6 +75,19 @@ func (svc aiService) SendChat(token, userID, system string, history []ChatTurn) 
 		return "", fmt.Errorf("platform-services returned status %d: %s: %w", resp.StatusCode, string(body), ErrUnauthorized)
 	}
 
+	if resp.StatusCode == http.StatusTooManyRequests {
+		// Platform-services returns 429 in two cases:
+		//   1. Per-instance daily Trace quota exhausted (primary path).
+		//   2. Cloud-relay defensive abuse limit (rare).
+		// Both share the same JSON shape (see
+		// QuotaExceededException::toPayload), so we lift it into a typed
+		// error the dispatcher converts into a `quota_exceeded` WS frame.
+		// On any decode failure we still wrap ErrQuotaExceeded so the UX
+		// path is consistent — an HTTP 429 should never surface as a
+		// generic "Bad Gateway" toast.
+		return "", parseQuotaError(body)
+	}
+
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("platform-services returned status %d: %s", resp.StatusCode, string(body))
 	}
@@ -92,4 +105,25 @@ func (svc aiService) logContext() log.Logger {
 		"service": "TRACE",
 		"type":    "AI",
 	})
+}
+
+// parseQuotaError lifts the documented 429 body into a *QuotaError. Any
+// missing / malformed fields fall back to safe zero values so the UI can
+// still render a useful "limit reached" card even if the upstream payload
+// drifted in shape. The returned error always satisfies
+// errors.Is(err, ErrQuotaExceeded).
+func parseQuotaError(body []byte) error {
+	var payload struct {
+		Code    string `json:"code"`
+		Limit   int    `json:"limit"`
+		Used    int    `json:"used"`
+		ResetAt string `json:"resetAt"`
+	}
+	_ = json.Unmarshal(body, &payload)
+
+	return &QuotaError{
+		Limit:   payload.Limit,
+		Used:    payload.Used,
+		ResetAt: payload.ResetAt,
+	}
 }
