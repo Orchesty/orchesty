@@ -3,6 +3,7 @@ function env(value: string | undefined, placeholder: string): string {
 }
 
 export const BACKEND_URL = env(import.meta.env.VITE_BACKEND_URL, '%VITE_BACKEND_URL%')
+export const STARTING_POINT_URL = env(import.meta.env.VITE_STARTING_POINT_URL, '%VITE_STARTING_POINT_URL%')
 export const NOTIFIER_URL = env(import.meta.env.VITE_NOTIFIER_URL, '%VITE_NOTIFIER_URL%')
 export const TRACE_URL = env(import.meta.env.VITE_TRACE_URL, '%VITE_TRACE_URL%')
 export const TITLE = env(import.meta.env.VITE_TITLE, '%VITE_TITLE%')

@@ -40,3 +40,5 @@ logs/
 **/logs/
 !**/views/logs/
 !**/components/logs/
+
+.env

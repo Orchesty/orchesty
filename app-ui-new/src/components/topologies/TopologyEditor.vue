@@ -15,9 +15,9 @@ import {
   deleteWebhookConfig,
   cascadeWebhookConfigs,
   buildWebhookCallbackUrl,
-  resolveStartingPointBase,
   type WebhookConfigItem,
 } from '@/services/webhookConfigService'
+import { STARTING_POINT_URL } from '@/config'
 import CopyValue from '@/components/ui/CopyValue.vue'
 import StatusBadge from '@/components/ui/StatusBadge.vue'
 import type { BadgeVariant } from '@/components/ui/StatusBadge.vue'
@@ -166,7 +166,7 @@ const resolveBackendId = (editorNodeId: string): string => {
 // when integrators want to lock a tester / cron to a single deployed build.
 const getStartingPointUrl = (editorNodeId: string): string => {
   const backendId = resolveBackendId(editorNodeId)
-  return `${resolveStartingPointBase()}/topologies/${props.topologyId}/nodes/${backendId}/run`
+  return `${STARTING_POINT_URL}/topologies/${props.topologyId}/nodes/${backendId}/run`
 }
 
 // Name-based starting-point URL: matches the starting-point's
@@ -176,7 +176,7 @@ const getStartingPointUrl = (editorNodeId: string): string => {
 const getStartingPointUrlByName = (node: EditorNode): string => {
   const topology = encodeURIComponent(props.topologyName || '')
   const nodeName = encodeURIComponent(node.name || '')
-  return `${resolveStartingPointBase()}/topologies/${topology}/nodes/${nodeName}/run-by-name`
+  return `${STARTING_POINT_URL}/topologies/${topology}/nodes/${nodeName}/run-by-name`
 }
 
 

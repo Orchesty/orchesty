@@ -7,6 +7,7 @@ fi
 
 sed " \
     s|%VITE_BACKEND_URL%|${VITE_BACKEND_URL}|g; \
+    s|%VITE_STARTING_POINT_URL%|${VITE_STARTING_POINT_URL:-}|g; \
     s|%VITE_NOTIFIER_URL%|${VITE_NOTIFIER_URL:-}|g; \
     s|%VITE_TRACE_URL%|${VITE_TRACE_URL:-}|g; \
     s|%VITE_TITLE%|${VITE_TITLE:-}|g; \
