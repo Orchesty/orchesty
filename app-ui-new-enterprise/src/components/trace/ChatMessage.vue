@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { Bot } from 'lucide-vue-next'
-import type { ChatMessage } from '@/types/trace'
+import type { ChatMessage, AssistantBodySegment } from '@/types/trace'
 import CopyValue from '@/components/ui/CopyValue.vue'
+import OnboardingActionCard from '@/components/trace/OnboardingActionCard.vue'
+import { parseAssistantBody } from '@/utils/traceMessageParser'
+import { formatAssistantText } from '@/utils/assistantTextFormat'
+import { useTraceStore } from '@/stores/trace'
 
 interface Props {
   message: ChatMessage
@@ -22,7 +26,51 @@ const isAssistant = computed(() => props.message.role === 'assistant')
 // Save state
 const saved = ref(false)
 
-// Extract plain text from HTML content
+const traceStore = useTraceStore()
+
+// Parse the raw assistant text (when available) into a stage marker plus
+// ordered text/action segments. Falls back to the pre-formatted HTML in
+// `message.content` when rawContent is missing (legacy messages, user
+// turns, structured audit reports).
+const parsedBody = computed(() => {
+  if (!isAssistant.value) return null
+  const raw = props.message.rawContent
+  if (typeof raw !== 'string' || raw === '') return null
+  return parseAssistantBody(raw)
+})
+
+const renderableSegments = computed<AssistantBodySegment[]>(() => {
+  if (!parsedBody.value) return []
+  // Skip if no actions were detected and the only segment is text — the
+  // upstream v-html path renders the same content with proper paragraph
+  // wrapping and audit-report awareness.
+  const hasAction = parsedBody.value.segments.some((s) => s.kind === 'action')
+  if (!hasAction) return []
+  return parsedBody.value.segments
+})
+
+const useRichRender = computed(() => renderableSegments.value.length > 0)
+
+// Forward the latest detected stage to the Pinia store so the next user
+// turn can pass it back to Trace as ExtraContext (`onboardingStage`).
+// Watch the parsed marker rather than calling inside computed() so we
+// don't trigger reactive side-effects during render.
+watch(
+  () => parsedBody.value,
+  (parsed) => {
+    if (!parsed) return
+    if (parsed.stage && typeof traceStore.setOnboardingStage === 'function') {
+      traceStore.setOnboardingStage(parsed.stage, parsed.next)
+    }
+  },
+  { immediate: true },
+)
+
+const renderTextSegment = (raw: string): string => formatAssistantText(raw)
+
+// Extract plain text from HTML content (used by the Copy button in the
+// legacy v-html path). The action-card path routes copy through the cards
+// themselves, so this fallback is fine for non-onboarding messages.
 const textContent = computed(() => {
   const tempDiv = document.createElement('div')
   tempDiv.innerHTML = props.message.content
@@ -57,7 +105,16 @@ const handleExportPdf = () => {
 
     <!-- Message Content -->
     <div class="flex-1 min-w-0">
-      <div class="prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-headings:my-3" v-html="message.content"></div>
+      <!-- Onboarding-aware render: detected [shell]/[prompt]/[link] blocks become
+           interactive cards, surrounding prose stays as v-html so links and
+           paragraphs remain consistent with the legacy path. -->
+      <div v-if="useRichRender" class="prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-headings:my-3">
+        <template v-for="(segment, idx) in renderableSegments" :key="idx">
+          <OnboardingActionCard v-if="segment.kind === 'action'" :action="segment.action" />
+          <div v-else v-html="renderTextSegment(segment.content)"></div>
+        </template>
+      </div>
+      <div v-else class="prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-headings:my-3" v-html="message.content"></div>
       
       <!-- Action Buttons (only for assistant messages, hidden while the
            typewriter animation is still streaming) -->

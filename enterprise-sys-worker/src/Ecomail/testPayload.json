@@ -1,0 +1,13 @@
+{
+    "template_id": 29,
+    "subject": "Hello my boy...",
+    "from_name": "Orchesty platform",
+    "from_email": "info@orchesty-solutions.com",
+    "reply_to": "info@orchesty-solutions.com",
+    "to": [
+      {
+        "email": "jan.k@orchesty-solutions.com",
+        "name": "Jan Karel"
+      }
+    ]
+  }

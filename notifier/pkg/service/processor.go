@@ -220,7 +220,7 @@ func (service processorService) processInApp(ctx context.Context, e model.EventE
 
 		window := config.Throttle.InAppThrottleWindow
 		if n.PresetID == "cloud_limit_threshold" {
-			window = config.Throttle.CloudLimitWindow
+			window = config.Throttle.EmailWindow
 		}
 		if err := service.throttle.SetThrottle(ctx, tKey, window); err != nil {
 			service.logContext().Error(fmt.Errorf("in_app throttle set error: %v", err))
@@ -228,11 +228,23 @@ func (service processorService) processInApp(ctx context.Context, e model.EventE
 	}
 }
 
-// throttleWindowFor returns a per-preset override window for cloud-limit
-// notifications (default 2h) and falls back to the global window otherwise.
+// throttleWindowFor returns the email-throttle window for all "user-facing"
+// presets (topology failures, limit signals, cloud-limit thresholds). They
+// share `EmailWindow` (default 2h) so a misbehaving topology cannot spam the
+// recipient — the buffer collects events during `BufferWindow` and the next
+// email is gated for `EmailWindow` after the previous flush. The global
+// `Window` is reserved as a fallback for any future preset that hasn't been
+// explicitly classified yet.
 func throttleWindowFor(presetID string) int {
-	if presetID == "cloud_limit_threshold" {
-		return config.Throttle.CloudLimitWindow
+	switch presetID {
+	case "topology_failed",
+		"topology_failed_repeatedly",
+		"topology_failed_message",
+		"topology_slow",
+		"limit_overflow",
+		"limit_recovered",
+		"cloud_limit_threshold":
+		return config.Throttle.EmailWindow
 	}
 	return config.Throttle.Window
 }

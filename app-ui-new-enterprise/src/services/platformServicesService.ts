@@ -52,3 +52,30 @@ export async function setBinding(
 export async function removeBinding(serviceType: string): Promise<void> {
   await api.delete(`/api/platform-services/${encodeURIComponent(serviceType)}`)
 }
+
+/**
+ * Trace cloud-relay quota status returned by
+ * `GET /platform-services/trace-ai-provider/quota`. Drives the
+ * mode-aware Settings/TraceTab UI:
+ *
+ *   - mode = "user"     : user has installed their own LLM and bound it as
+ *                         `trace-ai-provider`. Cap is not enforced.
+ *   - mode = "system"   : no user binding, Trace feature flag enabled.
+ *                         Default LLM via cloud-relay applies, `used`/`limit`
+ *                         render the live badge.
+ *   - mode = "disabled" : Trace feature flag is off. UI should hide the tab.
+ */
+export type TraceQuotaMode = 'user' | 'system' | 'disabled'
+
+export interface TraceQuotaStatus {
+  mode: TraceQuotaMode
+  used: number
+  limit: number
+  resetAt: string
+}
+
+export async function fetchTraceQuota(): Promise<TraceQuotaStatus> {
+  const response = await api.get<TraceQuotaStatus>('/api/platform-services/trace-ai-provider/quota')
+  return response.data
+}
+

@@ -24,14 +24,20 @@ type (
 	}
 
 	dispatcherService struct {
-		sender  sender.HttpSender
-		baseURL string
-		logger  log.Logger
+		sender     sender.HttpSender
+		baseURL    string
+		instanceID string
+		logger     log.Logger
 	}
 )
 
-func NewDispatcherService(httpSender sender.HttpSender, baseURL string, logger log.Logger) DispatcherService {
-	return dispatcherService{httpSender, baseURL, logger}
+// NewDispatcherService constructs the dispatcher. `instanceID` is the cloud-side
+// UUID of this Orchesty instance (sourced from `ORCHESTY_CLOUD_INSTANCE_ID`)
+// and is attached to every dispatched payload so cloud-backend can resolve the
+// Instance row independently of the in-pipes tenant_id concept. May be empty
+// for on-prem deployments where no cloud linkage exists.
+func NewDispatcherService(httpSender sender.HttpSender, baseURL, instanceID string, logger log.Logger) DispatcherService {
+	return dispatcherService{httpSender, baseURL, instanceID, logger}
 }
 
 func (service dispatcherService) Dispatch(presetID string, e model.EventEnvelope, channelRecipients []model.ChannelRecipients) error {
@@ -49,6 +55,7 @@ func (service dispatcherService) Dispatch(presetID string, e model.EventEnvelope
 
 		payload := model.DispatchPayload{
 			PresetID:   presetID,
+			InstanceID: service.instanceID,
 			TenantID:   e.TenantID,
 			Channel:    cr.Channel,
 			Event:      e,
@@ -81,6 +88,7 @@ func (service dispatcherService) DispatchBuffered(presetID string, firstEvent mo
 
 		payload := model.DispatchPayload{
 			PresetID:   presetID,
+			InstanceID: service.instanceID,
 			TenantID:   firstEvent.TenantID,
 			Channel:    cr.Channel,
 			Event:      firstEvent,

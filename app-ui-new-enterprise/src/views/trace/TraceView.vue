@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { Bot } from 'lucide-vue-next'
 import Button from '@/components/ui/Button.vue'
@@ -12,6 +13,7 @@ import {
   makeReportId,
   escapeHtml,
 } from '@/components/trace/auditReportRenderer'
+import { formatAssistantText } from '@/utils/assistantTextFormat'
 import { printReport } from '@/components/trace/printReport'
 import type { ChatMessage as ChatMessageType, EntityHistoryResponse, TraceReport } from '@/types/trace'
 import { fetchReports, saveReport, updateReportTitle, deleteReport } from '@/services/traceService'
@@ -34,6 +36,8 @@ const chatContainerEl = ref<HTMLElement | null>(null)
 
 const authStore = useAuthStore()
 const socket = useTraceSocket()
+const route = useRoute()
+const router = useRouter()
 
 const connectionLabel = computed(() => {
   switch (socket.status.value) {
@@ -103,6 +107,7 @@ const startStreaming = (id: string, raw: string) => {
   if (atoms.length === 0) {
     traceStore.updateMessage(id, {
       content: formatAssistantContent(raw),
+      rawContent: raw,
       streaming: false,
       canSave: true,
     })
@@ -113,6 +118,7 @@ const startStreaming = (id: string, raw: string) => {
   const finalize = () => {
     traceStore.updateMessage(id, {
       content: formatAssistantContent(raw),
+      rawContent: raw,
       streaming: false,
       canSave: true,
     })
@@ -124,6 +130,7 @@ const startStreaming = (id: string, raw: string) => {
     const prefix = atoms.slice(0, cursor).join('')
     traceStore.updateMessage(id, {
       content: formatAssistantContent(prefix),
+      rawContent: prefix,
       streaming: cursor < atoms.length,
     })
     void nextTick().then(scrollToBottom)
@@ -157,6 +164,7 @@ onMounted(async () => {
         id: `msg-asst-${Date.now()}`,
         role: 'assistant',
         content: formatAssistantContent(data.content),
+        rawContent: data.content,
         timestamp: new Date(),
         status: 'sent',
         canSave: true,
@@ -192,6 +200,19 @@ onMounted(async () => {
     void nextTick().then(scrollToBottom)
   })
 
+  socket.onQuotaExceeded((data) => {
+    sending.value = false
+    cancelActiveStream()
+    traceStore.addMessage({
+      id: `msg-quota-${Date.now()}`,
+      role: 'assistant',
+      content: renderQuotaExceededHtml(data),
+      timestamp: new Date(),
+      status: 'error',
+    })
+    void nextTick().then(scrollToBottom)
+  })
+
   const userID = authStore.user?.id
   if (userID) {
     socket.connect(userID)
@@ -200,6 +221,21 @@ onMounted(async () => {
   await loadReports()
   await nextTick()
   scrollToBottom()
+
+  // Optional `?prompt=start+onboarding` deep-link from external surfaces
+  // (Cloud overview banner, marketing site, ...). Sends the prompt as if
+  // the user typed it themselves and strips the param from the URL so a
+  // page reload doesn't re-fire the same message.
+  const prefill = typeof route.query.prompt === 'string' ? route.query.prompt.trim() : ''
+  if (prefill !== '') {
+    void nextTick().then(() => {
+      handleSendMessage(prefill)
+      // Strip the query param without unmounting the view (same name,
+      // params kept, query.prompt removed).
+      const { prompt: _omit, ...rest } = route.query
+      void router.replace({ name: route.name as string, params: route.params, query: rest })
+    })
+  }
 })
 
 onUnmounted(() => {
@@ -248,46 +284,27 @@ const tryParseEntityHistory = (raw: string): EntityHistoryResponse | null => {
   return null
 }
 
-// Turns an already-escaped string into HTML where Markdown links and bare
-// URLs are clickable <a> tags. Runs AFTER escapeHtml so any embedded HTML
-// from the LLM is already neutralised; we only re-introduce <a> tags whose
-// text/href we control. Trailing sentence punctuation on bare URLs is left
-// outside the link so "see https://orchesty.io/docs." doesn't link the dot.
-const LINK_ATTRS = 'target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline dark:text-primary-500"'
-const PLACEHOLDER_RE = /\u0000LINK(\d+)\u0000/g
-
-const linkifyEscapedHtml = (escaped: string): string => {
-  const tokens: string[] = []
-  const stash = (html: string): string => {
-    const idx = tokens.push(html) - 1
-    return `\u0000LINK${idx}\u0000`
-  }
-
-  // Markdown links first so bare-URL pass doesn't match the URL inside them.
-  let result = escaped.replace(
-    /\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)/g,
-    (_, text: string, url: string) =>
-      stash(`<a href="${url}" ${LINK_ATTRS}>${text}</a>`),
-  )
-
-  result = result.replace(/https?:\/\/[^\s<]+/g, (match: string) => {
-    let url = match
-    let trail = ''
-    while (/[.,;:!?)\]]$/.test(url)) {
-      trail = url.slice(-1) + trail
-      url = url.slice(0, -1)
-    }
-    if (!url) return match
-    return `${stash(`<a href="${url}" ${LINK_ATTRS}>${url}</a>`)}${trail}`
-  })
-
-  return result.replace(PLACEHOLDER_RE, (_, i: string) => tokens[Number(i)] ?? '')
-}
+// Strip the leading "[onboarding-stage:..]" marker from the raw text before
+// HTML formatting. The marker is stage-memory metadata and must never reach
+// the user's eyes — ChatMessage independently parses rawContent and forwards
+// the same marker to the trace store.
+//
+// We greedily consume everything on the marker line after the closing `]`
+// so a stray "next=foo" outside the bracket (LLM drift from the canonical
+// "next= belongs INSIDE the bracket" rule) doesn't leak into the rendered
+// body. The bounded `[^\n]*` makes sure we never eat past the line break.
+const STAGE_MARKER_LINE_RE = /^\s*\[onboarding-stage:[^\s,\]]+(?:[\s,]+next=[^\s\]]+)?\][^\n]*\n?/
 
 // Wrap raw assistant text into safe HTML so newlines render as paragraphs
 // and any URLs become clickable links. If the text contains a per-entity
 // history payload, render the structured audit-report template (shared with
 // the saved-report modal and PDF view).
+//
+// Onboarding action blocks ([shell] / [prompt] / [link]) are NOT stripped
+// here — they survive into `message.content` as plain text. ChatMessage
+// re-parses `rawContent` via parseAssistantBody and replaces them with
+// action cards; this HTML is the legacy fallback for messages without
+// rawContent.
 const formatAssistantContent = (raw: string): string => {
   const history = tryParseEntityHistory(raw)
   if (history) {
@@ -297,13 +314,8 @@ const formatAssistantContent = (raw: string): string => {
     })
   }
 
-  const escaped = escapeHtml(raw)
-  const linked = linkifyEscapedHtml(escaped)
-  const paragraphs = linked
-    .split(/\n{2,}/)
-    .map((p) => `<p>${p.replace(/\n/g, '<br>')}</p>`)
-    .join('')
-  return paragraphs || '<p></p>'
+  const cleaned = raw.replace(STAGE_MARKER_LINE_RE, '')
+  return formatAssistantText(cleaned)
 }
 
 // Send message handler
@@ -323,7 +335,7 @@ const handleSendMessage = async (messageText: string) => {
   scrollToBottom()
 
   sending.value = true
-  socket.send(trimmed)
+  socket.send(trimmed, traceStore.getExtraContext())
 
   // The "Thinking…" card is rendered conditionally on `sending`. Without an
   // extra scroll pass it lands below the absolutely positioned ChatInput and
@@ -399,6 +411,46 @@ const handleCopy = () => {
 const handleExportPdf = (content: string) => {
   printReport(content, 'Trace Audit Report')
 }
+
+// Render the dedicated `quota_exceeded` info card. The backend (Go) already
+// translated PHP's `QuotaExceededException::toPayload()` into a structured
+// frame; we just turn the counters into copy and provide the two CTAs the
+// user actually needs ("Connect your own LLM" -> Settings/TraceTab,
+// "Upgrade plan" -> Cloud overview). Settings + Cloud links are wrapped as
+// in-app routes when running inside the same app, otherwise plain anchors.
+const renderQuotaExceededHtml = (data: { limit: number; used: number; resetAt: string }): string => {
+  const limit = data.limit > 0 ? data.limit : 100
+  const used = data.used > 0 ? data.used : limit
+  let resetCopy = 'tomorrow at 00:00 UTC'
+  if (data.resetAt) {
+    const parsed = new Date(data.resetAt)
+    if (!Number.isNaN(parsed.valueOf())) {
+      resetCopy = parsed.toLocaleString(undefined, {
+        weekday: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+      }) + ' your time'
+    }
+  }
+
+  return `
+    <div class="rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-900 dark:border-amber-700 dark:bg-amber-900/30 dark:text-amber-200">
+      <p class="font-semibold">Daily Trace limit reached</p>
+      <p class="mt-1 text-sm">
+        You've used <strong>${escapeHtml(String(used))} / ${escapeHtml(String(limit))}</strong>
+        Trace messages today on the included Orchesty default LLM. The counter resets ${escapeHtml(resetCopy)}.
+      </p>
+      <div class="mt-3 flex flex-wrap gap-2 text-sm">
+        <a href="/settings/trace" class="inline-flex items-center rounded-md border border-amber-300 bg-white px-3 py-1.5 font-medium text-amber-900 hover:bg-amber-100 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-100 dark:hover:bg-amber-900">
+          Connect your own LLM
+        </a>
+        <a href="/cloud/overview" class="inline-flex items-center rounded-md px-3 py-1.5 font-medium text-amber-900 underline-offset-2 hover:underline dark:text-amber-100">
+          Upgrade plan
+        </a>
+      </div>
+    </div>
+  `
+}
 </script>
 
 <template>
@@ -433,6 +485,17 @@ const handleExportPdf = (content: string) => {
             <Bot class="h-12 w-12 mb-4 text-primary-600 dark:text-primary-500" aria-hidden="true" />
             <p class="text-lg font-medium text-gray-700 dark:text-gray-300">Ask Trace about an audited entity</p>
             <p class="mt-1 text-sm">For example: <em>"Find product with SKU XYZ"</em></p>
+            <button
+              type="button"
+              @click="handleSendMessage('start onboarding')"
+              :disabled="sending"
+              class="mt-6 inline-flex items-center gap-2 rounded-full border border-primary-200 bg-primary-50 px-4 py-1.5 text-sm font-medium text-primary-700 transition-colors hover:bg-primary-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-primary-900 dark:bg-primary-950 dark:text-primary-300 dark:hover:bg-primary-900"
+            >
+              <svg class="h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 12h14" />
+              </svg>
+              Start onboarding
+            </button>
           </div>
 
           <ChatMessage

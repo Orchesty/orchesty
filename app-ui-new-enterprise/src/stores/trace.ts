@@ -118,7 +118,7 @@ export const useTraceStore = defineStore('trace', () => {
   // `streaming: false`, which triggers persistence once.
   const updateMessage = (
     id: string,
-    patch: Partial<Pick<ChatMessage, 'content' | 'canSave' | 'streaming'>>,
+    patch: Partial<Pick<ChatMessage, 'content' | 'rawContent' | 'canSave' | 'streaming'>>,
   ): void => {
     const idx = messages.value.findIndex((m) => m.id === id)
     if (idx === -1) return
@@ -129,8 +129,54 @@ export const useTraceStore = defineStore('trace', () => {
     persist(messages.value)
   }
 
+  // Onboarding stage memory. Lives in sessionStorage so it survives
+  // navigation but resets when the tab closes — the user starts a fresh
+  // session in a clean state. The LLM uses it as a hint when answering
+  // "what's next" so we don't have to re-derive position from chat
+  // history every turn.
+  const initialStage = (() => {
+    try {
+      return sessionStorage.getItem(STORAGE_KEYS.TRACE_ONBOARDING_STAGE) || null
+    } catch {
+      return null
+    }
+  })()
+  const onboardingStage = ref<string | null>(initialStage)
+  const onboardingNext = ref<string | null>(null)
+
+  const setOnboardingStage = (stage: string | null, next: string | null = null): void => {
+    onboardingStage.value = stage
+    onboardingNext.value = next
+    try {
+      if (stage) {
+        sessionStorage.setItem(STORAGE_KEYS.TRACE_ONBOARDING_STAGE, stage)
+      } else {
+        sessionStorage.removeItem(STORAGE_KEYS.TRACE_ONBOARDING_STAGE)
+      }
+    } catch {
+      // ignore — sessionStorage may be disabled (private browsing on
+      // some browsers); the in-memory ref still works for the session.
+    }
+  }
+
+  // Compose the ExtraContext payload the WebSocket request frame ships to
+  // the Trace backend. Centralising it here keeps the call site in
+  // useTraceSocket / TraceView a one-liner and makes future context keys
+  // (e.g. cloud account/instance hints) trivial to add.
+  const getExtraContext = (): Record<string, string> => {
+    const ctx: Record<string, string> = {}
+    if (onboardingStage.value) {
+      ctx.onboardingStage = onboardingStage.value
+    }
+    if (onboardingNext.value) {
+      ctx.onboardingNext = onboardingNext.value
+    }
+    return ctx
+  }
+
   const clear = (): void => {
     messages.value = []
+    setOnboardingStage(null)
     try {
       localStorage.removeItem(STORAGE_KEYS.TRACE_HISTORY)
     } catch {
@@ -138,5 +184,14 @@ export const useTraceStore = defineStore('trace', () => {
     }
   }
 
-  return { messages, addMessage, updateMessage, clear }
+  return {
+    messages,
+    onboardingStage,
+    onboardingNext,
+    addMessage,
+    updateMessage,
+    setOnboardingStage,
+    getExtraContext,
+    clear,
+  }
 })

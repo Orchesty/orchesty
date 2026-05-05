@@ -67,7 +67,12 @@ type BufferedEvent struct {
 }
 
 type DispatchPayload struct {
-	PresetID   string          `json:"preset_id"`
+	PresetID string `json:"preset_id"`
+	// InstanceID is the cloud-side instance UUID (separate concept from
+	// tenant_id) injected by the notifier from its deployment env so the
+	// downstream cloud-backend can resolve the Instance row directly.
+	// Omitted on on-prem deployments where it is not configured.
+	InstanceID string          `json:"instance_id,omitempty"`
 	TenantID   string          `json:"tenant_id"`
 	Channel    string          `json:"channel"`
 	Event      EventEnvelope   `json:"event"`

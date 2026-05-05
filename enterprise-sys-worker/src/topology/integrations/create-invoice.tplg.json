@@ -1,0 +1,118 @@
+{
+    "nodes": [
+        {
+            "type": "flow",
+            "id": "start-create-invoice",
+            "label": "Start",
+            "shape": "circle",
+            "property": null,
+            "action": null,
+            "name": "start",
+            "position": { "x": -200, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "i-doklad-lookup-contact-from-cloud-payload",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "i-doklad-lookup-contact-from-cloud-payload",
+                "worker": "sys-worker",
+                "type": "connector",
+                "app": "i-doklad",
+                "icon": "<img src=\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0ZGNkIzNSIgZD0iTTE0IDJINmMtMS4xIDAtMS45OS45LTEuOTkgMkw0IDIwYzAgMS4xLjg5IDIgMS45OSAySDE4YzEuMSAwIDItLjkgMi0yVjhsLTYtNnptMiAxNkg4di0yaDh2MnptMC00SDh2LTJoOHYyem0tMy01VjMuNUwxOC41IDlIMTN6Ii8+PC9zdmc+\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 0, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "cloud-to-idoklad-invoice-mapper",
+            "label": "Custom Action",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "cloud-to-idoklad-invoice-mapper",
+                "worker": "sys-worker",
+                "type": "custom",
+                "app": "i-doklad",
+                "icon": "<img src=\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0ZGNkIzNSIgZD0iTTE0IDJINmMtMS4xIDAtMS45OS45LTEuOTkgMkw0IDIwYzAgMS4xLjg5IDIgMS45OSAySDE4YzEuMSAwIDItLjkgMi0yVjhsLTYtNnptMiAxNkg4di0yaDh2MnptMC00SDh2LTJoOHYyem0tMy01VjMuNUwxOC41IDlIMTN6Ii8+PC9zdmc+\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 200, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "i-doklad-prepare-invoice-from-cloud",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "i-doklad-prepare-invoice-from-cloud",
+                "worker": "sys-worker",
+                "type": "connector",
+                "app": "i-doklad",
+                "icon": "<img src=\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0ZGNkIzNSIgZD0iTTE0IDJINmMtMS4xIDAtMS45OS45LTEuOTkgMkw0IDIwYzAgMS4xLjg5IDIgMS45OSAySDE4YzEuMSAwIDItLjkgMi0yVjhsLTYtNnptMiAxNkg4di0yaDh2MnptMC00SDh2LTJoOHYyem0tMy01VjMuNUwxOC41IDlIMTN6Ii8+PC9zdmc+\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 400, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "i-doklad-create-invoice-from-cloud",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "i-doklad-create-invoice-from-cloud",
+                "worker": "sys-worker",
+                "type": "connector",
+                "app": "i-doklad",
+                "icon": "<img src=\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0ZGNkIzNSIgZD0iTTE0IDJINmMtMS4xIDAtMS45OS45LTEuOTkgMkw0IDIwYzAgMS4xLjg5IDIgMS45OSAySDE4YzEuMSAwIDItLjkgMi0yVjhsLTYtNnptMiAxNkg4di0yaDh2MnptMC00SDh2LTJoOHYyem0tMy01VjMuNUwxOC41IDlIMTN6Ii8+PC9zdmc+\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 600, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "i-doklad-upload-attachment-to-invoice",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "i-doklad-upload-attachment-to-invoice",
+                "worker": "sys-worker",
+                "type": "connector",
+                "app": "i-doklad",
+                "icon": "<img src=\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0ZGNkIzNSIgZD0iTTE0IDJINmMtMS4xIDAtMS45OS45LTEuOTkgMkw0IDIwYzAgMS4xLjg5IDIgMS45OSAySDE4YzEuMSAwIDItLjkgMi0yVjhsLTYtNnptMiAxNkg4di0yaDh2MnptMC00SDh2LTJoOHYyem0tMy01VjMuNUwxOC41IDlIMTN6Ii8+PC9zdmc+\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 800, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "cloud-callback-connector",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "cloud-callback-connector",
+                "worker": "sys-worker",
+                "type": "connector",
+                "app": "cloud-callback",
+                "icon": "<img src=\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzRGQzNGNyIgZD0iTTE5LjM1IDEwLjA0QzE4LjY3IDYuNTkgMTUuNjQgNCAxMiA0IDkuMTEgNCA2LjYgNS42NCA1LjM1IDguMDQgMi4zNCA4LjM2IDAgMTAuOTEgMCAxNGMwIDMuMzEgMi42OSA2IDYgNmgxM2MyLjc2IDAgNS0yLjI0IDUtNSAwLTIuNjQtMi4wNS00Ljc4LTQuNjUtNC45NnoiLz48L3N2Zz4=\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 1000, "y": 0 }
+        }
+    ],
+    "connections": [
+        { "id": "c1", "from": "start-create-invoice", "to": "i-doklad-lookup-contact-from-cloud-payload", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c2", "from": "i-doklad-lookup-contact-from-cloud-payload", "to": "cloud-to-idoklad-invoice-mapper", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c3", "from": "cloud-to-idoklad-invoice-mapper", "to": "i-doklad-prepare-invoice-from-cloud", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c4", "from": "i-doklad-prepare-invoice-from-cloud", "to": "i-doklad-create-invoice-from-cloud", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c5", "from": "i-doklad-create-invoice-from-cloud", "to": "i-doklad-upload-attachment-to-invoice", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c6", "from": "i-doklad-upload-attachment-to-invoice", "to": "cloud-callback-connector", "sourceOutput": "output", "targetInput": "input" }
+    ]
+}

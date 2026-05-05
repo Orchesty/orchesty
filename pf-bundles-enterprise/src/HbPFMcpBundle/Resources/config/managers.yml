@@ -15,9 +15,25 @@ services:
             - '@hbpf.mcp.manager.loki'
             - '@hbpf.mcp.manager.metrics_aggregator'
             - '@hbpf.mcp.manager.docs_search_client'
+            - '@hbpf.mcp.manager.docs_read_client'
+            - '@hbpf.mcp.manager.onboarding_step_client'
 
     hbpf.mcp.manager.docs_search_client:
         class: Hanaboso\PipesFrameworkEnterprise\Mcp\Model\DocsSearchClient
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '%docsSearchUrl%'
+            - '%docsSearchToken%'
+
+    hbpf.mcp.manager.docs_read_client:
+        class: Hanaboso\PipesFrameworkEnterprise\Mcp\Model\DocsReadClient
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '%docsSearchUrl%'
+            - '%docsSearchToken%'
+
+    hbpf.mcp.manager.onboarding_step_client:
+        class: Hanaboso\PipesFrameworkEnterprise\Mcp\Model\OnboardingStepClient
         arguments:
             - '@hbpf.transport.curl_manager'
             - '%docsSearchUrl%'

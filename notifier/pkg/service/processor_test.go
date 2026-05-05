@@ -7,23 +7,35 @@ import (
 	"notifier/pkg/model"
 )
 
-func TestThrottleWindowForCloudLimit(t *testing.T) {
+func TestThrottleWindowFor(t *testing.T) {
 	prevWindow := config.Throttle.Window
-	prevCloud := config.Throttle.CloudLimitWindow
+	prevEmail := config.Throttle.EmailWindow
 	t.Cleanup(func() {
 		config.Throttle.Window = prevWindow
-		config.Throttle.CloudLimitWindow = prevCloud
+		config.Throttle.EmailWindow = prevEmail
 	})
 
 	config.Throttle.Window = 60
-	config.Throttle.CloudLimitWindow = 7_200
+	config.Throttle.EmailWindow = 7_200
 
-	if got := throttleWindowFor("cloud_limit_threshold"); got != 7_200 {
-		t.Fatalf("expected 7200 for cloud_limit_threshold, got %d", got)
+	emailPresets := []string{
+		"cloud_limit_threshold",
+		"topology_failed",
+		"topology_failed_repeatedly",
+		"topology_failed_message",
+		"topology_slow",
+		"limit_overflow",
+		"limit_recovered",
 	}
 
-	if got := throttleWindowFor("topology_failed"); got != 60 {
-		t.Fatalf("expected 60 for non-cloud preset, got %d", got)
+	for _, p := range emailPresets {
+		if got := throttleWindowFor(p); got != 7_200 {
+			t.Fatalf("expected 7200 (EmailWindow) for %q, got %d", p, got)
+		}
+	}
+
+	if got := throttleWindowFor("future_unknown_preset"); got != 60 {
+		t.Fatalf("expected 60 (Window fallback) for unknown preset, got %d", got)
 	}
 }
 

@@ -6,6 +6,12 @@ export interface ChatMessage {
   id: string
   role: MessageRole
   content: string
+  // Optional raw (un-HTML-escaped, un-paragraph-wrapped) version of the
+  // assistant text. The renderer uses it to detect onboarding action blocks
+  // ([shell] / [prompt] / [link]) and the leading [onboarding-stage:..]
+  // marker so cards and stage memory work without re-parsing HTML. Set
+  // alongside `content` while streaming and finalised in the same tick.
+  rawContent?: string
   timestamp: Date
   status?: MessageStatus
   canSave?: boolean  // Only assistant messages with reports can be saved
@@ -98,4 +104,25 @@ export interface EntityHistoryResponse {
 export type EntityRun = IEntityRun
 /** @deprecated kept as alias for older imports — use ICheckpointSnapshot. */
 export type EntityCheckpointSnapshot = ICheckpointSnapshot
+
+// Onboarding action blocks emitted by the Trace summariser as inline tagged
+// segments inside an assistant message ("[shell] <label>\n<value>"). The
+// drawer parses them out of the prose and renders dedicated cards with copy
+// buttons; the original prose continues around them. See parseAssistantBody.
+export type OnboardingActionKind = 'shell' | 'prompt' | 'link'
+
+export interface OnboardingAction {
+  kind: OnboardingActionKind
+  label: string
+  // For shell / prompt actions: the verbatim command / prompt body the user
+  // can copy. For link actions this is empty and `href` is set instead.
+  value?: string
+  href?: string
+}
+
+// Body segments yielded by the parser. The drawer iterates over them in
+// order: text segments render as Markdown, action segments as cards.
+export type AssistantBodySegment =
+  | { kind: 'text'; content: string }
+  | { kind: 'action'; action: OnboardingAction }
 

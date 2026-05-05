@@ -1,0 +1,214 @@
+{
+    "nodes": [
+        {
+            "type": "flow",
+            "id": "start-bulk",
+            "label": "Start",
+            "shape": "circle",
+            "property": null,
+            "action": null,
+            "name": "start",
+            "position": { "x": -200, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "prepare-invoice-filters",
+            "label": "Custom Action",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "prepare-invoice-filters",
+                "worker": "sys-worker",
+                "type": "custom",
+                "app": "i-doklad",
+                "icon": "<img src=\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0ZGNkIzNSIgZD0iTTE0IDJINmMtMS4xIDAtMS45OS45LTEuOTkgMkw0IDIwYzAgMS4xLjg5IDIgMS45OSAySDE4YzEuMSAwIDItLjkgMi0yVjhsLTYtNnptMiAxNkg4di0yaDh2MnptMC00SDh2LTJoOHYyem0tMy01VjMuNUwxOC41IDlIMTN6Ii8+PC9zdmc+\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 0, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "i-doklad-list-issued-invoices",
+            "label": "Batch",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "i-doklad-list-issued-invoices",
+                "worker": "sys-worker",
+                "type": "batch",
+                "app": "i-doklad",
+                "icon": "<img src=\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0ZGNkIzNSIgZD0iTTE0IDJINmMtMS4xIDAtMS45OS45LTEuOTkgMkw0IDIwYzAgMS4xLjg5IDIgMS45OSAySDE4YzEuMSAwIDItLjkgMi0yVjhsLTYtNnptMiAxNkg4di0yaDh2MnptMC00SDh2LTJoOHYyem0tMy01VjMuNUwxOC41IDlIMTN6Ii8+PC9zdmc+\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 200, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "filter-synced-invoices",
+            "label": "Custom Action",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "filter-synced-invoices",
+                "worker": "sys-worker",
+                "type": "custom",
+                "app": "i-doklad",
+                "icon": "<img src=\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0ZGNkIzNSIgZD0iTTE0IDJINmMtMS4xIDAtMS45OS45LTEuOTkgMkw0IDIwYzAgMS4xLjg5IDIgMS45OSAySDE4YzEuMSAwIDItLjkgMi0yVjhsLTYtNnptMiAxNkg4di0yaDh2MnptMC00SDh2LTJoOHYyem0tMy01VjMuNUwxOC41IDlIMTN6Ii8+PC9zdmc+\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 400, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "start-by-vs",
+            "label": "Start",
+            "shape": "circle",
+            "property": null,
+            "action": null,
+            "name": "start",
+            "position": { "x": -200, "y": -200 }
+        },
+        {
+            "type": "flow",
+            "id": "i-doklad-get-issued-invoice-by-vs",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "i-doklad-get-issued-invoice-by-vs",
+                "worker": "sys-worker",
+                "type": "connector",
+                "app": "i-doklad",
+                "icon": "<img src=\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0ZGNkIzNSIgZD0iTTE0IDJINmMtMS4xIDAtMS45OS45LTEuOTkgMkw0IDIwYzAgMS4xLjg5IDIgMS45OSAySDE4YzEuMSAwIDItLjkgMi0yVjhsLTYtNnptMiAxNkg4di0yaDh2MnptMC00SDh2LTJoOHYyem0tMy01VjMuNUwxOC41IDlIMTN6Ii8+PC9zdmc+\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 0, "y": -200 }
+        },
+        {
+            "type": "flow",
+            "id": "flexibee-lookup-partner-from-invoice",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "flexibee-lookup-partner-from-invoice",
+                "worker": "sys-worker",
+                "type": "connector",
+                "app": "flexibee",
+                "icon": "<img src=\"data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IlZyc3R2YV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTAwIDEwMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOnVybCgjU1ZHSURfMV8pO30KCS5zdDF7ZmlsbDojNjQ2MzYzO30KPC9zdHlsZT4KPGcgaWQ9IlZyc3R2YV8yXzFfIj4KCTxnIGlkPSJMb2dhIj4KCQk8Zz4KCQkJCgkJCQk8bGluZWFyR3JhZGllbnQgaWQ9IlNWR0lEXzFfIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjY2LjY5MjIiIHkxPSIyMC42Nzk0IiB4Mj0iNjYuNjkyMiIgeTI9Ijc4LjU2MDEiIGdyYWRpZW50VHJhbnNmb3JtPSJtYXRyaXgoMSAwIDAgLTEgMCA5OS42MTk4KSI+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwIiBzdHlsZT0ic3RvcC1jb2xvcjojRjdCMzAwIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjEyIiBzdHlsZT0ic3RvcC1jb2xvcjojRjZBRjAzIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjI1IiBzdHlsZT0ic3RvcC1jb2xvcjojRjVBMjBCIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjM4IiBzdHlsZT0ic3RvcC1jb2xvcjojRjI4RTFBIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjUxIiBzdHlsZT0ic3RvcC1jb2xvcjojRUY3MTJFIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjY0IiBzdHlsZT0ic3RvcC1jb2xvcjojRUE0QjQ3Ii8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjc3IiBzdHlsZT0ic3RvcC1jb2xvcjojRTUxRTY2Ii8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjg1IiBzdHlsZT0ic3RvcC1jb2xvcjojRTEwMDdCIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIxIiBzdHlsZT0ic3RvcC1jb2xvcjojRTEwMDdCIi8+CgkJCTwvbGluZWFyR3JhZGllbnQ+CgkJCTxwb2x5Z29uIGNsYXNzPSJzdDAiIHBvaW50cz0iMzMuNSwyMS4xIDY2LjksMjEuMSA5OS45LDc4LjkgNjYuNSw3OC45IAkJCSIvPgoJCQk8cG9seWdvbiBjbGFzcz0ic3QxIiBwb2ludHM9IjMzLjUsMjEuMSAwLjEsNzguOSAzMy41LDc4LjkgNjYuOSwyMS4xIAkJCSIvPgoJCTwvZz4KCTwvZz4KPC9nPgo8L3N2Zz4K\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 600, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "flexibee-create-partner-from-invoice",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "flexibee-create-partner-from-invoice",
+                "worker": "sys-worker",
+                "type": "connector",
+                "app": "flexibee",
+                "icon": "<img src=\"data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IlZyc3R2YV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTAwIDEwMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOnVybCgjU1ZHSURfMV8pO30KCS5zdDF7ZmlsbDojNjQ2MzYzO30KPC9zdHlsZT4KPGcgaWQ9IlZyc3R2YV8yXzFfIj4KCTxnIGlkPSJMb2dhIj4KCQk8Zz4KCQkJCgkJCQk8bGluZWFyR3JhZGllbnQgaWQ9IlNWR0lEXzFfIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjY2LjY5MjIiIHkxPSIyMC42Nzk0IiB4Mj0iNjYuNjkyMiIgeTI9Ijc4LjU2MDEiIGdyYWRpZW50VHJhbnNmb3JtPSJtYXRyaXgoMSAwIDAgLTEgMCA5OS42MTk4KSI+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwIiBzdHlsZT0ic3RvcC1jb2xvcjojRjdCMzAwIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjEyIiBzdHlsZT0ic3RvcC1jb2xvcjojRjZBRjAzIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjI1IiBzdHlsZT0ic3RvcC1jb2xvcjojRjVBMjBCIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjM4IiBzdHlsZT0ic3RvcC1jb2xvcjojRjI4RTFBIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjUxIiBzdHlsZT0ic3RvcC1jb2xvcjojRUY3MTJFIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjY0IiBzdHlsZT0ic3RvcC1jb2xvcjojRUE0QjQ3Ii8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjc3IiBzdHlsZT0ic3RvcC1jb2xvcjojRTUxRTY2Ii8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjg1IiBzdHlsZT0ic3RvcC1jb2xvcjojRTEwMDdCIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIxIiBzdHlsZT0ic3RvcC1jb2xvcjojRTEwMDdCIi8+CgkJCTwvbGluZWFyR3JhZGllbnQ+CgkJCTxwb2x5Z29uIGNsYXNzPSJzdDAiIHBvaW50cz0iMzMuNSwyMS4xIDY2LjksMjEuMSA5OS45LDc4LjkgNjYuNSw3OC45IAkJCSIvPgoJCQk8cG9seWdvbiBjbGFzcz0ic3QxIiBwb2ludHM9IjMzLjUsMjEuMSAwLjEsNzguOSAzMy41LDc4LjkgNjYuOSwyMS4xIAkJCSIvPgoJCTwvZz4KCTwvZz4KPC9nPgo8L3N2Zz4K\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 800, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "invoice-idoklad-to-flexi-mapper",
+            "label": "Custom Action",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "invoice-idoklad-to-flexi-mapper",
+                "worker": "sys-worker",
+                "type": "custom",
+                "app": "flexibee",
+                "icon": "<img src=\"data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IlZyc3R2YV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTAwIDEwMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOnVybCgjU1ZHSURfMV8pO30KCS5zdDF7ZmlsbDojNjQ2MzYzO30KPC9zdHlsZT4KPGcgaWQ9IlZyc3R2YV8yXzFfIj4KCTxnIGlkPSJMb2dhIj4KCQk8Zz4KCQkJCgkJCQk8bGluZWFyR3JhZGllbnQgaWQ9IlNWR0lEXzFfIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjY2LjY5MjIiIHkxPSIyMC42Nzk0IiB4Mj0iNjYuNjkyMiIgeTI9Ijc4LjU2MDEiIGdyYWRpZW50VHJhbnNmb3JtPSJtYXRyaXgoMSAwIDAgLTEgMCA5OS42MTk4KSI+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwIiBzdHlsZT0ic3RvcC1jb2xvcjojRjdCMzAwIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjEyIiBzdHlsZT0ic3RvcC1jb2xvcjojRjZBRjAzIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjI1IiBzdHlsZT0ic3RvcC1jb2xvcjojRjVBMjBCIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjM4IiBzdHlsZT0ic3RvcC1jb2xvcjojRjI4RTFBIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjUxIiBzdHlsZT0ic3RvcC1jb2xvcjojRUY3MTJFIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjY0IiBzdHlsZT0ic3RvcC1jb2xvcjojRUE0QjQ3Ii8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjc3IiBzdHlsZT0ic3RvcC1jb2xvcjojRTUxRTY2Ii8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjg1IiBzdHlsZT0ic3RvcC1jb2xvcjojRTEwMDdCIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIxIiBzdHlsZT0ic3RvcC1jb2xvcjojRTEwMDdCIi8+CgkJCTwvbGluZWFyR3JhZGllbnQ+CgkJCTxwb2x5Z29uIGNsYXNzPSJzdDAiIHBvaW50cz0iMzMuNSwyMS4xIDY2LjksMjEuMSA5OS45LDc4LjkgNjYuNSw3OC45IAkJCSIvPgoJCQk8cG9seWdvbiBjbGFzcz0ic3QxIiBwb2ludHM9IjMzLjUsMjEuMSAwLjEsNzguOSAzMy41LDc4LjkgNjYuOSwyMS4xIAkJCSIvPgoJCTwvZz4KCTwvZz4KPC9nPgo8L3N2Zz4K\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 1000, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "flexibee-create-faktura-vydana-from-invoice",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "flexibee-create-faktura-vydana-from-invoice",
+                "worker": "sys-worker",
+                "type": "connector",
+                "app": "flexibee",
+                "icon": "<img src=\"data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IlZyc3R2YV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTAwIDEwMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOnVybCgjU1ZHSURfMV8pO30KCS5zdDF7ZmlsbDojNjQ2MzYzO30KPC9zdHlsZT4KPGcgaWQ9IlZyc3R2YV8yXzFfIj4KCTxnIGlkPSJMb2dhIj4KCQk8Zz4KCQkJCgkJCQk8bGluZWFyR3JhZGllbnQgaWQ9IlNWR0lEXzFfIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjY2LjY5MjIiIHkxPSIyMC42Nzk0IiB4Mj0iNjYuNjkyMiIgeTI9Ijc4LjU2MDEiIGdyYWRpZW50VHJhbnNmb3JtPSJtYXRyaXgoMSAwIDAgLTEgMCA5OS42MTk4KSI+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwIiBzdHlsZT0ic3RvcC1jb2xvcjojRjdCMzAwIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjEyIiBzdHlsZT0ic3RvcC1jb2xvcjojRjZBRjAzIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjI1IiBzdHlsZT0ic3RvcC1jb2xvcjojRjVBMjBCIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjM4IiBzdHlsZT0ic3RvcC1jb2xvcjojRjI4RTFBIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjUxIiBzdHlsZT0ic3RvcC1jb2xvcjojRUY3MTJFIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjY0IiBzdHlsZT0ic3RvcC1jb2xvcjojRUE0QjQ3Ii8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjc3IiBzdHlsZT0ic3RvcC1jb2xvcjojRTUxRTY2Ii8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjg1IiBzdHlsZT0ic3RvcC1jb2xvcjojRTEwMDdCIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIxIiBzdHlsZT0ic3RvcC1jb2xvcjojRTEwMDdCIi8+CgkJCTwvbGluZWFyR3JhZGllbnQ+CgkJCTxwb2x5Z29uIGNsYXNzPSJzdDAiIHBvaW50cz0iMzMuNSwyMS4xIDY2LjksMjEuMSA5OS45LDc4LjkgNjYuNSw3OC45IAkJCSIvPgoJCQk8cG9seWdvbiBjbGFzcz0ic3QxIiBwb2ludHM9IjMzLjUsMjEuMSAwLjEsNzguOSAzMy41LDc4LjkgNjYuOSwyMS4xIAkJCSIvPgoJCTwvZz4KCTwvZz4KPC9nPgo8L3N2Zz4K\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 1200, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "i-doklad-download-invoice-pdf",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "i-doklad-download-invoice-pdf",
+                "worker": "sys-worker",
+                "type": "connector",
+                "app": "i-doklad",
+                "icon": "<img src=\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0ZGNkIzNSIgZD0iTTE0IDJINmMtMS4xIDAtMS45OS45LTEuOTkgMkw0IDIwYzAgMS4xLjg5IDIgMS45OSAySDE4YzEuMSAwIDItLjkgMi0yVjhsLTYtNnptMiAxNkg4di0yaDh2MnptMC00SDh2LTJoOHYyem0tMy01VjMuNUwxOC41IDlIMTN6Ii8+PC9zdmc+\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 1400, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "flexibee-upload-attachment",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "flexibee-upload-attachment",
+                "worker": "sys-worker",
+                "type": "connector",
+                "app": "flexibee",
+                "icon": "<img src=\"data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IlZyc3R2YV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTAwIDEwMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOnVybCgjU1ZHSURfMV8pO30KCS5zdDF7ZmlsbDojNjQ2MzYzO30KPC9zdHlsZT4KPGcgaWQ9IlZyc3R2YV8yXzFfIj4KCTxnIGlkPSJMb2dhIj4KCQk8Zz4KCQkJCgkJCQk8bGluZWFyR3JhZGllbnQgaWQ9IlNWR0lEXzFfIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjY2LjY5MjIiIHkxPSIyMC42Nzk0IiB4Mj0iNjYuNjkyMiIgeTI9Ijc4LjU2MDEiIGdyYWRpZW50VHJhbnNmb3JtPSJtYXRyaXgoMSAwIDAgLTEgMCA5OS42MTk4KSI+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwIiBzdHlsZT0ic3RvcC1jb2xvcjojRjdCMzAwIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjEyIiBzdHlsZT0ic3RvcC1jb2xvcjojRjZBRjAzIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjI1IiBzdHlsZT0ic3RvcC1jb2xvcjojRjVBMjBCIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjM4IiBzdHlsZT0ic3RvcC1jb2xvcjojRjI4RTFBIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjUxIiBzdHlsZT0ic3RvcC1jb2xvcjojRUY3MTJFIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjY0IiBzdHlsZT0ic3RvcC1jb2xvcjojRUE0QjQ3Ii8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjc3IiBzdHlsZT0ic3RvcC1jb2xvcjojRTUxRTY2Ii8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIwLjg1IiBzdHlsZT0ic3RvcC1jb2xvcjojRTEwMDdCIi8+CgkJCQk8c3RvcCAgb2Zmc2V0PSIxIiBzdHlsZT0ic3RvcC1jb2xvcjojRTEwMDdCIi8+CgkJCTwvbGluZWFyR3JhZGllbnQ+CgkJCTxwb2x5Z29uIGNsYXNzPSJzdDAiIHBvaW50cz0iMzMuNSwyMS4xIDY2LjksMjEuMSA5OS45LDc4LjkgNjYuNSw3OC45IAkJCSIvPgoJCQk8cG9seWdvbiBjbGFzcz0ic3QxIiBwb2ludHM9IjMzLjUsMjEuMSAwLjEsNzguOSAzMy41LDc4LjkgNjYuOSwyMS4xIAkJCSIvPgoJCTwvZz4KCTwvZz4KPC9nPgo8L3N2Zz4K\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 1600, "y": 0 }
+        },
+        {
+            "type": "flow",
+            "id": "i-doklad-tag-issued-invoice",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "i-doklad-tag-issued-invoice",
+                "worker": "sys-worker",
+                "type": "connector",
+                "app": "i-doklad",
+                "icon": "<img src=\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0ZGNkIzNSIgZD0iTTE0IDJINmMtMS4xIDAtMS45OS45LTEuOTkgMkw0IDIwYzAgMS4xLjg5IDIgMS45OSAySDE4YzEuMSAwIDItLjkgMi0yVjhsLTYtNnptMiAxNkg4di0yaDh2MnptMC00SDh2LTJoOHYyem0tMy01VjMuNUwxOC41IDlIMTN6Ii8+PC9zdmc+\" alt=\"\" />"
+            },
+            "name": null,
+            "position": { "x": 1800, "y": 0 }
+        }
+    ],
+    "connections": [
+        { "id": "c1", "from": "start-bulk", "to": "prepare-invoice-filters", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c2", "from": "prepare-invoice-filters", "to": "i-doklad-list-issued-invoices", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c3", "from": "i-doklad-list-issued-invoices", "to": "filter-synced-invoices", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c4", "from": "filter-synced-invoices", "to": "flexibee-lookup-partner-from-invoice", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c5", "from": "start-by-vs", "to": "i-doklad-get-issued-invoice-by-vs", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c6", "from": "i-doklad-get-issued-invoice-by-vs", "to": "flexibee-lookup-partner-from-invoice", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c7", "from": "flexibee-lookup-partner-from-invoice", "to": "flexibee-create-partner-from-invoice", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c8", "from": "flexibee-create-partner-from-invoice", "to": "invoice-idoklad-to-flexi-mapper", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c9", "from": "invoice-idoklad-to-flexi-mapper", "to": "flexibee-create-faktura-vydana-from-invoice", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c10", "from": "flexibee-create-faktura-vydana-from-invoice", "to": "i-doklad-download-invoice-pdf", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c11", "from": "i-doklad-download-invoice-pdf", "to": "flexibee-upload-attachment", "sourceOutput": "output", "targetInput": "input" },
+        { "id": "c12", "from": "flexibee-upload-attachment", "to": "i-doklad-tag-issued-invoice", "sourceOutput": "output", "targetInput": "input" }
+    ]
+}
