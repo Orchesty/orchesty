@@ -41,6 +41,8 @@ final class AuditLogSubscriber implements EventSubscriberInterface
         '/api/audit-logs',
         '/api/user/login',
         '/api/user/logout',
+        '/api/onboarding/state',
+        '/api/onboarding/welcome-seen',
     ];
 
     private const array RESOURCE_PREFIX_MAP = [

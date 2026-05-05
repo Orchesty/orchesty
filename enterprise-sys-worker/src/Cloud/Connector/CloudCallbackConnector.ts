@@ -1,11 +1,11 @@
+import CoreFormsEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
 import AConnector from '@orchesty/nodejs-sdk/dist/lib/Connector/AConnector';
+import logger from '@orchesty/nodejs-sdk/dist/lib/Logger/Logger';
 import RequestDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/RequestDto';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import { checkParams } from '@orchesty/nodejs-sdk/dist/lib/Utils/Validations';
-import CoreFormsEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
-import logger from '@orchesty/nodejs-sdk/dist/lib/Logger/Logger';
-import { CLOUD_URL, CLOUD_API_KEY } from '../CloudCallbackApplication';
+import { CLOUD_API_KEY, CLOUD_URL } from '../CloudCallbackApplication';
 
 export const NAME = 'cloud-callback-connector';
 
@@ -44,7 +44,8 @@ export default class CloudCallbackConnector extends AConnector {
             bodyStr,
             {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
+                Accept: 'application/json',
+                // eslint-disable-next-line @typescript-eslint/naming-convention
                 'X-Api-Key': apiKey,
             },
         );

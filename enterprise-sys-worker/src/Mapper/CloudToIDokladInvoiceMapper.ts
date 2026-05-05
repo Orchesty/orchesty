@@ -21,6 +21,7 @@ export default class CloudToIDokladInvoiceMapper extends ACommonNode {
         // PriceType: 0 = s DPH, 1 = bez DPH, 2 = přenesená daňová povinnost
         const priceType = data.reverseChargeVat ? 2 : 1;
 
+        /* eslint-disable @typescript-eslint/naming-convention */
         const invoiceData: Record<string, unknown> = {
             PartnerId: data.partnerId,
             Description: data.subject,
@@ -30,12 +31,13 @@ export default class CloudToIDokladInvoiceMapper extends ACommonNode {
                 Amount: item.quantity,
                 UnitPrice: item.unitPrice,
                 PriceType: priceType,
-                VatRateType: 1,             // 1 = základní sazba (21%)
+                VatRateType: 1, // 1 = základní sazba (21%)
                 Unit: 'ks',
                 DiscountPercentage: 0,
                 IsTaxMovement: !data.reverseChargeVat,
             })),
         };
+        /* eslint-enable @typescript-eslint/naming-convention */
 
         dto.setJsonData({
             cloudInvoiceId: data.invoiceId,
@@ -56,7 +58,6 @@ interface ICloudInvoicePayload {
     duzp: string;
     currency: string;
     reverseChargeVat: boolean;
-    maturityDays?: number;
     items: {
         description: string;
         quantity: number;
@@ -64,6 +65,7 @@ interface ICloudInvoicePayload {
         totalPrice: number;
     }[];
     partnerId: number;
+    maturityDays?: number;
     reportPdf?: {
         filename: string;
         contentBase64: string;

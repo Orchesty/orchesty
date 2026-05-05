@@ -61,6 +61,7 @@ export default class CloudInviteEmailMapper extends ASystemEmailMapper {
   </tr>
 </table>`;
 
+        /* eslint-disable @typescript-eslint/naming-convention */
         return dto.setNewJsonData<IInput>({
             subject: "You've been invited to Orchesty Cloud",
             from_name: sender.fromName,
@@ -68,6 +69,7 @@ export default class CloudInviteEmailMapper extends ASystemEmailMapper {
             to: [{ email }],
             html,
         });
+        /* eslint-enable @typescript-eslint/naming-convention */
     }
 
 }

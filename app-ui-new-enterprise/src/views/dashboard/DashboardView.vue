@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import TimeFilter from '@/components/ui/TimeFilter.vue'
 import OverviewTab from '@/components/dashboard/OverviewTab.vue'
 import ConnectorsTab from '@/components/dashboard/ConnectorsTab.vue'
@@ -8,7 +8,9 @@ import TopologiesTab from '@/components/dashboard/TopologiesTab.vue'
 import ProcessesTab from '@/components/dashboard/ProcessesTab.vue'
 import ApplicationsTab from '@/components/dashboard/ApplicationsTab.vue'
 import ResourcesTab from '@/components/dashboard/ResourcesTab.vue'
+import WelcomeOnboardingModal from '@/components/onboarding/WelcomeOnboardingModal.vue'
 import { useCloudMode } from '@/composables/useCloudMode'
+import { useWelcomeOnboarding } from '@/composables/useWelcomeOnboarding'
 import ConnectorDetailDrawer from '@/components/dashboard/ConnectorDetailDrawer.vue'
 import ProcessesDrawer from '@/components/dashboard/ProcessesDrawer.vue'
 import ProcessAuditDrawer from '@/components/dashboard/ProcessAuditDrawer.vue'
@@ -19,8 +21,37 @@ import type { TimeFilter as TimeFilterType, ProcessFilter, HeatmapClickData, Pro
 import { formatDateTimeLocal } from '@/utils/timeRangeConverter'
 
 const router = useRouter()
+const route = useRoute()
 const { enterpriseDashboards } = useFeatures()
 const { cloudMode } = useCloudMode()
+const {
+  isOpen: welcomeOpen,
+  ensureLoaded: loadWelcomeState,
+  dismiss: dismissWelcome,
+  forceOpen: forceOpenWelcome,
+} = useWelcomeOnboarding()
+
+onMounted(() => {
+  // `?welcome=1` is a dev/preview trigger: opens the modal regardless of
+  // localStorage cache or server state, and strips the query so a reload
+  // doesn't keep re-firing it. Dismissing afterwards persists as usual.
+  if (route.query.welcome === '1') {
+    forceOpenWelcome()
+    const { welcome: _omit, ...rest } = route.query
+    void router.replace({ name: route.name as string, params: route.params, query: rest })
+    return
+  }
+
+  void loadWelcomeState()
+})
+
+// Navigate to the Trace view and let it auto-fire the onboarding prompt.
+// TraceView already supports `?prompt=` deep-links and strips the param
+// after dispatching, so reloads don't re-trigger the same message.
+const handleOpenTraceFromWelcome = () => {
+  void dismissWelcome()
+  void router.push({ name: 'trace', query: { prompt: 'start onboarding' } })
+}
 
 const dashboardTabs = computed(() => {
   const baseTabs = [
@@ -346,4 +377,14 @@ const handleTopologyProcessesClick = (topologyId: string) => {
     />
 
   </div></main>
+
+  <!-- First-visit welcome modal. Mounted at the dashboard level so it shows
+       on the first dashboard render after login and never blocks other
+       routes. Both code paths (core-only and enterprise) get the modal,
+       which is the natural landing surface for trial / new instances. -->
+  <WelcomeOnboardingModal
+    v-model="welcomeOpen"
+    @open-trace="handleOpenTraceFromWelcome"
+    @dismiss="dismissWelcome"
+  />
 </template>

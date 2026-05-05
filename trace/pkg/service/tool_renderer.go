@@ -53,26 +53,26 @@ func renderToolResult(toolID string, raw []byte) (string, bool) {
 // expensive LLM summariser pass for the onboarding wizard. It produces the
 // EXACT plain-text shape the FE parser (`traceMessageParser.ts`) expects:
 //
-//   [onboarding-stage:<stage> next=<next>]
+//	[onboarding-stage:<stage> next=<next>]
 //
-//   # <title>
+//	# <title>
 //
-//   <intro verbatim>
+//	<intro verbatim>
 //
-//   [shell] <label>
-//   ```bash
-//   <value verbatim>
-//   ```
+//	[shell] <label>
+//	```bash
+//	<value verbatim>
+//	```
 //
-//   [prompt] <label>
-//   ```
-//   <value verbatim>
-//   ```
+//	[prompt] <label>
+//	```
+//	<value verbatim>
+//	```
 //
-//   [link] <label>
-//   <href>
+//	[link] <label>
+//	<href>
 //
-//   Reply `next` when you're ready to continue.
+//	Reply `next` when you're ready to continue.
 //
 // Why a Go renderer and not the LLM summariser:
 //   - The LLM was burning 4–7 s per onboarding turn doing what amounts to a
@@ -172,7 +172,7 @@ func renderOnboardingStep(raw []byte) (string, bool) {
 // renderOnboardingAction renders a single action object from `actions[]`
 // into one of the three tagged blocks the FE recognises:
 //   - shell: `[shell] <label>\n```bash\n<value>\n````
-//   - prompt: `[prompt] <label>\n````\n<value>\n````` (4-backtick fence so
+//   - prompt: `[prompt] <label>\n````\n<value>\n```“ (4-backtick fence so
 //     nested ```lang ... ``` snippets inside the prompt body don't break out)
 //   - link: `[link] <label>\n<href>`
 //

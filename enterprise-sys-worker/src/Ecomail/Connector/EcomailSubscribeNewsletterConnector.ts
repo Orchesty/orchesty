@@ -11,6 +11,7 @@ export interface IInput {
     email: string;
 }
 
+/* eslint-disable @typescript-eslint/naming-convention */
 export interface IOutput {
     id: number;
     email: string;
@@ -24,6 +25,7 @@ interface ISubscribeRequestBody {
     subscriber_data: { email: string };
     skip_confirmation: boolean;
 }
+/* eslint-enable @typescript-eslint/naming-convention */
 
 export default class EcomailSubscribeNewsletterConnector extends AConnector {
 
@@ -47,10 +49,12 @@ export default class EcomailSubscribeNewsletterConnector extends AConnector {
             return dto as unknown as ProcessDto<IOutput>;
         }
 
+        /* eslint-disable @typescript-eslint/naming-convention */
         const body: ISubscribeRequestBody = {
             subscriber_data: { email: input.email },
             skip_confirmation: false,
         };
+        /* eslint-enable @typescript-eslint/naming-convention */
 
         const request = app.getRequestDto(
             dto,

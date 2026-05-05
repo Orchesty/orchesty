@@ -1,8 +1,8 @@
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import ResultCode from '@orchesty/nodejs-sdk/dist/lib/Utils/ResultCode';
 import { checkParams } from '@orchesty/nodejs-sdk/dist/lib/Utils/Validations';
-import { ISalesFormContext } from '../../Sales/types';
 import { buildSalesMergeVars } from '../../Sales/mergeVars';
+import { ISalesFormContext } from '../../Sales/types';
 import {
     FROM_EMAIL,
     FROM_NAME,
@@ -57,6 +57,7 @@ export default class EcomailSendSalesCustomerConfirmationConnector extends Ecoma
             return dto as unknown as ProcessDto<IOutput>;
         }
 
+        /* eslint-disable @typescript-eslint/naming-convention */
         const emailInput: IInput = {
             template_id: Number(templateId),
             subject: buildSubject(ctx),
@@ -65,6 +66,7 @@ export default class EcomailSendSalesCustomerConfirmationConnector extends Ecoma
             to: [{ email: ctx.email, name: `${ctx.firstName} ${ctx.lastName}` }],
             global_merge_vars: buildSalesMergeVars(ctx),
         };
+        /* eslint-enable @typescript-eslint/naming-convention */
 
         dto.setNewJsonData<IInput>(emailInput);
         await super.processAction(dto);

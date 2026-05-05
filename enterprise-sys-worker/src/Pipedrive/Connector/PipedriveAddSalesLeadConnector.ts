@@ -1,5 +1,5 @@
-import { SUBDOMAIN } from '@orchesty/connector-pipedrive/dist/PipedriveApplication';
 import PipedriveAddLeadConnector, { IInput, IOutput } from '@orchesty/connector-pipedrive/dist/Connector/PipedriveAddLeadConnector';
+import { SUBDOMAIN } from '@orchesty/connector-pipedrive/dist/PipedriveApplication';
 import CoreFormsEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import { checkParams } from '@orchesty/nodejs-sdk/dist/lib/Utils/Validations';
@@ -30,7 +30,8 @@ export default class PipedriveAddSalesLeadConnector extends PipedriveAddLeadConn
         );
 
         const appInstall = await this.getApplicationInstallFromProcess(dto);
-        const subdomain = appInstall.getSettings()?.[CoreFormsEnum.AUTHORIZATION_FORM]?.[SUBDOMAIN] as string | undefined;
+        const subdomain = appInstall.getSettings()
+            ?.[CoreFormsEnum.AUTHORIZATION_FORM]?.[SUBDOMAIN] as string | undefined;
 
         const leadInput: ISalesLeadRequestBody = {
             title: `${ctx.firstName} ${ctx.lastName} (${ctx.company})`,

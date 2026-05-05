@@ -34,12 +34,12 @@ import TopologyFailedRepeatedlyEmailMapper from './CustomNode/TopologyFailedRepe
 import TopologySlowEmailMapper from './CustomNode/TopologySlowEmailMapper';
 import TrialEndedEmailMapper from './CustomNode/TrialEndedEmailMapper';
 import TrialReminderEmailMapper from './CustomNode/TrialReminderEmailMapper';
-import EcomailApplication from './Ecomail/EcomailApplication';
 import EcomailSendMessageConnector from './Ecomail/Connector/EcomailSendMessageConnector';
 import EcomailSendSalesBusinessNotificationConnector from './Ecomail/Connector/EcomailSendSalesBusinessNotificationConnector';
 import EcomailSendSalesCustomerConfirmationConnector from './Ecomail/Connector/EcomailSendSalesCustomerConfirmationConnector';
 import EcomailSendTransactionalEmailConnector from './Ecomail/Connector/EcomailSendTransactionalEmailConnector';
 import EcomailSubscribeNewsletterConnector from './Ecomail/Connector/EcomailSubscribeNewsletterConnector';
+import EcomailApplication from './Ecomail/EcomailApplication';
 import FlexiBeeCreateFakturaVydanaFromInvoice from './FlexiBee/Connector/FlexiBeeCreateFakturaVydanaFromInvoice';
 import FlexiBeeCreatePartnerFromInvoice from './FlexiBee/Connector/FlexiBeeCreatePartnerFromInvoice';
 import FlexiBeeLookupPartnerFromInvoice from './FlexiBee/Connector/FlexiBeeLookupPartnerFromInvoice';

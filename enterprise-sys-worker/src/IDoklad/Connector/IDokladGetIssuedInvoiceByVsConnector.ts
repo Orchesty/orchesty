@@ -37,9 +37,11 @@ export default class IDokladGetIssuedInvoiceByVsConnector extends AConnector {
             repeat: '>=500',
         }, 60, 3);
 
+        /* eslint-disable @typescript-eslint/naming-convention */
         const body = JSON.parse(response.getBody()) as {
             Data?: { Items?: Record<string, unknown>[] };
         };
+        /* eslint-enable @typescript-eslint/naming-convention */
         const invoice = body.Data?.Items?.[0];
 
         if (!invoice) {

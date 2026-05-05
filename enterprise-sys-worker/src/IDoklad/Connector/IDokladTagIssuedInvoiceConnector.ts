@@ -28,6 +28,7 @@ export default class IDokladTagIssuedInvoiceConnector extends AConnector {
             applicationInstall,
             HttpMethods.PATCH,
             `${BASE_URL}/IssuedInvoices`,
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             JSON.stringify({ Id: invoiceId, Tags: tags }),
         );
 

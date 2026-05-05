@@ -13,27 +13,27 @@
   },
   "keywords": [],
   "dependencies": {
-    "@orchesty/connector-open-ai": "^1.0.1",
-    "@orchesty/nodejs-sdk": "^5.0.5",
-    "dotenv": "^16.6.1"
+    "@orchesty/connector-open-ai": "^2.0.0",
+    "@orchesty/nodejs-sdk": "^5.0.9",
+    "dotenv": "^17.4.2"
   },
   "pnpm": {
     "overrides": {
-      "@orchesty/nodejs-sdk": "^5.0.3"
+       "eslint": "$eslint"
     }
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
-    "@eslint/js": "^9.39.4",
+    "@eslint/js": "^10.0.1",
     "@hanaboso/eslint-plugin": "^1.2.5",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.6.0",
     "copyfiles": "^2.4.1",
-    "eslint": "^9.39.4",
+    "eslint": "^10.3.0",
     "jest": "^30.3.0",
     "nodemon": "^3.1.14",
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   }
 }

@@ -1,6 +1,6 @@
+import logger from '@orchesty/nodejs-sdk/dist/lib/Logger/Logger';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import ResultCode from '@orchesty/nodejs-sdk/dist/lib/Utils/ResultCode';
-import logger from '@orchesty/nodejs-sdk/dist/lib/Logger/Logger';
 import IDokladGetContactConnector from './IDokladGetContactConnector';
 
 export const NAME = 'i-doklad-lookup-contact-from-cloud-payload';
@@ -60,9 +60,11 @@ export default class IDokladLookupContactFromCloudPayload extends IDokladGetCont
 
 }
 
+/* eslint-disable @typescript-eslint/naming-convention */
 interface IContactListResponse {
     Data?: {
         Items?: { Id: number }[];
         TotalItems?: number;
     };
 }
+/* eslint-enable @typescript-eslint/naming-convention */

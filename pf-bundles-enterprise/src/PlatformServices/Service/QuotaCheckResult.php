@@ -5,6 +5,8 @@ namespace Hanaboso\PipesFrameworkEnterprise\PlatformServices\Service;
 use DateTimeImmutable;
 
 /**
+ * Class QuotaCheckResult
+ *
  * Outcome of a single `TraceQuotaService::incrementOrReject` decision.
  *
  * `rejected = true` means the increment was NOT persisted because the daily
@@ -18,6 +20,8 @@ final class QuotaCheckResult
 {
 
     /**
+     * QuotaCheckResult constructor.
+     *
      * @param bool              $rejected
      * @param int               $used
      * @param int               $limit

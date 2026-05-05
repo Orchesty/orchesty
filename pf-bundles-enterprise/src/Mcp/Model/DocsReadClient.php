@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\Utils\String\Json;
 use Throwable;
 
 /**
@@ -101,7 +102,7 @@ final class DocsReadClient
         $url = sprintf('%s%s', rtrim($this->baseUrl, '/'), self::READ_PATH);
         $dto = (new RequestDto(new Uri($url), CurlManager::METHOD_POST, new ProcessDto()))
             ->setHeaders($headers)
-            ->setBody((string) json_encode(['path' => $trimmedPath], JSON_THROW_ON_ERROR));
+            ->setBody(Json::encode(['path' => $trimmedPath]));
 
         try {
             // HTTP_ERRORS=false lets us inspect non-2xx ourselves so we can
@@ -116,18 +117,18 @@ final class DocsReadClient
             );
         } catch (Throwable $e) {
             return [
+                'body'  => '',
                 'error' => sprintf('docs read request failed: %s', $e->getMessage()),
                 'path'  => $trimmedPath,
-                'body'  => '',
             ];
         }
 
         $status = $response->getStatusCode();
         if ($status < 200 || $status >= 300) {
             return [
+                'body'  => '',
                 'error' => sprintf('docs read returned status %d', $status),
                 'path'  => $trimmedPath,
-                'body'  => '',
             ];
         }
 
@@ -135,16 +136,16 @@ final class DocsReadClient
             $decoded = $response->getJsonBody();
         } catch (Throwable $e) {
             return [
+                'body'  => '',
                 'error' => sprintf('docs read returned malformed JSON: %s', $e->getMessage()),
                 'path'  => $trimmedPath,
-                'body'  => '',
             ];
         }
 
         if (!isset($decoded['body']) || !is_string($decoded['body'])) {
             $decoded['body'] = '';
         }
-        $decoded['path'] = $decoded['path'] ?? $trimmedPath;
+        $decoded['path'] ??= $trimmedPath;
 
         return $decoded;
     }

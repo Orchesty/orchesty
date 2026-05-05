@@ -21,7 +21,7 @@ export default class IDokladCreateInvoiceFromCloud extends IDokladCreateIssuedIn
         const data = dto.getJsonData() as Record<string, unknown>;
         const cloudInvoiceId = data.cloudInvoiceId as string;
         const invoiceData = data.invoiceData as Record<string, unknown>;
-        const reportPdf = data.reportPdf;
+        const { reportPdf } = data;
 
         // Reshape dto for the base connector (expects flat invoice data)
         dto.setJsonData(invoiceData);
@@ -42,8 +42,10 @@ export default class IDokladCreateInvoiceFromCloud extends IDokladCreateIssuedIn
 
 }
 
+/* eslint-disable @typescript-eslint/naming-convention */
 interface ICreateInvoiceResponse {
     Data?: {
         Id?: number;
     };
 }
+/* eslint-enable @typescript-eslint/naming-convention */

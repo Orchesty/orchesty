@@ -114,6 +114,7 @@ export default class CloudLimitThresholdEmailMapper extends ASystemEmailMapper {
   </td></tr>
 </table>`;
 
+        /* eslint-disable @typescript-eslint/naming-convention */
         return dto.setNewJsonData<IInput>({
             subject: `Cloud plan ${resourceLabel(resource)} \u2014 ${bandLabel(band)}`,
             from_name: sender.fromName,
@@ -121,6 +122,7 @@ export default class CloudLimitThresholdEmailMapper extends ASystemEmailMapper {
             to: recipients.map((email) => ({ email })),
             html,
         });
+        /* eslint-enable @typescript-eslint/naming-convention */
     }
 
 }

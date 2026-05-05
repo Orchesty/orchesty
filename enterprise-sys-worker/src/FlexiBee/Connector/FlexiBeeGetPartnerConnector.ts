@@ -1,8 +1,8 @@
+import FlexiBeeApplication from '@orchesty/connector-flexi-bee/dist/FexiBeeApplication';
 import AConnector from '@orchesty/nodejs-sdk/dist/lib/Connector/AConnector';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import { checkParams } from '@orchesty/nodejs-sdk/dist/lib/Utils/Validations';
-import FlexiBeeApplication from '@orchesty/connector-flexi-bee/dist/FexiBeeApplication';
 
 export const NAME = 'flexibee-get-partner';
 
@@ -27,9 +27,7 @@ export default class FlexiBeeGetPartnerConnector extends AConnector {
         const application = this.getApplication<FlexiBeeApplication>();
 
         const url = application.getUrl(applicationInstall, `adresar/(ic='${ic}').json`);
-        const request = await application.getRequestDto(
-            dto, applicationInstall, HttpMethods.GET, url,
-        );
+        const request = await application.getRequestDto(dto, applicationInstall, HttpMethods.GET, url);
 
         const response = await this.getSender().send(request, {
             success: [200],

@@ -5,6 +5,8 @@ namespace Hanaboso\PipesFrameworkEnterprise\PlatformServices\Service;
 use DateTimeImmutable;
 
 /**
+ * Class QuotaUsageView
+ *
  * Read-only snapshot of the current Trace cloud-relay quota window.
  * Returned by `TraceQuotaService::getCurrentUsage()` and surfaced by the
  * `GET /platform-services/trace-ai-provider/quota` endpoint.
@@ -19,6 +21,8 @@ final class QuotaUsageView
 {
 
     /**
+     * QuotaUsageView constructor.
+     *
      * @param int               $used
      * @param int               $limit
      * @param DateTimeImmutable $resetAt
@@ -37,9 +41,9 @@ final class QuotaUsageView
     public function toArray(): array
     {
         return [
-            'used'    => $this->used,
             'limit'   => $this->limit,
             'resetAt' => $this->resetAt->format(DATE_ATOM),
+            'used'    => $this->used,
         ];
     }
 

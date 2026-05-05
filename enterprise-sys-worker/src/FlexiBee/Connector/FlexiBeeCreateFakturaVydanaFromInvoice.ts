@@ -23,6 +23,7 @@ export default class FlexiBeeCreateFakturaVydanaFromInvoice extends FlexiBeeCrea
         const data = dto.getJsonData() as Record<string, unknown>;
         const flexiInvoice = data.flexiInvoice as Record<string, unknown>;
         const idokladInvoiceId = data.idokladInvoiceId as number;
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         const idokladTags = (data.idokladTags ?? []) as { TagId: number }[];
 
         // Reshape dto for the base connector (expects raw invoice data)

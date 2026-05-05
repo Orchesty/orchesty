@@ -14,9 +14,10 @@ import (
 // linear-progression trigger ("next", "continue", ...).
 //
 // Examples:
-//   [onboarding-stage:overview next=choose-your-way]
-//   [onboarding-stage:choose-your-way]                 // terminal — no next
-//   [onboarding-stage:add-a-node next=connector-node]
+//
+//	[onboarding-stage:overview next=choose-your-way]
+//	[onboarding-stage:choose-your-way]                 // terminal — no next
+//	[onboarding-stage:add-a-node next=connector-node]
 var onboardingStageMarkerRe = regexp.MustCompile(`^\[onboarding-stage:([a-z0-9-]+)(?:\s+next=([a-z0-9-]+))?\]`)
 
 // parseOnboardingStageMarker extracts (stage, next) from the first line of a
@@ -151,17 +152,17 @@ func normaliseTriggerInput(input string) string {
 //
 // Routing rules:
 //   - AI triggers          → "clone-starter-ai" (always — first-time pick
-//                            from choose-your-way and mid-branch switch
-//                            collapse to the same restart point).
+//     from choose-your-way and mid-branch switch
+//     collapse to the same restart point).
 //   - manual triggers      → "clone-starter-manual" (symmetric).
 //   - linear progress      → derived from the FE-supplied
-//                            extraContext["onboardingNext"] hint, or by
-//                            scanning history backwards for the latest
-//                            assistant turn carrying `next=<id>` in its
-//                            stage marker. Returns ok=false if neither
-//                            source yields a target — that means we are on
-//                            a terminal stage where "next" is genuinely
-//                            ambiguous; let the LLM ask a follow-up.
+//     extraContext["onboardingNext"] hint, or by
+//     scanning history backwards for the latest
+//     assistant turn carrying `next=<id>` in its
+//     stage marker. Returns ok=false if neither
+//     source yields a target — that means we are on
+//     a terminal stage where "next" is genuinely
+//     ambiguous; let the LLM ask a follow-up.
 //
 // The history scan only ever inspects Role=="assistant" turns and only the
 // FIRST line of each. Quoted markers buried in prose (e.g. a docs_search

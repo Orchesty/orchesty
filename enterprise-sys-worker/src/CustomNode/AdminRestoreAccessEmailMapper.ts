@@ -59,6 +59,7 @@ export default class AdminRestoreAccessEmailMapper extends ASystemEmailMapper {
   </tr>
 </table>`;
 
+        /* eslint-disable @typescript-eslint/naming-convention */
         return dto.setNewJsonData<IInput>({
             subject: 'Your Orchesty Admin access has been restored',
             from_name: sender.fromName,
@@ -66,6 +67,7 @@ export default class AdminRestoreAccessEmailMapper extends ASystemEmailMapper {
             to: [{ email, name }],
             html,
         });
+        /* eslint-enable @typescript-eslint/naming-convention */
     }
 
 }

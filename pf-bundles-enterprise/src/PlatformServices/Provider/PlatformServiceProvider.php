@@ -113,11 +113,7 @@ final class PlatformServiceProvider
      */
     public function isConfigured(string $serviceType): bool
     {
-        if (
-            $this->bindingRepository->findOneBy(
-                [ServiceBinding::SERVICE_TYPE => $serviceType],
-            ) !== NULL
-        ) {
+        if ($this->bindingRepository->findOneBy([ServiceBinding::SERVICE_TYPE => $serviceType]) !== NULL) {
             return TRUE;
         }
 
@@ -165,19 +161,15 @@ final class PlatformServiceProvider
      *
      * @return mixed[]
      *
+     * @throws MongoDBException
      * @throws PlatformServiceException
      * @throws QuotaExceededException
-     * @throws MongoDBException
      */
     private function dispatchCloudRelay(string $method, array $data): array
     {
         $check = $this->traceQuotaService->incrementOrReject();
         if ($check->rejected) {
-            throw new QuotaExceededException(
-                limit: $check->limit,
-                used: $check->used,
-                resetAt: $check->resetAt,
-            );
+            throw new QuotaExceededException(limit: $check->limit, used: $check->used, resetAt: $check->resetAt);
         }
 
         // The cloud-relay endpoint expects no SDK / user fields (no local
@@ -241,7 +233,12 @@ final class PlatformServiceProvider
             return Json::decode($response);
         } catch (Throwable $e) {
             throw new PlatformServiceException(
-                sprintf('Platform service call failed [%s/%s]: %s', $binding->getServiceType(), $method, $e->getMessage()),
+                sprintf(
+                    'Platform service call failed [%s/%s]: %s',
+                    $binding->getServiceType(),
+                    $method,
+                    $e->getMessage(),
+                ),
                 PlatformServiceException::CALL_FAILED,
                 $e,
             );
@@ -281,8 +278,7 @@ final class PlatformServiceProvider
         if (!$this->serviceLocator->isApplicationInstalledOnSdk($appKey, $sdk)) {
             throw new PlatformServiceException(
                 sprintf(
-                    'Application "%s" is no longer installed on worker "%s" for platform service "%s". '
-                    . 'Update the binding in Settings.',
+                    'Application "%s" is no longer installed on worker "%s" for platform service "%s". Update the binding in Settings.',
                     $appKey,
                     $sdk,
                     $binding->getServiceType(),

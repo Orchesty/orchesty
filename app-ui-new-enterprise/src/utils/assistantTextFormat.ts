@@ -100,10 +100,12 @@ const calloutExtension: TokenizerAndRendererExtension = {
     const match = src.match(/^>\s*\[!([A-Za-z]+)\][^\n]*\n((?:>[^\n]*(?:\n|$))*)/)
     if (!match) return undefined
 
-    const type = match[1].toLowerCase()
+    const typeRaw = match[1]!
+    const bodyRaw = match[2]!
+    const type = typeRaw.toLowerCase()
     if (!(CALLOUT_TYPES as readonly string[]).includes(type)) return undefined
 
-    const body = match[2]
+    const body = bodyRaw
       .split('\n')
       .map((line) => line.replace(/^>\s?/, ''))
       .join('\n')

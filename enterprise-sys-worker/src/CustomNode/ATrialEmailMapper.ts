@@ -2,21 +2,19 @@ import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import { IInput } from '../Ecomail/Connector/EcomailSendMessageConnector';
 import ASystemEmailMapper from './ASystemEmailMapper';
 
-/* eslint-disable @typescript-eslint/naming-convention */
 export interface ITrialEmailPayload {
     kind: 'reminder' | 'ended';
     accountId: string;
     instanceId: string;
     email: string;
+    configureUrl: string;
+    trialEndsAt: string;
+    reminderKey: string;
     ownerName?: string;
     locale?: string;
     instanceUrl?: string;
-    configureUrl: string;
     daysRemaining?: number;
-    trialEndsAt: string;
-    reminderKey: string;
 }
-/* eslint-enable @typescript-eslint/naming-convention */
 
 export function escapeHtml(str: string): string {
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -56,6 +54,7 @@ export default abstract class ATrialEmailMapper extends ASystemEmailMapper {
             ? { email: payload.email, name: payload.ownerName }
             : { email: payload.email };
 
+        /* eslint-disable @typescript-eslint/naming-convention */
         return dto.setNewJsonData<IInput>({
             subject,
             from_name: sender.fromName,
@@ -63,6 +62,7 @@ export default abstract class ATrialEmailMapper extends ASystemEmailMapper {
             to: [recipient],
             html,
         });
+        /* eslint-enable @typescript-eslint/naming-convention */
     }
 
     /**

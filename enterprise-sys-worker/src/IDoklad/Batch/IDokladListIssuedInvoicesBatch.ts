@@ -52,6 +52,7 @@ export default class IDokladListIssuedInvoicesBatch extends ABatchNode {
 
 }
 
+/* eslint-disable @typescript-eslint/naming-convention */
 interface IIssuedInvoiceListResponse {
     Data: {
         Items: Record<string, unknown>[];
@@ -62,3 +63,4 @@ interface IIssuedInvoiceListResponse {
     StatusCode: number;
     Message: string | null;
 }
+/* eslint-enable @typescript-eslint/naming-convention */

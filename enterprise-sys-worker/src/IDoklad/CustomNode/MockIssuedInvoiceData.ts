@@ -10,6 +10,7 @@ export default class MockIssuedInvoiceData extends ACommonNode {
     }
 
     public processAction(dto: ProcessDto): ProcessDto {
+        /* eslint-disable @typescript-eslint/naming-convention */
         dto.setJsonData({
             PartnerId: 19962643,
             Description: 'Faktura za konzultační služby - TEST',
@@ -44,6 +45,7 @@ export default class MockIssuedInvoiceData extends ACommonNode {
                 },
             ],
         });
+        /* eslint-enable @typescript-eslint/naming-convention */
 
         return dto;
     }

@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFrameworkEnterprise\Mcp\Model;
 
-use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
@@ -99,17 +99,17 @@ final class McpManager
             // to put exactly one of these alongside `audit`/`data`. They are
             // forwarded to topology_progress.startedAt and Loki query window
             // by McpManager::run().
-            $properties['day'] = [
+            $properties['day']    = [
                 'description' => 'Restrict to a single calendar day (UTC), e.g. "2026-03-12".',
                 'format'      => 'date',
                 'type'        => 'string',
             ];
-            $properties['from'] = [
+            $properties['from']   = [
                 'description' => 'ISO 8601 start of the date range (inclusive). Use together with "to".',
                 'format'      => 'date-time',
                 'type'        => 'string',
             ];
-            $properties['to'] = [
+            $properties['to']     = [
                 'description' => 'ISO 8601 end of the date range (exclusive). Use together with "from".',
                 'format'      => 'date-time',
                 'type'        => 'string',
@@ -124,18 +124,7 @@ final class McpManager
 
             return [
                 'description'   => sprintf(
-                    'Returns the audit history of a single %s entity: for every '
-                    . 'topology run that touched it, an `entry` snapshot (when '
-                    . 'business data entered the process), zero or more `steps` '
-                    . '(intermediate audit checkpoints, possibly from sibling '
-                    . 'entities of the same correlation), and an `exit` snapshot '
-                    . '(when the process delegated the data to its destination). '
-                    . 'Each snapshot carries a `time`, `nodeName` and the picked '
-                    . '`payload` (subset of fields declared in the audit node\'s '
-                    . 'allowlist). Snapshots are null when the topology has no '
-                    . 'AuditCheckpointNode with the corresponding role. Optional '
-                    . 'top-level `day` / `from`+`to` / `period` narrow the result '
-                    . 'to topology runs started in that window.',
+                    'Returns the audit history of a single %s entity: for every topology run that touched it, an `entry` snapshot (when business data entered the process), zero or more `steps` (intermediate audit checkpoints, possibly from sibling entities of the same correlation), and an `exit` snapshot (when the process delegated the data to its destination). Each snapshot carries a `time`, `nodeName` and the picked `payload` (subset of fields declared in the audit node\'s allowlist). Snapshots are null when the topology has no AuditCheckpointNode with the corresponding role. Optional top-level `day` / `from`+`to` / `period` narrow the result to topology runs started in that window.',
                     $entityName,
                 ),
                 'id'            => $entity->getKey(),
@@ -199,415 +188,6 @@ final class McpManager
     }
 
     /**
-     * Manifest entry for the onboarding_step tool. Only emitted when the
-     * Nuxt origin is configured (DOCS_SEARCH_URL set) — same gating as the
-     * docs tools, since both rely on the public Orchesty site to host the
-     * source content.
-     *
-     * @return mixed[]
-     */
-    private function getOnboardingManifest(): array
-    {
-        if (!$this->onboardingStepClient->isConfigured()) {
-            return [];
-        }
-
-        return [
-            [
-                'description'   => 'Return a structured onboarding step (title, '
-                    . 'intro, prerequisites, next, actions[]) for guiding a new '
-                    . 'Orchesty user through scaffolding a worker, building '
-                    . 'their first topology, running it locally and verifying '
-                    . 'the result. ALWAYS prefer this tool over docs_search '
-                    . 'when the user expresses onboarding intent ("how do I '
-                    . 'start", "jak začít", "first time", "co je dál", "what\'s '
-                    . 'next"). Args: optional `stage` — when missing, returns '
-                    . 'the first step. After receiving a step, the assistant '
-                    . 'renders it as plain text with [shell] / [prompt] / '
-                    . '[link] action blocks the FE detects and shows as '
-                    . 'copy-pasteable cards.',
-                'id'            => 'onboarding_step',
-                'input_schema'  => [
-                    'properties' => [
-                        'stage' => [
-                            'description' => 'Onboarding stage id (e.g. "overview", "choose-your-way", "clone-starter-ai", "clone-starter-manual", "build-components-ai", "build-components-manual", "run-locally", "test-and-debug", "verify", "add-a-node", "application", "connector-node", "batch-node", "custom-node", "webhook-trigger", "event-trigger", "cron-trigger"). Omit to start from the first stage.',
-                            'type'        => 'string',
-                        ],
-                    ],
-                    'required'   => [],
-                    'type'       => 'object',
-                ],
-                'kind'          => 'onboarding',
-                'output_schema' => [
-                    'properties' => [
-                        'actions'       => [
-                            'items' => [
-                                'properties' => [
-                                    'href'  => ['type' => 'string'],
-                                    'kind'  => ['enum' => ['shell', 'prompt', 'link'], 'type' => 'string'],
-                                    'label' => ['type' => 'string'],
-                                    'value' => ['type' => 'string'],
-                                ],
-                                'type'       => 'object',
-                            ],
-                            'type'  => 'array',
-                        ],
-                        'description'   => ['type' => 'string'],
-                        'intro'         => ['type' => 'string'],
-                        'next'          => ['type' => 'string'],
-                        'path'          => ['type' => 'string'],
-                        'prerequisites' => [
-                            'items' => ['type' => 'string'],
-                            'type'  => 'array',
-                        ],
-                        'stage'         => ['type' => 'string'],
-                        'stages'        => [
-                            'items' => ['type' => 'string'],
-                            'type'  => 'array',
-                        ],
-                        'title'         => ['type' => 'string'],
-                    ],
-                    'type'       => 'object',
-                ],
-                'title'         => 'Get an interactive onboarding step',
-            ],
-        ];
-    }
-
-    /**
-     * Manifest entry for the docs_search tool. Only emitted when the
-     * DocsSearchClient is configured (DOCS_SEARCH_URL set) — otherwise the
-     * Trace LLM would see a tool that always errors out, which leads it to
-     * route platform-usage questions through the catch-all Reply shape and
-     * apologise to the user instead of either answering or staying silent.
-     *
-     * @return mixed[]
-     */
-    private function getDocsManifest(): array
-    {
-        if (!$this->docsSearchClient->isConfigured()) {
-            return [];
-        }
-
-        $manifest = [];
-
-        $manifest[] = [
-            'description'   => 'Search the public Orchesty documentation '
-                . '(orchesty.io) for platform usage answers. Use for '
-                . 'questions like "how do I get started", "how do I create '
-                . 'a topology", "how does OAuth2 application setup work", '
-                . '"what is a connector", any "how do I…" / "what is…" / '
-                . '"jak nastavím…" question. Pass the user message verbatim '
-                . 'as `query`. Do NOT use this tool for entity history or '
-                . 'metrics — those have their own envelopes. The top 1–2 '
-                . 'results carry a `bodyExcerpt` field (~3500 chars) so the '
-                . 'assistant can ground its answer in actual page text '
-                . 'rather than just listing links. If the excerpts do not '
-                . 'answer the question, follow up with a single docs_read '
-                . 'call against the most relevant `path`.',
-            'id'            => 'docs_search',
-            'input_schema'  => [
-                'properties' => [
-                    'query'  => [
-                        'description' => 'Natural-language question about Orchesty platform usage. Pass the user message verbatim.',
-                        'type'        => 'string',
-                    ],
-                    'locale' => [
-                        'description' => 'Preferred reply language for the user. Hint only — corpus is single-language.',
-                        'enum'        => ['cs', 'en'],
-                        'type'        => 'string',
-                    ],
-                ],
-                'required'   => ['query'],
-                'type'       => 'object',
-            ],
-            'kind'          => 'docs',
-            'output_schema' => [
-                'properties' => [
-                    'latestVersion' => ['type' => 'string'],
-                    'query'         => ['type' => 'string'],
-                    'results'       => [
-                        'items' => [
-                            'properties' => [
-                                'bodyExcerpt' => [
-                                    'description' => 'Up to ~3500 chars of actual page text, present only on the top 1–2 results. Use it verbatim or paraphrased to ground the answer.',
-                                    'type'        => 'string',
-                                ],
-                                'description' => ['type' => 'string'],
-                                'path'        => ['type' => 'string'],
-                                'score'       => ['type' => 'number'],
-                                'snippet'     => ['type' => 'string'],
-                                'source'      => ['enum' => ['docs', 'learn', 'onboarding'], 'type' => 'string'],
-                                'title'       => ['type' => 'string'],
-                            ],
-                            'type'       => 'object',
-                        ],
-                        'type'  => 'array',
-                    ],
-                ],
-                'type'       => 'object',
-            ],
-            'title'         => 'Search Orchesty documentation',
-        ];
-
-        if ($this->docsReadClient->isConfigured()) {
-            $manifest[] = [
-                'description'   => 'Fetch the full body text (up to ~12000 chars) '
-                    . 'of a single Orchesty documentation, learn or onboarding '
-                    . 'page. Use only as a follow-up to docs_search when the top '
-                    . 'result\'s `bodyExcerpt` is too thin to answer the user\'s '
-                    . 'question. Pass the canonical `path` returned by docs_search '
-                    . '(e.g. "/docs/2.0/...", "/learn/...", "/onboarding/..."). '
-                    . 'Call this AT MOST ONCE per user turn.',
-                'id'            => 'docs_read',
-                'input_schema'  => [
-                    'properties' => [
-                        'path' => [
-                            'description' => 'Canonical page path returned by docs_search.',
-                            'type'        => 'string',
-                        ],
-                    ],
-                    'required'   => ['path'],
-                    'type'       => 'object',
-                ],
-                'kind'          => 'docs',
-                'output_schema' => [
-                    'properties' => [
-                        'body'          => ['type' => 'string'],
-                        'description'   => ['type' => 'string'],
-                        'latestVersion' => ['type' => 'string'],
-                        'path'          => ['type' => 'string'],
-                        'title'         => ['type' => 'string'],
-                        'truncated'     => ['type' => 'boolean'],
-                    ],
-                    'type'       => 'object',
-                ],
-                'title'         => 'Read a single Orchesty documentation page',
-            ];
-        }
-
-        return $manifest;
-    }
-
-    /**
-     * Fixed actions the LLM can call for cross-cutting metrics questions.
-     * They sit alongside the per-entity audit history so the model can pick
-     * the right tool: entity-specific timelines go through `entity_history`,
-     * "how many processes" / "which connector fails most" go through these.
-     *
-     * @return mixed[]
-     */
-    private function getMetricsManifest(): array
-    {
-        $dateProperties = [
-            'from'   => [
-                'description' => 'ISO 8601 start of the range (inclusive). Use with "to".',
-                'format'      => 'date-time',
-                'type'        => 'string',
-            ],
-            'to'     => [
-                'description' => 'ISO 8601 end of the range (exclusive). Use with "from".',
-                'format'      => 'date-time',
-                'type'        => 'string',
-            ],
-            'period' => [
-                'description' => 'Named relative range: today, yesterday, this_week, last_7d, last_30d.',
-                'enum'        => ['today', 'yesterday', 'this_week', 'last_7d', 'last_30d'],
-                'type'        => 'string',
-            ],
-        ];
-
-        return [
-            [
-                'description'   => 'Aggregated process counts (success/failed) bucketed over a time '
-                    . 'range. Use for questions like "how many processes ran last week" or '
-                    . '"what is the failure rate today". Do NOT use for per-entity history; '
-                    . 'route those through the entity_history actions.',
-                'id'            => 'processes_timeseries',
-                'input_schema'  => [
-                    'properties' => [
-                        ...$dateProperties,
-                        'topology_id' => [
-                            'description' => 'Optional topology id to restrict the aggregation to one topology.',
-                            'type'        => 'string',
-                        ],
-                        'buckets'     => [
-                            'description' => 'Bucket count between 1 and 24 (default 12).',
-                            'maximum'     => 24,
-                            'minimum'     => 1,
-                            'type'        => 'integer',
-                        ],
-                    ],
-                    'type'       => 'object',
-                ],
-                'kind'          => 'timeseries',
-                'output_schema' => [
-                    'properties' => [
-                        'failed' => ['type' => 'integer'],
-                        'kind'   => ['type' => 'string'],
-                        'period' => ['type' => 'string'],
-                        'points' => [
-                            'items' => [
-                                'properties' => [
-                                    'failed'  => ['type' => 'integer'],
-                                    'success' => ['type' => 'integer'],
-                                    'time'    => ['type' => 'string'],
-                                ],
-                                'type'       => 'object',
-                            ],
-                            'type'  => 'array',
-                        ],
-                        'title'  => ['type' => 'string'],
-                        'total'  => ['type' => 'integer'],
-                    ],
-                    'type'       => 'object',
-                ],
-                'title'         => 'Process counts over time',
-            ],
-            [
-                'description'   => 'Lists topologies that had at least one process run in the time '
-                    . 'range. Use for "which topologies were running today", "what topologies were '
-                    . 'active last week", "show me running topologies", "jaké topologie běžely". '
-                    . 'Each item carries the topology name, total run count and how many of those '
-                    . 'runs succeeded, failed or are still in flight, plus the first and last run '
-                    . 'timestamps in the window. Use processes_timeseries instead when the user '
-                    . 'asks about MESSAGE volumes over time, not which topologies executed.',
-                'id'            => 'topologies_activity',
-                'input_schema'  => [
-                    'properties' => [
-                        ...$dateProperties,
-                        'limit' => [
-                            'description' => 'Maximum number of topologies to return (1-50, default 10).',
-                            'maximum'     => 50,
-                            'minimum'     => 1,
-                            'type'        => 'integer',
-                        ],
-                    ],
-                    'type'       => 'object',
-                ],
-                'kind'          => 'list',
-                'output_schema' => [
-                    'properties' => [
-                        'items'  => [
-                            'items' => [
-                                'properties' => [
-                                    'failed'       => ['type' => 'integer'],
-                                    'firstRunAt'   => ['type' => ['string', 'null']],
-                                    'lastRunAt'    => ['type' => ['string', 'null']],
-                                    'running'      => ['type' => 'integer'],
-                                    'runs'         => ['type' => 'integer'],
-                                    'success'      => ['type' => 'integer'],
-                                    'topologyId'   => ['type' => 'string'],
-                                    'topologyName' => ['type' => 'string'],
-                                ],
-                                'type'       => 'object',
-                            ],
-                            'type'  => 'array',
-                        ],
-                        'kind'   => ['type' => 'string'],
-                        'period' => ['type' => 'string'],
-                        'title'  => ['type' => 'string'],
-                    ],
-                    'type'       => 'object',
-                ],
-                'title'         => 'Topologies active in range',
-            ],
-            [
-                'description'   => 'Top connectors by failure count over a time range. Use for '
-                    . '"which connector is failing", "show flaky connectors today" type questions. '
-                    . 'Returns a short list ranked by failure count (descending).',
-                'id'            => 'failing_connectors',
-                'input_schema'  => [
-                    'properties' => [
-                        ...$dateProperties,
-                        'limit' => [
-                            'description' => 'Maximum number of connectors to return (1-20, default 10).',
-                            'maximum'     => 20,
-                            'minimum'     => 1,
-                            'type'        => 'integer',
-                        ],
-                    ],
-                    'type'       => 'object',
-                ],
-                'kind'          => 'list',
-                'output_schema' => [
-                    'properties' => [
-                        'items'  => [
-                            'items' => [
-                                'properties' => [
-                                    'failed'       => ['type' => 'integer'],
-                                    'failureRate'  => ['type' => 'number'],
-                                    'nodeName'     => ['type' => 'string'],
-                                    'success'      => ['type' => 'integer'],
-                                    'topologyName' => ['type' => 'string'],
-                                ],
-                                'type'       => 'object',
-                            ],
-                            'type'  => 'array',
-                        ],
-                        'kind'   => ['type' => 'string'],
-                        'period' => ['type' => 'string'],
-                        'title'  => ['type' => 'string'],
-                    ],
-                    'type'       => 'object',
-                ],
-                'title'         => 'Top failing connectors',
-            ],
-            [
-                'description'   => 'Most recent failed connector calls over a time range, sourced from '
-                    . 'the same connector metrics that power the dashboard process detail. Use for '
-                    . '"show the last errors", "what failed today", "recent connector errors" type '
-                    . 'questions. Each item carries the failing node, topology, the truncated upstream '
-                    . 'response body (`resultMessage`) and the HTTP status the bridge observed. Soft '
-                    . 'SDK outcomes (repeat / limit / trashed without an HTTP call) are NOT included '
-                    . 'here — only real HTTP-level connector failures.',
-                'id'            => 'recent_errors',
-                'input_schema'  => [
-                    'properties' => [
-                        ...$dateProperties,
-                        'topology_id' => [
-                            'description' => 'Optional topology id to restrict the search to one topology.',
-                            'type'        => 'string',
-                        ],
-                        'limit'       => [
-                            'description' => 'Maximum number of error entries to return (1-20, default 10).',
-                            'maximum'     => 20,
-                            'minimum'     => 1,
-                            'type'        => 'integer',
-                        ],
-                    ],
-                    'type'       => 'object',
-                ],
-                'kind'          => 'list',
-                'output_schema' => [
-                    'properties' => [
-                        'items'  => [
-                            'items' => [
-                                'properties' => [
-                                    'correlationId' => ['type' => 'string'],
-                                    'finishedAt'    => ['type' => 'string'],
-                                    'httpStatus'    => ['type' => ['integer', 'null']],
-                                    'nodeName'      => ['type' => 'string'],
-                                    'resultMessage' => ['type' => 'string'],
-                                    'resultStatus'  => ['type' => 'string'],
-                                    'topologyName'  => ['type' => 'string'],
-                                ],
-                                'type'       => 'object',
-                            ],
-                            'type'  => 'array',
-                        ],
-                        'kind'   => ['type' => 'string'],
-                        'period' => ['type' => 'string'],
-                        'title'  => ['type' => 'string'],
-                    ],
-                    'type'       => 'object',
-                ],
-                'title'         => 'Recent errors',
-            ],
-        ];
-    }
-
-    /**
      * Per-entity Trace lookup. Returns entry/steps/exit snapshots for each
      * topology run that touched the requested entity.
      *
@@ -662,8 +242,8 @@ final class McpManager
         [$start, $end] = DateRangeResolver::resolve([
             DateRangeResolver::KEY_DAY    => $data[DateRangeResolver::KEY_DAY] ?? NULL,
             DateRangeResolver::KEY_FROM   => $data[DateRangeResolver::KEY_FROM] ?? NULL,
-            DateRangeResolver::KEY_TO     => $data[DateRangeResolver::KEY_TO] ?? NULL,
             DateRangeResolver::KEY_PERIOD => $data[DateRangeResolver::KEY_PERIOD] ?? NULL,
+            DateRangeResolver::KEY_TO     => $data[DateRangeResolver::KEY_TO] ?? NULL,
         ], 30);
 
         $emptyResponse = [
@@ -768,6 +348,369 @@ final class McpManager
     }
 
     /**
+     * Manifest entry for the onboarding_step tool. Only emitted when the
+     * Nuxt origin is configured (DOCS_SEARCH_URL set) — same gating as the
+     * docs tools, since both rely on the public Orchesty site to host the
+     * source content.
+     *
+     * @return mixed[]
+     */
+    private function getOnboardingManifest(): array
+    {
+        if (!$this->onboardingStepClient->isConfigured()) {
+            return [];
+        }
+
+        return [
+            [
+                'description'   => 'Return a structured onboarding step (title, intro, prerequisites, next, actions[]) for guiding a new Orchesty user through scaffolding a worker, building their first topology, running it locally and verifying the result. ALWAYS prefer this tool over docs_search when the user expresses onboarding intent ("how do I start", "jak začít", "first time", "co je dál", "what\'s next"). Args: optional `stage` — when missing, returns the first step. After receiving a step, the assistant renders it as plain text with [shell] / [prompt] / [link] action blocks the FE detects and shows as copy-pasteable cards.',
+                'id'            => 'onboarding_step',
+                'input_schema'  => [
+                    'properties' => [
+                        'stage' => [
+                            'description' => 'Onboarding stage id (e.g. "overview", "choose-your-way", "clone-starter-ai", "clone-starter-manual", "build-components-ai", "build-components-manual", "run-locally", "test-and-debug", "verify", "add-a-node", "application", "connector-node", "batch-node", "custom-node", "webhook-trigger", "event-trigger", "cron-trigger"). Omit to start from the first stage.',
+                            'type'        => 'string',
+                        ],
+                    ],
+                    'required'   => [],
+                    'type'       => 'object',
+                ],
+                'kind'          => 'onboarding',
+                'output_schema' => [
+                    'properties' => [
+                        'actions'       => [
+                            'items' => [
+                                'properties' => [
+                                    'href'  => ['type' => 'string'],
+                                    'kind'  => ['enum' => ['shell', 'prompt', 'link'], 'type' => 'string'],
+                                    'label' => ['type' => 'string'],
+                                    'value' => ['type' => 'string'],
+                                ],
+                                'type'       => 'object',
+                            ],
+                            'type'  => 'array',
+                        ],
+                        'description'   => ['type' => 'string'],
+                        'intro'         => ['type' => 'string'],
+                        'next'          => ['type' => 'string'],
+                        'path'          => ['type' => 'string'],
+                        'prerequisites' => [
+                            'items' => ['type' => 'string'],
+                            'type'  => 'array',
+                        ],
+                        'stage'         => ['type' => 'string'],
+                        'stages'        => [
+                            'items' => ['type' => 'string'],
+                            'type'  => 'array',
+                        ],
+                        'title'         => ['type' => 'string'],
+                    ],
+                    'type'       => 'object',
+                ],
+                'title'         => 'Get an interactive onboarding step',
+            ],
+        ];
+    }
+
+    /**
+     * Manifest entry for the docs_search tool. Only emitted when the
+     * DocsSearchClient is configured (DOCS_SEARCH_URL set) — otherwise the
+     * Trace LLM would see a tool that always errors out, which leads it to
+     * route platform-usage questions through the catch-all Reply shape and
+     * apologise to the user instead of either answering or staying silent.
+     *
+     * @return mixed[]
+     */
+    private function getDocsManifest(): array
+    {
+        if (!$this->docsSearchClient->isConfigured()) {
+            return [];
+        }
+
+        $manifest = [];
+
+        $manifest[] = [
+            'description'   => 'Search the public Orchesty documentation (orchesty.io) for platform usage answers. Use for questions like "how do I get started", "how do I create a topology", "how does OAuth2 application setup work", "what is a connector", any "how do I…" / "what is…" / "jak nastavím…" question. Pass the user message verbatim as `query`. Do NOT use this tool for entity history or metrics — those have their own envelopes. The top 1–2 results carry a `bodyExcerpt` field (~3500 chars) so the assistant can ground its answer in actual page text rather than just listing links. If the excerpts do not answer the question, follow up with a single docs_read call against the most relevant `path`.',
+            'id'            => 'docs_search',
+            'input_schema'  => [
+                'properties' => [
+                    'locale' => [
+                        'description' => 'Preferred reply language for the user. Hint only — corpus is single-language.',
+                        'enum'        => ['cs', 'en'],
+                        'type'        => 'string',
+                    ],
+                    'query'  => [
+                        'description' => 'Natural-language question about Orchesty platform usage. Pass the user message verbatim.',
+                        'type'        => 'string',
+                    ],
+                ],
+                'required'   => ['query'],
+                'type'       => 'object',
+            ],
+            'kind'          => 'docs',
+            'output_schema' => [
+                'properties' => [
+                    'latestVersion' => ['type' => 'string'],
+                    'query'         => ['type' => 'string'],
+                    'results'       => [
+                        'items' => [
+                            'properties' => [
+                                'bodyExcerpt' => [
+                                    'description' => 'Up to ~3500 chars of actual page text, present only on the top 1–2 results. Use it verbatim or paraphrased to ground the answer.',
+                                    'type'        => 'string',
+                                ],
+                                'description' => ['type' => 'string'],
+                                'path'        => ['type' => 'string'],
+                                'score'       => ['type' => 'number'],
+                                'snippet'     => ['type' => 'string'],
+                                'source'      => ['enum' => ['docs', 'learn', 'onboarding'], 'type' => 'string'],
+                                'title'       => ['type' => 'string'],
+                            ],
+                            'type'       => 'object',
+                        ],
+                        'type'  => 'array',
+                    ],
+                ],
+                'type'       => 'object',
+            ],
+            'title'         => 'Search Orchesty documentation',
+        ];
+
+        if ($this->docsReadClient->isConfigured()) {
+            $manifest[] = [
+                'description'   => 'Fetch the full body text (up to ~12000 chars) of a single Orchesty documentation, learn or onboarding page. Use only as a follow-up to docs_search when the top result\'s `bodyExcerpt` is too thin to answer the user\'s question. Pass the canonical `path` returned by docs_search (e.g. "/docs/2.0/...", "/learn/...", "/onboarding/..."). Call this AT MOST ONCE per user turn.',
+                'id'            => 'docs_read',
+                'input_schema'  => [
+                    'properties' => [
+                        'path' => [
+                            'description' => 'Canonical page path returned by docs_search.',
+                            'type'        => 'string',
+                        ],
+                    ],
+                    'required'   => ['path'],
+                    'type'       => 'object',
+                ],
+                'kind'          => 'docs',
+                'output_schema' => [
+                    'properties' => [
+                        'body'          => ['type' => 'string'],
+                        'description'   => ['type' => 'string'],
+                        'latestVersion' => ['type' => 'string'],
+                        'path'          => ['type' => 'string'],
+                        'title'         => ['type' => 'string'],
+                        'truncated'     => ['type' => 'boolean'],
+                    ],
+                    'type'       => 'object',
+                ],
+                'title'         => 'Read a single Orchesty documentation page',
+            ];
+        }
+
+        return $manifest;
+    }
+
+    /**
+     * Fixed actions the LLM can call for cross-cutting metrics questions.
+     * They sit alongside the per-entity audit history so the model can pick
+     * the right tool: entity-specific timelines go through `entity_history`,
+     * "how many processes" / "which connector fails most" go through these.
+     *
+     * @return mixed[]
+     */
+    private function getMetricsManifest(): array
+    {
+        $dateProperties = [
+            'from'   => [
+                'description' => 'ISO 8601 start of the range (inclusive). Use with "to".',
+                'format'      => 'date-time',
+                'type'        => 'string',
+            ],
+            'period' => [
+                'description' => 'Named relative range: today, yesterday, this_week, last_7d, last_30d.',
+                'enum'        => ['today', 'yesterday', 'this_week', 'last_7d', 'last_30d'],
+                'type'        => 'string',
+            ],
+            'to'     => [
+                'description' => 'ISO 8601 end of the range (exclusive). Use with "from".',
+                'format'      => 'date-time',
+                'type'        => 'string',
+            ],
+        ];
+
+        return [
+            [
+                'description'   => 'Aggregated process counts (success/failed) bucketed over a time range. Use for questions like "how many processes ran last week" or "what is the failure rate today". Do NOT use for per-entity history; route those through the entity_history actions.',
+                'id'            => 'processes_timeseries',
+                'input_schema'  => [
+                    'properties' => [
+                        ...$dateProperties,
+                        'buckets'     => [
+                            'description' => 'Bucket count between 1 and 24 (default 12).',
+                            'maximum'     => 24,
+                            'minimum'     => 1,
+                            'type'        => 'integer',
+                        ],
+                        'topology_id' => [
+                            'description' => 'Optional topology id to restrict the aggregation to one topology.',
+                            'type'        => 'string',
+                        ],
+                    ],
+                    'type'       => 'object',
+                ],
+                'kind'          => 'timeseries',
+                'output_schema' => [
+                    'properties' => [
+                        'failed' => ['type' => 'integer'],
+                        'kind'   => ['type' => 'string'],
+                        'period' => ['type' => 'string'],
+                        'points' => [
+                            'items' => [
+                                'properties' => [
+                                    'failed'  => ['type' => 'integer'],
+                                    'success' => ['type' => 'integer'],
+                                    'time'    => ['type' => 'string'],
+                                ],
+                                'type'       => 'object',
+                            ],
+                            'type'  => 'array',
+                        ],
+                        'title'  => ['type' => 'string'],
+                        'total'  => ['type' => 'integer'],
+                    ],
+                    'type'       => 'object',
+                ],
+                'title'         => 'Process counts over time',
+            ],
+            [
+                'description'   => 'Lists topologies that had at least one process run in the time range. Use for "which topologies were running today", "what topologies were active last week", "show me running topologies", "jaké topologie běžely". Each item carries the topology name, total run count and how many of those runs succeeded, failed or are still in flight, plus the first and last run timestamps in the window. Use processes_timeseries instead when the user asks about MESSAGE volumes over time, not which topologies executed.',
+                'id'            => 'topologies_activity',
+                'input_schema'  => [
+                    'properties' => [
+                        ...$dateProperties,
+                        'limit' => [
+                            'description' => 'Maximum number of topologies to return (1-50, default 10).',
+                            'maximum'     => 50,
+                            'minimum'     => 1,
+                            'type'        => 'integer',
+                        ],
+                    ],
+                    'type'       => 'object',
+                ],
+                'kind'          => 'list',
+                'output_schema' => [
+                    'properties' => [
+                        'items'  => [
+                            'items' => [
+                                'properties' => [
+                                    'failed'       => ['type' => 'integer'],
+                                    'firstRunAt'   => ['type' => ['string', 'null']],
+                                    'lastRunAt'    => ['type' => ['string', 'null']],
+                                    'running'      => ['type' => 'integer'],
+                                    'runs'         => ['type' => 'integer'],
+                                    'success'      => ['type' => 'integer'],
+                                    'topologyId'   => ['type' => 'string'],
+                                    'topologyName' => ['type' => 'string'],
+                                ],
+                                'type'       => 'object',
+                            ],
+                            'type'  => 'array',
+                        ],
+                        'kind'   => ['type' => 'string'],
+                        'period' => ['type' => 'string'],
+                        'title'  => ['type' => 'string'],
+                    ],
+                    'type'       => 'object',
+                ],
+                'title'         => 'Topologies active in range',
+            ],
+            [
+                'description'   => 'Top connectors by failure count over a time range. Use for "which connector is failing", "show flaky connectors today" type questions. Returns a short list ranked by failure count (descending).',
+                'id'            => 'failing_connectors',
+                'input_schema'  => [
+                    'properties' => [
+                        ...$dateProperties,
+                        'limit' => [
+                            'description' => 'Maximum number of connectors to return (1-20, default 10).',
+                            'maximum'     => 20,
+                            'minimum'     => 1,
+                            'type'        => 'integer',
+                        ],
+                    ],
+                    'type'       => 'object',
+                ],
+                'kind'          => 'list',
+                'output_schema' => [
+                    'properties' => [
+                        'items'  => [
+                            'items' => [
+                                'properties' => [
+                                    'failed'       => ['type' => 'integer'],
+                                    'failureRate'  => ['type' => 'number'],
+                                    'nodeName'     => ['type' => 'string'],
+                                    'success'      => ['type' => 'integer'],
+                                    'topologyName' => ['type' => 'string'],
+                                ],
+                                'type'       => 'object',
+                            ],
+                            'type'  => 'array',
+                        ],
+                        'kind'   => ['type' => 'string'],
+                        'period' => ['type' => 'string'],
+                        'title'  => ['type' => 'string'],
+                    ],
+                    'type'       => 'object',
+                ],
+                'title'         => 'Top failing connectors',
+            ],
+            [
+                'description'   => 'Most recent failed connector calls over a time range, sourced from the same connector metrics that power the dashboard process detail. Use for "show the last errors", "what failed today", "recent connector errors" type questions. Each item carries the failing node, topology, the truncated upstream response body (`resultMessage`) and the HTTP status the bridge observed. Soft SDK outcomes (repeat / limit / trashed without an HTTP call) are NOT included here — only real HTTP-level connector failures.',
+                'id'            => 'recent_errors',
+                'input_schema'  => [
+                    'properties' => [
+                        ...$dateProperties,
+                        'limit'       => [
+                            'description' => 'Maximum number of error entries to return (1-20, default 10).',
+                            'maximum'     => 20,
+                            'minimum'     => 1,
+                            'type'        => 'integer',
+                        ],
+                        'topology_id' => [
+                            'description' => 'Optional topology id to restrict the search to one topology.',
+                            'type'        => 'string',
+                        ],
+                    ],
+                    'type'       => 'object',
+                ],
+                'kind'          => 'list',
+                'output_schema' => [
+                    'properties' => [
+                        'items'  => [
+                            'items' => [
+                                'properties' => [
+                                    'correlationId' => ['type' => 'string'],
+                                    'finishedAt'    => ['type' => 'string'],
+                                    'httpStatus'    => ['type' => ['integer', 'null']],
+                                    'nodeName'      => ['type' => 'string'],
+                                    'resultMessage' => ['type' => 'string'],
+                                    'resultStatus'  => ['type' => 'string'],
+                                    'topologyName'  => ['type' => 'string'],
+                                ],
+                                'type'       => 'object',
+                            ],
+                            'type'  => 'array',
+                        ],
+                        'kind'   => ['type' => 'string'],
+                        'period' => ['type' => 'string'],
+                        'title'  => ['type' => 'string'],
+                    ],
+                    'type'       => 'object',
+                ],
+                'title'         => 'Recent errors',
+            ],
+        ];
+    }
+
+    /**
      * Routes `{tool, args}` envelopes to the metrics aggregator. Kept private
      * so the public surface stays a single `run()` entry point regardless of
      * which envelope shape arrived.
@@ -791,9 +734,7 @@ final class McpManager
                     : DocsSearchClient::DEFAULT_TOP_K,
                 isset($args['locale']) && is_string($args['locale']) ? $args['locale'] : NULL,
             ),
-            'docs_read'            => $this->docsReadClient->read(
-                (string) ($args['path'] ?? ''),
-            ),
+            'docs_read'            => $this->docsReadClient->read((string) ($args['path'] ?? '')),
             'onboarding_step'      => $this->onboardingStepClient->step(
                 isset($args['stage']) && is_string($args['stage']) ? $args['stage'] : NULL,
             ),
@@ -868,18 +809,18 @@ final class McpManager
                 'correlationId'  => $progress->getId(),
                 'entry'          => NULL,
                 'exit'           => NULL,
-                'steps'          => [],
-                'topologyId'     => $topologyId,
-                'topologyName'   => $topologyNames[$topologyId] ?? NULL,
-                'startedAt'      => $started->format(DATE_ATOM),
                 'finishedAt'     => $finished?->format(DATE_ATOM),
-                'ok'             => $ok,
                 'nok'            => $nok,
-                'total'          => $total,
+                'ok'             => $ok,
                 // Derived from progress counters: gives the FE a meaningful
                 // status pill even when the topology emits no audit
                 // checkpoints (which is the common case today).
                 'progressStatus' => $this->deriveProgressStatus($finished, $ok, $nok, $total),
+                'startedAt'      => $started->format(DATE_ATOM),
+                'steps'          => [],
+                'topologyId'     => $topologyId,
+                'topologyName'   => $topologyNames[$topologyId] ?? NULL,
+                'total'          => $total,
             ];
         }
 
@@ -895,15 +836,15 @@ final class McpManager
                     'correlationId'  => $cid,
                     'entry'          => NULL,
                     'exit'           => NULL,
+                    'finishedAt'     => NULL,
+                    'nok'            => 0,
+                    'ok'             => 0,
+                    'progressStatus' => 'unknown',
+                    'startedAt'      => NULL,
                     'steps'          => [],
                     'topologyId'     => $log['topologyId'] ?? NULL,
                     'topologyName'   => $log['topologyName'] ?? NULL,
-                    'startedAt'      => NULL,
-                    'finishedAt'     => NULL,
-                    'ok'             => 0,
-                    'nok'            => 0,
                     'total'          => 0,
-                    'progressStatus' => 'unknown',
                 ];
             } else {
                 if (($runs[$cid]['topologyId'] ?? NULL) === NULL && isset($log['topologyId'])) {
@@ -930,12 +871,15 @@ final class McpManager
                     if ($runs[$cid]['entry'] === NULL) {
                         $runs[$cid]['entry'] = $snapshot;
                     }
+
                     break;
                 case 'process_exit':
                     $runs[$cid]['exit'] = $snapshot;
+
                     break;
                 case 'process_step':
                     $runs[$cid]['steps'][] = $snapshot;
+
                     break;
             }
         }
@@ -987,8 +931,15 @@ final class McpManager
      * - `failed`  — finished and at least one step failed
      * - `running` — not finished yet
      * - `unknown` — no usable counters (defensive default)
+     *
+     * @param DateTimeInterface|null $finished
+     * @param int                    $ok
+     * @param int                    $nok
+     * @param int                    $total
+     *
+     * @return string
      */
-    private function deriveProgressStatus(?\DateTimeInterface $finished, int $ok, int $nok, int $total): string
+    private function deriveProgressStatus(?DateTimeInterface $finished, int $ok, int $nok, int $total): string
     {
         if ($finished === NULL) {
             return 'running';

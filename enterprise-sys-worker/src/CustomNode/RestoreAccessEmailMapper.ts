@@ -57,6 +57,7 @@ export default class RestoreAccessEmailMapper extends ASystemEmailMapper {
   </tr>
 </table>`;
 
+        /* eslint-disable @typescript-eslint/naming-convention */
         return dto.setNewJsonData<IInput>({
             subject: 'Your Orchesty access has been restored',
             from_name: sender.fromName,
@@ -64,6 +65,7 @@ export default class RestoreAccessEmailMapper extends ASystemEmailMapper {
             to: [{ email }],
             html,
         });
+        /* eslint-enable @typescript-eslint/naming-convention */
     }
 
 }

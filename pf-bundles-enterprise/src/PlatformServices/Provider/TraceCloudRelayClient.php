@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFrameworkEnterprise\PlatformServices\Provider;
 use DateTimeImmutable;
 use DateTimeZone;
 use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\RequestOptions;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
@@ -14,6 +15,8 @@ use Hanaboso\Utils\String\Json;
 use Throwable;
 
 /**
+ * Class TraceCloudRelayClient
+ *
  * HTTP client for the Trace cloud-relay default LLM proxy.
  *
  * When a user instance has Trace enabled but no user-managed
@@ -32,10 +35,12 @@ use Throwable;
 final class TraceCloudRelayClient
 {
 
-    private const string PATH    = '/api/internal/trace-relay/chat';
-    private const int TIMEOUT_MS = 60_000;
+    private const string PATH   = '/api/internal/trace-relay/chat';
+    private const int TIMEOUT_S = 60;
 
     /**
+     * TraceCloudRelayClient constructor.
+     *
      * @param CurlManager $curlManager
      * @param string      $cloudBackendUrl
      * @param string      $instanceId
@@ -98,10 +103,12 @@ final class TraceCloudRelayClient
             'X-Instance-Id'     => $this->instanceId,
             'X-Instance-Secret' => $this->instanceSecret,
         ]);
-        $dto->setTimeout(self::TIMEOUT_MS);
 
         try {
-            $response = $this->curlManager->send($dto);
+            $response = $this->curlManager->send($dto, [
+                RequestOptions::HTTP_ERRORS => FALSE,
+                RequestOptions::TIMEOUT     => self::TIMEOUT_S,
+            ]);
         } catch (Throwable $e) {
             throw new PlatformServiceException(
                 sprintf('Trace cloud-relay request failed: %s', $e->getMessage()),
@@ -122,7 +129,7 @@ final class TraceCloudRelayClient
             // funnels it through the same `quota_exceeded` WS message as the
             // primary user-quota path; payload preserves the underlying code
             // so support can distinguish in logs.
-            $body = $this->safeJsonBody($response->getBody());
+            $body    = $this->safeJsonBody($response->getBody());
             $resetAt = $this->parseResetAt($body);
 
             throw new QuotaExceededException(
@@ -146,9 +153,7 @@ final class TraceCloudRelayClient
     private function safeJsonBody(string $raw): array
     {
         try {
-            $decoded = Json::decode($raw);
-
-            return is_array($decoded) ? $decoded : [];
+            return Json::decode($raw);
         } catch (Throwable) {
             return [];
         }
@@ -161,7 +166,7 @@ final class TraceCloudRelayClient
      */
     private function parseResetAt(array $body): DateTimeImmutable
     {
-        $raw = $body['resetAt'] ?? null;
+        $raw = $body['resetAt'] ?? NULL;
         if (is_string($raw) && $raw !== '') {
             try {
                 return new DateTimeImmutable($raw);
@@ -172,7 +177,7 @@ final class TraceCloudRelayClient
 
         // Defensive limit responses include `retryAfterSec`; project that
         // forward instead of guessing the next UTC midnight.
-        $retryAfter = $body['retryAfterSec'] ?? null;
+        $retryAfter = $body['retryAfterSec'] ?? NULL;
         if (is_int($retryAfter) || (is_string($retryAfter) && ctype_digit($retryAfter))) {
             return (new DateTimeImmutable('now', new DateTimeZone('UTC')))
                 ->modify(sprintf('+%d seconds', (int) $retryAfter));

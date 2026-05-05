@@ -25,6 +25,7 @@ parameters:
 			- Hanaboso\PipesFramework\Database\Document\Topology
 			- Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler
 			- Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler
+			- Hanaboso\PipesFrameworkEnterprise\PlatformServices\Exception\PlatformServiceException
 			- Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator
 			- PipesFrameworkEnterpriseTests\ControllerTestCaseAbstract
 			- PipesFrameworkEnterpriseTests\DatabaseTestCaseAbstract
@@ -40,4 +41,5 @@ parameters:
 			- Hanaboso\PipesFrameworkEnterprise\Mcp\Document\AuditDataField
 			- Hanaboso\PipesFrameworkEnterprise\Mcp\Document\AuditEntity
 			- Hanaboso\PipesFrameworkEnterprise\Mcp\Document\AuditEntityField
+			- Hanaboso\PipesFrameworkEnterprise\PlatformServices\Exception\PlatformServiceException
 			- Hanaboso\PipesFrameworkEnterprise\TraceReport\Document\TraceReport

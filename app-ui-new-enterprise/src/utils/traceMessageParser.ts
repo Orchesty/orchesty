@@ -78,15 +78,15 @@ const tryParseAction = (lines: string[], startIdx: number): PendingActionLookahe
   if (!headerMatch) return null
 
   const kind = headerMatch[1] as OnboardingActionKind
-  const label = headerMatch[2].trim()
+  const label = headerMatch[2]!.trim()
   if (label === '') return null
 
   if (kind === 'link') {
     // Link expects exactly one URL line after the header (blank lines tolerated).
     let cursor = startIdx + 1
-    while (cursor < lines.length && lines[cursor].trim() === '') cursor += 1
+    while (cursor < lines.length && lines[cursor]!.trim() === '') cursor += 1
     if (cursor >= lines.length) return null
-    const href = lines[cursor].trim()
+    const href = lines[cursor]!.trim()
     if (!/^https?:\/\//i.test(href) && !href.startsWith('/')) return null
     return {
       action: { kind: 'link', label, href },
@@ -96,20 +96,20 @@ const tryParseAction = (lines: string[], startIdx: number): PendingActionLookahe
 
   // shell / prompt: expect a fenced code block after the header.
   let cursor = startIdx + 1
-  while (cursor < lines.length && lines[cursor].trim() === '') cursor += 1
+  while (cursor < lines.length && lines[cursor]!.trim() === '') cursor += 1
   if (cursor >= lines.length) return null
-  const openMatch = lines[cursor].match(FENCE_OPEN_RE)
+  const openMatch = lines[cursor]!.match(FENCE_OPEN_RE)
   if (!openMatch) return null
 
   // Capture the opening fence length so we only treat a same-length fence
   // as the close. Inner ```lang ... ``` blocks inside a 4-backtick prompt
   // are then preserved verbatim instead of terminating the outer card.
-  const closeRe = buildFenceCloseRe(openMatch[1].length)
+  const closeRe = buildFenceCloseRe(openMatch[1]!.length)
 
   const valueStart = cursor + 1
   let valueEnd = -1
   for (let i = valueStart; i < lines.length; i += 1) {
-    if (closeRe.test(lines[i])) {
+    if (closeRe.test(lines[i]!)) {
       valueEnd = i
       break
     }
@@ -153,16 +153,16 @@ export const parseAssistantBody = (raw: string): ParsedAssistantBody => {
 
   // Consume the optional leading stage marker (and the blank line after it,
   // if any) before walking the body.
-  while (cursor < lines.length && lines[cursor].trim() === '') cursor += 1
+  while (cursor < lines.length && lines[cursor]!.trim() === '') cursor += 1
   if (cursor < lines.length) {
-    const markerMatch = lines[cursor].match(STAGE_MARKER_RE)
+    const markerMatch = lines[cursor]!.match(STAGE_MARKER_RE)
     if (markerMatch) {
-      stage = markerMatch[1]
+      stage = markerMatch[1] ?? null
       // Capture group 2 = next= inside the bracket (canonical form);
       // group 3 = next= after the closing `]` (tolerant fallback).
       next = markerMatch[2] ?? markerMatch[3] ?? null
       cursor += 1
-      if (cursor < lines.length && lines[cursor].trim() === '') cursor += 1
+      if (cursor < lines.length && lines[cursor]!.trim() === '') cursor += 1
     }
   }
 
@@ -175,7 +175,8 @@ export const parseAssistantBody = (raw: string): ParsedAssistantBody => {
   }
 
   while (cursor < lines.length) {
-    const headerMatch = lines[cursor].match(ACTION_HEADER_RE)
+    const line = lines[cursor]!
+    const headerMatch = line.match(ACTION_HEADER_RE)
     if (headerMatch) {
       const parsed = tryParseAction(lines, cursor)
       if (parsed) {
@@ -187,7 +188,7 @@ export const parseAssistantBody = (raw: string): ParsedAssistantBody => {
       // Header found but block is incomplete (mid-stream). Fall through
       // and emit the header as plain text; next streaming tick will retry.
     }
-    textBuffer.push(lines[cursor])
+    textBuffer.push(line)
     cursor += 1
   }
 

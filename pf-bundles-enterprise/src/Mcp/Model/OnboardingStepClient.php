@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\Utils\String\Json;
 use Throwable;
 
 /**
@@ -80,7 +81,7 @@ final class OnboardingStepClient
      *     error?: '...'
      *   }
      *
-     * @param string|null $stage  optional stage id; null/empty defaults to the first stage
+     * @param string|null $stage optional stage id; null/empty defaults to the first stage
      *
      * @return mixed[]
      */
@@ -88,9 +89,9 @@ final class OnboardingStepClient
     {
         if (!$this->isConfigured()) {
             return [
+                'actions' => [],
                 'error'   => 'onboarding step is not configured',
                 'stages'  => [],
-                'actions' => [],
             ];
         }
 
@@ -113,7 +114,7 @@ final class OnboardingStepClient
         $url = sprintf('%s%s', rtrim($this->baseUrl, '/'), self::STEP_PATH);
         $dto = (new RequestDto(new Uri($url), CurlManager::METHOD_POST, new ProcessDto()))
             ->setHeaders($headers)
-            ->setBody((string) json_encode($body, JSON_THROW_ON_ERROR));
+            ->setBody(Json::encode($body));
 
         try {
             // HTTP_ERRORS=false lets us inspect non-2xx ourselves so we can
@@ -128,18 +129,18 @@ final class OnboardingStepClient
             );
         } catch (Throwable $e) {
             return [
+                'actions' => [],
                 'error'   => sprintf('onboarding step request failed: %s', $e->getMessage()),
                 'stages'  => [],
-                'actions' => [],
             ];
         }
 
         $status = $response->getStatusCode();
         if ($status < 200 || $status >= 300) {
             return [
+                'actions' => [],
                 'error'   => sprintf('onboarding step returned status %d', $status),
                 'stages'  => [],
-                'actions' => [],
             ];
         }
 
@@ -147,9 +148,9 @@ final class OnboardingStepClient
             $decoded = $response->getJsonBody();
         } catch (Throwable $e) {
             return [
+                'actions' => [],
                 'error'   => sprintf('onboarding step returned malformed JSON: %s', $e->getMessage()),
                 'stages'  => [],
-                'actions' => [],
             ];
         }
 

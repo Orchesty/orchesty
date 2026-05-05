@@ -1,14 +1,14 @@
-import { ABasicApplication, USER, PASSWORD } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Type/Basic/ABasicApplication';
-import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
-import RequestDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/RequestDto';
-import { CommonHeaders, JSON_TYPE } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
-import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
-import AProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/AProcessDto';
 import CoreFormsEnum, { getFormName } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
-import Form from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Form';
+import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
 import Field from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Field';
 import FieldType from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FieldType';
+import Form from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Form';
 import FormStack from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FormStack';
+import { ABasicApplication, PASSWORD, USER } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Type/Basic/ABasicApplication';
+import RequestDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/RequestDto';
+import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
+import AProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/AProcessDto';
+import { CommonHeaders, JSON_TYPE } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
 
 // ── iDoklad API v3 base URL ──
 export const BASE_URL = 'https://api.idoklad.cz/v3';
@@ -110,12 +110,14 @@ export default class IDokladClientCredentialsApplication extends ABasicApplicati
         }
 
         // Exchange credentials for a new token
+        /* eslint-disable @typescript-eslint/naming-convention */
         const body = new URLSearchParams({
             grant_type: 'client_credentials',
             client_id: clientId,
             client_secret: clientSecret,
             scope: 'idoklad_api',
         });
+        /* eslint-enable @typescript-eslint/naming-convention */
 
         const response = await fetch(TOKEN_URL, {
             method: 'POST',

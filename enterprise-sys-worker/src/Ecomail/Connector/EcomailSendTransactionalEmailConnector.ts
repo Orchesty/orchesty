@@ -24,13 +24,14 @@ interface IAttachment {
     content: string;
 }
 
+/* eslint-disable @typescript-eslint/naming-convention */
 export interface IInput {
     template_id: number;
     subject: string;
     from_name: string;
     from_email: string;
-    reply_to?: string;
     to: IRecipient[];
+    reply_to?: string;
     global_merge_vars?: IMergeVar[];
     attachments?: IAttachment[];
     options?: {
@@ -44,6 +45,7 @@ export interface IOutput {
     total_accepted_recipients: number;
     id: number;
 }
+/* eslint-enable @typescript-eslint/naming-convention */
 
 interface IApiResponse {
     results: IOutput;

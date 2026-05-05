@@ -24,6 +24,7 @@ interface IAttachment {
     content: string;
 }
 
+/* eslint-disable @typescript-eslint/naming-convention */
 export interface IInput {
     subject: string;
     from_name: string;
@@ -46,6 +47,7 @@ export interface IOutput {
     total_accepted_recipients: number;
     id: number;
 }
+/* eslint-enable @typescript-eslint/naming-convention */
 
 interface IApiResponse {
     results: IOutput;

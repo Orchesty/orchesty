@@ -75,6 +75,11 @@
     "mongodb": "^7.2.0",
     "mysql2": "^3.22.3"
   },
+  "pnpm": {
+    "overrides": {
+       "eslint": "$eslint"
+    }
+  },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^10.0.1",

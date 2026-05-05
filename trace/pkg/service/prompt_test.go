@@ -1082,13 +1082,13 @@ func TestBuildSystemPrompt_GenericNodeIntentRoutesToHub(t *testing.T) {
 // every card with `next` set is the user-visible CTA.
 //
 // Two guards:
-//   1. The new literal "Reply `next` when you're ready to continue." MUST
-//      appear — any drift here changes the product wording.
-//   2. The legacy "ask me \"what's next\"" wording MUST NOT come back.
-//      Users were not actually typing "what's next" (it reads weird and
-//      requires apostrophes / quotes), which is why we rewrote it to the
-//      shorter "Reply `next`" CTA. Keep this test as a guardrail against
-//      a careless revert.
+//  1. The new literal "Reply `next` when you're ready to continue." MUST
+//     appear — any drift here changes the product wording.
+//  2. The legacy "ask me \"what's next\"" wording MUST NOT come back.
+//     Users were not actually typing "what's next" (it reads weird and
+//     requires apostrophes / quotes), which is why we rewrote it to the
+//     shorter "Reply `next`" CTA. Keep this test as a guardrail against
+//     a careless revert.
 func TestBuildSummariserPrompt_OnboardingClosingLineLiteral(t *testing.T) {
 	prompt := BuildSummariserPrompt("onboarding_step")
 

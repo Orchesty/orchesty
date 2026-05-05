@@ -1,6 +1,6 @@
 import AConnector from '@orchesty/nodejs-sdk/dist/lib/Connector/AConnector';
-import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import RequestDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/RequestDto';
+import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import { BASE_URL } from '../IDokladClientCredentialsApplication';
 
@@ -48,7 +48,7 @@ export default class IDokladUploadAttachmentToInvoiceConnector extends AConnecto
             const bodyParts = [
                 `--${boundary}\r\n`,
                 `Content-Disposition: form-data; name="file"; filename="${filename}"\r\n`,
-                `Content-Type: application/pdf\r\n\r\n`,
+                'Content-Type: application/pdf\r\n\r\n',
             ];
             const header = Buffer.from(bodyParts.join(''));
             const footer = Buffer.from(`\r\n--${boundary}--\r\n`);

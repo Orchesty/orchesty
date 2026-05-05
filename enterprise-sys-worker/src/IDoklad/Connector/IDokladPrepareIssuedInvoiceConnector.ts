@@ -35,6 +35,7 @@ export default class IDokladPrepareIssuedInvoiceConnector extends AConnector {
             repeat: '>=500',
         }, 60, 3);
 
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         const body = JSON.parse(response.getBody()) as { Data?: Record<string, unknown> };
         const defaults = body.Data ?? {};
 

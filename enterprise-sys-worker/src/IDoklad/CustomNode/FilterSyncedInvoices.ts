@@ -18,6 +18,7 @@ export default class FilterSyncedInvoices extends ACommonNode {
 
     public processAction(dto: ProcessDto): ProcessDto {
         const invoice = dto.getJsonData() as Record<string, unknown>;
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         const tags = (invoice.Tags ?? []) as { TagId: number }[];
 
         if (tags.some((t) => t.TagId === SYNCED_TAG_ID)) {

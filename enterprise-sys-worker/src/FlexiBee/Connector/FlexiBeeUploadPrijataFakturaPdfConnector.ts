@@ -1,9 +1,9 @@
+import FlexiBeeApplication from '@orchesty/connector-flexi-bee/dist/FexiBeeApplication';
 import AConnector from '@orchesty/nodejs-sdk/dist/lib/Connector/AConnector';
-import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import RequestDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/RequestDto';
+import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import { checkParams } from '@orchesty/nodejs-sdk/dist/lib/Utils/Validations';
-import FlexiBeeApplication from '@orchesty/connector-flexi-bee/dist/FexiBeeApplication';
 
 export const NAME = 'flexibee-upload-prijata-faktura-pdf';
 
@@ -57,7 +57,7 @@ export default class FlexiBeeUploadPrijataFakturaPdfConnector extends AConnector
         );
         const headers = baseRequest.getHeaders();
         headers['Content-Type'] = 'application/pdf';
-        headers['Accept'] = 'application/json';
+        headers.Accept = 'application/json';
 
         const request = new RequestDto(
             url,

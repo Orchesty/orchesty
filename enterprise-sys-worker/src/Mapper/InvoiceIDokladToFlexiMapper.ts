@@ -3,6 +3,59 @@ import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 
 export const NAME = 'invoice-idoklad-to-flexi-mapper';
 
+/* eslint-disable @typescript-eslint/naming-convention */
+interface IIDokladInvoice {
+    Id: number;
+    Description: string;
+    DateOfIssue: string;
+    DateOfMaturity: string;
+    DateOfTaxing: string;
+    Items: IIDokladInvoiceItem[];
+    DocumentNumber?: string;
+    Note?: string;
+    VariableSymbol?: string;
+    VatReverseChargeCodeId?: number | null;
+    Tags?: { TagId: number }[];
+    flexiPartnerCode?: string;
+}
+
+interface IIDokladInvoiceItem {
+    Name: string;
+    Amount: number;
+    Prices: {
+        UnitPrice: number;
+        TotalWithVat: number;
+        TotalWithoutVat: number;
+        TotalVat: number;
+    };
+    PriceType: number;
+    VatRateType: number;
+    VatRate?: number;
+    IsTaxMovement?: boolean;
+    Unit?: string;
+    DiscountPercentage?: number;
+}
+/* eslint-enable @typescript-eslint/naming-convention */
+
+function mapPriceType(priceType: number): string {
+    switch (priceType) {
+        case 0: return 'typCeny.sDph'; // s DPH
+        case 1: return 'typCeny.bezDph'; // bez DPH
+        case 2: return 'typCeny.bezDph'; // přenesená daňová povinnost → bez DPH
+        default: return 'typCeny.bezDph';
+    }
+}
+
+function mapVatRateType(vatRateType: number): string {
+    switch (vatRateType) {
+        case 0: return 'typSzbDph.dphSniz';
+        case 1: return 'typSzbDph.dphZakl';
+        case 2: return 'typSzbDph.dphOsv';
+        case 3: return 'typSzbDph.dphSniz2';
+        default: return 'typSzbDph.dphZakl';
+    }
+}
+
 export default class InvoiceIDokladToFlexiMapper extends ACommonNode {
 
     public getName(): string {
@@ -40,7 +93,7 @@ export default class InvoiceIDokladToFlexiMapper extends ACommonNode {
                 cenaMj: item.Prices.UnitPrice,
                 typCenyDphK: mapPriceType(item.PriceType),
                 typSzbDphK: item.PriceType === 2
-                    ? 'typSzbDph.dphOsv'                   // intra-EU: osvobozeno (0%)
+                    ? 'typSzbDph.dphOsv' // intra-EU: osvobozeno (0%)
                     : mapVatRateType(item.VatRateType),
                 jednotka: item.Unit ?? 'ks',
                 slevaPol: item.DiscountPercentage ?? 0,
@@ -64,55 +117,4 @@ export default class InvoiceIDokladToFlexiMapper extends ACommonNode {
         return dto;
     }
 
-}
-
-function mapPriceType(priceType: number): string {
-    switch (priceType) {
-        case 0: return 'typCeny.sDph';        // s DPH
-        case 1: return 'typCeny.bezDph';       // bez DPH
-        case 2: return 'typCeny.bezDph';       // přenesená daňová povinnost → bez DPH
-        default: return 'typCeny.bezDph';
-    }
-}
-
-function mapVatRateType(vatRateType: number): string {
-    switch (vatRateType) {
-        case 0: return 'typSzbDph.dphSniz';
-        case 1: return 'typSzbDph.dphZakl';
-        case 2: return 'typSzbDph.dphOsv';
-        case 3: return 'typSzbDph.dphSniz2';
-        default: return 'typSzbDph.dphZakl';
-    }
-}
-
-interface IIDokladInvoice {
-    Id: number;
-    Description: string;
-    DateOfIssue: string;
-    DateOfMaturity: string;
-    DateOfTaxing: string;
-    DocumentNumber?: string;
-    Note?: string;
-    VariableSymbol?: string;
-    VatReverseChargeCodeId?: number | null;
-    Tags?: { TagId: number }[];
-    flexiPartnerCode?: string;
-    Items: IIDokladInvoiceItem[];
-}
-
-interface IIDokladInvoiceItem {
-    Name: string;
-    Amount: number;
-    Prices: {
-        UnitPrice: number;
-        TotalWithVat: number;
-        TotalWithoutVat: number;
-        TotalVat: number;
-    };
-    PriceType: number;
-    VatRateType: number;
-    VatRate?: number;
-    IsTaxMovement?: boolean;
-    Unit?: string;
-    DiscountPercentage?: number;
 }

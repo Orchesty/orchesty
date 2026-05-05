@@ -3,6 +3,36 @@ import FlexiBeeCreatePartnerConnector from './FlexiBeeCreatePartnerConnector';
 
 export const NAME = 'flexibee-create-partner-from-invoice';
 
+/* eslint-disable @typescript-eslint/naming-convention */
+interface IPartnerAddress {
+    NickName?: string;
+    Firstname?: string;
+    Surname?: string;
+    Street?: string;
+    City?: string;
+    PostalCode?: string;
+    CountryId?: number;
+    IdentificationNumber?: string;
+    VatIdentificationNumber?: string;
+    Email?: string;
+    Phone?: string;
+}
+/* eslint-enable @typescript-eslint/naming-convention */
+
+/**
+ * Maps iDoklad CountryId to FlexiBee country code.
+ * iDoklad: 1 = SK, 2 = CZ. For unknown IDs, falls back to empty string
+ * (FlexiBee will use its default).
+ */
+function mapCountryToFlexiCode(countryId?: number): string {
+    switch (countryId) {
+        case 1: return 'code:SK';
+        case 2: return 'code:CZ';
+        case undefined: return '';
+        default: return '';
+    }
+}
+
 /**
  * Derived connector: creates a FlexiBee partner from an iDoklad invoice
  * payload, but only if flexiPartnerCode is null (partner not found).
@@ -34,9 +64,9 @@ export default class FlexiBeeCreatePartnerFromInvoice extends FlexiBeeCreatePart
         }
 
         const partnerCode = `IDOKLAD-${ic}`;
-        const nazev = partnerAddress?.NickName
-            || [partnerAddress?.Firstname, partnerAddress?.Surname].filter(Boolean).join(' ')
-            || ic;
+        const fullName = [partnerAddress?.Firstname, partnerAddress?.Surname].filter(Boolean).join(' ');
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+        const nazev = partnerAddress?.NickName?.trim() || fullName || ic;
 
         const countryId = partnerAddress?.CountryId;
         const stat = mapCountryToFlexiCode(countryId);
@@ -62,31 +92,4 @@ export default class FlexiBeeCreatePartnerFromInvoice extends FlexiBeeCreatePart
         return dto;
     }
 
-}
-
-interface IPartnerAddress {
-    NickName?: string;
-    Firstname?: string;
-    Surname?: string;
-    Street?: string;
-    City?: string;
-    PostalCode?: string;
-    CountryId?: number;
-    IdentificationNumber?: string;
-    VatIdentificationNumber?: string;
-    Email?: string;
-    Phone?: string;
-}
-
-/**
- * Maps iDoklad CountryId to FlexiBee country code.
- * iDoklad: 1 = SK, 2 = CZ. For unknown IDs, falls back to empty string
- * (FlexiBee will use its default).
- */
-function mapCountryToFlexiCode(countryId?: number): string {
-    switch (countryId) {
-        case 1: return 'code:SK';
-        case 2: return 'code:CZ';
-        default: return '';
-    }
 }

@@ -12,6 +12,7 @@ interface IPipedriveContact {
     primary: boolean;
 }
 
+/* eslint-disable @typescript-eslint/naming-convention */
 interface IPipedrivePersonRequestBody {
     name: string;
     email: IPipedriveContact[];
@@ -19,6 +20,7 @@ interface IPipedrivePersonRequestBody {
     job_title?: string;
     org_id?: number;
 }
+/* eslint-enable @typescript-eslint/naming-convention */
 
 interface IPipedrivePersonResponse {
     success: boolean;
@@ -48,6 +50,7 @@ export default class PipedriveAddSalesPersonConnector extends AConnector {
         if (ctx.phone) {
             body.phone = [{ value: ctx.phone, primary: true }];
         }
+
         if (ctx.jobTitle) {
             body.job_title = ctx.jobTitle;
         }

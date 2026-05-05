@@ -100,6 +100,17 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
+    Hanaboso\PipesFrameworkEnterprise\PlatformServices\Service\UserOnboardingService:
+        class: Hanaboso\PipesFrameworkEnterprise\PlatformServices\Service\UserOnboardingService
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\UserOnboardingController:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\UserOnboardingController
+        arguments:
+            - '@Hanaboso\PipesFrameworkEnterprise\PlatformServices\Service\UserOnboardingService'
+            - '@security.token_storage'
+
     Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\NotificationController:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\NotificationController
 

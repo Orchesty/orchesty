@@ -40,10 +40,12 @@ export default class IDokladDownloadInvoicePdfConnector extends AConnector {
             repeat: '>=500',
         }, 60, 3);
 
+        /* eslint-disable @typescript-eslint/naming-convention */
         const body = JSON.parse(response.getBody()) as {
             Data?: string;
             IsSuccess?: boolean;
         };
+        /* eslint-enable @typescript-eslint/naming-convention */
 
         if (!body.Data) {
             throw new Error(`Failed to download PDF for invoice [${invoiceId}]`);

@@ -96,6 +96,7 @@ export default class TopologyFailedRepeatedlyEmailMapper extends ASystemEmailMap
   </tr>
 </table>`;
 
+        /* eslint-disable @typescript-eslint/naming-convention */
         return dto.setNewJsonData<IInput>({
             subject: `Repeated failures \u2014 ${topologyName}`,
             from_name: sender.fromName,
@@ -103,6 +104,7 @@ export default class TopologyFailedRepeatedlyEmailMapper extends ASystemEmailMap
             to: recipients.map((email) => ({ email })),
             html,
         });
+        /* eslint-enable @typescript-eslint/naming-convention */
     }
 
 }

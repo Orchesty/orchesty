@@ -7,6 +7,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
 
 /**
+ * Class TraceQuotaUsage
+ *
  * Per-day trace cloud-relay usage counter.
  *
  * One document per UTC day. The instance increments `count` atomically before
@@ -30,9 +32,9 @@ final class TraceQuotaUsage
 
     use IdTrait;
 
-    public const string WINDOW_START         = 'windowStart';
-    public const string COUNT                = 'count';
-    public const string LAST_INCREMENTED_AT  = 'lastIncrementedAt';
+    public const string WINDOW_START        = 'windowStart';
+    public const string COUNT               = 'count';
+    public const string LAST_INCREMENTED_AT = 'lastIncrementedAt';
 
     /**
      * @var DateTimeImmutable

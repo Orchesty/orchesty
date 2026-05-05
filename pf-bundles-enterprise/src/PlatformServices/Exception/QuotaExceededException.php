@@ -5,6 +5,8 @@ namespace Hanaboso\PipesFrameworkEnterprise\PlatformServices\Exception;
 use DateTimeImmutable;
 
 /**
+ * Class QuotaExceededException
+ *
  * Thrown by `PlatformServiceProvider` when the per-instance daily quota for
  * the Trace cloud-relay default LLM is reached. Carries enough context for
  * the trace bridge to translate it into a UI-friendly `quota_exceeded` WS
@@ -16,6 +18,8 @@ final class QuotaExceededException extends PlatformServiceException
 {
 
     /**
+     * QuotaExceededException constructor.
+     *
      * @param int               $limit
      * @param int               $used
      * @param DateTimeImmutable $resetAt
@@ -69,8 +73,8 @@ final class QuotaExceededException extends PlatformServiceException
         return [
             'code'    => 'QUOTA_EXCEEDED',
             'limit'   => $this->limit,
-            'used'    => $this->used,
             'resetAt' => $this->resetAt->format(DATE_ATOM),
+            'used'    => $this->used,
         ];
     }
 

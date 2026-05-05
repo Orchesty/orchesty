@@ -9,8 +9,11 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\PipesFrameworkEnterprise\PlatformServices\Document\TraceQuotaUsage;
 use Hanaboso\PipesFrameworkEnterprise\PlatformServices\Repository\TraceQuotaUsageRepository;
 use MongoDB\BSON\UTCDateTime;
+use MongoDB\Operation\FindOneAndUpdate;
 
 /**
+ * Class TraceQuotaService
+ *
  * Per-instance daily quota counter for the Trace cloud-relay default LLM.
  *
  * The instance increments the counter atomically (single MongoDB upsert with
@@ -37,6 +40,8 @@ final class TraceQuotaService
 {
 
     /**
+     * TraceQuotaService constructor.
+     *
      * @param DocumentManager           $dm
      * @param TraceQuotaUsageRepository $repository
      * @param int                       $dailyCap
@@ -72,8 +77,8 @@ final class TraceQuotaService
                 '$setOnInsert' => [TraceQuotaUsage::WINDOW_START => new UTCDateTime($windowStart)],
             ],
             [
+                'returnDocument' => FindOneAndUpdate::RETURN_DOCUMENT_AFTER,
                 'upsert'         => TRUE,
-                'returnDocument' => \MongoDB\Operation\FindOneAndUpdate::RETURN_DOCUMENT_AFTER,
             ],
         );
 
@@ -91,17 +96,14 @@ final class TraceQuotaService
             );
         }
 
-        return new QuotaCheckResult(
-            rejected: FALSE,
-            used: $newCount,
-            limit: $this->dailyCap,
-            resetAt: $resetAt,
-        );
+        return new QuotaCheckResult(rejected: FALSE, used: $newCount, limit: $this->dailyCap, resetAt: $resetAt);
     }
 
     /**
      * Refund a previously successful increment when the dispatch failed
      * downstream (network error to cloud-relay, system instance 5xx, etc.).
+     *
+     * @param DateTimeImmutable|null $windowStart
      *
      * @throws MongoDBException
      */
@@ -117,6 +119,8 @@ final class TraceQuotaService
 
     /**
      * Read-only snapshot for UI badge / banner.
+     *
+     * @return QuotaUsageView
      */
     public function getCurrentUsage(): QuotaUsageView
     {

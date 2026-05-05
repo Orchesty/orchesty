@@ -41,8 +41,8 @@ func TestParseOnboardingStageMarker_Shapes(t *testing.T) {
 			wantOK:    true,
 		},
 		{
-			name:    "leading whitespace before marker is trimmed",
-			content: "  \n[onboarding-stage:overview next=choose-your-way]\n",
+			name:      "leading whitespace before marker is trimmed",
+			content:   "  \n[onboarding-stage:overview next=choose-your-way]\n",
 			wantStage: "overview",
 			wantNext:  "choose-your-way",
 			wantOK:    true,

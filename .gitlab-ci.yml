@@ -14,6 +14,7 @@ include:
   - local: "/applinth-admin-ui/.gitlab-ci.yml"
   - local: "/applinth-marketplace-ui/.gitlab-ci.yml"
   - local: "/bridge/.gitlab-ci.yml"
+  - local: "/cloud-trace-llm-worker/.gitlab-ci.yml"
   - local: "/counter/.gitlab-ci.yml"
   - local: "/cron/.gitlab-ci.yml"
   - local: "/detector/.gitlab-ci.yml"

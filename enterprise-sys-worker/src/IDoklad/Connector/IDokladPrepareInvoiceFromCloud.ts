@@ -22,7 +22,7 @@ export default class IDokladPrepareInvoiceFromCloud extends IDokladPrepareIssued
         const cloudInvoiceId = data.cloudInvoiceId as string;
         const maturityDays = data.maturityDays as number | undefined;
         const invoiceData = data.invoiceData as Record<string, unknown>;
-        const reportPdf = data.reportPdf;
+        const { reportPdf } = data;
 
         // Reshape dto for the base connector (expects flat invoice data)
         dto.setJsonData(invoiceData);
@@ -33,7 +33,7 @@ export default class IDokladPrepareInvoiceFromCloud extends IDokladPrepareIssued
 
         // Recalculate DateOfMaturity from DateOfIssue (not from DUZP).
         // maturityDays is required from Cloud payload.
-        if (maturityDays == null) {
+        if (maturityDays === undefined || maturityDays === null) {
             throw new Error('Missing required field [maturityDays] in Cloud payload');
         }
         const dateOfIssue = new Date(mergedInvoice.DateOfIssue as string);

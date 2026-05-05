@@ -1,7 +1,7 @@
+import FlexiBeeApplication from '@orchesty/connector-flexi-bee/dist/FexiBeeApplication';
 import AConnector from '@orchesty/nodejs-sdk/dist/lib/Connector/AConnector';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
-import FlexiBeeApplication from '@orchesty/connector-flexi-bee/dist/FexiBeeApplication';
 
 export const NAME = 'flexibee-create-faktura-vydana-connector';
 
@@ -19,6 +19,7 @@ export default class FlexiBeeCreateFakturaVydanaConnector extends AConnector {
 
         const body = {
             winstrom: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
                 'faktura-vydana': Array.isArray(data) ? data : [data],
             },
         };

@@ -177,6 +177,7 @@ export default class TopologyFailedMessageEmailMapper extends ASystemEmailMapper
             subject = `Failed message \u2014 ${topologyName}`;
         }
 
+        /* eslint-disable @typescript-eslint/naming-convention */
         return dto.setNewJsonData<IInput>({
             subject,
             from_name: sender.fromName,
@@ -184,6 +185,7 @@ export default class TopologyFailedMessageEmailMapper extends ASystemEmailMapper
             to: recipients.map((email) => ({ email })),
             html,
         });
+        /* eslint-enable @typescript-eslint/naming-convention */
     }
 
 }

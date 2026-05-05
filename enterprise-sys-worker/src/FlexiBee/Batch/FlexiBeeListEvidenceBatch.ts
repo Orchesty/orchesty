@@ -1,7 +1,7 @@
+import FlexiBeeApplication from '@orchesty/connector-flexi-bee/dist/FexiBeeApplication';
 import ABatchNode from '@orchesty/nodejs-sdk/dist/lib/Batch/ABatchNode';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import BatchProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/BatchProcessDto';
-import FlexiBeeApplication from '@orchesty/connector-flexi-bee/dist/FexiBeeApplication';
 
 const PAGE_SIZE = 100;
 
@@ -19,10 +19,10 @@ const PAGE_SIZE = 100;
  */
 export default class FlexiBeeListEvidenceBatch extends ABatchNode {
 
-    constructor(
+    public constructor(
         private readonly evidence: string,
         private readonly nodeName: string,
-        private readonly decompose: boolean = false,
+        private readonly decompose = false,
     ) {
         super();
     }
@@ -41,9 +41,7 @@ export default class FlexiBeeListEvidenceBatch extends ABatchNode {
             `${this.evidence}.json?detail=full&add-row-count=true&start=${page * PAGE_SIZE}&limit=${PAGE_SIZE}`,
         );
 
-        const request = await application.getRequestDto(
-            dto, applicationInstall, HttpMethods.GET, url,
-        );
+        const request = await application.getRequestDto(dto, applicationInstall, HttpMethods.GET, url);
 
         const response = await this.getSender().send(request, {
             success: [200],

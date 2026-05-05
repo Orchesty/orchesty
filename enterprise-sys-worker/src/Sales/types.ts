@@ -6,12 +6,12 @@ export interface ISalesFormInput {
     firstName: string;
     lastName: string;
     email: string;
-    phone?: string;
     company: string;
-    jobTitle?: string;
-    companySize?: string;
     message: string;
     consent: boolean;
+    phone?: string;
+    jobTitle?: string;
+    companySize?: string;
     meta?: { ip?: string; userAgent?: string };
 }
 
