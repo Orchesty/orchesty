@@ -224,6 +224,7 @@ global:
     backendUrl: https://cloud-backend.orchesty.example.com
     frontendUrl: https://cloud-frontend.orchesty.example.com
     startingPointUrl: http://cloud-starting-point.orchesty.example.com
+    docsSearchUrl: https://orchesty.io
     trialEndsAt: ""
     instance:
       notifierUrl: http://notifier.orchesty.example.com

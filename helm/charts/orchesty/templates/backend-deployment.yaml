@@ -134,6 +134,13 @@ spec:
               value: "{{ .Values.global.cloud.auth0.audience }}"
             - name: TRIALS_ENDS_AT
               value: "{{ .Values.global.cloud.trialEndsAt }}"
+            - name: DOCS_SEARCH_URL
+              value: "{{ .Values.global.cloud.docsSearchUrl }}"
+            - name: DOCS_SEARCH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: orchesty_cloud_docs_search_token
+                  name: {{ include "pipes.secretName" . }}
 {{- end }}
 
 {{- if not .Values.global.imageOverrides.bridge }}

@@ -44,7 +44,9 @@ type k8s struct {
 }
 
 type orchesty struct {
-	Version                 string `env:"APP_ORCHESTY_VERSION" default:"2.1"`
+	Version                 string `env:"APP_ORCHESTY_VERSION" default:"3.0"`
+	DocsSearchToken         string `env:"APP_ORCHESTY_DOCS_SEARCH_TOKEN"`
+	DocsSearchUrl           string `env:"APP_ORCHESTY_DOCS_SEARCH_URL" default:"https://orchesty.io"`
 	DockerRegistry          string `env:"ORCHESTY_DOCKER_REGISTRY" default:"dkr.hanaboso.net"`
 	EnterpriseBackendImage  string `env:"ORCHESTY_ENTERPRISE_BACKEND_IMAGE" default:"pipes/pipes/enterprise-backend"`
 	EnterpriseFrontendImage string `env:"ORCHESTY_ENTERPRISE_FRONTEND_IMAGE" default:"pipes/pipes/enterprise-frontend"`

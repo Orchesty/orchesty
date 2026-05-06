@@ -181,6 +181,9 @@ func (c *Client) ApplyInstanceSecret(dto *models.InstanceDTO) (bool, error) {
 		// Customization envs
 		"orchesty_cloud_instance_id":     dto.CloudInstanceId,
 		"orchesty_cloud_instance_secret": dto.CloudInstanceSecret,
+
+		// Docs search token for backend
+		"orchesty_cloud_docs_search_token": config.Orchesty.DocsSearchToken,
 	}
 
 	if dto.Customizations.Applinth.Enabled {

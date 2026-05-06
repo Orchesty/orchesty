@@ -4,6 +4,7 @@
 - Limiter: added new ENVs
 - Notifier: added new ENVs
 - Backend: updated ENVs
+- Worker-Api: changed default pod port
 - Fluentd: removed
 - Resources: Updated request and limit
 - Service naming: Unified service name across chart

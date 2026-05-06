@@ -18,6 +18,7 @@ service:
 secret:
   name: cloud-controller
   keys:
+    docsSearchToken: docs_search_token
     mongodbDsn: mongodb_dsn
     mongodbHostname: mongodb_hostname
     rabbitHostname: rabbit_hostname
@@ -29,9 +30,10 @@ secret:
 
 env:
   appDebug: true
-  appOrchestyVersion: "3.0.0-rc1"
+  appOrchestyVersion: "3.0.0-rc2"
   helmOrchestyVersion: "3.0.0-rc2"
   helmBridgePoolKey: bridgepool
+  docsSearchUrl: https://orchesty-io.stage.hanaboso.net
 
 kong:
   enabled: true

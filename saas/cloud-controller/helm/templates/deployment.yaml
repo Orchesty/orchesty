@@ -32,6 +32,15 @@ spec:
               value: {{ .Values.env.appDebug | quote }}
             - name: APP_ORCHESTY_VERSION
               value: {{ .Values.env.appOrchestyVersion | quote }}
+            - name: APP_ORCHESTY_DOCS_SEARCH_URL
+              value: {{ .Values.env.docsSearchUrl | quote }}
+            - name: APP_ORCHESTY_DOCS_SEARCH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.name }}
+                  key: {{ .Values.secret.keys.docsSearchToken }}                  
+
+            # Helm
             - name: HELM_ORCHESTY_VERSION
               value: {{ .Values.env.helmOrchestyVersion | quote }}
             - name: HELM_BRIDGEPOOL_KEY

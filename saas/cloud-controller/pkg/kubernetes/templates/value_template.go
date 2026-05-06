@@ -39,6 +39,7 @@ global:
     backendUrl: https://api.cloud.orchesty.io
     frontendUrl: https://app.cloud.orchesty.io
     startingPointUrl: https://start-{{cloudInstancePrefix}}-{{cloudInstance}}.{{domainSuffix}}
+    docsSearchUrl: {{docsSearchUrl}}
     trialEndsAt: {{trialEndsAt}}
     instance:
       notifierUrl: https://ses-{{instancePrefix}}-{{instance}}.{{domainSuffix}}

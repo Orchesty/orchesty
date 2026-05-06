@@ -149,6 +149,9 @@ func (h *Helm) createFiles(path string, dto *models.InstanceDTO) error {
 	values = strings.ReplaceAll(values, "{{cloudInstancePrefix}}", config.Cloud.InstancePrefix)
 	values = strings.ReplaceAll(values, "{{cloudInstance}}", config.Cloud.Instance)
 
+	// Docs search URL replacement
+	values = strings.ReplaceAll(values, "{{docsSearchUrl}}", config.Orchesty.DocsSearchUrl)
+
 	// Trial end date replacement
 	values = strings.ReplaceAll(values, "{{trialEndsAt}}", dto.Customizations.TrialEndsAt)
 
