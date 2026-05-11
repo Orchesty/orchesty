@@ -7,6 +7,7 @@ RUN npm i -g pnpm
 WORKDIR /precache
 COPY package.json ./
 COPY pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml ./
 RUN pnpm install
 
 ### Build step

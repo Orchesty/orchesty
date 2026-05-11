@@ -2,7 +2,8 @@ packages:
   - app-ui-new
   - app-ui-new-enterprise
 
-ignoredBuiltDependencies:
-  - esbuild
-  - rete
-  - vue-demi
+allowBuilds:
+  browser-tabs-lock: false
+  esbuild: false
+  rete: false
+  vue-demi: false

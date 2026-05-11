@@ -15,7 +15,6 @@
     "format": "prettier --write '**/*.{js,ts,vue,json,yml,mjs,css,scss,md}'",
     "validate": "run-p -l lint lint:styles format:check"
   },
-  "packageManager": "pnpm@9.1.4",
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "axios": "^1.12.2",
