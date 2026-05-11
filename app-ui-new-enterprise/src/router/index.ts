@@ -236,14 +236,27 @@ export function createEnterpriseRouter() {
       }
     }
 
-    if (!_auth0UsersExistCache.value && to.path !== '/setup') {
-      next('/setup')
-      return
-    }
+    // In cloud mode, the /setup self-hosted bootstrap screen must never be
+    // shown — identity originates from the cloud and is handed off via the
+    // session-handoff flow. If a user lands here (e.g. handoff failed and the
+    // instance Mongo is empty), bounce them to the cloud sign-in so they can
+    // retry the handoff instead of creating a rogue local admin.
+    if (cloudLoaded.value && cloudMode.value) {
+      if (to.path === '/setup') {
+        const returnUrl = encodeURIComponent(window.location.origin)
+        window.location.href = `${cloudUrl.value}/sign-in?redirect_to=${returnUrl}`
+        return
+      }
+    } else {
+      if (!_auth0UsersExistCache.value && to.path !== '/setup') {
+        next('/setup')
+        return
+      }
 
-    if (to.path === '/setup' && _auth0UsersExistCache.value) {
-      next('/sign-in')
-      return
+      if (to.path === '/setup' && _auth0UsersExistCache.value) {
+        next('/sign-in')
+        return
+      }
     }
 
     const loginFailed = sessionStorage.getItem(STORAGE_KEYS.AUTH0_LOGIN_FAILED) === 'true'

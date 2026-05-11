@@ -33,6 +33,7 @@ services:
         arguments:
             - '@hbpf.cloud.handler.user_sync'
             - '@hbpf.cloud.member_sync'
+            - '@hbpf.cloud.handoff_sync_lock'
             - '@hbpf.user.manager.security'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '%orchesty_cloud_instance_secret%'
@@ -45,6 +46,12 @@ services:
             - '@security.password_hasher_factory'
             - '@hbpf.manager.group'
             - '%orchesty_cloud_backend_url%'
+
+    hbpf.cloud.handoff_sync_lock:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Service\HandoffSyncLock
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - 30
 
     hbpf.cloud.member_sync:
         class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\CloudMemberSyncService

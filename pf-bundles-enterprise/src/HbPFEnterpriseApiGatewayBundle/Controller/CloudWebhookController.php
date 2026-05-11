@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Contr
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\CloudMemberSyncService;
 use Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\CloudUserSyncHandler;
+use Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Service\HandoffSyncLock;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\UserBundle\Model\Security\SecurityManager;
 use Hanaboso\Utils\String\Json;
@@ -30,6 +31,7 @@ final class CloudWebhookController extends AbstractController
      *
      * @param CloudUserSyncHandler   $cloudUserSyncHandler
      * @param CloudMemberSyncService $cloudMemberSyncService
+     * @param HandoffSyncLock        $handoffSyncLock
      * @param SecurityManager        $securityManager
      * @param DocumentManager        $dm
      * @param string                 $instanceSecret
@@ -37,6 +39,7 @@ final class CloudWebhookController extends AbstractController
     public function __construct(
         private readonly CloudUserSyncHandler $cloudUserSyncHandler,
         private readonly CloudMemberSyncService $cloudMemberSyncService,
+        private readonly HandoffSyncLock $handoffSyncLock,
         private readonly SecurityManager $securityManager,
         private readonly DocumentManager $dm,
         private readonly string $instanceSecret,
@@ -173,10 +176,47 @@ final class CloudWebhookController extends AbstractController
             ]);
 
             if (!$user) {
-                return new JsonResponse(
-                    ['message' => sprintf('User [%s] not found on this instance', $email)],
-                    Response::HTTP_NOT_FOUND,
+                // Self-healing handoff: cloud guarantees membership before
+                // signing this token, so we trust the payload and provision
+                // the visiting user here. We then best-effort dotáhneme zbylé
+                // členy tak, aby další uživatelé téže instance nemuseli
+                // čekat na příští webhook.
+                $cloudRole  = $payload['role'] ?? NULL;
+                $instanceId = (string) ($payload['instanceId'] ?? '');
+                $webhookTok = $payload['webhookToken'] ?? NULL;
+
+                error_log(sprintf(
+                    '[handoff] inline provision email=%s instanceId=%s',
+                    $email,
+                    $instanceId,
+                ));
+
+                $user = $this->cloudUserSyncHandler->provisionSingleUser(
+                    (string) $email,
+                    is_string($cloudRole) ? $cloudRole : NULL,
                 );
+
+                if (is_string($webhookTok) && $webhookTok !== '' && $instanceId !== '') {
+                    if ($this->handoffSyncLock->acquire($instanceId)) {
+                        try {
+                            $result = $this->cloudUserSyncHandler->syncUsers(['token' => $webhookTok]);
+                            error_log(sprintf(
+                                '[handoff] backfill triggered instanceId=%s result=%s',
+                                $instanceId,
+                                Json::encode($result),
+                            ));
+                        } catch (Throwable $t) {
+                            // Backfill is best-effort; primární cíl (provision návštěvníka) splněn.
+                            error_log(sprintf(
+                                '[handoff] backfill failed instanceId=%s error=%s',
+                                $instanceId,
+                                $t->getMessage(),
+                            ));
+                        } finally {
+                            $this->handoffSyncLock->release($instanceId);
+                        }
+                    }
+                }
             }
 
             $jwt = $this->securityManager->createToken(
