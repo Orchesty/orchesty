@@ -26,6 +26,13 @@ final class EnterpriseGroupHandler
 {
 
     /**
+     * Default level assigned to user-created (Guest) access groups. Level 0 is reserved
+     * as the Super Admin bypass marker (see {@see PermissionPresets::SUPER_ADMIN}); preset
+     * groups occupy the lowest values. Anything outside that range only affects list ordering.
+     */
+    private const int DEFAULT_GROUP_LEVEL = 999;
+
+    /**
      * EnterpriseGroupHandler constructor.
      *
      * @param DocumentManager $dm
@@ -76,13 +83,17 @@ final class EnterpriseGroupHandler
     }
 
     /**
+     * Creates a new (Guest) access group. Level is fixed to a default (non-zero) value;
+     * permissions are not assignable here — they are managed exclusively through:
+     *   - preset groups (system roles, see {@see PermissionPresets}),
+     *   - per-topology access ({@see updateTopologyAccess}).
+     *
      * @param string $name
-     * @param int    $level
      *
      * @return mixed[]
      * @throws AclException
      */
-    public function createGroup(string $name, int $level = 999): array
+    public function createGroup(string $name): array
     {
         if (trim($name) === '') {
             throw new InvalidArgumentException('Group name cannot be empty.');
@@ -92,29 +103,26 @@ final class EnterpriseGroupHandler
             throw new LogicException(sprintf('Group name [%s] is reserved for a system preset.', $name));
         }
 
-        if ($level < 1) {
-            throw new AclException('Group level must be at least 1.');
-        }
-
         /** @var Group $group */
         $group = $this->accessManager->addGroup($name);
 
-        $group->setLevel($level);
+        $group->setLevel(self::DEFAULT_GROUP_LEVEL);
         $this->dm->flush();
 
         return $this->serializeGroupDetail($group);
     }
 
     /**
-     * @param string       $id
-     * @param string|null  $name
-     * @param int|null     $level
-     * @param mixed[]|null $rules Array of [{resource: string, actions: string[]}]
+     * Renames an existing (non-preset) group. Level and rules are intentionally not
+     * editable here — see {@see createGroup} for the rationale.
+     *
+     * @param string      $id
+     * @param string|null $name
      *
      * @return mixed[]
      * @throws AclException
      */
-    public function updateGroup(string $id, ?string $name = NULL, ?int $level = NULL, ?array $rules = NULL): array
+    public function updateGroup(string $id, ?string $name = NULL): array
     {
         $group = $this->findGroupOrFail($id);
 
@@ -126,62 +134,21 @@ final class EnterpriseGroupHandler
             $dto->addUser($user);
         }
 
-        if ($rules !== NULL) {
-            $ruleData = [];
-            foreach ($rules as $entry) {
-                $resource = $entry['resource'] ?? '';
-                $actions  = $entry['actions'] ?? [];
-
-                if ($resource === '' || !is_array($actions) || $actions === []) {
-                    continue;
-                }
-
-                $baseResource = str_contains($resource, ':')
-                    ? strstr($resource, ':', TRUE)
-                    : $resource;
-
-                $actionMask = $this->maskFactory->maskActionFromYmlArray($actions, $baseResource);
-
-                if ($actionMask === 0) {
-                    continue;
-                }
-
-                $ruleData[] = [
-                    'action_mask'   => $actionMask,
-                    'property_mask' => 2,
-                    'resource'      => $resource,
-                ];
-            }
-
-            if ($ruleData !== []) {
-                $dto->addRule(Rule::class, $ruleData);
-            }
-        } else {
-            $existingRuleData = [];
-            /** @var Rule $existingRule */
-            foreach ($group->getRules() as $existingRule) {
-                $existingRuleData[] = [
-                    'action_mask'   => $existingRule->getActionMask(),
-                    'property_mask' => $existingRule->getPropertyMask(),
-                    'resource'      => $existingRule->getResource(),
-                ];
-            }
-            if ($existingRuleData !== []) {
-                $dto->addRule(Rule::class, $existingRuleData);
-            }
+        $existingRuleData = [];
+        /** @var Rule $existingRule */
+        foreach ($group->getRules() as $existingRule) {
+            $existingRuleData[] = [
+                'action_mask'   => $existingRule->getActionMask(),
+                'property_mask' => $existingRule->getPropertyMask(),
+                'resource'      => $existingRule->getResource(),
+            ];
+        }
+        if ($existingRuleData !== []) {
+            $dto->addRule(Rule::class, $existingRuleData);
         }
 
         /** @var Group $updatedGroup */
         $updatedGroup = $this->accessManager->updateGroup($dto);
-
-        if ($level !== NULL) {
-            if ($level < 1) {
-                throw new AclException('Group level must be at least 1.');
-            }
-
-            $updatedGroup->setLevel($level);
-            $this->dm->flush();
-        }
 
         return $this->serializeGroupDetail($updatedGroup);
     }
