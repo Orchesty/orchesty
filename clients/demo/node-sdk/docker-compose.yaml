@@ -22,7 +22,7 @@ services:
             MYSQL_USER: root
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
             MYSQL_DATABASE: ${MYSQL_DATABASE}
-        command: pnpm run start
+        command: /bin/sh -c 'pnpm i && pnpm run start'
 
     mongo:
         image: mongo

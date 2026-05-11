@@ -180,10 +180,6 @@ function formatActions(actions: string[]): string {
             <dd class="text-sm font-medium text-gray-900 dark:text-white">{{ groupDetail.name }}</dd>
           </dl>
           <dl class="flex items-center justify-between gap-4">
-            <dt class="text-sm font-normal text-gray-500 dark:text-gray-400">Level</dt>
-            <dd class="text-sm font-medium text-gray-900 dark:text-white">{{ groupDetail.level }}</dd>
-          </dl>
-          <dl class="flex items-center justify-between gap-4">
             <dt class="text-sm font-normal text-gray-500 dark:text-gray-400">Users</dt>
             <dd class="text-sm font-medium text-gray-900 dark:text-white">{{ groupUsers.length }}</dd>
           </dl>

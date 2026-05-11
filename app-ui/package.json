@@ -16,7 +16,6 @@
     "validate": "run-p -l lint lint:styles format:check test:unit",
     "vue-i18n-extract": "node ./src/localization/transform.mjs && vue-i18n-extract report --vueFiles './src/**/*.?(js|vue)' --languageFiles './src/localization/generated/*.json' && rm -rf './src/localization/generated/'"
   },
-  "packageManager": "pnpm@9.1.4",
   "dependencies": {
     "@casl/ability": "^6.7.3",
     "@casl/vue": "^1.2.3",

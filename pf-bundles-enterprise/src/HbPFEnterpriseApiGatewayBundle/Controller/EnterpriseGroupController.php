@@ -84,9 +84,7 @@ final class EnterpriseGroupController
                 return $this->getErrorResponse(new InvalidArgumentException('Missing parameter "name"'), 400);
             }
 
-            $level = $request->request->getInt('level', 999);
-
-            return $this->getResponse($this->groupHandler->createGroup($name, $level));
+            return $this->getResponse($this->groupHandler->createGroup($name));
         } catch (LogicException $e) {
             return $this->getErrorResponse($e, 400);
         } catch (AclException $e) {
@@ -106,13 +104,9 @@ final class EnterpriseGroupController
     public function updateAction(string $id, Request $request): Response
     {
         try {
-            $name  = $request->request->getString('name') ?: NULL;
-            $level = $request->request->has('level') ? $request->request->getInt('level') : NULL;
+            $name = $request->request->getString('name') ?: NULL;
 
-            $data  = $request->request->all();
-            $rules = isset($data['rules']) && is_array($data['rules']) ? $data['rules'] : NULL;
-
-            return $this->getResponse($this->groupHandler->updateGroup($id, $name, $level, $rules));
+            return $this->getResponse($this->groupHandler->updateGroup($id, $name));
         } catch (InvalidArgumentException $e) {
             return $this->getErrorResponse($e, 404);
         } catch (LogicException $e) {

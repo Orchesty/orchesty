@@ -19,8 +19,6 @@ const selectedGroup = ref<Group | null>(null)
 
 const columns: TableColumn[] = [
   { key: 'name', label: 'Group name', sortable: true },
-  { key: 'level', label: 'Level', sortable: true },
-  { key: 'rules', label: 'Rules', sortable: false },
   { key: 'usersCount', label: 'Users', sortable: true },
   { key: 'actions', label: '', sortable: false, className: 'text-right' },
 ]
@@ -102,18 +100,6 @@ onMounted(() => {
         >
           {{ (row as Group).name }}
         </button>
-      </template>
-
-      <template #cell-level="{ row }">
-        <span class="text-sm text-gray-500 dark:text-gray-400">
-          {{ (row as Group).level }}
-        </span>
-      </template>
-
-      <template #cell-rules="{ row }">
-        <span class="text-sm text-gray-500 dark:text-gray-400">
-          {{ (row as Group).rules.length }}
-        </span>
       </template>
 
       <template #cell-usersCount="{ row }">

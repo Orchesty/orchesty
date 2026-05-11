@@ -21,11 +21,6 @@
     "@orchesty/nodejs-sdk": "^5.0.9",
     "dotenv": "^17.4.2"
   },
-  "pnpm": {
-    "overrides": {
-       "eslint": "$eslint"
-    }
-  },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^10.0.1",

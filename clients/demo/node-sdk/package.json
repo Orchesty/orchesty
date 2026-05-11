@@ -12,7 +12,6 @@
   "keywords": [],
   "author": "info@hanaboso.com",
   "license": "Apache-2.0",
-  "packageManager": "pnpm@9.1.4",
   "dependencies": {
     "@aws-sdk/client-ses": "^3.1038.0",
     "@orchesty/connector-airtable": "^2.0.0",
@@ -74,11 +73,6 @@
     "luxon": "^3.7.2",
     "mongodb": "^7.2.0",
     "mysql2": "^3.22.3"
-  },
-  "pnpm": {
-    "overrides": {
-       "eslint": "$eslint"
-    }
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",

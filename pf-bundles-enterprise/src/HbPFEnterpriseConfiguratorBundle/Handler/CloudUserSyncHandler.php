@@ -82,23 +82,7 @@ final class CloudUserSyncHandler
                 continue;
             }
 
-            $user = new User();
-            $user->setEmail($email);
-
-            $hasher = $this->passwordHasherFactory->getPasswordHasher(User::class);
-            $user->setPassword($hasher->hash(bin2hex(random_bytes(32))));
-
-            $this->dm->persist($user);
-            $this->dm->flush();
-
-            $groupName = self::ROLE_MAP[$cloudUser['role'] ?? ''] ?? self::DEFAULT_GROUP;
-
-            try {
-                $this->groupManager->addUserIntoGroup($user, groupName: $groupName);
-            } catch (Throwable) {
-            }
-
-            $this->removeTmpUser($email);
+            $this->provisionSingleUser((string) $email, $cloudUser['role'] ?? NULL);
 
             $created++;
         }
@@ -108,6 +92,49 @@ final class CloudUserSyncHandler
             'skipped' => $skipped,
             'total'   => count($users),
         ];
+    }
+
+    /**
+     * Provision a single user from a cloud handoff payload.
+     *
+     * Idempotent — when a user with the same e-mail already exists, returns it
+     * without modifications. Used by both bulk syncUsers() and the on-the-fly
+     * inline provisioning during cloud session handoff (CloudWebhookController).
+     *
+     * @param string      $email     e-mail address from the cloud
+     * @param string|NULL $cloudRole optional cloud role (ADMIN | DEVELOPER | BILLING | OWNER)
+     *
+     * @return User
+     * @throws MongoDBException
+     */
+    public function provisionSingleUser(string $email, ?string $cloudRole = NULL): User
+    {
+        $existing = $this->dm->getRepository(User::class)->findOneBy(['email' => $email]);
+        if ($existing) {
+            $this->removeTmpUser($email);
+
+            return $existing;
+        }
+
+        $user = new User();
+        $user->setEmail($email);
+
+        $hasher = $this->passwordHasherFactory->getPasswordHasher(User::class);
+        $user->setPassword($hasher->hash(bin2hex(random_bytes(32))));
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $groupName = self::ROLE_MAP[$cloudRole ?? ''] ?? self::DEFAULT_GROUP;
+
+        try {
+            $this->groupManager->addUserIntoGroup($user, groupName: $groupName);
+        } catch (Throwable) {
+        }
+
+        $this->removeTmpUser($email);
+
+        return $user;
     }
 
     /**

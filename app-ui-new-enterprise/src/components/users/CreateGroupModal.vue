@@ -15,14 +15,12 @@ const emit = defineEmits<{
 }>()
 
 const groupName = ref('')
-const groupLevel = ref(999)
 const submitting = ref(false)
 const errorMessage = ref('')
 
 watch(() => props.modelValue, (newValue) => {
   if (!newValue) {
     groupName.value = ''
-    groupLevel.value = 999
     errorMessage.value = ''
   }
 })
@@ -33,7 +31,7 @@ const handleSubmit = async () => {
   submitting.value = true
   errorMessage.value = ''
   try {
-    await createGroup(groupName.value.trim(), groupLevel.value)
+    await createGroup(groupName.value.trim())
     emit('group-created')
     emit('update:modelValue', false)
   } catch (error: unknown) {
@@ -77,28 +75,12 @@ const handleClose = () => {
           />
         </div>
 
-        <div>
-          <label for="group-level" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Level
-          </label>
-          <input
-            v-model.number="groupLevel"
-            type="number"
-            id="group-level"
-            min="0"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            Lower number means higher privilege in the hierarchy. Default is 999.
-          </p>
-        </div>
-
         <p v-if="errorMessage" class="text-sm text-red-600 dark:text-red-400">
           {{ errorMessage }}
         </p>
 
         <p class="text-sm text-gray-500 dark:text-gray-400">
-          After creating the group, you can configure permissions and add users in the group detail.
+          After creating the group, you can add users and assign per-topology access in the group detail.
         </p>
       </div>
     </form>

@@ -1,3 +1,6 @@
-onlyBuiltDependencies:
-  - protobufjs
-  - unrs-resolver
+overrides:
+  eslint: $eslint
+
+allowBuilds:
+  protobufjs: true
+  unrs-resolver: true

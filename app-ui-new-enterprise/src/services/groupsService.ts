@@ -11,14 +11,14 @@ export async function fetchGroupDetail(id: string): Promise<Group> {
   return response.data
 }
 
-export async function createGroup(name: string, level: number = 999): Promise<Group> {
-  const response = await api.post<Group>('/api/group', { name, level })
+export async function createGroup(name: string): Promise<Group> {
+  const response = await api.post<Group>('/api/group', { name })
   return response.data
 }
 
 export async function updateGroup(
   id: string,
-  data: { name?: string; level?: number },
+  data: { name?: string },
 ): Promise<Group> {
   const response = await api.put<Group>(`/api/group/${id}`, data)
   return response.data
@@ -78,11 +78,6 @@ export async function ensurePresetGroups(): Promise<void> {
 
 export async function setUserRole(userId: string, role: string): Promise<void> {
   await api.put(`/api/user/${userId}/role`, { role })
-}
-
-export async function updateGroupRules(groupId: string, rules: RulePayload[]): Promise<Group> {
-  const response = await api.put<Group>(`/api/group/${groupId}`, { rules })
-  return response.data
 }
 
 export interface TopologyListItem {
