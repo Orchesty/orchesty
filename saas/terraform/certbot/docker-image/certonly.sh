@@ -6,7 +6,7 @@ set -e
 
 CERT_SUM1=$(md5sum live/${CERT_NAME}/cert.pem || true)
 
-echo "Renewing..."
+echo "Generating..."
 certbot certonly \
     --agree-tos \
     --email fakturace-ops@hanaboso.com \

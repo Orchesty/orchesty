@@ -33,7 +33,7 @@ env:
   appOrchestyVersion: "3.0.0-rc2"
   helmOrchestyVersion: "3.0.0-rc2"
   helmBridgePoolKey: bridgepool
-  docsSearchUrl: https://orchesty-io.stage.hanaboso.net
+  docsSearchUrl: https://orchesty.io
 
 kong:
   enabled: true

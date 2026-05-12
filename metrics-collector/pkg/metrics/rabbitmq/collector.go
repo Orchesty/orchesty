@@ -25,6 +25,7 @@ type Collector struct {
 }
 
 type queueInfo struct {
+	Name                   string   `json:"name"`
 	Messages               int64    `json:"messages"`
 	MessageBytesPersistent int64    `json:"message_bytes_persistent"`
 	MessageBytesRAM        int64    `json:"message_bytes_ram"`
@@ -116,6 +117,11 @@ func (c *Collector) fetchMetrics(ctx context.Context) (*models.RabbitMQMetric, e
 		}
 
 		for _, q := range items {
+			// Skip excluded queues
+			if c.isQueueExcluded(q.Name) {
+				continue
+			}
+
 			diskMb := float64(q.MessageBytesPersistent) / (1024 * 1024)
 			ramMb := float64(q.MessageBytesRAM) / (1024 * 1024)
 
@@ -158,6 +164,15 @@ func (c *Collector) parseResponse(resp *http.Response) ([]queueInfo, int, error)
 	}
 
 	return paginatedResp.Items, paginatedResp.PageCount, nil
+}
+
+func (c *Collector) isQueueExcluded(queueName string) bool {
+	for _, excluded := range config.RabbitMQ.ExcludedQueues {
+		if queueName == excluded {
+			return true
+		}
+	}
+	return false
 }
 
 func (c *Collector) aggregateMetrics(ctx context.Context, repo *storage.MongoRepository) error {

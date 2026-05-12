@@ -54,6 +54,7 @@ type redisRateLimitConfig struct {
 
 var serviceSuffixes = []string{"fe", "be", "sp", "tp", "wa", "ws", "ses"}
 var optionalServiceSuffixes = []string{"grafana", "applinth-marketplace-ui"}
+var rateLimitServices = []string{"sp"}
 
 type Client struct {
 	httpClient *http.Client
@@ -80,7 +81,7 @@ func (c *Client) RegisterServices(dto *models.InstanceDTO) error {
 			return fmt.Errorf("register kong route for %s: %w", entry.name, err)
 		}
 
-		if dto.Customizations.RateLimits.Enabled {
+		if dto.Customizations.RateLimits.Enabled && isRateLimitedService(dto, entry.name) {
 			if err := c.createRateLimitPlugin(entry); err != nil {
 				return fmt.Errorf("register kong rate-limit plugin for %s: %w", entry.name, err)
 			}
@@ -107,8 +108,10 @@ func (c *Client) UpdateServices(dto *models.InstanceDTO) error {
 			}
 		}
 
-		if err := c.upsertRateLimitPlugin(entry); err != nil {
-			return fmt.Errorf("update kong rate-limit plugin for %s: %w", entry.name, err)
+		if isRateLimitedService(dto, entry.name) {
+			if err := c.upsertRateLimitPlugin(entry); err != nil {
+				return fmt.Errorf("update kong rate-limit plugin for %s: %w", entry.name, err)
+			}
 		}
 	}
 
@@ -300,6 +303,16 @@ func (c *Client) sendRequestWithResponse(method, path string, data any, response
 	return nil
 }
 
+func isRateLimitedService(dto *models.InstanceDTO, serviceName string) bool {
+	for _, service := range rateLimitServices {
+		if serviceName == dto.Instance+"-"+service {
+			return true
+		}
+	}
+
+	return false
+}
+
 func buildServiceEntries(dto *models.InstanceDTO) ([]serviceEntry, error) {
 	suffix := config.Cloud.DomainSuffix
 	tpProtocol := serviceProtocolForService(dto.Instance + "-tp")
@@ -364,7 +377,7 @@ func buildServiceEntries(dto *models.InstanceDTO) ([]serviceEntry, error) {
 
 	for i := range entries {
 		entries[i].routeConfig = routeConfigForService(entries[i].name)
-		if entries[i].name == dto.Instance+"-sp" || entries[i].name == dto.Instance+"-wa" {
+		if isRateLimitedService(dto, entries[i].name) {
 			entries[i].rateLimitConfig = rateLimitCfg
 		}
 	}

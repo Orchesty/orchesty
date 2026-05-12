@@ -92,6 +92,8 @@ spec:
 {{- end }}
 
 {{- if .Values.global.cloud.enabled }}
+            - name: CRON_LIMITS
+              value: "1"
             - name: NOTIFIER_DSN
               value: "http://{{ include "pipes.fullname" (dict "suffix" "notifier" "noPrefix" true "root" .) }}:8080"
             - name: TUNNEL_PROXY_HOST

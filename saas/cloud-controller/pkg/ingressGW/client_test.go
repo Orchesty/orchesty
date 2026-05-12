@@ -143,8 +143,6 @@ func TestRegisterServicesSuccess(t *testing.T) {
 			t.Fatalf("request %d: expected %s %s, got %s %s", i, expected.method, expected.path, requests[i].Method, requests[i].Path)
 		}
 	}
-
-	// Verify first service payload
 	if requests[0].Body["name"] != "instance-abc123-fe" {
 		t.Fatalf("expected service name instance-abc123-fe, got %v", requests[0].Body["name"])
 	}
@@ -252,8 +250,8 @@ func TestUpdateServicesSuccess(t *testing.T) {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	if len(requests) != 21 {
-		t.Fatalf("expected 21 requests, got %d", len(requests))
+	if len(requests) != 15 {
+		t.Fatalf("expected 15 requests, got %d", len(requests))
 	}
 
 	expectedRequests := []struct {
@@ -262,25 +260,19 @@ func TestUpdateServicesSuccess(t *testing.T) {
 	}{
 		{http.MethodPut, "/services/instance-abc123-fe"},
 		{http.MethodPatch, "/routes/instance-abc123-fe-route"},
-		{http.MethodGet, "/routes/instance-abc123-fe-route/plugins"},
 		{http.MethodPut, "/services/instance-abc123-be"},
 		{http.MethodPatch, "/routes/instance-abc123-be-route"},
-		{http.MethodGet, "/routes/instance-abc123-be-route/plugins"},
 		{http.MethodPut, "/services/instance-abc123-sp"},
 		{http.MethodPatch, "/routes/instance-abc123-sp-route"},
 		{http.MethodGet, "/routes/instance-abc123-sp-route/plugins"},
 		{http.MethodPut, "/services/instance-abc123-tp"},
 		{http.MethodPatch, "/routes/instance-abc123-tp-route"},
-		{http.MethodGet, "/routes/instance-abc123-tp-route/plugins"},
 		{http.MethodPut, "/services/instance-abc123-wa"},
 		{http.MethodPatch, "/routes/instance-abc123-wa-route"},
-		{http.MethodGet, "/routes/instance-abc123-wa-route/plugins"},
 		{http.MethodPut, "/services/instance-abc123-ws"},
 		{http.MethodPatch, "/routes/instance-abc123-ws-route"},
-		{http.MethodGet, "/routes/instance-abc123-ws-route/plugins"},
 		{http.MethodPut, "/services/instance-abc123-ses"},
 		{http.MethodPatch, "/routes/instance-abc123-ses-route"},
-		{http.MethodGet, "/routes/instance-abc123-ses-route/plugins"},
 	}
 
 	for i, expected := range expectedRequests {
@@ -288,13 +280,12 @@ func TestUpdateServicesSuccess(t *testing.T) {
 			t.Fatalf("request %d: expected %s %s, got %s %s", i, expected.method, expected.path, requests[i].Method, requests[i].Path)
 		}
 	}
-
-	wsUpdateBody := requests[13].Body
+	wsUpdateBody := requests[12].Body
 	wsProtocols := wsUpdateBody["protocols"].([]any)
 	if len(wsProtocols) != 1 || wsProtocols[0] != "https" {
 		t.Fatalf("expected ws route protocols [https] on update, got %v", wsProtocols)
 	}
-	tpUpdateBody := requests[10].Body
+	tpUpdateBody := requests[8].Body
 	if _, hasMethods := tpUpdateBody["methods"]; hasMethods {
 		t.Fatalf("expected tunnel-proxy update payload without methods, got %v", tpUpdateBody["methods"])
 	}
@@ -337,16 +328,21 @@ func TestUpdateServicesDeletesRateLimitPluginsWhenDisabled(t *testing.T) {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	if len(requests) != 28 {
-		t.Fatalf("expected 28 requests, got %d", len(requests))
+	// Expected requests:
+	// - 7 services * (PUT service + PATCH route) = 14
+	// - 1 service with rate limiting (sp) * (GET plugins + DELETE) = 2
+	// Total: 16 requests
+	if len(requests) != 16 {
+		t.Fatalf("expected 16 requests, got %d", len(requests))
 	}
 
-	if requests[2].Method != http.MethodGet || requests[2].Path != "/routes/instance-abc123-fe-route/plugins" {
-		t.Fatalf("expected GET plugin lookup for first route, got %s %s", requests[2].Method, requests[2].Path)
+	// Check that rate limit plugin is deleted only for sp service (requests 6-7)
+	if requests[6].Method != http.MethodGet || requests[6].Path != "/routes/instance-abc123-sp-route/plugins" {
+		t.Fatalf("expected GET plugin lookup for sp route, got %s %s", requests[6].Method, requests[6].Path)
 	}
 
-	if requests[3].Method != http.MethodDelete || requests[3].Path != "/plugins/plugin-to-delete" {
-		t.Fatalf("expected DELETE /plugins/plugin-to-delete for first route, got %s %s", requests[3].Method, requests[3].Path)
+	if requests[7].Method != http.MethodDelete || requests[7].Path != "/plugins/plugin-to-delete" {
+		t.Fatalf("expected DELETE /plugins/plugin-to-delete for sp route, got %s %s", requests[7].Method, requests[7].Path)
 	}
 }
 
@@ -369,20 +365,19 @@ func TestRegisterServicesCreatesRateLimitPlugins(t *testing.T) {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	if len(requests) != 16 {
-		t.Fatalf("expected 16 requests, got %d", len(requests))
+	if len(requests) != 15 {
+		t.Fatalf("expected 15 requests, got %d", len(requests))
 	}
 
 	pluginRequests := make([]capturedRequest, 0)
 	for _, req := range requests {
-		if req.Method == http.MethodPost && req.Path == "/routes/instance-abc123-sp-route/plugins" ||
-			(req.Method == http.MethodPost && req.Path == "/routes/instance-abc123-wa-route/plugins") {
+		if req.Method == http.MethodPost && req.Path == "/routes/instance-abc123-sp-route/plugins" {
 			pluginRequests = append(pluginRequests, req)
 		}
 	}
 
-	if len(pluginRequests) != 2 {
-		t.Fatalf("expected 2 plugin create requests, got %d", len(pluginRequests))
+	if len(pluginRequests) != 1 {
+		t.Fatalf("expected 1 plugin create request, got %d", len(pluginRequests))
 	}
 
 	pluginBody := pluginRequests[0].Body
@@ -431,12 +426,12 @@ func TestUpdateServicesUpsertsRateLimitPlugins(t *testing.T) {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	if len(requests) != 28 {
-		t.Fatalf("expected 28 requests, got %d", len(requests))
+	if len(requests) != 16 {
+		t.Fatalf("expected 16 requests, got %d", len(requests))
 	}
 
-	if requests[10].Method != http.MethodGet || requests[10].Path != "/routes/instance-abc123-sp-route/plugins" {
-		t.Fatalf("expected GET plugin lookup for sp route, got %s %s", requests[10].Method, requests[10].Path)
+	if requests[6].Method != http.MethodGet || requests[6].Path != "/routes/instance-abc123-sp-route/plugins" {
+		t.Fatalf("expected GET plugin lookup for sp route at index 6, got %s %s", requests[6].Method, requests[6].Path)
 	}
 
 	patchPluginRequests := 0
@@ -444,28 +439,23 @@ func TestUpdateServicesUpsertsRateLimitPlugins(t *testing.T) {
 	var patchConfig map[string]any
 
 	for _, req := range requests {
-		if req.Path != "/plugins/plugin-123" {
-			continue
-		}
-
-		if req.Method == http.MethodPatch {
+		if req.Path == "/plugins/plugin-123" && req.Method == http.MethodPatch {
 			patchPluginRequests++
 			if patchConfig == nil {
 				patchConfig = req.Body["config"].(map[string]any)
 			}
 		}
-
-		if req.Method == http.MethodDelete {
+		if req.Path == "/plugins/plugin-123" && req.Method == http.MethodDelete {
 			deletePluginRequests++
 		}
 	}
 
-	if patchPluginRequests != 2 {
-		t.Fatalf("expected 2 PATCH plugin requests for sp and wa, got %d", patchPluginRequests)
+	if patchPluginRequests != 1 {
+		t.Fatalf("expected 1 PATCH plugin request for sp, got %d", patchPluginRequests)
 	}
 
-	if deletePluginRequests != 5 {
-		t.Fatalf("expected 5 DELETE plugin requests for non-rate-limited services, got %d", deletePluginRequests)
+	if deletePluginRequests != 0 {
+		t.Fatalf("expected 0 DELETE plugin requests (rate limits applied only to sp), got %d", deletePluginRequests)
 	}
 
 	if patchConfig["minute"] != float64(120) {
@@ -513,14 +503,13 @@ func TestRegisterServicesCreatesRedisRateLimitPlugins(t *testing.T) {
 
 	pluginRequests := make([]capturedRequest, 0)
 	for _, req := range requests {
-		if req.Method == http.MethodPost && req.Path == "/routes/instance-abc123-sp-route/plugins" ||
-			(req.Method == http.MethodPost && req.Path == "/routes/instance-abc123-wa-route/plugins") {
+		if req.Method == http.MethodPost && req.Path == "/routes/instance-abc123-sp-route/plugins" {
 			pluginRequests = append(pluginRequests, req)
 		}
 	}
 
-	if len(pluginRequests) != 2 {
-		t.Fatalf("expected 2 plugin create requests, got %d", len(pluginRequests))
+	if len(pluginRequests) != 1 {
+		t.Fatalf("expected 1 plugin create request, got %d", len(pluginRequests))
 	}
 
 	pluginBody := pluginRequests[0].Body

@@ -16,11 +16,12 @@ type config struct {
 }
 
 type rabbitMQConfig struct {
-	Url      string `env:"RABBITMQ_URL" default:"http://localhost:15672"`
-	User     string `env:"RABBITMQ_USER" default:"guest"`
-	Password string `env:"RABBITMQ_PASSWORD" default:"guest"`
-	VHost    string `env:"RABBITMQ_VHOST" default:"/"`
-	HaMode   bool   `env:"RABBITMQ_HA_MODE" default:"true"`
+	Url            string   `env:"RABBITMQ_URL" default:"http://localhost:15672"`
+	User           string   `env:"RABBITMQ_USER" default:"guest"`
+	Password       string   `env:"RABBITMQ_PASSWORD" default:"guest"`
+	VHost          string   `env:"RABBITMQ_VHOST" default:"/"`
+	HaMode         bool     `env:"RABBITMQ_HA_MODE" default:"true"`
+	ExcludedQueues []string `env:"RABBITMQ_EXCLUDED_QUEUES" default:"pipes.multi-counter" env-separator:","`
 }
 
 type mongoDBConfig struct {

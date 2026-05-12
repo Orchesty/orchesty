@@ -25,4 +25,15 @@ RUN mkdir -p /var/lib/nginx/tmp/client_body && \
     chmod -R 774 /var/www/var /var/lib/nginx && \
     chown -R www-data /var/www/var /var/lib/nginx
 
-CMD [ "php-w-nginx.sh" ]
+# Prepares crontab folder & it's logs
+RUN mkdir -p /var/log/cron \
+    && mkdir -m 0644 -p /var/spool/cron/crontabs \
+    && touch /var/log/cron/cron.log
+COPY pf-bundles-enterprise/cron/start-cron.sh /usr/local/bin/start-cron.sh
+COPY pf-bundles-enterprise/cron/scripts/ /etc/cronscripts/
+RUN chmod 777 /usr/local/bin/start-cron.sh
+RUN chmod 777 /etc/cronscripts -R
+RUN /usr/bin/crontab /var/www/cron/crontab.txt
+
+CMD [ "start-cron.sh" ]
+

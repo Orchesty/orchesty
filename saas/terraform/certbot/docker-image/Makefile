@@ -1,6 +1,6 @@
 .PHONY: manual-renew image-build image-push
 
-IMAGE=europe-west1-docker.pkg.dev/orchesty-cloud-prod/infrastructure/certbot:latest2
+IMAGE=europe-west1-docker.pkg.dev/orchesty-cloud-prod/infrastructure/certbot:latest3
 
 # That's what I call opinionated!
 SA_STAGE=~/Downloads/orchesty-cloud-stage-hm-certbot.json
