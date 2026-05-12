@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import Card from '@/components/ui/Card.vue'
+import ResourceLimitCards from './ResourceLimitCards.vue'
 import { useApexChart, getChartColors, getBaseChartOptions } from '@/composables/useApexChart'
 import { useDateFormat } from '@/composables/useDateFormat'
 import { fetchLimitsHistory, type CloudLimitsHistory } from '@/services/cloudLimitsService'
@@ -14,9 +15,17 @@ const { usage } = useCloudLimitsUsage()
 interface Props {
   timeFilter: TimeFilter
   refreshKey?: number
+  // Render the 3 plan-limit cards (slots / messages / storage) above the
+  // history charts. Enabled by the Starter dashboard, which has no Overview
+  // tab to host them; Operations Suite leaves this off so the cards remain
+  // exclusive to OverviewTab.
+  showLimitCards?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  refreshKey: 0,
+  showLimitCards: false,
+})
 
 const messagesChartEl = ref<HTMLElement | null>(null)
 const storageChartEl = ref<HTMLElement | null>(null)
@@ -154,6 +163,8 @@ onMounted(loadData)
 
 <template>
   <div class="space-y-6">
+    <ResourceLimitCards v-if="props.showLimitCards" />
+
     <div v-if="error" class="rounded-lg bg-red-50 p-4 dark:bg-red-900/20">
       <p class="text-red-800 dark:text-red-400">{{ error }}</p>
     </div>

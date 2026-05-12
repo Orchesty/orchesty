@@ -22,6 +22,7 @@ import { useToast } from '@/composables/useToast';
 import Drawer from '@/components/ui/Drawer.vue';
 import Button from '@/components/ui/Button.vue';
 import Confirm from '@/components/ui/Confirm.vue';
+import Modal from '@/components/ui/Modal.vue';
 import StatusBadge from '@/components/ui/StatusBadge.vue';
 import type { BadgeVariant } from '@/components/ui/StatusBadge.vue';
 import TabsWithOverflow, { type TabDefinition } from '@/components/applications/TabsWithOverflow.vue';
@@ -62,6 +63,8 @@ function mergeInstall(
 const loading = ref(false);
 const saving = ref(false);
 const showUninstallConfirm = ref(false);
+const showActivationErrorModal = ref(false);
+const activationErrorMessage = ref('');
 const applicationInstall = ref<ApplicationInstall | null>(null);
 const formValues = ref<Record<string, unknown>>({});
 const activeTab = ref<string>('');
@@ -312,6 +315,14 @@ const handleReauthorize = () => {
   authorizeApplication(props.applicationKey, props.worker);
 };
 
+const extractErrorMessage = (error: unknown, fallback: string): string => {
+  const e = error as { response?: { data?: { message?: unknown } }; message?: unknown };
+  const fromResponse = typeof e?.response?.data?.message === 'string' ? e.response!.data!.message as string : '';
+  if (fromResponse) return fromResponse;
+  if (typeof e?.message === 'string' && e.message) return e.message;
+  return fallback;
+};
+
 const handleChangeState = async (enabled: boolean) => {
   if (!props.applicationKey || !props.worker) return;
 
@@ -331,9 +342,19 @@ const handleChangeState = async (enabled: boolean) => {
     );
     emit('refresh');
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to change application state';
     console.error('Failed to change application state:', error);
-    showToast(errorMessage, 'error');
+    if (enabled) {
+      activationErrorMessage.value = extractErrorMessage(
+        error,
+        'Failed to activate application. Please try again.',
+      );
+      showActivationErrorModal.value = true;
+    } else {
+      showToast(
+        extractErrorMessage(error, 'Failed to change application state'),
+        'error',
+      );
+    }
   } finally {
     saving.value = false;
   }
@@ -429,9 +450,9 @@ watch(() => props.modelValue, async (newValue) => {
               Install
             </Button>
             <Button
-              v-if="currentStatus === 'authorized'"
-              :variant="needsOAuthAuthorization ? 'outline' : 'primary'"
-              :disabled="saving || needsOAuthAuthorization"
+              v-if="currentStatus === 'installed' || currentStatus === 'authorized'"
+              variant="primary"
+              :disabled="saving"
               @click="handleChangeState(true)"
             >
               Activate
@@ -550,5 +571,51 @@ watch(() => props.modelValue, async (newValue) => {
       This action cannot be undone.
     </p>
   </Confirm>
+
+  <Modal
+    v-model="showActivationErrorModal"
+    id="activation-error-modal"
+    title="Cannot activate application"
+    size="md"
+  >
+    <div class="space-y-4">
+      <div class="flex items-start gap-3">
+        <svg
+          class="h-10 w-10 shrink-0 text-red-500"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 9v3.75m0 3.75h.008v.008H12v-.008ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+          />
+        </svg>
+        <div class="space-y-2">
+          <p class="text-sm text-gray-700 dark:text-gray-200">
+            The application could not be activated. The most common reason is that the
+            <strong>Authorization</strong> form is missing required fields or the credentials are invalid.
+            Please review the Authorization tab, fill in all required fields and save the form,
+            then try Activate again.
+          </p>
+          <p
+            v-if="activationErrorMessage"
+            class="rounded-md bg-gray-50 p-3 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+          >
+            <span class="font-medium">Server message:</span> {{ activationErrorMessage }}
+          </p>
+        </div>
+      </div>
+    </div>
+    <template #footer-actions>
+      <Button variant="primary" @click="showActivationErrorModal = false">
+        Got it
+      </Button>
+    </template>
+  </Modal>
 </template>
 

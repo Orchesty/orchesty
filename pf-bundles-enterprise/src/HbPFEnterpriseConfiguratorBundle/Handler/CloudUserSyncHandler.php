@@ -38,9 +38,11 @@ use Throwable;
  *
  * Group assignment is idempotent: provisionSingleUser / syncUsers reapply
  * the preset to existing users so previously broken provisioning self-heals
- * on the next webhook or session-handoff. ACL failures (preset group
- * missing in the worker database) are logged and rethrown so the cloud
- * caller can observe them.
+ * on the next webhook or session-handoff. Both entry points proactively
+ * materialise the preset Group documents via EnterpriseGroupHandler before
+ * any addUserIntoGroup() call, so freshly provisioned instances that have
+ * never seen the local setupUser flow don't fall over with
+ * "Group [super_admin] was not found!".
  *
  * @package Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler
  */
@@ -61,6 +63,7 @@ final class CloudUserSyncHandler
      * @param DocumentManager                $dm
      * @param PasswordHasherFactoryInterface $passwordHasherFactory
      * @param GroupManager                   $groupManager
+     * @param EnterpriseGroupHandler         $groupHandler
      * @param string                         $cloudUrl
      * @param LoggerInterface|null           $logger
      */
@@ -69,6 +72,7 @@ final class CloudUserSyncHandler
         private readonly DocumentManager $dm,
         private readonly PasswordHasherFactoryInterface $passwordHasherFactory,
         private readonly GroupManager $groupManager,
+        private readonly EnterpriseGroupHandler $groupHandler,
         private readonly string $cloudUrl,
         ?LoggerInterface $logger = NULL,
     )
@@ -85,6 +89,8 @@ final class CloudUserSyncHandler
     public function syncUsers(array $data): array
     {
         ControllerUtils::checkParameters(['token'], $data);
+
+        $this->groupHandler->ensurePresetGroups();
 
         $users    = $this->fetchUsersFromCloud($data['token']);
         $created  = 0;
@@ -178,6 +184,8 @@ final class CloudUserSyncHandler
                 ),
             );
         }
+
+        $this->groupHandler->ensurePresetGroups();
 
         $existing = $this->dm->getRepository(User::class)->findOneBy(['email' => $email]);
         if ($existing) {

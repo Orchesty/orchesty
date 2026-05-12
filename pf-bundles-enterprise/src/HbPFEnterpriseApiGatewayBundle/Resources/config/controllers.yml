@@ -45,6 +45,7 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@security.password_hasher_factory'
             - '@hbpf.manager.group'
+            - '@hbpf.group.handler'
             - '%orchesty_cloud_backend_url%'
             - '@?logger'
 

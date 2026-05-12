@@ -9,6 +9,7 @@ use Hanaboso\AclBundle\Manager\GroupManager;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesFrameworkEnterprise\Acl\PermissionPresets;
 use Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\CloudUserSyncHandler;
+use Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\EnterpriseGroupHandler;
 use Hanaboso\UserBundle\Document\TmpUser;
 use Hanaboso\UserBundle\Document\User;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -205,12 +206,74 @@ final class CloudUserSyncHandlerTest extends TestCase
     }
 
     /**
-     * @param DocumentManager $dm
-     * @param GroupManager    $groupMgr
+     * Provisioning on a freshly cloud-provisioned instance must not depend on
+     * the local setupUser flow having ever run — preset groups
+     * (`super_admin`, …) may not yet exist in the worker Mongo. Both
+     * provisionSingleUser and syncUsers must therefore proactively call
+     * EnterpriseGroupHandler::ensurePresetGroups() before any
+     * GroupManager::addUserIntoGroup() attempt; otherwise the cloud caller
+     * sees "Group [super_admin] was not found!".
+     *
+     * @return void
+     */
+    public function testEnsuresPresetGroupsBeforeGroupAssignment(): void
+    {
+        $userRepo  = $this->createMock(DocumentRepository::class);
+        $tmpRepo   = $this->createMock(DocumentRepository::class);
+        $groupRepo = $this->createMock(DocumentRepository::class);
+        $userRepo->method('findOneBy')->willReturn(NULL);
+        $tmpRepo->method('findOneBy')->willReturn(NULL);
+        $groupRepo->method('findOneBy')->willReturn(NULL);
+
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->method('getRepository')->willReturnCallback(
+            static fn(string $cls) => match ($cls) {
+                User::class    => $userRepo,
+                Group::class   => $groupRepo,
+                default        => $tmpRepo,
+            },
+        );
+
+        $callOrder    = [];
+        $groupHandler = $this->createMock(EnterpriseGroupHandler::class);
+        $groupHandler->method('ensurePresetGroups')->willReturnCallback(
+            static function () use (&$callOrder): void {
+                $callOrder[] = 'ensurePresetGroups';
+            },
+        );
+
+        $groupMgr = $this->createMock(GroupManager::class);
+        $groupMgr->method('addUserIntoGroup')->willReturnCallback(
+            static function (User $u, ?string $id = NULL, ?string $groupName = NULL) use (&$callOrder): void {
+                unset($u, $id, $groupName);
+                $callOrder[] = 'addUserIntoGroup';
+            },
+        );
+
+        $handler = $this->makeHandler($dm, $groupMgr, $groupHandler);
+        $handler->provisionSingleUser('owner@example.com', 'OWNER');
+
+        self::assertSame(
+            ['ensurePresetGroups', 'addUserIntoGroup'],
+            $callOrder,
+            'ensurePresetGroups must run before addUserIntoGroup so the preset Group documents exist.',
+        );
+    }
+
+    /**
+     * @param DocumentManager             $dm
+     * @param GroupManager                $groupMgr
+     * @param EnterpriseGroupHandler|null $groupHandler optional; tests that don't care
+     *                                                  about ensurePresetGroups can omit it
+     *                                                  and get a no-op mock.
      *
      * @return CloudUserSyncHandler
      */
-    private function makeHandler(DocumentManager $dm, GroupManager $groupMgr): CloudUserSyncHandler
+    private function makeHandler(
+        DocumentManager $dm,
+        GroupManager $groupMgr,
+        ?EnterpriseGroupHandler $groupHandler = NULL,
+    ): CloudUserSyncHandler
     {
         $hasher = $this->createMock(PasswordHasherInterface::class);
         $hasher->method('hash')->willReturnCallback(static fn(string $raw): string => sprintf('hashed:%s', $raw));
@@ -223,6 +286,7 @@ final class CloudUserSyncHandlerTest extends TestCase
             $dm,
             $factory,
             $groupMgr,
+            $groupHandler ?? $this->createMock(EnterpriseGroupHandler::class),
             'http://cloud.local',
         );
     }
