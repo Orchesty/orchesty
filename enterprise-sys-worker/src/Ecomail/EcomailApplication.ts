@@ -25,6 +25,11 @@ export const SYSTEM_FORM = 'system';
 export const SYSTEM_FROM_EMAIL = 'system_from_email';
 export const SYSTEM_FROM_NAME = 'system_from_name';
 
+export const SUPPORT_FORM = 'support';
+export const SUPPORT_FROM_EMAIL = 'support_from_email';
+export const SUPPORT_FROM_NAME = 'support_from_name';
+export const SUPPORT_CONFIRMATION_TEMPLATE_ID = 'support_confirmation_template_id';
+
 const BASE_URL = 'https://api2.ecomailapp.cz';
 
 export default class EcomailApplication extends ABasicApplication {
@@ -61,7 +66,12 @@ export default class EcomailApplication extends ABasicApplication {
             .addField(new Field(FieldType.TEXT, SYSTEM_FROM_EMAIL, 'System sender email', null, true))
             .addField(new Field(FieldType.TEXT, SYSTEM_FROM_NAME, 'System sender name', null, true));
 
-        return new FormStack().addForm(authForm).addForm(settingsForm).addForm(systemForm);
+        const supportForm = new Form(SUPPORT_FORM, 'Support emails')
+            .addField(new Field(FieldType.TEXT, SUPPORT_FROM_EMAIL, 'Support sender email (e.g. support@orchesty-solutions.com)', null, true))
+            .addField(new Field(FieldType.TEXT, SUPPORT_FROM_NAME, 'Support sender name', null, true))
+            .addField(new Field(FieldType.NUMBER, SUPPORT_CONFIRMATION_TEMPLATE_ID, 'Support — customer confirmation template ID', null, true));
+
+        return new FormStack().addForm(authForm).addForm(settingsForm).addForm(systemForm).addForm(supportForm);
     }
 
     public isAuthorized(applicationInstall: ApplicationInstall): boolean {

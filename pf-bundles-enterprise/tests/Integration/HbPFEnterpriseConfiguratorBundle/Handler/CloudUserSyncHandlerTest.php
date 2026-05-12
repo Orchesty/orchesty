@@ -4,14 +4,17 @@ namespace PipesFrameworkEnterpriseTests\Integration\HbPFEnterpriseConfiguratorBu
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Hanaboso\AclBundle\Document\Group;
 use Hanaboso\AclBundle\Manager\GroupManager;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\PipesFrameworkEnterprise\Acl\PermissionPresets;
 use Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\CloudUserSyncHandler;
 use Hanaboso\UserBundle\Document\TmpUser;
 use Hanaboso\UserBundle\Document\User;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 
@@ -32,49 +35,22 @@ final class CloudUserSyncHandlerTest extends TestCase
     /**
      * @return void
      */
-    public function testProvisionSingleUserCreatesUserWithDefaultGroupWhenRoleIsNull(): void
+    public function testProvisionSingleUserMapsOwnerAndAdminToSuperAdmin(): void
     {
-        $userRepo = $this->createMock(DocumentRepository::class);
+        $userRepo  = $this->createMock(DocumentRepository::class);
+        $tmpRepo   = $this->createMock(DocumentRepository::class);
+        $groupRepo = $this->createMock(DocumentRepository::class);
         $userRepo->method('findOneBy')->willReturn(NULL);
-        $tmpRepo = $this->createMock(DocumentRepository::class);
         $tmpRepo->method('findOneBy')->willReturn(NULL);
+        $groupRepo->method('findOneBy')->willReturn(NULL);
 
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturnCallback(
-            static fn(string $cls) => $cls === User::class ? $userRepo : $tmpRepo,
-        );
-
-        $captured = [];
-        $groupMgr = $this->createMock(GroupManager::class);
-        $groupMgr->method('addUserIntoGroup')->willReturnCallback(
-            static function (User $u, ?string $id = NULL, ?string $groupName = NULL) use (&$captured): void {
-                unset($id);
-                $captured[] = ['email' => $u->getEmail(), 'group' => $groupName];
+            static fn(string $cls) => match ($cls) {
+                User::class    => $userRepo,
+                Group::class   => $groupRepo,
+                default        => $tmpRepo,
             },
-        );
-
-        $handler = $this->makeHandler($dm, $groupMgr);
-
-        $user = $handler->provisionSingleUser('alice@example.com', NULL);
-
-        self::assertSame('alice@example.com', $user->getEmail());
-        self::assertCount(1, $captured);
-        self::assertSame('user', $captured[0]['group']);
-    }
-
-    /**
-     * @return void
-     */
-    public function testProvisionSingleUserMapsOwnerToAdminGroup(): void
-    {
-        $userRepo = $this->createMock(DocumentRepository::class);
-        $userRepo->method('findOneBy')->willReturn(NULL);
-        $tmpRepo = $this->createMock(DocumentRepository::class);
-        $tmpRepo->method('findOneBy')->willReturn(NULL);
-
-        $dm = $this->createMock(DocumentManager::class);
-        $dm->method('getRepository')->willReturnCallback(
-            static fn(string $cls) => $cls === User::class ? $userRepo : $tmpRepo,
         );
 
         $captured = [];
@@ -91,23 +67,85 @@ final class CloudUserSyncHandlerTest extends TestCase
         $handler->provisionSingleUser('owner@example.com', 'OWNER');
         $handler->provisionSingleUser('admin@example.com', 'ADMIN');
 
-        self::assertSame(['admin', 'admin'], $captured);
+        self::assertSame(
+            [PermissionPresets::SUPER_ADMIN, PermissionPresets::SUPER_ADMIN],
+            $captured,
+        );
+    }
+
+    /**
+     * Cloud DEVELOPER and BILLING roles are NOT auto-provisioned in the
+     * worker — DEVELOPERs are invited from inside the worker via
+     * AddUserModal, BILLING is cloud-only. provisionSingleUser must throw
+     * for these roles so the caller (session-handoff or syncUsers) can
+     * surface a clear error instead of creating a privilege-less user.
+     *
+     * @return void
+     */
+    public function testProvisionSingleUserRejectsNonOwnerAdminRoles(): void
+    {
+        $userRepo  = $this->createMock(DocumentRepository::class);
+        $tmpRepo   = $this->createMock(DocumentRepository::class);
+        $groupRepo = $this->createMock(DocumentRepository::class);
+        $userRepo->method('findOneBy')->willReturn(NULL);
+        $tmpRepo->method('findOneBy')->willReturn(NULL);
+        $groupRepo->method('findOneBy')->willReturn(NULL);
+
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->method('getRepository')->willReturnCallback(
+            static fn(string $cls) => match ($cls) {
+                User::class    => $userRepo,
+                Group::class   => $groupRepo,
+                default        => $tmpRepo,
+            },
+        );
+
+        $groupMgr = $this->createMock(GroupManager::class);
+        $groupMgr->expects(self::never())->method('addUserIntoGroup');
+
+        $handler = $this->makeHandler($dm, $groupMgr);
+
+        foreach (['DEVELOPER', 'BILLING', NULL] as $role) {
+            $caught = NULL;
+            try {
+                $handler->provisionSingleUser('reject@example.com', $role);
+            } catch (RuntimeException $e) {
+                $caught = $e;
+            }
+            self::assertNotNull(
+                $caught,
+                sprintf('Expected RuntimeException for cloud role %s', $role ?? 'NULL'),
+            );
+        }
     }
 
     /**
      * @return void
      */
-    public function testProvisionSingleUserMapsBillingAndDeveloperToUserGroup(): void
+    public function testProvisionSingleUserReappliesGroupForExistingUser(): void
     {
-        $userRepo = $this->createMock(DocumentRepository::class);
-        $userRepo->method('findOneBy')->willReturn(NULL);
-        $tmpRepo = $this->createMock(DocumentRepository::class);
+        $existing = new User();
+        $existing->setEmail('present@example.com');
+
+        $userRepo  = $this->createMock(DocumentRepository::class);
+        $tmpRepo   = $this->createMock(DocumentRepository::class);
+        $groupRepo = $this->createMock(DocumentRepository::class);
+        $userRepo->method('findOneBy')->willReturn($existing);
         $tmpRepo->method('findOneBy')->willReturn(NULL);
+        // Returning NULL signals the preset group has not yet been created
+        // (or the user is not a member yet) -> ensureGroup must call
+        // addUserIntoGroup so the role gets healed on the next webhook.
+        $groupRepo->method('findOneBy')->willReturn(NULL);
 
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturnCallback(
-            static fn(string $cls) => $cls === User::class ? $userRepo : $tmpRepo,
+            static fn(string $cls) => match ($cls) {
+                User::class    => $userRepo,
+                Group::class   => $groupRepo,
+                default        => $tmpRepo,
+            },
         );
+        $dm->expects(self::never())->method('persist');
 
         $captured = [];
         $groupMgr = $this->createMock(GroupManager::class);
@@ -120,40 +158,10 @@ final class CloudUserSyncHandlerTest extends TestCase
 
         $handler = $this->makeHandler($dm, $groupMgr);
 
-        $handler->provisionSingleUser('billing@example.com', 'BILLING');
-        $handler->provisionSingleUser('dev@example.com', 'DEVELOPER');
-
-        self::assertSame(['user', 'user'], $captured);
-    }
-
-    /**
-     * @return void
-     */
-    public function testProvisionSingleUserIsIdempotentWhenUserExists(): void
-    {
-        $existing = new User();
-        $existing->setEmail('present@example.com');
-
-        $userRepo = $this->createMock(DocumentRepository::class);
-        $userRepo->method('findOneBy')->willReturn($existing);
-        $tmpRepo = $this->createMock(DocumentRepository::class);
-        $tmpRepo->method('findOneBy')->willReturn(NULL);
-
-        $dm = $this->createMock(DocumentManager::class);
-        $dm->method('getRepository')->willReturnCallback(
-            static fn(string $cls) => $cls === User::class ? $userRepo : $tmpRepo,
-        );
-        $dm->expects(self::never())->method('persist');
-        $dm->expects(self::never())->method('flush');
-
-        $groupMgr = $this->createMock(GroupManager::class);
-        $groupMgr->expects(self::never())->method('addUserIntoGroup');
-
-        $handler = $this->makeHandler($dm, $groupMgr);
-
         $result = $handler->provisionSingleUser('present@example.com', 'OWNER');
 
         self::assertSame($existing, $result);
+        self::assertSame([PermissionPresets::SUPER_ADMIN], $captured);
     }
 
     /**
@@ -164,14 +172,20 @@ final class CloudUserSyncHandlerTest extends TestCase
         $tmpUser = new TmpUser();
         $tmpUser->setEmail('pending@example.com');
 
-        $userRepo = $this->createMock(DocumentRepository::class);
+        $userRepo  = $this->createMock(DocumentRepository::class);
+        $tmpRepo   = $this->createMock(DocumentRepository::class);
+        $groupRepo = $this->createMock(DocumentRepository::class);
         $userRepo->method('findOneBy')->willReturn(NULL);
-        $tmpRepo = $this->createMock(DocumentRepository::class);
         $tmpRepo->method('findOneBy')->willReturn($tmpUser);
+        $groupRepo->method('findOneBy')->willReturn(NULL);
 
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturnCallback(
-            static fn(string $cls) => $cls === User::class ? $userRepo : $tmpRepo,
+            static fn(string $cls) => match ($cls) {
+                User::class    => $userRepo,
+                Group::class   => $groupRepo,
+                default        => $tmpRepo,
+            },
         );
 
         $removeCalled = FALSE;
@@ -185,7 +199,7 @@ final class CloudUserSyncHandlerTest extends TestCase
 
         $handler = $this->makeHandler($dm, $this->createMock(GroupManager::class));
 
-        $handler->provisionSingleUser('pending@example.com', NULL);
+        $handler->provisionSingleUser('pending@example.com', 'ADMIN');
 
         self::assertTrue($removeCalled, 'TmpUser for the provisioned e-mail must be removed.');
     }

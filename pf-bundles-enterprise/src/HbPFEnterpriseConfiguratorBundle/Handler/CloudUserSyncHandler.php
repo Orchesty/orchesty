@@ -5,13 +5,17 @@ namespace Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Han
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\AclBundle\Document\Group;
 use Hanaboso\AclBundle\Manager\GroupManager;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFrameworkEnterprise\Acl\PermissionPresets;
 use Hanaboso\UserBundle\Document\TmpUser;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\Utils\System\ControllerUtils;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use RuntimeException;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Throwable;
@@ -19,19 +23,36 @@ use Throwable;
 /**
  * Class CloudUserSyncHandler
  *
+ * Cloud → worker user sync is intentionally narrow: only cloud OWNER and
+ * ADMIN roles are auto-provisioned with the worker SUPER_ADMIN preset.
+ *   OWNER + ADMIN  -> super_admin
+ *   DEVELOPER      -> not auto-synced (invited from inside the worker via
+ *                     the AddUserModal flow that pulls from cloud
+ *                     `accountMember` on demand)
+ *   BILLING        -> not propagated (cloud-only billing access)
+ *
+ * Cloud-side filtering (`getInstanceUsersForCallback` and
+ * `bulkAddInstanceMembers`) is the primary defence — only OWNER/ADMIN ever
+ * reach the worker. The role check below is a defensive belt-and-braces
+ * net so a future cloud-side bug can't accidentally widen the surface.
+ *
+ * Group assignment is idempotent: provisionSingleUser / syncUsers reapply
+ * the preset to existing users so previously broken provisioning self-heals
+ * on the next webhook or session-handoff. ACL failures (preset group
+ * missing in the worker database) are logged and rethrown so the cloud
+ * caller can observe them.
+ *
  * @package Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler
  */
 final class CloudUserSyncHandler
 {
 
     private const array ROLE_MAP = [
-        'ADMIN'     => 'admin',
-        'BILLING'   => 'user',
-        'DEVELOPER' => 'user',
-        'OWNER'     => 'admin',
+        'ADMIN' => PermissionPresets::SUPER_ADMIN,
+        'OWNER' => PermissionPresets::SUPER_ADMIN,
     ];
 
-    private const string DEFAULT_GROUP = 'user';
+    private readonly LoggerInterface $logger;
 
     /**
      * CloudUserSyncHandler constructor.
@@ -41,6 +62,7 @@ final class CloudUserSyncHandler
      * @param PasswordHasherFactoryInterface $passwordHasherFactory
      * @param GroupManager                   $groupManager
      * @param string                         $cloudUrl
+     * @param LoggerInterface|null           $logger
      */
     public function __construct(
         private readonly CurlManager $curlManager,
@@ -48,8 +70,10 @@ final class CloudUserSyncHandler
         private readonly PasswordHasherFactoryInterface $passwordHasherFactory,
         private readonly GroupManager $groupManager,
         private readonly string $cloudUrl,
+        ?LoggerInterface $logger = NULL,
     )
     {
+        $this->logger = $logger ?? new NullLogger();
     }
 
     /**
@@ -62,9 +86,11 @@ final class CloudUserSyncHandler
     {
         ControllerUtils::checkParameters(['token'], $data);
 
-        $users   = $this->fetchUsersFromCloud($data['token']);
-        $created = 0;
-        $skipped = 0;
+        $users    = $this->fetchUsersFromCloud($data['token']);
+        $created  = 0;
+        $skipped  = 0;
+        $repaired = 0;
+        $failed   = 0;
 
         foreach ($users as $cloudUser) {
             $email = $cloudUser['email'] ?? NULL;
@@ -74,43 +100,88 @@ final class CloudUserSyncHandler
                 continue;
             }
 
-            $existing = $this->dm->getRepository(User::class)->findOneBy(['email' => $email]);
-            if ($existing) {
-                $this->removeTmpUser($email);
+            $cloudRole = $cloudUser['role'] ?? NULL;
+            if (!is_string($cloudRole) || !isset(self::ROLE_MAP[$cloudRole])) {
                 $skipped++;
 
                 continue;
             }
 
-            $this->provisionSingleUser((string) $email, $cloudUser['role'] ?? NULL);
+            try {
+                $existing = $this->dm->getRepository(User::class)->findOneBy(['email' => $email]);
+                if ($existing) {
+                    $reassigned = $this->ensureGroup($existing, $cloudRole);
+                    $this->removeTmpUser($email);
+                    if ($reassigned) {
+                        $repaired++;
+                    } else {
+                        $skipped++;
+                    }
 
-            $created++;
+                    continue;
+                }
+
+                $this->provisionSingleUser((string) $email, $cloudRole);
+                $created++;
+            } catch (Throwable $e) {
+                $failed++;
+                $this->logger->error(
+                    sprintf(
+                        '[CloudUserSyncHandler] Failed to sync %s (role=%s): %s',
+                        (string) $email,
+                        $cloudRole,
+                        $e->getMessage(),
+                    ),
+                    ['exception' => $e],
+                );
+            }
         }
 
         return [
-            'created' => $created,
-            'skipped' => $skipped,
-            'total'   => count($users),
+            'created'  => $created,
+            'failed'   => $failed,
+            'repaired' => $repaired,
+            'skipped'  => $skipped,
+            'total'    => count($users),
         ];
     }
 
     /**
      * Provision a single user from a cloud handoff payload.
      *
-     * Idempotent — when a user with the same e-mail already exists, returns it
-     * without modifications. Used by both bulk syncUsers() and the on-the-fly
-     * inline provisioning during cloud session handoff (CloudWebhookController).
+     * Idempotent — when a user with the same e-mail already exists, the
+     * existing row is returned and its preset group is reapplied (self-heals
+     * any earlier broken provisioning). Used by both bulk syncUsers() and the
+     * on-the-fly inline provisioning during cloud session handoff
+     * (CloudWebhookController).
+     *
+     * Only OWNER and ADMIN cloud roles trigger auto-creation. For any other
+     * role (DEVELOPER, BILLING, NULL, …) we throw — those users must be
+     * invited from inside the worker via the AddUserModal flow. The cloud
+     * gates session-handoff on instanceMember and only adds OWNER/ADMIN to
+     * instanceMember, so the throw path is the "shouldn't happen" branch.
      *
      * @param string      $email     e-mail address from the cloud
-     * @param string|NULL $cloudRole optional cloud role (ADMIN | DEVELOPER | BILLING | OWNER)
+     * @param string|NULL $cloudRole optional cloud role (OWNER or ADMIN)
      *
      * @return User
      * @throws MongoDBException
+     * @throws RuntimeException when $cloudRole is not OWNER or ADMIN
      */
     public function provisionSingleUser(string $email, ?string $cloudRole = NULL): User
     {
+        if (!is_string($cloudRole) || !isset(self::ROLE_MAP[$cloudRole])) {
+            throw new RuntimeException(
+                sprintf(
+                    'Cloud role %s is not auto-provisioned in the worker (only OWNER/ADMIN); invite this user from inside the instance.',
+                    $cloudRole ?? 'NULL',
+                ),
+            );
+        }
+
         $existing = $this->dm->getRepository(User::class)->findOneBy(['email' => $email]);
         if ($existing) {
+            $this->ensureGroup($existing, $cloudRole);
             $this->removeTmpUser($email);
 
             return $existing;
@@ -125,16 +196,82 @@ final class CloudUserSyncHandler
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $groupName = self::ROLE_MAP[$cloudRole ?? ''] ?? self::DEFAULT_GROUP;
-
-        try {
-            $this->groupManager->addUserIntoGroup($user, groupName: $groupName);
-        } catch (Throwable) {
-        }
+        $this->ensureGroup($user, $cloudRole);
 
         $this->removeTmpUser($email);
 
         return $user;
+    }
+
+    /**
+     * Make sure $user belongs to the preset group derived from $cloudRole.
+     * No-op if the user is already a member. Logs and rethrows on failure.
+     *
+     * Throws when $cloudRole is unmapped — callers must filter to OWNER/ADMIN
+     * before invoking this method (see ROLE_MAP).
+     *
+     * @param User        $user
+     * @param string|NULL $cloudRole
+     *
+     * @return bool TRUE when the membership was added, FALSE if already present.
+     */
+    private function ensureGroup(User $user, ?string $cloudRole): bool
+    {
+        if (!is_string($cloudRole) || !isset(self::ROLE_MAP[$cloudRole])) {
+            throw new RuntimeException(
+                sprintf(
+                    'Cannot assign worker group for cloud role %s — only OWNER/ADMIN are auto-mapped.',
+                    $cloudRole ?? 'NULL',
+                ),
+            );
+        }
+
+        $groupName = self::ROLE_MAP[$cloudRole];
+
+        try {
+            if ($this->isUserInGroup($user, $groupName)) {
+                return FALSE;
+            }
+
+            $this->groupManager->addUserIntoGroup($user, groupName: $groupName);
+
+            return TRUE;
+        } catch (Throwable $e) {
+            $this->logger->error(
+                sprintf(
+                    '[CloudUserSyncHandler] Failed to add %s to group %s: %s',
+                    $user->getEmail(),
+                    $groupName,
+                    $e->getMessage(),
+                ),
+                ['exception' => $e],
+            );
+
+            throw $e;
+        }
+    }
+
+    /**
+     * @param User   $user
+     * @param string $groupName
+     *
+     * @return bool
+     */
+    private function isUserInGroup(User $user, string $groupName): bool
+    {
+        /** @var Group|null $group */
+        $group = $this->dm->getRepository(Group::class)->findOneBy(['name' => $groupName]);
+        if (!$group) {
+            return FALSE;
+        }
+
+        foreach ($group->getUsers() as $member) {
+            if ($member->getId() === $user->getId()) {
+                return TRUE;
+            }
+        }
+
+        return FALSE;
     }
 
     /**

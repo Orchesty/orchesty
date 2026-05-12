@@ -37,6 +37,7 @@ import TrialReminderEmailMapper from './CustomNode/TrialReminderEmailMapper';
 import EcomailSendMessageConnector from './Ecomail/Connector/EcomailSendMessageConnector';
 import EcomailSendSalesBusinessNotificationConnector from './Ecomail/Connector/EcomailSendSalesBusinessNotificationConnector';
 import EcomailSendSalesCustomerConfirmationConnector from './Ecomail/Connector/EcomailSendSalesCustomerConfirmationConnector';
+import EcomailSendSupportTicketConfirmationConnector from './Ecomail/Connector/EcomailSendSupportTicketConfirmationConnector';
 import EcomailSendTransactionalEmailConnector from './Ecomail/Connector/EcomailSendTransactionalEmailConnector';
 import EcomailSubscribeNewsletterConnector from './Ecomail/Connector/EcomailSubscribeNewsletterConnector';
 import EcomailApplication from './Ecomail/EcomailApplication';
@@ -56,6 +57,10 @@ import FilterSyncedInvoices from './IDoklad/CustomNode/FilterSyncedInvoices';
 import MockIssuedInvoiceData from './IDoklad/CustomNode/MockIssuedInvoiceData';
 import PrepareInvoiceFilters from './IDoklad/CustomNode/PrepareInvoiceFilters';
 import IDokladClientCredentialsApplication from './IDoklad/IDokladClientCredentialsApplication';
+import JsmAttachTemporaryFiles from './Jsm/Connector/JsmAttachTemporaryFiles';
+import JsmCreateCustomerRequest from './Jsm/Connector/JsmCreateCustomerRequest';
+import SupportTicketPrepareMapper from './Jsm/CustomNode/SupportTicketPrepareMapper';
+import JsmApplication from './Jsm/JsmApplication';
 import CloudToIDokladInvoiceMapper from './Mapper/CloudToIDokladInvoiceMapper';
 import InvoiceIDokladToFlexiMapper from './Mapper/InvoiceIDokladToFlexiMapper';
 import PipedriveAddSalesLeadConnector from './Pipedrive/Connector/PipedriveAddSalesLeadConnector';
@@ -106,6 +111,9 @@ export function prepare(): void {
     );
     container.setApplication(flexiBeeApp);
 
+    const jsmApp = new JsmApplication();
+    container.setApplication(jsmApp);
+
     // ── Connectors (existing enterprise) ──
     container.setNode(new SmtpSendEmail(), smtpApp);
     container.setNode(new SlackSendMessageConnector(), slackApp);
@@ -118,6 +126,13 @@ export function prepare(): void {
     container.setNode(new EcomailSubscribeNewsletterConnector(), ecomailApp);
     container.setNode(new EcomailSendSalesBusinessNotificationConnector(), ecomailApp);
     container.setNode(new EcomailSendSalesCustomerConfirmationConnector(), ecomailApp);
+    container.setNode(new EcomailSendSupportTicketConfirmationConnector(), ecomailApp);
+
+    // ── Connectors & CustomNode (Jira Service Management — support tickets) ──
+    container.setNode(new JsmAttachTemporaryFiles(), jsmApp);
+    container.setNode(new JsmCreateCustomerRequest(), jsmApp);
+    // Bound to jsmApp so it can read service desk + per-category request type IDs.
+    container.setNode(new SupportTicketPrepareMapper(), jsmApp);
 
     // ── Connectors (Pipedrive) ──
     container.setNode(new PipedriveAddSalesOrganizationConnector(), pipedriveApp);
