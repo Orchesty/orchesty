@@ -53,7 +53,19 @@ const handleOpenTraceFromWelcome = () => {
   void router.push({ name: 'trace', query: { prompt: 'start onboarding' } })
 }
 
+// Cloud Starter (no operations suite) gets a minimal tab set that surfaces
+// plan limits — its Resources tab embeds the limit cards that normally live
+// on OverviewTab. Operations Suite keeps the full tab set.
+const isStarterCloud = computed(() => cloudMode.value && !enterpriseDashboards.value)
+
 const dashboardTabs = computed(() => {
+  if (isStarterCloud.value) {
+    return [
+      { id: 'resources', label: 'Resources' },
+      { id: 'processes', label: 'Processes' },
+    ]
+  }
+
   const baseTabs = [
     { id: 'overview', label: 'Overview' },
     { id: 'applications', label: 'Applications' },
@@ -69,10 +81,16 @@ const dashboardTabs = computed(() => {
   return baseTabs
 })
 
-// Active tab state -- Vue-controlled, persisted in localStorage
+// Active tab state -- Vue-controlled, persisted in localStorage.
+// Resolve once at setup so the default respects the current tab set:
+// Starter lands on Resources, Operations Suite lands on Overview. A saved
+// id from a previous instance is honoured only when it exists in the
+// current tab list, otherwise we fall back to the per-mode default.
 const TAB_KEY = 'orchesty_dashboard_active_tab'
+const defaultTabId = isStarterCloud.value ? 'resources' : 'overview'
 const savedTab = localStorage.getItem(TAB_KEY)
-const activeTab = ref(savedTab || 'overview')
+const validTabIds = dashboardTabs.value.map((t) => t.id)
+const activeTab = ref(savedTab && validTabIds.includes(savedTab) ? savedTab : defaultTabId)
 
 const handleTabClick = (tabId: string) => {
   activeTab.value = tabId
@@ -229,8 +247,10 @@ const handleTopologyProcessesClick = (topologyId: string) => {
 </script>
 
 <template>
-  <!-- Core-only view: Process grid -->
-  <main v-if="!enterpriseDashboards" class="h-full overflow-y-auto">
+  <!-- On-prem community fallback: Processes-only grid, no tabs.
+       Cloud Starter (no operations suite) falls through to the tabbed
+       layout below with a trimmed tab list (Resources + Processes). -->
+  <main v-if="!enterpriseDashboards && !cloudMode" class="h-full overflow-y-auto">
     <div class="px-4 pb-4 pt-6">
       <div class="mb-6">
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Processes</h1>
@@ -239,12 +259,16 @@ const handleTopologyProcessesClick = (topologyId: string) => {
     </div>
   </main>
 
-  <!-- Enterprise dashboard -->
+  <!-- Tabbed dashboard: Operations Suite full view OR Cloud Starter
+       (Resources + Processes only). dashboardTabs differs by mode. -->
   <main v-else class="h-full overflow-y-auto"><div class="px-4 pb-4 pt-6">
-    <!-- Page Header -->
+    <!-- Page Header (Starter shows just "Overview", Operations Suite
+         keeps the richer Control Center header + subtitle). -->
     <div class="mb-6">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Control Center</h1>
-      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+        {{ isStarterCloud ? 'Overview' : 'Control Center' }}
+      </h1>
+      <p v-if="!isStarterCloud" class="mt-1 text-sm text-gray-500 dark:text-gray-400">
         Monitor and manage your processes
       </p>
     </div>
@@ -341,6 +365,7 @@ const handleTopologyProcessesClick = (topologyId: string) => {
         v-else-if="activeTab === 'resources'"
         :time-filter="activeTimeFilter"
         :refresh-key="refreshKey"
+        :show-limit-cards="isStarterCloud"
       />
 
     </KeepAlive>
