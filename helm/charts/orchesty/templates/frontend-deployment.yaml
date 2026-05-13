@@ -30,7 +30,7 @@ spec:
               value: "{{ .Values.global.backend_url }}"
             - name: VITE_STARTING_POINT_URL
               value: "{{ .Values.global.starting_point_url }}"
-{{- if not .Values.global.cloud.enabled }}
+{{- if .Values.global.cloud.enabled }}
             - name: VITE_NOTIFIER_URL
               value: "{{ .Values.global.cloud.instance.notifierUrl }}"
             - name: VITE_TRACE_URL

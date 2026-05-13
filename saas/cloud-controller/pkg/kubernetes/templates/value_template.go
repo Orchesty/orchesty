@@ -36,9 +36,9 @@ global:
           value: "true"
   cloud:
     enabled: true
-    backendUrl: https://api.cloud.orchesty.io
-    frontendUrl: https://app.cloud.orchesty.io
-    startingPointUrl: https://start-{{cloudInstancePrefix}}-{{cloudInstance}}.{{domainSuffix}}
+    backendUrl: https://api.orchesty.io
+    frontendUrl: https://app.orchesty.io
+    startingPointUrl: https://start-{{cloudInstancePrefix}}-{{instance}}.{{domainSuffix}}
     docsSearchUrl: {{docsSearchUrl}}
     trialEndsAt: {{trialEndsAt}}
     instance:
@@ -59,7 +59,7 @@ global:
       audience: {{auth0Audience}}
       clientId: {{auth0ClientId}}
   notifier:
-    startingPointDsn: https://start-{{cloudInstancePrefix}}-{{cloudInstance}}.{{domainSuffix}}
+    startingPointDsn: https://start-{{cloudInstancePrefix}}-{{instance}}.{{domainSuffix}}
 {{imageOverridesBlock}}
 {{resourceLimitsBlock}}
 {{logsBlockGlobal}}
