@@ -54,16 +54,20 @@ export async function removeBinding(serviceType: string): Promise<void> {
 }
 
 /**
- * Trace cloud-relay quota status returned by
+ * Trace quota status returned by
  * `GET /platform-services/trace-ai-provider/quota`. Drives the
- * mode-aware Settings/TraceTab UI:
+ * mode-aware Settings/TraceTab UI.
  *
- *   - mode = "user"     : user has installed their own LLM and bound it as
- *                         `trace-ai-provider`. Cap is not enforced.
- *   - mode = "system"   : no user binding, Trace feature flag enabled.
- *                         Default LLM via cloud-relay applies, `used`/`limit`
- *                         render the live badge.
- *   - mode = "disabled" : Trace feature flag is off. UI should hide the tab.
+ * Single gate is `ORCHESTY_FEATURE_TRACE_AUDITING`. Cloud-relay
+ * reachability is NOT a gate — instances without a relay still expose the
+ * binding editor so users can bring their own LLM.
+ *
+ *   - mode = "user"     : feature on, user binding present (own LLM).
+ *                         Cap is not enforced.
+ *   - mode = "system"   : feature on, no user binding. Default LLM via
+ *                         cloud-relay may apply at runtime; `used`/`limit`
+ *                         render the badge when relay is configured.
+ *   - mode = "disabled" : feature flag is off. UI hides the tab.
  */
 export type TraceQuotaMode = 'user' | 'system' | 'disabled'
 
