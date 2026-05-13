@@ -1,4 +1,4 @@
-if [ "$CRON_LIMITS" == "1" ]; then
- 	sh -c "/var/www/bin/console orchesty:limits:tick --once"
-else
+#!/bin/sh
+if [ "$CRON_LIMITS" = "1" ]; then
+    /var/www/bin/console orchesty:limits:tick --once
 fi
