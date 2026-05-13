@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"math/big"
 	"regexp"
-	"strconv"
 	"strings"
 )
 
@@ -23,14 +22,23 @@ const charsetLower = "abcdefghijklmnopqrstuvwxyz0123456789"
 
 const defaultUserName = "orchesty@hanaboso.com"
 
-const reservedCpu = 2000    // in millicores
-const reservedMemory = 1024 // in MiB
+const RequestedCpuPerTopologySlot = 50     // in millicores
+const RequestedMemoryPerTopologySlot = 128 // in MiB
 
-const reservedCpuForLogs = 2000    // in millicores
-const reservedMemoryForLogs = 4096 // in MiB
+const LimitCpuPerTopologySlot = 100    // in millicores
+const LimitMemoryPerTopologySlot = 256 // in MiB
 
-const reservedCpuForGrafana = 1000    // in millicores
-const reservedMemoryForGrafana = 1024 // in MiB
+const requestedCpuForCore = 250     // in millicores
+const requestedMemoryForCore = 1024 // in MiB
+
+const limitCpuForCore = 2000    // in millicores
+const limitMemoryForCore = 1024 // in MiB
+
+const requestedCpuForLogs = 2000    // in millicores
+const requestedMemoryForLogs = 4096 // in MiB
+
+const requestedCpuForGrafana = 1000    // in millicores
+const requestedMemoryForGrafana = 1024 // in MiB
 
 var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 
@@ -75,13 +83,15 @@ type Applinth struct {
 }
 
 type ResourceLimits struct {
-	Enabled          bool   `json:"enabled"`
-	Cpu              string `json:"cpu"`    // in millicores
-	Memory           string `json:"memory"` // in Gi
-	TopologySlots    int    `json:"topologySlots"`
-	Messages         int    `json:"messages"`
-	StorageGb        int    `json:"storageGb"`
-	TrashDuplication int    `json:"trashDuplication"`
+	Enabled          bool `json:"enabled"`
+	RequestCpu       int  // in millicores
+	RequestMemory    int  // in GiB
+	LimitCpu         int  // in millicores
+	LimitMemory      int  // in GiB
+	TopologySlots    int  `json:"topologySlots"`
+	Messages         int  `json:"messages"`
+	StorageGb        int  `json:"storageGb"`
+	TrashDuplication int  `json:"trashDuplication"`
 }
 
 type Features struct {
@@ -287,36 +297,28 @@ func NewInstanceDTO(instanceInfo RequestInstanceInfo, instanceCredentials Reques
 }
 
 func ProcessCustomizations(customizations Customizations) (Customizations, error) {
-	customizations.ResourceLimits.Cpu = strings.TrimSpace(customizations.ResourceLimits.Cpu)
-	customizations.ResourceLimits.Memory = strings.TrimSpace(customizations.ResourceLimits.Memory)
+	customizations.ResourceLimits.RequestCpu = customizations.ResourceLimits.TopologySlots * RequestedCpuPerTopologySlot
+	customizations.ResourceLimits.RequestMemory = customizations.ResourceLimits.TopologySlots * RequestedMemoryPerTopologySlot
+	customizations.ResourceLimits.LimitCpu = customizations.ResourceLimits.TopologySlots * LimitCpuPerTopologySlot
+	customizations.ResourceLimits.LimitMemory = customizations.ResourceLimits.TopologySlots * LimitMemoryPerTopologySlot
 
-	cpu, err := strconv.Atoi(customizations.ResourceLimits.Cpu)
-	if err != nil && customizations.ResourceLimits.Cpu != "" {
-		return Customizations{}, fmt.Errorf("resourceLimits.cpu must be integer: %w", err)
-	}
-
-	memory, err := strconv.Atoi(customizations.ResourceLimits.Memory)
-	if err != nil && customizations.ResourceLimits.Memory != "" {
-		return Customizations{}, fmt.Errorf("resourceLimits.memory must be integer: %w", err)
-	}
-
-	customizations.ResourceLimits.Cpu = strconv.Itoa(cpu + reservedCpu)
-	customizations.ResourceLimits.Memory = strconv.Itoa(memory + reservedMemory)
+	customizations.ResourceLimits.RequestCpu = customizations.ResourceLimits.RequestCpu + requestedCpuForCore
+	customizations.ResourceLimits.RequestMemory = customizations.ResourceLimits.RequestMemory + requestedMemoryForCore
+	customizations.ResourceLimits.LimitCpu = customizations.ResourceLimits.LimitCpu + limitCpuForCore
+	customizations.ResourceLimits.LimitMemory = customizations.ResourceLimits.LimitMemory + limitMemoryForCore
 
 	if customizations.Logs.Enabled {
-		cpu, _ := strconv.Atoi(customizations.ResourceLimits.Cpu)
-		memory, _ := strconv.Atoi(customizations.ResourceLimits.Memory)
-
-		customizations.ResourceLimits.Cpu = strconv.Itoa(cpu + reservedCpuForLogs)
-		customizations.ResourceLimits.Memory = strconv.Itoa(memory + reservedMemoryForLogs)
+		customizations.ResourceLimits.RequestCpu = customizations.ResourceLimits.RequestCpu + requestedCpuForLogs
+		customizations.ResourceLimits.RequestMemory = customizations.ResourceLimits.RequestMemory + requestedMemoryForLogs
+		customizations.ResourceLimits.LimitCpu = customizations.ResourceLimits.LimitCpu + requestedCpuForLogs
+		customizations.ResourceLimits.LimitMemory = customizations.ResourceLimits.LimitMemory + requestedMemoryForLogs
 	}
 
 	if customizations.Logs.GrafanaEnabled {
-		cpu, _ := strconv.Atoi(customizations.ResourceLimits.Cpu)
-		memory, _ := strconv.Atoi(customizations.ResourceLimits.Memory)
-
-		customizations.ResourceLimits.Cpu = strconv.Itoa(cpu + reservedCpuForGrafana)
-		customizations.ResourceLimits.Memory = strconv.Itoa(memory + reservedMemoryForGrafana)
+		customizations.ResourceLimits.RequestCpu = customizations.ResourceLimits.RequestCpu + requestedCpuForGrafana
+		customizations.ResourceLimits.RequestMemory = customizations.ResourceLimits.RequestMemory + requestedMemoryForGrafana
+		customizations.ResourceLimits.LimitCpu = customizations.ResourceLimits.LimitCpu + requestedCpuForGrafana
+		customizations.ResourceLimits.LimitMemory = customizations.ResourceLimits.LimitMemory + requestedMemoryForGrafana
 	}
 
 	return customizations, nil

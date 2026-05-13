@@ -26,6 +26,11 @@ global:
         value: https://api-{{instancePrefix}}-{{instance}}.{{domainSuffix}}
       LIMITS_CHECK_INTERVAL:
         value: "60"
+    topologiesResources:
+      defaultRequestCpu: {{topologyRequestCpu}}m
+      defaultRequestMemory: {{topologyRequestMemory}}Mi
+      defaultLimitCpu: {{topologyLimitCpu}}m
+      defaultLimitMemory: {{topologyLimitMemory}}Mi
     topologiesExtraSpec:
       nodeSelector:
         {{bridgePoolKey}}: "true"
@@ -59,7 +64,7 @@ global:
       audience: {{auth0Audience}}
       clientId: {{auth0ClientId}}
   notifier:
-    startingPointDsn: https://start-{{cloudInstancePrefix}}-{{instance}}.{{domainSuffix}}
+    startingPointDsn: https://start-{{cloudInstancePrefix}}-{{cloudInstance}}.{{domainSuffix}}
 {{imageOverridesBlock}}
 {{resourceLimitsBlock}}
 {{logsBlockGlobal}}
@@ -157,8 +162,8 @@ global:
   useQuota: {{limitsEnabled}}
   namespaceQuota:
     resources:
-      requests.cpu: {{cpuLimit}}m
-      requests.memory: {{memoryLimit}}Mi
+      requests.cpu: {{cpuRequest}}m
+      requests.memory: {{memoryRequest}}Mi
       limits.cpu: {{cpuLimit}}m
       limits.memory: {{memoryLimit}}Mi
 `

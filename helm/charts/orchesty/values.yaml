@@ -130,7 +130,7 @@ global:
     resources:
       requests:
         memory: 32Mi
-        cpu: 20m
+        cpu: 10m
       limits:
         memory: 32Mi
         cpu: 50m
@@ -175,7 +175,7 @@ global:
     resources:
       requests:
         memory: 32Mi
-        cpu: 20m
+        cpu: 10m
       limits:
         memory: 32Mi
         cpu: 100m
@@ -186,7 +186,7 @@ global:
     resources:
       requests:
         memory: 128Mi
-        cpu: 20m
+        cpu: 10m
       limits:
         memory: 128Mi
         cpu: 100m
@@ -197,15 +197,15 @@ global:
     resources:
       requests:
         memory: 128Mi
-        cpu: 20m
+        cpu: 10m
       limits:
         memory: 128Mi
         cpu: 100m
     topologiesResources:
       defaultRequestCpu: 50m
-      defaultRequestMemory: 64Mi
+      defaultRequestMemory: 128Mi
       defaultLimitCpu: 100m
-      defaultLimitMemory: 64Mi
+      defaultLimitMemory: 256Mi
     topologiesExtraEnv: {}
 #     FOO:
 #       value: bar

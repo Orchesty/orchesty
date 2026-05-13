@@ -98,7 +98,7 @@ type gcs struct {
 
 type cloud struct {
 	InstancePrefix string `env:"CLOUD_INSTANCE_PREFIX" default:"prod"`
-	Instance       string `env:"CLOUD_INSTANCE" default:"orchesty-instance"`
+	Instance       string `env:"CLOUD_INSTANCE" default:"orchesty"`
 	DomainSuffix   string `env:"KONG_DOMAIN_SUFFIX" default:"eu2.cloud.orchesty.io"`
 	Oauth0Domain   string `env:"CLOUD_AUTH0_DOMAIN" required:"true"`
 	Oauth0Audience string `env:"CLOUD_AUTH0_AUDIENCE" required:"true"`

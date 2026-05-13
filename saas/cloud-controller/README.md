@@ -134,8 +134,6 @@ Request body:
     },
     "resourceLimits": {
       "enabled": true,
-      "cpu": "500",
-      "memory": "512",
       "topologySlots": 0,
       "messages": 0,
       "storageGb": 0,
@@ -174,7 +172,8 @@ Notes:
 - `customizations.logs.retentionPeriod` is optional; log retention period in hours.
 - `customizations.logs.logsStorageSize` is optional; log storage size in Gi.
 - `customizations.applinth` is optional; when `enabled`, generates an EC key pair (secp521r1) for JWE and stores PEM-encoded keys in the K8s secret.
-- `customizations.resourceLimits` is optional; when `enabled`, sets CPU and memory limits on Orchesty pods. `topologySlots`, `messages`, `storageGb`, `trashDuplication` control per-instance cloud limits.
+- `customizations.resourceLimits` is optional; when `enabled`, resource requests/limits are computed internally from instance setup (topology slots, core services, logs, grafana). Send only `topologySlots`, `messages`, `storageGb`, `trashDuplication` for per-instance cloud limits.
+- `customizations.resourceLimits.cpu` and `customizations.resourceLimits.memory` are no longer accepted request fields.
 - `customizations.features.traceAuditing` is optional; enables trace auditing.
 - `customizations.features.enterpriseDashboards` is optional; enables enterprise dashboards.
 - `customizations.features.auditLogs` is optional; enables audit logs.

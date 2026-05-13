@@ -147,6 +147,13 @@ func (h *Helm) createFiles(path string, dto *models.InstanceDTO) error {
 
 	// Cloud instance prefix and cloud instance replacement in public URLs
 	values = strings.ReplaceAll(values, "{{cloudInstancePrefix}}", config.Cloud.InstancePrefix)
+	values = strings.ReplaceAll(values, "{{cloudInstance}}", config.Cloud.Instance)
+
+	// Topology resources replacement
+	values = strings.ReplaceAll(values, "{{topologyRequestCpu}}", strconv.Itoa(models.RequestedCpuPerTopologySlot))
+	values = strings.ReplaceAll(values, "{{topologyRequestMemory}}", strconv.Itoa(models.RequestedMemoryPerTopologySlot))
+	values = strings.ReplaceAll(values, "{{topologyLimitCpu}}", strconv.Itoa(models.LimitCpuPerTopologySlot))
+	values = strings.ReplaceAll(values, "{{topologyLimitMemory}}", strconv.Itoa(models.LimitMemoryPerTopologySlot))
 
 	// Docs search URL replacement
 	values = strings.ReplaceAll(values, "{{docsSearchUrl}}", config.Orchesty.DocsSearchUrl)
@@ -260,8 +267,10 @@ func (h *Helm) buildResourceLimits(dto *models.InstanceDTO) string {
 		return ""
 	}
 
-	resourceLimitsBlock := strings.ReplaceAll(templates.ResourceLimitsBlockTemplate, "{{cpuLimit}}", dto.Customizations.ResourceLimits.Cpu)
-	resourceLimitsBlock = strings.ReplaceAll(resourceLimitsBlock, "{{memoryLimit}}", dto.Customizations.ResourceLimits.Memory)
+	resourceLimitsBlock := strings.ReplaceAll(templates.ResourceLimitsBlockTemplate, "{{cpuRequest}}", strconv.Itoa(dto.Customizations.ResourceLimits.RequestCpu))
+	resourceLimitsBlock = strings.ReplaceAll(resourceLimitsBlock, "{{cpuLimit}}", strconv.Itoa(dto.Customizations.ResourceLimits.LimitCpu))
+	resourceLimitsBlock = strings.ReplaceAll(resourceLimitsBlock, "{{memoryRequest}}", strconv.Itoa(dto.Customizations.ResourceLimits.RequestMemory))
+	resourceLimitsBlock = strings.ReplaceAll(resourceLimitsBlock, "{{memoryLimit}}", strconv.Itoa(dto.Customizations.ResourceLimits.LimitMemory))
 	resourceLimitsBlock = strings.ReplaceAll(resourceLimitsBlock, "{{limitsEnabled}}", strconv.FormatBool(dto.Customizations.ResourceLimits.Enabled))
 
 	return resourceLimitsBlock
