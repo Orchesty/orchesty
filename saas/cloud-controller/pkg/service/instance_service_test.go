@@ -142,6 +142,25 @@ func (k *kubernetesStub) Install(*models.InstanceDTO) error {
 	return k.stepErrs["install"]
 }
 
+func (k *kubernetesStub) GetDeploymentNames(instance string) ([]string, error) {
+	k.steps = append(k.steps, "get-deployment-names")
+	if err := k.stepErrs["get-deployment-names"]; err != nil {
+		return nil, err
+	}
+	// Return empty list by default for tests - can be customized if needed
+	return []string{}, nil
+}
+
+func (k *kubernetesStub) ScaleDeploymentsToZero(instance string, components []string) error {
+	k.steps = append(k.steps, "scale-deployments-to-zero")
+	return k.stepErrs["scale-deployments-to-zero"]
+}
+
+func (k *kubernetesStub) ScaleDeploymentsToReplicas(instance string, replicas map[string]int32) error {
+	k.steps = append(k.steps, "scale-deployments-to-replicas")
+	return k.stepErrs["scale-deployments-to-replicas"]
+}
+
 type ingressStub struct {
 	steps    []string
 	stepErrs map[string]error

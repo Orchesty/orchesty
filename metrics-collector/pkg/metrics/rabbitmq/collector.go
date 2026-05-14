@@ -11,17 +11,21 @@ import (
 	"time"
 
 	"metrics-collector/pkg/config"
+	"metrics-collector/pkg/metrics"
 	"metrics-collector/pkg/models"
-	"metrics-collector/pkg/storage"
 	"metrics-collector/pkg/utils"
 )
 
 const CollectorName = "RabbitMQ"
 
 type Collector struct {
-	client           *http.Client
+	client           httpDoer
 	lastAggregatedAt time.Time
 	authHeader       string
+}
+
+type httpDoer interface {
+	Do(req *http.Request) (*http.Response, error)
 }
 
 type queueInfo struct {
@@ -53,7 +57,7 @@ func (c *Collector) Name() string {
 	return CollectorName
 }
 
-func (c *Collector) Collect(ctx context.Context, repo *storage.MongoRepository) error {
+func (c *Collector) Collect(ctx context.Context, repo metrics.Repository) error {
 	metric, err := c.fetchMetrics(ctx)
 	if err != nil {
 		config.Logger.ErrorWrap("failed to fetch RabbitMQ metrics", err)
@@ -175,7 +179,7 @@ func (c *Collector) isQueueExcluded(queueName string) bool {
 	return false
 }
 
-func (c *Collector) aggregateMetrics(ctx context.Context, repo *storage.MongoRepository) error {
+func (c *Collector) aggregateMetrics(ctx context.Context, repo metrics.Repository) error {
 	now := time.Now()
 	metrics, err := repo.GetRabbitMQMetricsForMonth(ctx)
 	if err != nil {

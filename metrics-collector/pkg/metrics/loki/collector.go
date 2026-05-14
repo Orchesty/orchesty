@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"metrics-collector/pkg/config"
+	"metrics-collector/pkg/metrics"
 	"metrics-collector/pkg/models"
-	"metrics-collector/pkg/storage"
 	"metrics-collector/pkg/utils"
 )
 
@@ -24,7 +24,11 @@ const (
 const CollectorName = "Loki"
 
 type Collector struct {
-	client *http.Client
+	client httpDoer
+}
+
+type httpDoer interface {
+	Do(req *http.Request) (*http.Response, error)
 }
 
 type lokiResponse struct {
@@ -48,7 +52,7 @@ func (c *Collector) Name() string {
 	return CollectorName
 }
 
-func (c *Collector) Collect(ctx context.Context, repo *storage.MongoRepository) error {
+func (c *Collector) Collect(ctx context.Context, repo metrics.Repository) error {
 	metric, err := c.fetchMetrics(ctx)
 	if err != nil {
 		config.Logger.ErrorWrap("failed to fetch Loki metrics", err)
@@ -198,7 +202,7 @@ func (c *Collector) estimateDataSizeFromChunks(ctx context.Context) (int64, erro
 	return int64(bytes / 20.0), nil
 }
 
-func (c *Collector) aggregateMetrics(ctx context.Context, repo *storage.MongoRepository) error {
+func (c *Collector) aggregateMetrics(ctx context.Context, repo metrics.Repository) error {
 	now := time.Now()
 	metrics, err := repo.GetLokiMetricsForMonth(ctx)
 	if err != nil {

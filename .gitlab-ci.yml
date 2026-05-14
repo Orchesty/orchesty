@@ -20,6 +20,7 @@ include:
   - local: "/detector/.gitlab-ci.yml"
   - local: "/enterprise-sys-worker/.gitlab-ci.yml"
   - local: "/limiter/.gitlab-ci.yml"
+  - local: "/metrics-collector/.gitlab-ci.yml"
   - local: "/notifier/.gitlab-ci.yml"
   - local: "/pf-bundles/.gitlab-ci.yml" # aka backend
   - local: "/pf-bundles-enterprise/.gitlab-ci.yml" # aka enterprise backend

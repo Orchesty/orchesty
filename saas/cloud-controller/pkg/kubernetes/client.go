@@ -26,6 +26,7 @@ const requestTimeout = 20 * time.Second
 const (
 	orchestySecretsName       = "orchesty-secrets"
 	defaultSecretDisplayLabel = "oc-instance-displayname"
+	suspendedNodeSelectorKey  = "cloud-controller.orchesty.io/suspended"
 	alloyClusterRoleNameFmt   = "orchesty-alloy-%s"
 	grafanaClusterRoleNameFmt = "orchesty-grafana-%s-clusterrole"
 	lokiClusterRoleNameFmt    = "orchesty-loki-%s-clusterrole"
@@ -597,4 +598,149 @@ func (c *Client) getClientSet() (kubernetes.Interface, error) {
 
 	c.clientSet = clientSet
 	return c.clientSet, nil
+}
+
+func (c *Client) ScaleDeploymentsToZero(instance string, components []string) error {
+	return c.ScaleDeploymentsToReplicas(instance, func() map[string]int32 {
+		result := make(map[string]int32)
+		for _, comp := range components {
+			result[comp] = 0
+		}
+		return result
+	}())
+}
+
+func (c *Client) ScaleDeploymentsToReplicas(instance string, replicas map[string]int32) error {
+	instance = strings.TrimSpace(instance)
+	if instance == "" {
+		return fmt.Errorf("instance is required")
+	}
+
+	if len(replicas) == 0 {
+		return nil
+	}
+
+	clientSet, err := c.getClientSet()
+	if err != nil {
+		return fmt.Errorf("get client set: %w", err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+	defer cancel()
+
+	var errs []error
+
+	for componentName, replicaCount := range replicas {
+		if err := scaleDeploymentOrStatefulSet(ctx, clientSet, instance, componentName, replicaCount); err != nil {
+			errs = append(errs, err)
+		}
+	}
+
+	if len(errs) > 0 {
+		return errors.Join(errs...)
+	}
+
+	return nil
+}
+
+func (c *Client) GetDeploymentNames(instance string) ([]string, error) {
+	instance = strings.TrimSpace(instance)
+	if instance == "" {
+		return nil, fmt.Errorf("instance is required")
+	}
+
+	clientSet, err := c.getClientSet()
+	if err != nil {
+		return nil, fmt.Errorf("get client set: %w", err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+	defer cancel()
+
+	// List deployments
+	deploymentList, err := clientSet.AppsV1().Deployments(instance).List(ctx, metav1.ListOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("list deployments: %w", err)
+	}
+
+	var names []string
+	for _, deployment := range deploymentList.Items {
+		names = append(names, deployment.Name)
+	}
+
+	// List statefulsets
+	statefulSetList, err := clientSet.AppsV1().StatefulSets(instance).List(ctx, metav1.ListOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("list statefulsets: %w", err)
+	}
+
+	for _, ss := range statefulSetList.Items {
+		names = append(names, ss.Name)
+	}
+
+	// List daemonsets
+	daemonSetList, err := clientSet.AppsV1().DaemonSets(instance).List(ctx, metav1.ListOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("list daemonsets: %w", err)
+	}
+
+	for _, ds := range daemonSetList.Items {
+		names = append(names, ds.Name)
+	}
+
+	return names, nil
+}
+
+func scaleDeploymentOrStatefulSet(ctx context.Context, clientSet kubernetes.Interface, namespace, name string, replicaCount int32) error {
+	deployment, err := clientSet.AppsV1().Deployments(namespace).Get(ctx, name, metav1.GetOptions{})
+	if err == nil {
+		deployment = deployment.DeepCopy()
+		deployment.Spec.Replicas = &replicaCount
+		if _, updateErr := clientSet.AppsV1().Deployments(namespace).Update(ctx, deployment, metav1.UpdateOptions{}); updateErr != nil {
+			return fmt.Errorf("scale deployment %s to %d replicas: %w", name, replicaCount, updateErr)
+		}
+		return nil
+	}
+
+	if !apierrors.IsNotFound(err) {
+		return fmt.Errorf("get deployment %s: %w", name, err)
+	}
+
+	statefulSet, err := clientSet.AppsV1().StatefulSets(namespace).Get(ctx, name, metav1.GetOptions{})
+	if err == nil {
+		statefulSet = statefulSet.DeepCopy()
+		statefulSet.Spec.Replicas = &replicaCount
+		if _, updateErr := clientSet.AppsV1().StatefulSets(namespace).Update(ctx, statefulSet, metav1.UpdateOptions{}); updateErr != nil {
+			return fmt.Errorf("scale statefulset %s to %d replicas: %w", name, replicaCount, updateErr)
+		}
+		return nil
+	}
+
+	if !apierrors.IsNotFound(err) {
+		return fmt.Errorf("get statefulset %s: %w", name, err)
+	}
+
+	daemonSet, err := clientSet.AppsV1().DaemonSets(namespace).Get(ctx, name, metav1.GetOptions{})
+	if err != nil {
+		if apierrors.IsNotFound(err) {
+			return nil
+		}
+		return fmt.Errorf("get daemonset %s: %w", name, err)
+	}
+
+	daemonSet = daemonSet.DeepCopy()
+	if daemonSet.Spec.Template.Spec.NodeSelector == nil {
+		daemonSet.Spec.Template.Spec.NodeSelector = map[string]string{}
+	}
+	if replicaCount == 0 {
+		daemonSet.Spec.Template.Spec.NodeSelector[suspendedNodeSelectorKey] = "true"
+	} else {
+		delete(daemonSet.Spec.Template.Spec.NodeSelector, suspendedNodeSelectorKey)
+	}
+
+	if _, updateErr := clientSet.AppsV1().DaemonSets(namespace).Update(ctx, daemonSet, metav1.UpdateOptions{}); updateErr != nil {
+		return fmt.Errorf("update daemonset %s for suspension state %d: %w", name, replicaCount, updateErr)
+	}
+
+	return nil
 }

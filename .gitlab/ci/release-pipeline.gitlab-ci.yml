@@ -20,7 +20,7 @@ workflow:
   script:
     - "DST_TAG=$(echo ${CI_COMMIT_REF_NAME} | sed -nE 's/v([0-9]+)\\.([0-9]+)\\.([0-9]+)(.*)/\\1.\\2.\\3\\4/p')"
     - skopeo login --username "${CI_REGISTRY_USER}" --password "${CI_REGISTRY_PASSWORD}" "${REGISTRY}"
-    - skopeo login --username "${RELEASE_REGISTRY_USERNAME}" --password "${RELEASE_REGISTRY_PASSWORD}" "$(echo $REGISTRY_RELEASE | sed -E 's|([^/]+).*|\1|')"
+    - '[ "${REGISTRY_RELEASE}" != "${REGISTRY}" ] && skopeo login --username "${RELEASE_REGISTRY_USERNAME}" --password "${RELEASE_REGISTRY_PASSWORD}" "$(echo $REGISTRY_RELEASE | sed -E ''s|([^/]+).*|\1|'')"'
     - skopeo copy --multi-arch all docker://${REGISTRY}/${RELEASE_IMAGE}:${SRC_TAG} docker://${REGISTRY_RELEASE}/${RELEASE_IMAGE}:${DST_TAG}
 
   tags:
@@ -40,7 +40,7 @@ workflow:
   script:
     - "DST_TAG=$(echo ${CI_COMMIT_REF_NAME} | sed -nE 's/v([0-9]+)\\.([0-9]+)\\.[0-9]+(.*)/\\1.\\2\\3/p')"
     - skopeo login --username "${CI_REGISTRY_USER}" --password "${CI_REGISTRY_PASSWORD}" "${REGISTRY}"
-    - skopeo login --username "${RELEASE_REGISTRY_USERNAME}" --password "${RELEASE_REGISTRY_PASSWORD}" "$(echo $REGISTRY_RELEASE | sed -E 's|([^/]+).*|\1|')"
+    - '[ "${REGISTRY_RELEASE}" != "${REGISTRY}" ] && skopeo login --username "${RELEASE_REGISTRY_USERNAME}" --password "${RELEASE_REGISTRY_PASSWORD}" "$(echo $REGISTRY_RELEASE | sed -E ''s|([^/]+).*|\1|'')"'
     - skopeo copy --multi-arch all docker://${REGISTRY}/${RELEASE_IMAGE}:${SRC_TAG} docker://${REGISTRY_RELEASE}/${RELEASE_IMAGE}:${DST_TAG}
 
   tags:
@@ -48,10 +48,17 @@ workflow:
 
 ## rel-x.y.z
 
-backend:rel-x.y.z:
+frontend:rel-x.y.z:
   extends: .base-rel-x.y.z
   before_script:
-    - export RELEASE_IMAGE=${IMAGE_PREFIX}backend
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}frontend
+    - export SRC_TAG=master
+
+frontend-enterprise:rel-x.y.z:
+  extends: .base-rel-x.y.z
+  before_script:
+    - export REGISTRY_RELEASE=dkr.hanaboso.net/pipes/pipes
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}enterprise-frontend
     - export SRC_TAG=master
 
 bridge:rel-x.y.z:
@@ -78,16 +85,37 @@ detector:rel-x.y.z:
     - export RELEASE_IMAGE=${IMAGE_PREFIX}detector
     - export SRC_TAG=master
 
-frontend:rel-x.y.z:
-  extends: .base-rel-x.y.z
-  before_script:
-    - export RELEASE_IMAGE=${IMAGE_PREFIX}frontend
-    - export SRC_TAG=master
-
 limiter:rel-x.y.z:
   extends: .base-rel-x.y.z
   before_script:
     - export RELEASE_IMAGE=${IMAGE_PREFIX}limiter
+    - export SRC_TAG=master
+
+metrics-collector:rel-x.y.z:
+  extends: .base-rel-x.y.z
+  before_script:
+    - export REGISTRY_RELEASE=dkr.hanaboso.net/pipes/pipes
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}metrics-collector
+    - export SRC_TAG=master
+
+notifier:rel-x.y.z:
+  extends: .base-rel-x.y.z
+  before_script:
+    - export REGISTRY_RELEASE=dkr.hanaboso.net/pipes/pipes
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}notifier
+    - export SRC_TAG=master
+
+backend:rel-x.y.z:
+  extends: .base-rel-x.y.z
+  before_script:
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}backend
+    - export SRC_TAG=master
+
+backend-enterprise:rel-x.y.z:
+  extends: .base-rel-x.y.z
+  before_script:
+    - export REGISTRY_RELEASE=dkr.hanaboso.net/pipes/pipes
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}enterprise-backend
     - export SRC_TAG=master
 
 starting-point:rel-x.y.z:
@@ -102,6 +130,20 @@ topology-api:rel-x.y.z:
     - export RELEASE_IMAGE=${IMAGE_PREFIX}topology-api
     - export SRC_TAG=master
 
+trace:rel-x.y.z:
+  extends: .base-rel-x.y.z
+  before_script:
+    - export REGISTRY_RELEASE=dkr.hanaboso.net/pipes/pipes
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}trace
+    - export SRC_TAG=master
+
+tunnel-proxy:rel-x.y.z:
+  extends: .base-rel-x.y.z
+  before_script:
+    - export REGISTRY_RELEASE=dkr.hanaboso.net/pipes/pipes
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}tunnel-proxy
+    - export SRC_TAG=master
+
 worker-api:rel-x.y.z:
   extends: .base-rel-x.y.z
   before_script:
@@ -110,10 +152,17 @@ worker-api:rel-x.y.z:
 
 ## rel-x.y
 
-backend:rel-x.y:
+frontend:rel-x.y:
   extends: .base-rel-x.y
   before_script:
-    - export RELEASE_IMAGE=${IMAGE_PREFIX}backend
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}frontend
+    - export SRC_TAG=master
+
+frontend-enterprise:rel-x.y:
+  extends: .base-rel-x.y
+  before_script:
+    - export REGISTRY_RELEASE=dkr.hanaboso.net/pipes/pipes
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}enterprise-frontend
     - export SRC_TAG=master
 
 bridge:rel-x.y:
@@ -140,16 +189,37 @@ detector:rel-x.y:
     - export RELEASE_IMAGE=${IMAGE_PREFIX}detector
     - export SRC_TAG=master
 
-frontend:rel-x.y:
-  extends: .base-rel-x.y
-  before_script:
-    - export RELEASE_IMAGE=${IMAGE_PREFIX}frontend
-    - export SRC_TAG=master
-
 limiter:rel-x.y:
   extends: .base-rel-x.y
   before_script:
     - export RELEASE_IMAGE=${IMAGE_PREFIX}limiter
+    - export SRC_TAG=master
+
+metrics-collector:rel-x.y:
+  extends: .base-rel-x.y
+  before_script:
+    - export REGISTRY_RELEASE=dkr.hanaboso.net/pipes/pipes
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}metrics-collector
+    - export SRC_TAG=master
+
+notifier:rel-x.y:
+  extends: .base-rel-x.y
+  before_script:
+    - export REGISTRY_RELEASE=dkr.hanaboso.net/pipes/pipes
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}notifier
+    - export SRC_TAG=master
+
+backend:rel-x.y:
+  extends: .base-rel-x.y
+  before_script:
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}backend
+    - export SRC_TAG=master
+
+backend-enterprise:rel-x.y:
+  extends: .base-rel-x.y
+  before_script:
+    - export REGISTRY_RELEASE=dkr.hanaboso.net/pipes/pipes
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}enterprise-backend
     - export SRC_TAG=master
 
 starting-point:rel-x.y:
@@ -162,6 +232,20 @@ topology-api:rel-x.y:
   extends: .base-rel-x.y
   before_script:
     - export RELEASE_IMAGE=${IMAGE_PREFIX}topology-api
+    - export SRC_TAG=master
+
+trace:rel-x.y:
+  extends: .base-rel-x.y
+  before_script:
+    - export REGISTRY_RELEASE=dkr.hanaboso.net/pipes/pipes
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}trace
+    - export SRC_TAG=master
+
+tunnel-proxy:rel-x.y:
+  extends: .base-rel-x.y
+  before_script:
+    - export REGISTRY_RELEASE=dkr.hanaboso.net/pipes/pipes
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}tunnel-proxy
     - export SRC_TAG=master
 
 worker-api:rel-x.y:

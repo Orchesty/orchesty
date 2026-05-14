@@ -134,6 +134,24 @@ type RequestInstanceCredentials struct {
 	InstanceSecret string `json:"instanceSecret"`
 }
 
+type SuspendInstanceRequest struct {
+	Instance string `json:"instance"`
+}
+
+type SuspendInstanceResponse struct {
+	Instance string `json:"instance"`
+	State    string `json:"state"` // "suspended"
+}
+
+type ResumeInstanceRequest struct {
+	Instance string `json:"instance"`
+}
+
+type ResumeInstanceResponse struct {
+	Instance string `json:"instance"`
+	State    string `json:"state"` // "active"
+}
+
 type ExistingInstanceData struct {
 	Instance            string
 	InstanceDisplayName string

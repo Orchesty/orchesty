@@ -39,6 +39,8 @@ type instanceService interface {
 	CreateInstance(request service.CreateInstanceRequest) (models.InstanceInfo, error)
 	UpdateInstance(request service.UpdateInstanceRequest) (models.InstanceInfo, error)
 	DeleteInstance(instance string) error
+	SuspendInstance(instance string) error
+	ResumeInstance(instance string) error
 }
 
 type Server struct {
@@ -72,6 +74,8 @@ func New(
 	mux.HandleFunc("POST /instance", server.createInstance)
 	mux.HandleFunc("PATCH /instance", server.updateInstance)
 	mux.HandleFunc("DELETE /instance", server.deleteInstance)
+	mux.HandleFunc("POST /instance/suspend", server.suspendInstance)
+	mux.HandleFunc("POST /instance/resume", server.resumeInstance)
 
 	return mux
 }
@@ -319,6 +323,64 @@ func (s *Server) updateInstance(writer http.ResponseWriter, request *http.Reques
 	}
 
 	writeJSON(writer, http.StatusOK, result)
+}
+
+func (s *Server) suspendInstance(writer http.ResponseWriter, request *http.Request) {
+	var body models.SuspendInstanceRequest
+	decoder := json.NewDecoder(request.Body)
+	decoder.DisallowUnknownFields()
+
+	if err := decoder.Decode(&body); err != nil {
+		writeError(writer, http.StatusBadRequest, err)
+		return
+	}
+
+	if err := s.instanceService.SuspendInstance(body.Instance); err != nil {
+		var inputErr *service.InputError
+		if errors.As(err, &inputErr) {
+			writeError(writer, http.StatusBadRequest, err)
+			return
+		}
+
+		writeError(writer, http.StatusInternalServerError, err)
+		return
+	}
+
+	response := models.SuspendInstanceResponse{
+		Instance: body.Instance,
+		State:    "suspended",
+	}
+
+	writeJSON(writer, http.StatusOK, response)
+}
+
+func (s *Server) resumeInstance(writer http.ResponseWriter, request *http.Request) {
+	var body models.ResumeInstanceRequest
+	decoder := json.NewDecoder(request.Body)
+	decoder.DisallowUnknownFields()
+
+	if err := decoder.Decode(&body); err != nil {
+		writeError(writer, http.StatusBadRequest, err)
+		return
+	}
+
+	if err := s.instanceService.ResumeInstance(body.Instance); err != nil {
+		var inputErr *service.InputError
+		if errors.As(err, &inputErr) {
+			writeError(writer, http.StatusBadRequest, err)
+			return
+		}
+
+		writeError(writer, http.StatusInternalServerError, err)
+		return
+	}
+
+	response := models.ResumeInstanceResponse{
+		Instance: body.Instance,
+		State:    "active",
+	}
+
+	writeJSON(writer, http.StatusOK, response)
 }
 
 func writeJSON(writer http.ResponseWriter, statusCode int, body any) {

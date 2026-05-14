@@ -51,6 +51,9 @@ type KubernetesClient interface {
 	UpdateNamespaceDisplayName(instance, displayName string) error
 	DeleteNamespace(instance string) (bool, error)
 	Install(dto *models.InstanceDTO) error
+	GetDeploymentNames(instance string) ([]string, error)
+	ScaleDeploymentsToZero(instance string, components []string) error
+	ScaleDeploymentsToReplicas(instance string, replicas map[string]int32) error
 }
 
 type IngressClient interface {
@@ -249,6 +252,72 @@ func (s *InstanceService) UpdateInstance(request UpdateInstanceRequest) (models.
 	return dto.ToInstanceInfo(false), nil
 }
 
+func (s *InstanceService) SuspendInstance(instance string) error {
+	instance = strings.TrimSpace(instance)
+	if instance == "" {
+		return &InputError{ErrInstanceRequired}
+	}
+
+	dto, err := s.kubernetes.LoadInstanceDTO(instance)
+	if err != nil {
+		return fmt.Errorf("load instance dto: %w", err)
+	}
+
+	// Apply instance secret with suspend state marker
+	if _, err := s.kubernetes.ApplyInstanceSecret(dto); err != nil {
+		return fmt.Errorf("apply instance secret: %w", err)
+	}
+
+	// Get all deployments in the namespace and scale to zero (keep PVCs intact)
+	deployments, err := s.kubernetes.GetDeploymentNames(dto.Instance)
+	if err != nil {
+		return fmt.Errorf("get deployment names: %w", err)
+	}
+	deployments = filterSuspendableDeployments(deployments)
+
+	if err := s.kubernetes.ScaleDeploymentsToZero(dto.Instance, deployments); err != nil {
+		return fmt.Errorf("scale components to zero: %w", err)
+	}
+
+	return nil
+}
+
+func (s *InstanceService) ResumeInstance(instance string) error {
+	instance = strings.TrimSpace(instance)
+	if instance == "" {
+		return &InputError{ErrInstanceRequired}
+	}
+
+	dto, err := s.kubernetes.LoadInstanceDTO(instance)
+	if err != nil {
+		return fmt.Errorf("load instance dto: %w", err)
+	}
+
+	// Apply instance secret with active state marker
+	if _, err := s.kubernetes.ApplyInstanceSecret(dto); err != nil {
+		return fmt.Errorf("apply instance secret: %w", err)
+	}
+
+	// Get all deployments in the namespace and scale back to 1 replica
+	deployments, err := s.kubernetes.GetDeploymentNames(dto.Instance)
+	if err != nil {
+		return fmt.Errorf("get deployment names: %w", err)
+	}
+	deployments = filterSuspendableDeployments(deployments)
+
+	// Build replica map - all deployments get 1 replica
+	componentsToScale := make(map[string]int32)
+	for _, deployment := range deployments {
+		componentsToScale[deployment] = 1
+	}
+
+	if err := s.kubernetes.ScaleDeploymentsToReplicas(dto.Instance, componentsToScale); err != nil {
+		return fmt.Errorf("scale components back up: %w", err)
+	}
+
+	return nil
+}
+
 func (s *InstanceService) Shutdown() {
 	s.mongo.Disconnect()
 }
@@ -361,4 +430,21 @@ func (s *InstanceService) rollbackCreate(dto *models.InstanceDTO, state createSt
 	}
 
 	return errors.Join(errs...)
+}
+
+func filterSuspendableDeployments(deployments []string) []string {
+	filtered := make([]string, 0, len(deployments))
+	for _, deployment := range deployments {
+		if shouldKeepRunningDuringSuspend(deployment) {
+			continue
+		}
+		filtered = append(filtered, deployment)
+	}
+
+	return filtered
+}
+
+func shouldKeepRunningDuringSuspend(name string) bool {
+	name = strings.TrimSpace(name)
+	return strings.HasSuffix(name, "-backend") || strings.HasSuffix(name, "-frontend")
 }

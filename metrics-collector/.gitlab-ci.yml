@@ -1,0 +1,20 @@
+.base-metrics-collector:
+  variables:
+    DIR: metrics-collector
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}metrics-collector
+
+metrics-collector:test:
+  stage: test
+  extends:
+    - .base-test
+    - .base-metrics-collector
+
+metrics-collector:build:
+  stage: build
+  needs:
+    - job: metrics-collector:test
+      optional: false
+  when: manual
+  extends:
+    - .base-dind-build
+    - .base-metrics-collector

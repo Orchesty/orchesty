@@ -1,7 +1,7 @@
 .base-pf-bundles-enterprise:
   variables:
     DIR: pf-bundles-enterprise
-    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}backend-enterprise
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}enterprise-backend
 
 pf-bundles-enterprise:test:
   stage: test

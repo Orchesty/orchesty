@@ -1,7 +1,7 @@
 .base-frontend-enterprise:
   variables:
     DIR: app-ui-new-enterprise
-    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}frontend-enterprise
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}enterprise-frontend
 
 frontend-enterprise:test:
   stage: test

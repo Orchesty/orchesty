@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"metrics-collector/pkg/config"
+	"metrics-collector/pkg/metrics"
 	"metrics-collector/pkg/models"
-	"metrics-collector/pkg/storage"
 	"metrics-collector/pkg/utils"
 
 	"github.com/hanaboso/go-mongodb"
@@ -36,7 +36,7 @@ func (c *Collector) Name() string {
 	return CollectorName
 }
 
-func (c *Collector) Collect(ctx context.Context, repo *storage.MongoRepository) error {
+func (c *Collector) Collect(ctx context.Context, repo metrics.Repository) error {
 	metric, err := c.fetchMetrics(ctx)
 	if err != nil {
 		config.Logger.ErrorWrap("failed to fetch MongoDB metrics", err)
@@ -103,7 +103,7 @@ func (c *Collector) fetchMetrics(ctx context.Context) (*models.MongoDBMetric, er
 	}, nil
 }
 
-func (c *Collector) aggregateMetrics(ctx context.Context, repo *storage.MongoRepository) error {
+func (c *Collector) aggregateMetrics(ctx context.Context, repo metrics.Repository) error {
 	now := time.Now()
 	metrics, err := repo.GetMongoDBMetricsForMonth(ctx)
 	if err != nil {

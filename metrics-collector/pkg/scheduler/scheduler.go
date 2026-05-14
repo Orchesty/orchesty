@@ -10,7 +10,6 @@ import (
 	"metrics-collector/pkg/metrics"
 	lokicollector "metrics-collector/pkg/metrics/loki"
 	mongodbcollector "metrics-collector/pkg/metrics/mongodb"
-	"metrics-collector/pkg/storage"
 )
 
 type CollectorWithInterval struct {
@@ -20,7 +19,7 @@ type CollectorWithInterval struct {
 
 type Scheduler struct {
 	collectorsWithIntervals []CollectorWithInterval
-	repo                    *storage.MongoRepository
+	repo                    metrics.Repository
 	tickers                 []*time.Ticker
 	done                    chan struct{}
 	wg                      sync.WaitGroup
@@ -28,7 +27,7 @@ type Scheduler struct {
 
 func NewScheduler(
 	collectors []metrics.Collector,
-	repo *storage.MongoRepository,
+	repo metrics.Repository,
 ) *Scheduler {
 	collectorsWithIntervals := make([]CollectorWithInterval, 0, len(collectors))
 

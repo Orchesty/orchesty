@@ -23,16 +23,10 @@ services:
         - 'seccomp:unconfined'
 
   mongodb:
-    image: mongo:7.0
-    ports:
-      - "27017:27017"
+    image: mongo:latest
 
   rabbitmq:
     image: rabbitmq:management-alpine
-    ports:
-      - "15672:15672"
 
   loki:
     image: grafana/loki:latest
-    # ports:
-    #   # - "3100:3100"

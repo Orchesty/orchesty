@@ -10,6 +10,8 @@ It orchestrates these systems:
 - Kong Gateway (ingress service and route registration)
 - GCS / Object Storage (log bucket and HMAC credential management)
 
+It also supports suspending and resuming an instance without losing data. Suspend only scales down the instance workloads that are safe to stop; backend, frontend, and Alloy stay running.
+
 ## Features
 
 - Create new instance via HTTP API
@@ -20,6 +22,7 @@ It orchestrates these systems:
 - Input validation for create requests
 - Conditional Kong Gateway ingress registration (toggleable via config)
 - Conditional GCS bucket and HMAC key management for Loki log storage (toggleable via config)
+- Suspend/resume instance lifecycle via HTTP API and `make` helpers
 - Applinth EC key pair generation (secp521r1 / P-521)
 - Grafana admin password generation
 - Unit and integration-like tests for all main packages
@@ -267,6 +270,67 @@ Error mapping:
 - `400` when `instance` query parameter is missing/empty
 - `500` internal error (aggregated errors from multiple systems)
 
+### POST /instance/suspend
+
+Suspends an instance by scaling down its suspendable workloads to zero while keeping persistent data intact.
+
+Request body:
+
+```json
+{
+  "instance": "instance-abc123def4"
+}
+```
+
+Notes:
+- Backend and frontend are kept running.
+- Alloy is kept running when it is deployed as a DaemonSet.
+- Persistent volumes and instance secrets stay in place.
+
+Success response (`200`):
+
+```json
+{
+  "instance": "instance-abc123def4",
+  "state": "suspended",
+}
+```
+
+Error mapping:
+- `400` invalid input
+- `409` instance is already suspended or missing
+- `500` internal error
+
+### POST /instance/resume
+
+Resumes a suspended instance by restoring its suspendable workloads.
+
+Request body:
+
+```json
+{
+  "instance": "instance-abc123def4"
+}
+```
+
+Notes:
+- Backend and frontend stay available during resume.
+- Alloy is restored by removing the suspend-specific node selector.
+
+Success response (`200`):
+
+```json
+{
+  "instance": "instance-abc123def4",
+  "state": "active",
+}
+```
+
+Error mapping:
+- `400` invalid input
+- `409` instance is not suspended or missing
+- `500` internal error
+
 ## Configuration
 
 Configuration is loaded from environment variables in `pkg/config/config.go`.
@@ -434,4 +498,20 @@ Delete instance:
 
 ```bash
 curl -i -X DELETE "http://localhost:8080/instance?instance=instance-abc123def4"
+```
+
+Suspend instance:
+
+```bash
+curl -s -X POST "http://localhost:8080/instance/suspend" \
+  -H "Content-Type: application/json" \
+  -d '{"instance":"instance-abc123def4"}' | jq
+```
+
+Resume instance:
+
+```bash
+curl -s -X POST "http://localhost:8080/instance/resume" \
+  -H "Content-Type: application/json" \
+  -d '{"instance":"instance-abc123def4"}' | jq
 ```

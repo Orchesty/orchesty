@@ -30,12 +30,18 @@ type instanceServiceStub struct {
 	createErr     error
 	updateErr     error
 	deleteErr     error
+	suspendErr    error
+	resumeErr     error
 	createCalls   int
 	updateCalls   int
 	deleteCalls   int
+	suspendCalls  int
+	resumeCalls   int
 	createRequest service.CreateInstanceRequest
 	updateRequest service.UpdateInstanceRequest
 	deleteValue   string
+	suspendValue  string
+	resumeValue   string
 }
 
 func (s *instanceServiceStub) CreateInstance(request service.CreateInstanceRequest) (models.InstanceInfo, error) {
@@ -54,6 +60,18 @@ func (s *instanceServiceStub) UpdateInstance(request service.UpdateInstanceReque
 	s.updateCalls++
 	s.updateRequest = request
 	return s.updateResult, s.updateErr
+}
+
+func (s *instanceServiceStub) SuspendInstance(instance string) error {
+	s.suspendCalls++
+	s.suspendValue = instance
+	return s.suspendErr
+}
+
+func (s *instanceServiceStub) ResumeInstance(instance string) error {
+	s.resumeCalls++
+	s.resumeValue = instance
+	return s.resumeErr
 }
 
 func TestStatusAllDependenciesHealthy(t *testing.T) {

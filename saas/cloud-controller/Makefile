@@ -55,3 +55,13 @@ update-instance:
 destroy-instance:
 	curl -s -X DELETE "$(API_URL)/instance?instance=instance-cse612e5go" \
 		-H "Content-Type: application/json" | jq
+
+suspend-instance:
+	curl -s -X POST "$(API_URL)/instance/suspend" \
+		-H "Content-Type: application/json" \
+		-d '{"instance":"instance-3l62fd85ym"}' | jq
+
+resume-instance:
+	curl -s -X POST "$(API_URL)/instance/resume" \
+		-H "Content-Type: application/json" \
+		-d '{"instance":"instance-3l62fd85ym"}' | jq

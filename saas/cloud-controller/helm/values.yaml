@@ -43,7 +43,7 @@ kong:
 
 cloud:
   instancePrefix: "prod"
-  instance: "orchesty-instance"
+  instance: "orchesty"
   pullSecret: "hanaboso"
   auth0:
     domain: "dev-qsa0lopaqbhr0vmj.eu.auth0.com"

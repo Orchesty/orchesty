@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"metrics-collector/pkg/config"
+	"metrics-collector/pkg/metrics"
 	"metrics-collector/pkg/models"
-	"metrics-collector/pkg/storage"
 	"metrics-collector/pkg/utils"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -63,7 +63,7 @@ func (c *Collector) Name() string {
 	return CollectorName
 }
 
-func (c *Collector) Collect(ctx context.Context, repo *storage.MongoRepository) error {
+func (c *Collector) Collect(ctx context.Context, repo metrics.Repository) error {
 	metric, err := c.fetchMetrics(ctx)
 	if err != nil {
 		config.Logger.ErrorWrap("failed to fetch K8s metrics", err)
@@ -170,7 +170,7 @@ func (c *Collector) fetchMetrics(ctx context.Context) (*models.K8sMetric, error)
 	}, nil
 }
 
-func (c *Collector) aggregateMetrics(ctx context.Context, repo *storage.MongoRepository) error {
+func (c *Collector) aggregateMetrics(ctx context.Context, repo metrics.Repository) error {
 	aggCtx, cancel := context.WithTimeout(ctx, collectorCtxTimeout)
 	defer cancel()
 
