@@ -121,14 +121,16 @@ final class PlatformServicesHandler
     }
 
     /**
-     * Snapshot of the Trace cloud-relay quota state for the UI badge.
+     * Snapshot of the Trace quota state for the UI badge.
      *
-     * `mode`:
-     *   - "user"     — user has installed their own LLM and bound it as
-     *                  `trace-ai-provider`. Cap is not enforced.
-     *   - "system"   — no user binding, Trace feature flag enabled. Default
-     *                  LLM via cloud-relay applies, cap is enforced.
-     *   - "disabled" — Trace feature flag is off; UI should hide the tab.
+     * `mode` (single gate is `ORCHESTY_FEATURE_TRACE_AUDITING`):
+     *   - "user"     — feature on, user binding present (own LLM). Cap is
+     *                  not enforced.
+     *   - "system"   — feature on, no user binding. Default LLM via the
+     *                  cloud-relay may apply at runtime; UI always
+     *                  exposes the binding editor so users on instances
+     *                  without a relay can bring their own LLM.
+     *   - "disabled" — feature flag is off; UI hides the tab.
      *
      * @return mixed[]
      */

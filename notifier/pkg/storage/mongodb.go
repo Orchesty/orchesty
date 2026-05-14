@@ -140,6 +140,73 @@ func (s MongoStorage) FindForEvent(tenantID, eventType string) ([]model.Subscrip
 	return subs, nil
 }
 
+// FindAllForEvent is the unfiltered counterpart of FindForEvent — it returns
+// every Subscription for `(tenantID, event_type=eventType)` regardless of the
+// `enabled` flag. The recipient resolver needs the disabled rows for
+// default-subscribed presets to know which users have explicitly opted out
+// (those users must NOT receive the implicit-default email).
+func (s MongoStorage) FindAllForEvent(tenantID, eventType string) ([]model.Subscription, error) {
+	ctx, cancel := s.Context()
+	defer cancel()
+
+	filter := bson.D{
+		{Key: model.TenantID, Value: tenantID},
+		{Key: model.SubjectType, Value: "event_type"},
+		{Key: model.SubjectID, Value: eventType},
+	}
+
+	cursor, err := s.subscriptions.Find(ctx, filter)
+	if err != nil {
+		s.logContext().Error(err)
+
+		return nil, fmt.Errorf("failed to find subscriptions for event: %w", err)
+	}
+	defer cursor.Close(ctx)
+
+	var subs []model.Subscription
+	if err := cursor.All(ctx, &subs); err != nil {
+		s.logContext().Error(err)
+
+		return nil, fmt.Errorf("failed to decode subscriptions: %w", err)
+	}
+
+	return subs, nil
+}
+
+// FindAllUserIDs lists every user known to this notifier instance. Used by
+// the recipient resolver to seed implicit recipients for default-subscribed
+// presets. Each notifier serves a single tenant (one Mongo DB per instance),
+// so no tenant filter is applied here.
+func (s MongoStorage) FindAllUserIDs() ([]bson.ObjectID, error) {
+	ctx, cancel := s.Context()
+	defer cancel()
+
+	// Project to `_id` only; we resolve emails separately via FindUserEmails
+	// when we know which users actually need to be contacted (after applying
+	// the explicit opt-out list).
+	cursor, err := s.users.Find(ctx, bson.D{}, options.Find().SetProjection(bson.D{{Key: "_id", Value: 1}}))
+	if err != nil {
+		s.logContext().Error(err)
+
+		return nil, fmt.Errorf("failed to find users: %w", err)
+	}
+	defer cursor.Close(ctx)
+
+	var users []model.User
+	if err := cursor.All(ctx, &users); err != nil {
+		s.logContext().Error(err)
+
+		return nil, fmt.Errorf("failed to decode users: %w", err)
+	}
+
+	ids := make([]bson.ObjectID, len(users))
+	for i, u := range users {
+		ids[i] = u.ID
+	}
+
+	return ids, nil
+}
+
 func (s MongoStorage) FindUserEmails(userIDs []bson.ObjectID) ([]string, error) {
 	ctx, cancel := s.Context()
 	defer cancel()

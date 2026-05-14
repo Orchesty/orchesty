@@ -56,7 +56,7 @@ func Load() error {
 	sseBroadcaster := NewSSEBroadcaster()
 
 	bufferService := NewBufferService(redisClient)
-	recipientService := NewRecipientService(mongoStorage, config.Logger)
+	recipientService := NewRecipientService(mongoStorage, presets, config.Logger)
 	dispatcherService := NewDispatcherService(httpSender, config.Dispatch.URL, config.App.InstanceID, config.Logger)
 	processorService := NewProcessorService(presets, helpers, store, bufferService, recipientService, dispatcherService, mongoStorage, sseBroadcaster, config.Logger)
 

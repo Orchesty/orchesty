@@ -19,16 +19,25 @@ use Throwable;
  * Class PlatformServiceProvider
  *
  * Dispatches platform-service calls to either the local SDK (user-managed
- * binding present) or to the cloud-relay default LLM (Trace-only fallback
- * for instances that have Trace enabled and no user binding).
+ * binding present) or to the cloud-relay default LLM (when no binding is
+ * configured and the instance has Trace enabled).
  *
- * Trace cloud-relay path:
+ * Access policy — single gate:
+ *   Trace UI surface and binding settings are available iff
+ *   `ORCHESTY_FEATURE_TRACE_AUDITING=true`. The relay reachability
+ *   (`TraceCloudRelayClient::isConfigured()`) is **not** a gate — it only
+ *   determines whether the default LLM call physically succeeds at
+ *   runtime. Users on instances without a relay can still bring their own
+ *   LLM (Settings → Trace).
+ *
+ * Trace cloud-relay path (when used at runtime):
  *   1. Per-instance daily quota counter is incremented atomically; if cap
  *      reached, throws `QuotaExceededException` and skips dispatch.
  *   2. `TraceCloudRelayClient` POSTs to the cloud backend, which proxies
  *      to the system-instance `cloud-trace-llm-worker`.
- *   3. On dispatch failure (network, upstream 5xx) the increment is
- *      reverted so transient errors do not eat the user's daily budget.
+ *   3. On dispatch failure (network, upstream 5xx, relay-not-configured)
+ *      the increment is reverted so transient errors do not eat the
+ *      user's daily budget.
  *
  * @package Hanaboso\PipesFrameworkEnterprise\PlatformServices\Provider
  */
@@ -39,6 +48,13 @@ final class PlatformServiceProvider
 
     /**
      * Returned by `getTraceProviderMode()` for the UI badge / banner.
+     *
+     * Semantics:
+     *   - MODE_DISABLED — `featureTraceAuditing=false`. UI hides the tab.
+     *   - MODE_USER     — Feature on AND a user binding exists.
+     *   - MODE_SYSTEM   — Feature on AND no user binding (relay default
+     *                     LLM may apply at runtime; UI shows binding
+     *                     editor either way).
      */
     public const string MODE_USER     = 'user';
     public const string MODE_SYSTEM   = 'system';
@@ -69,12 +85,16 @@ final class PlatformServiceProvider
      * Call a sync action on the platform-bound application.
      *
      * Routing:
-     *   - Binding present              → existing local-SDK dispatch.
+     *   - Binding present                  → local-SDK dispatch.
      *   - No binding + serviceType is
      *     trace-ai-provider + Trace
-     *     feature on + cloud relay
-     *     configured                   → cloud-relay default LLM (with cap).
-     *   - Otherwise                    → BINDING_NOT_FOUND error.
+     *     feature on                       → cloud-relay default LLM
+     *                                        (with daily cap). Relay
+     *                                        reachability is checked
+     *                                        inside `dispatchCloudRelay`
+     *                                        and surfaces as
+     *                                        `RELAY_FAILED` if missing.
+     *   - Otherwise                        → BINDING_NOT_FOUND error.
      *
      * @param string  $serviceType
      * @param string  $method
@@ -96,7 +116,7 @@ final class PlatformServiceProvider
             return $this->dispatchLocal($binding, $method, $data);
         }
 
-        if ($this->isCloudRelayEligible($serviceType)) {
+        if ($serviceType === self::TRACE_AI_PROVIDER && $this->featureTraceAuditing) {
             return $this->dispatchCloudRelay($method, $data);
         }
 
@@ -107,6 +127,12 @@ final class PlatformServiceProvider
     }
 
     /**
+     * Whether the platform service can serve a call.
+     *
+     * For Trace, a configured service means either a user binding exists
+     * or the feature flag is on (default-LLM path is attempted at
+     * runtime; relay reachability is a runtime detail, not a gate).
+     *
      * @param string $serviceType
      *
      * @return bool
@@ -117,42 +143,30 @@ final class PlatformServiceProvider
             return TRUE;
         }
 
-        return $this->isCloudRelayEligible($serviceType);
+        return $serviceType === self::TRACE_AI_PROVIDER && $this->featureTraceAuditing;
     }
 
     /**
      * Compute the UI mode for the trace-ai-provider service. Used by the
      * `/quota` endpoint to drive the Settings/TraceTab banner.
      *
+     * Single gate is `featureTraceAuditing`. Cloud-relay reachability is
+     * intentionally NOT consulted here — instances without a relay can
+     * still bring their own LLM via the binding editor.
+     *
      * @return string one of MODE_USER / MODE_SYSTEM / MODE_DISABLED
      */
     public function getTraceProviderMode(): string
     {
+        if (!$this->featureTraceAuditing) {
+            return self::MODE_DISABLED;
+        }
+
         $binding = $this->bindingRepository->findOneBy(
             [ServiceBinding::SERVICE_TYPE => self::TRACE_AI_PROVIDER],
         );
 
-        if ($binding !== NULL) {
-            return self::MODE_USER;
-        }
-
-        if ($this->isCloudRelayEligible(self::TRACE_AI_PROVIDER)) {
-            return self::MODE_SYSTEM;
-        }
-
-        return self::MODE_DISABLED;
-    }
-
-    /**
-     * @param string $serviceType
-     *
-     * @return bool
-     */
-    private function isCloudRelayEligible(string $serviceType): bool
-    {
-        return $serviceType === self::TRACE_AI_PROVIDER
-            && $this->featureTraceAuditing
-            && $this->cloudRelayClient->isConfigured();
+        return $binding !== NULL ? self::MODE_USER : self::MODE_SYSTEM;
     }
 
     /**

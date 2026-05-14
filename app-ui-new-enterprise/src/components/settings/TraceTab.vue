@@ -28,9 +28,14 @@ const candidates = ref<InstalledApplicationWithSyncMethods[]>([])
 const binding = ref<PlatformServiceBinding | null>(null)
 const selectedValue = ref<string | null>(null)
 
-// Quota status drives the mode-aware UI: live "X / 100" badge in `system`
-// mode, "Unlimited (your own LLM)" badge in `user` mode, hidden tab in
-// `disabled` mode.
+// Quota status drives the mode-aware UI:
+//   - `system` (feature on, no binding): default LLM card + binding editor
+//     reachable via "Connect your own LLM" toggle.
+//   - `user` (feature on, binding present): "Unlimited (your own LLM)"
+//     badge.
+//   - `disabled` (feature flag off): tab body collapses to a short status
+//     note. Note: SettingsView already hides the tab when the feature flag
+//     is off, so this branch is defensive only.
 const quota = ref<TraceQuotaStatus | null>(null)
 const quotaError = ref<string | null>(null)
 
@@ -237,16 +242,20 @@ onMounted(loadData)
       ></div>
     </div>
 
-    <!-- Disabled mode: feature flag is off (Trace not in plan). Hide the tab body. -->
+    <!-- Disabled mode: feature flag is off. Defensive — SettingsView normally
+         hides the tab entirely when `traceAuditing` is false. -->
     <div
       v-else-if="mode === 'disabled'"
       class="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
     >
-      Trace AI is not part of your current plan. Upgrade to PRO L3 or Enterprise to enable it.
+      Trace AI is disabled on this instance.
     </div>
 
     <div v-else class="space-y-4">
-      <!-- System mode: Orchesty default LLM with daily cap -->
+      <!-- System mode: Orchesty default LLM with daily cap. The badge stays
+           informational — if the cloud-relay isn't reachable on this instance,
+           the chat call surfaces a clear runtime error and the user can fall
+           back to the binding editor below. -->
       <div
         v-if="mode === 'system' && quota"
         class="rounded-lg border border-primary-200 bg-primary-50 p-5 text-sm dark:border-primary-900 dark:bg-primary-950/40"
@@ -257,9 +266,8 @@ onMounted(loadData)
               Orchesty default LLM
             </h3>
             <p class="mt-1 text-primary-800 dark:text-primary-300">
-              You're using Orchesty's built-in <code class="rounded bg-primary-100 px-1 py-0.5 font-mono text-xs dark:bg-primary-900">gpt-5.4-mini</code>
-              — {{ quota.limit }} messages per day are included with your plan. Connect your own
-              LLM for unlimited use.
+              Trace runs against Orchesty's built-in <code class="rounded bg-primary-100 px-1 py-0.5 font-mono text-xs dark:bg-primary-900">gpt-5.4-mini</code>
+              — up to {{ quota.limit }} messages per day. Connect your own LLM for unlimited use.
             </p>
           </div>
           <Button

@@ -33,9 +33,10 @@ func BuildPresets() []model.Preset {
 			},
 		},
 		{
-			ID:          "topology_failed_message",
-			Enabled:     true,
-			Description: "message moved to trash",
+			ID:                "topology_failed_message",
+			Enabled:           true,
+			Description:       "message moved to trash",
+			DefaultSubscribed: true,
 			Match: func(_ context.Context, e model.EventEnvelope, _ model.EvaluatorHelpers) (bool, error) {
 				return e.EventType == "topology_failed_message", nil
 			},
@@ -53,9 +54,10 @@ func BuildPresets() []model.Preset {
 			},
 		},
 		{
-			ID:          "limit_overflow",
-			Enabled:     true,
-			Description: "resource or message limit exceeded, messages are being discarded",
+			ID:                "limit_overflow",
+			Enabled:           true,
+			Description:       "resource or message limit exceeded, messages are being discarded",
+			DefaultSubscribed: true,
 			Match: func(_ context.Context, e model.EventEnvelope, _ model.EvaluatorHelpers) (bool, error) {
 				return e.EventType == "limit_overflow", nil
 			},
@@ -69,9 +71,10 @@ func BuildPresets() []model.Preset {
 			},
 		},
 		{
-			ID:          "cloud_limit_threshold",
-			Enabled:     true,
-			Description: "cloud plan resource crossed warning/critical/exceeded threshold",
+			ID:                "cloud_limit_threshold",
+			Enabled:           true,
+			Description:       "instance plan resource crossed warning/critical/exceeded threshold",
+			DefaultSubscribed: true,
 			Match: func(_ context.Context, e model.EventEnvelope, _ model.EvaluatorHelpers) (bool, error) {
 				return e.EventType == "cloud_limit_threshold", nil
 			},
