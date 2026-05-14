@@ -1,5 +1,8 @@
 # Release Notes
 
+## 3.0.0
+ Stable release
+
 ## 3.0.0-rc2
 - Limiter: added new ENVs
 - Notifier: added new ENVs
