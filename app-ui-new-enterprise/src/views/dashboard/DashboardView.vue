@@ -31,11 +31,20 @@ const {
   forceOpen: forceOpenWelcome,
 } = useWelcomeOnboarding()
 
+// `?welcome=2` previews the no-Trace variant on a Trace-enabled instance.
+// Otherwise undefined and the modal follows the live `traceAuditing` flag.
+const welcomeForceVariant = ref<'trace' | 'no-trace' | undefined>(undefined)
+
 onMounted(() => {
-  // `?welcome=1` is a dev/preview trigger: opens the modal regardless of
-  // localStorage cache or server state, and strips the query so a reload
-  // doesn't keep re-firing it. Dismissing afterwards persists as usual.
-  if (route.query.welcome === '1') {
+  // `?welcome=1` opens the auto-detect variant (mirrors production), `?welcome=2`
+  // forces the no-Trace variant for preview. Both paths bypass the local-cache /
+  // server "seen" flag and strip the query on activation so reloads don't keep
+  // re-firing. Dismissing afterwards persists as usual.
+  const welcomeParam = route.query.welcome
+  if (welcomeParam === '1' || welcomeParam === '2') {
+    if (welcomeParam === '2') {
+      welcomeForceVariant.value = 'no-trace'
+    }
     forceOpenWelcome()
     const { welcome: _omit, ...rest } = route.query
     void router.replace({ name: route.name as string, params: route.params, query: rest })
@@ -51,6 +60,15 @@ onMounted(() => {
 const handleOpenTraceFromWelcome = () => {
   void dismissWelcome()
   void router.push({ name: 'trace', query: { prompt: 'start onboarding' } })
+}
+
+// Non-Trace variant of the welcome modal points the user at the workers
+// settings as the natural next step — that's where they hook a custom
+// worker (or the Node.js starter) into the instance. SettingsView's first
+// tab is "Workers" so a plain push is enough; no hash/query is needed.
+const handleOpenWorkersFromWelcome = () => {
+  void dismissWelcome()
+  void router.push({ name: 'settings' })
 }
 
 // Cloud Starter (no operations suite) gets a minimal tab set that surfaces
@@ -409,7 +427,9 @@ const handleTopologyProcessesClick = (topologyId: string) => {
        which is the natural landing surface for trial / new instances. -->
   <WelcomeOnboardingModal
     v-model="welcomeOpen"
+    :force-variant="welcomeForceVariant"
     @open-trace="handleOpenTraceFromWelcome"
+    @open-workers="handleOpenWorkersFromWelcome"
     @dismiss="dismissWelcome"
   />
 </template>

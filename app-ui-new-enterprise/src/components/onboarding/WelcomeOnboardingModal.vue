@@ -1,16 +1,25 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import {
   Sparkles,
   Wrench,
   Workflow,
   Bot,
+  BookOpen,
+  Rocket,
   X,
   ArrowRight,
+  ExternalLink,
 } from 'lucide-vue-next'
+import { useFeatures } from '@/composables/useFeatures'
 
 interface Props {
   modelValue: boolean
+  // Optional override for previewing the modal copy in Trace-enabled
+  // instances (used by the `?welcome=2` dev trigger). When set, takes
+  // precedence over the live `traceAuditing` feature flag — production
+  // callers leave this undefined so the variant follows the real plan.
+  forceVariant?: 'trace' | 'no-trace'
 }
 
 const props = defineProps<Props>()
@@ -18,8 +27,37 @@ const props = defineProps<Props>()
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
   'open-trace': []
+  'open-workers': []
   'dismiss': []
 }>()
+
+// The modal renders one of two variants based on whether this instance has
+// the Trace AI auditing assistant enabled (Trial, Pro Level 3, Enterprise).
+// On those plans the primary onboarding path is "open Trace and ask"; on
+// everything else (Starter, Pro Level 1/2) Trace is unavailable, so the
+// primary path is "open the workers settings" and we surface external
+// learn links to orchesty.io as the conceptual onboarding companion. Using
+// the feature flag rather than the plan keeps this in lockstep with the
+// notifier-side derivation done in `instanceProvisioningService.ts` (see
+// `traceAuditingEnabled`) — if Trace ever ships on more plans, this modal
+// will follow automatically.
+const { traceAuditing } = useFeatures()
+
+// Effective variant: dev override wins, else fall back to the runtime flag.
+// Template references this instead of `traceAuditing` directly so the
+// preview path in DashboardView can render the no-Trace copy on a fully
+// Trace-enabled instance without touching the underlying feature state.
+const showTraceVariant = computed(() => {
+  if (props.forceVariant === 'trace') return true
+  if (props.forceVariant === 'no-trace') return false
+  return traceAuditing.value
+})
+
+// External learn URLs surfaced when Trace is unavailable. Hard-coded rather
+// than read from runtime config because they are stable marketing-site
+// URLs (and the modal must not block waiting for runtime config to load).
+const LEARN_GET_STARTED_URL = 'https://orchesty.io/learn/get-started/get-started'
+const LEARN_AI_BOOTSTRAP_URL = 'https://orchesty.io/ai-bootstrap'
 
 // Local copy so we can drive an enter/leave transition independent of the
 // parent's prop. The parent toggles `modelValue`; we mirror it here and
@@ -44,6 +82,12 @@ const handleOpenTrace = () => {
   visible.value = false
   emit('update:modelValue', false)
   emit('open-trace')
+}
+
+const handleOpenWorkers = () => {
+  visible.value = false
+  emit('update:modelValue', false)
+  emit('open-workers')
 }
 
 const onBackdropClick = (event: MouseEvent) => {
@@ -189,8 +233,8 @@ const onKeydown = (event: KeyboardEvent) => {
               </div>
             </div>
 
-            <!-- Trace callout -->
-            <div class="px-8 pb-2 pt-6 md:px-12">
+            <!-- Trace callout (only on plans that include the Trace assistant) -->
+            <div v-if="showTraceVariant" class="px-8 pb-2 pt-6 md:px-12">
               <div
                 class="flex items-start gap-4 rounded-xl border border-primary-100 bg-primary-50/60 p-5 dark:border-primary-900/40 dark:bg-primary-950/30"
               >
@@ -211,6 +255,56 @@ const onKeydown = (event: KeyboardEvent) => {
               </div>
             </div>
 
+            <!-- Learn links (no-Trace variant: Starter / Pro L1 / Pro L2). Two
+                 external cards point at orchesty.io: a hands-on Get Started
+                 walk-through and the AI-bootstrap landing page. Open in a new
+                 tab so the user can keep the dashboard alongside the docs. -->
+            <div v-else class="grid gap-4 px-8 pb-2 pt-6 md:grid-cols-2 md:px-12">
+              <a
+                :href="LEARN_GET_STARTED_URL"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group flex items-start gap-4 rounded-xl border border-primary-100 bg-primary-50/60 p-5 transition-colors hover:border-primary-200 hover:bg-primary-50 focus:outline-hidden focus:ring-4 focus:ring-primary-200 dark:border-primary-900/40 dark:bg-primary-950/30 dark:hover:border-primary-800 dark:hover:bg-primary-950/50 dark:focus:ring-primary-900"
+              >
+                <div
+                  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white text-primary-600 ring-1 ring-primary-100 dark:bg-gray-900 dark:text-primary-400 dark:ring-primary-900/40"
+                >
+                  <BookOpen class="h-5 w-5" />
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="flex items-center gap-1.5 text-sm font-semibold text-gray-900 dark:text-white">
+                    Get Started guide
+                    <ExternalLink class="h-3.5 w-3.5 text-gray-400 transition-colors group-hover:text-primary-600 dark:group-hover:text-primary-400" />
+                  </p>
+                  <p class="mt-1 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+                    A hands-on walk-through that takes you from an empty instance to a working integration.
+                  </p>
+                </div>
+              </a>
+
+              <a
+                :href="LEARN_AI_BOOTSTRAP_URL"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group flex items-start gap-4 rounded-xl border border-indigo-100 bg-indigo-50/60 p-5 transition-colors hover:border-indigo-200 hover:bg-indigo-50 focus:outline-hidden focus:ring-4 focus:ring-indigo-200 dark:border-indigo-900/40 dark:bg-indigo-950/30 dark:hover:border-indigo-800 dark:hover:bg-indigo-950/50 dark:focus:ring-indigo-900"
+              >
+                <div
+                  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white text-indigo-600 ring-1 ring-indigo-100 dark:bg-gray-900 dark:text-indigo-400 dark:ring-indigo-900/40"
+                >
+                  <Rocket class="h-5 w-5" />
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="flex items-center gap-1.5 text-sm font-semibold text-gray-900 dark:text-white">
+                    AI-bootstrap your worker
+                    <ExternalLink class="h-3.5 w-3.5 text-gray-400 transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400" />
+                  </p>
+                  <p class="mt-1 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+                    Bring your favourite AI editor and let it scaffold the whole worker from a prompt.
+                  </p>
+                </div>
+              </a>
+            </div>
+
             <!-- Footer actions -->
             <div
               class="flex flex-col-reverse items-stretch gap-3 px-8 py-7 md:flex-row md:items-center md:justify-end md:px-12"
@@ -223,11 +317,21 @@ const onKeydown = (event: KeyboardEvent) => {
                 Maybe later
               </button>
               <button
+                v-if="showTraceVariant"
                 type="button"
                 class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white shadow-xs transition-colors hover:bg-primary-700 focus:outline-hidden focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900"
                 @click="handleOpenTrace"
               >
                 Open Trace and start onboarding
+                <ArrowRight class="h-4 w-4" />
+              </button>
+              <button
+                v-else
+                type="button"
+                class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white shadow-xs transition-colors hover:bg-primary-700 focus:outline-hidden focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900"
+                @click="handleOpenWorkers"
+              >
+                Set up workers
                 <ArrowRight class="h-4 w-4" />
               </button>
             </div>

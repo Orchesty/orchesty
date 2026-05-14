@@ -33,6 +33,8 @@ Shows current message throughput vs. the configured limit. Indicates whether the
 
 Total count of failed messages with a breakdown by topology. This is where unprocessed data accumulates and needs attention.
 
+The count can be lower than the actual number of failed steps when a single process run produces many identical failures (e.g. an upstream API is down during a long batch). The platform deduplicates such runaway failures to keep this view readable -- see the **Duplicate failure guard** section in [Failed Messages](failed-messages/overview) for the full behaviour.
+
 ## Applications
 
 Heatmaps grouped by application. Each application has its own heatmap with connectors as rows. This is the fastest way to spot a complete outage of an external service -- if an entire application's heatmap turns red, the service is likely down.

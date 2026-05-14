@@ -12,6 +12,7 @@ import StatusBadge from '@/components/ui/StatusBadge.vue'
 import type { BadgeVariant } from '@/components/ui/StatusBadge.vue'
 import DeleteTopologyModal from '@/components/topologies/DeleteTopologyModal.vue'
 import InsertSchemaModal from '@/components/topologies/InsertSchemaModal.vue'
+import SlotLimitReachedModal from '@/components/topologies/SlotLimitReachedModal.vue'
 import Modal from '@/components/ui/Modal.vue'
 import Confirm from '@/components/ui/Confirm.vue'
 import Button from '@/components/ui/Button.vue'
@@ -413,6 +414,43 @@ const loadTopologyDetail = async () => {
 const publishing = ref(false)
 const hasFlow = ref(false)
 
+// Topology slot limit alert state. Backend returns HTTP 409 with a message
+// like "Cloud plan topology slot limit reached (X / Y). ..." when the gate
+// fires (cloud edition only — the gate is disabled when limitTopologySlots=0
+// in OSS). We surface this as an explanatory modal instead of a generic toast
+// so users actually understand the cause and the two recovery paths
+// (decommission a version, or upgrade plan) without having to file a support
+// ticket.
+const slotLimitModalOpen = ref(false)
+const slotLimitUsed = ref<number | null>(null)
+const slotLimitMax = ref<number | null>(null)
+
+const parseSlotLimitFromMessage = (message: string): { used: number; limit: number } | null => {
+  const match = message.match(/\((\d+)\s*\/\s*(\d+)\)/)
+  if (!match || match[1] === undefined || match[2] === undefined) return null
+  const used = Number.parseInt(match[1], 10)
+  const limit = Number.parseInt(match[2], 10)
+  if (Number.isNaN(used) || Number.isNaN(limit)) return null
+  return { used, limit }
+}
+
+const isSlotLimitError = (error: unknown): { used: number | null; limit: number | null } | null => {
+  const e = error as {
+    response?: { status?: number; data?: { message?: unknown } }
+    message?: unknown
+  }
+  if (e?.response?.status !== 409) return null
+  const serverMessage = typeof e.response?.data?.message === 'string'
+    ? (e.response.data.message as string)
+    : ''
+  // Backend uses this exact phrase in TopologySlotGate. Match defensively
+  // (case-insensitive substring) so a future tweak in punctuation does not
+  // silently regress the modal.
+  if (!/slot limit reached/i.test(serverMessage)) return null
+  const parsed = parseSlotLimitFromMessage(serverMessage)
+  return parsed ?? { used: null, limit: null }
+}
+
 const handlePublish = async () => {
   if (!topology.value) return
   publishing.value = true
@@ -423,7 +461,14 @@ const handlePublish = async () => {
     await layout.refreshSidebar()
   } catch (error) {
     console.error('Failed to publish topology:', error)
-    showToast('Failed to publish topology', 'error')
+    const slotLimit = isSlotLimitError(error)
+    if (slotLimit) {
+      slotLimitUsed.value = slotLimit.used
+      slotLimitMax.value = slotLimit.limit
+      slotLimitModalOpen.value = true
+    } else {
+      showToast('Failed to publish topology', 'error')
+    }
   } finally {
     publishing.value = false
   }
@@ -925,6 +970,13 @@ onMounted(async () => {
     :topology-id="topology._id"
     :topology-name="topology.name"
     @inserted="handleSchemaInserted"
+  />
+
+  <!-- Topology slot limit reached -->
+  <SlotLimitReachedModal
+    v-model="slotLimitModalOpen"
+    :used="slotLimitUsed"
+    :limit="slotLimitMax"
   />
 
   <!-- Enable/Disable Confirm -->
