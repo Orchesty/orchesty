@@ -37,7 +37,6 @@ import TrialReminderEmailMapper from './CustomNode/TrialReminderEmailMapper';
 import EcomailSendMessageConnector from './Ecomail/Connector/EcomailSendMessageConnector';
 import EcomailSendSalesBusinessNotificationConnector from './Ecomail/Connector/EcomailSendSalesBusinessNotificationConnector';
 import EcomailSendSalesCustomerConfirmationConnector from './Ecomail/Connector/EcomailSendSalesCustomerConfirmationConnector';
-import EcomailSendSupportTicketConfirmationConnector from './Ecomail/Connector/EcomailSendSupportTicketConfirmationConnector';
 import EcomailSendTransactionalEmailConnector from './Ecomail/Connector/EcomailSendTransactionalEmailConnector';
 import EcomailSubscribeNewsletterConnector from './Ecomail/Connector/EcomailSubscribeNewsletterConnector';
 import EcomailApplication from './Ecomail/EcomailApplication';
@@ -59,6 +58,7 @@ import PrepareInvoiceFilters from './IDoklad/CustomNode/PrepareInvoiceFilters';
 import IDokladClientCredentialsApplication from './IDoklad/IDokladClientCredentialsApplication';
 import JsmAttachTemporaryFiles from './Jsm/Connector/JsmAttachTemporaryFiles';
 import JsmCreateCustomerRequest from './Jsm/Connector/JsmCreateCustomerRequest';
+import SupportTicketConfirmationEmailMapper from './Jsm/CustomNode/SupportTicketConfirmationEmailMapper';
 import SupportTicketPrepareMapper from './Jsm/CustomNode/SupportTicketPrepareMapper';
 import JsmApplication from './Jsm/JsmApplication';
 import CloudToIDokladInvoiceMapper from './Mapper/CloudToIDokladInvoiceMapper';
@@ -126,13 +126,16 @@ export function prepare(): void {
     container.setNode(new EcomailSubscribeNewsletterConnector(), ecomailApp);
     container.setNode(new EcomailSendSalesBusinessNotificationConnector(), ecomailApp);
     container.setNode(new EcomailSendSalesCustomerConfirmationConnector(), ecomailApp);
-    container.setNode(new EcomailSendSupportTicketConfirmationConnector(), ecomailApp);
 
     // ── Connectors & CustomNode (Jira Service Management — support tickets) ──
     container.setNode(new JsmAttachTemporaryFiles(), jsmApp);
     container.setNode(new JsmCreateCustomerRequest(), jsmApp);
     // Bound to jsmApp so it can read service desk + per-category request type IDs.
     container.setNode(new SupportTicketPrepareMapper(), jsmApp);
+    // Bound to ecomailApp so it can read the [support] sender pair from the install
+    // (mirrors the pattern used by the system-notification email mappers — the
+    // confirmation HTML is built in code and dispatched via `ecomail-send-message`).
+    container.setNode(new SupportTicketConfirmationEmailMapper(), ecomailApp);
 
     // ── Connectors (Pipedrive) ──
     container.setNode(new PipedriveAddSalesOrganizationConnector(), pipedriveApp);

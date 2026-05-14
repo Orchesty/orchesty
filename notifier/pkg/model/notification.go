@@ -48,7 +48,17 @@ type Preset struct {
 	ID          string
 	Enabled     bool
 	Description string
-	Match       func(ctx context.Context, e EventEnvelope, h EvaluatorHelpers) (bool, error)
+	// DefaultSubscribed marks presets that should email every user in the
+	// instance unless the user has explicitly opted out. The explicit opt-out
+	// is a stored Subscription with `Enabled: false`. Presets without this
+	// flag retain the original "explicit opt-in only" semantics — no email
+	// without a stored Subscription with `Enabled: true`.
+	//
+	// Recipients are always resolved from the local Mongo `User` collection
+	// (one tenant per Mongo DB), so a default-subscribed preset reaches
+	// exactly the users the instance knows about.
+	DefaultSubscribed bool
+	Match             func(ctx context.Context, e EventEnvelope, h EvaluatorHelpers) (bool, error)
 }
 
 type NotificationMessage struct {
