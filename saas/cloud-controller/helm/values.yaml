@@ -30,8 +30,8 @@ secret:
 
 env:
   appDebug: true
-  appOrchestyVersion: "3.0.0-rc2"
-  helmOrchestyVersion: "3.0.0-rc2"
+  appOrchestyVersion: "3.0"
+  helmOrchestyVersion: "3.0.0"
   helmBridgePoolKey: bridgepool
   docsSearchUrl: https://orchesty.io
 
