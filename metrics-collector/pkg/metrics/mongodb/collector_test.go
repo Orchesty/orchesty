@@ -14,6 +14,14 @@ type mongoRepoStub struct {
 	saveCalls      int
 }
 
+func (r *mongoRepoStub) GetRabbitMQMonthlyAggregation(context.Context) (*models.RabbitAggregation, error) {
+	return nil, nil
+}
+
+func (r *mongoRepoStub) GetK8sMonthlyAggregation(context.Context) (*models.K8sAggregation, error) {
+	return nil, nil
+}
+
 func (r *mongoRepoStub) SaveRabbitMQMetric(context.Context, *models.RabbitMQMetric) error { return nil }
 func (r *mongoRepoStub) SaveMongoDBMetric(context.Context, *models.MongoDBMetric) error   { return nil }
 func (r *mongoRepoStub) SaveK8sMetric(context.Context, *models.K8sMetric) error           { return nil }
@@ -34,11 +42,42 @@ func (r *mongoRepoStub) SaveLokiAggregation(context.Context, *models.LokiAggrega
 	return nil
 }
 
+func (r *mongoRepoStub) GetLokiMonthlyAggregation(context.Context) (*models.LokiAggregation, error) {
+	return nil, nil
+}
+
 func (r *mongoRepoStub) GetRabbitMQMetricsForMonth(context.Context) ([]*models.RabbitMQMetric, error) {
 	return nil, nil
 }
-func (r *mongoRepoStub) GetMongoDBMetricsForMonth(context.Context) ([]*models.MongoDBMetric, error) {
-	return r.monthlyMetrics, nil
+func (r *mongoRepoStub) GetMongoDBMonthlyAggregation(context.Context) (*models.MongoAggregation, error) {
+	if len(r.monthlyMetrics) == 0 {
+		return nil, nil
+	}
+	var sumDataSize, sumStorageSize, sumDocuments float64
+	var maxDataSize, maxStorageSize float64
+	for _, m := range r.monthlyMetrics {
+		sumDataSize += m.DataSizeMB
+		sumStorageSize += m.StorageSizeMB
+		sumDocuments += float64(m.TotalDocuments)
+		if m.DataSizeMB > maxDataSize {
+			maxDataSize = m.DataSizeMB
+		}
+		if m.StorageSizeMB > maxStorageSize {
+			maxStorageSize = m.StorageSizeMB
+		}
+	}
+	count := float64(len(r.monthlyMetrics))
+	now := time.Now()
+	agg := &models.MongoAggregation{
+		Month:            now.Format("2006-01"),
+		AvgDataSizeMB:    sumDataSize / count,
+		MaxDataSizeMB:    maxDataSize,
+		AvgStorageSizeMB: sumStorageSize / count,
+		MaxStorageSizeMB: maxStorageSize,
+		AvgDocuments:     sumDocuments / count,
+		LastUpdated:      now,
+	}
+	return agg, nil
 }
 func (r *mongoRepoStub) GetK8sMetricsForMonth(context.Context) ([]*models.K8sMetric, error) {
 	return nil, nil

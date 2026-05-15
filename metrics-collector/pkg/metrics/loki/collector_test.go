@@ -18,6 +18,18 @@ type lokiRepoStub struct {
 	saveCalls      int
 }
 
+func (r *lokiRepoStub) GetMongoDBMonthlyAggregation(context.Context) (*models.MongoAggregation, error) {
+	return nil, nil
+}
+
+func (r *lokiRepoStub) GetRabbitMQMonthlyAggregation(context.Context) (*models.RabbitAggregation, error) {
+	return nil, nil
+}
+
+func (r *lokiRepoStub) GetK8sMonthlyAggregation(context.Context) (*models.K8sAggregation, error) {
+	return nil, nil
+}
+
 func (r *lokiRepoStub) SaveRabbitMQMetric(context.Context, *models.RabbitMQMetric) error { return nil }
 func (r *lokiRepoStub) SaveMongoDBMetric(context.Context, *models.MongoDBMetric) error   { return nil }
 func (r *lokiRepoStub) SaveK8sMetric(context.Context, *models.K8sMetric) error           { return nil }
@@ -34,6 +46,35 @@ func (r *lokiRepoStub) SaveLokiAggregation(_ context.Context, agg *models.LokiAg
 	r.saveCalls++
 	r.savedAgg = agg
 	return nil
+}
+
+func (r *lokiRepoStub) GetLokiMonthlyAggregation(context.Context) (*models.LokiAggregation, error) {
+	if len(r.monthlyMetrics) == 0 {
+		return nil, nil
+	}
+
+	var maxRetentionDays int
+	var totalDailyDataMB float64
+	lastMetric := r.monthlyMetrics[len(r.monthlyMetrics)-1]
+
+	for _, m := range r.monthlyMetrics {
+		if m.RetentionDays > maxRetentionDays {
+			maxRetentionDays = m.RetentionDays
+		}
+		totalDailyDataMB += m.DailyDataSizeMB
+	}
+
+	avgDailyDataMB := totalDailyDataMB / float64(len(r.monthlyMetrics))
+	estimatedTotalMB := avgDailyDataMB * float64(maxRetentionDays)
+
+	return &models.LokiAggregation{
+		Month:            time.Now().Format("2006-01"),
+		MaxRetentionDays: maxRetentionDays,
+		OldestTimestamp:  lastMetric.OldestTimestamp,
+		AvgDailyDataMB:   avgDailyDataMB,
+		EstimatedTotalMB: estimatedTotalMB,
+		LastUpdated:      time.Now(),
+	}, nil
 }
 
 func (r *lokiRepoStub) GetRabbitMQMetricsForMonth(context.Context) ([]*models.RabbitMQMetric, error) {

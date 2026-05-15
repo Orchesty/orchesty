@@ -43,7 +43,7 @@ type lokiConfig struct {
 
 type app struct {
 	Debug       bool `default:"false" env:"APP_DEBUG"`
-	Tick        int  `default:"10" env:"TICK"`         // in seconds
+	Tick        int  `default:"15" env:"TICK"`         // in seconds
 	TickMongoDB int  `default:"10" env:"TICK_MONGODB"` // in minutes
 	TickLoki    int  `default:"12" env:"TICK_LOKI"`    // in hours
 }

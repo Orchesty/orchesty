@@ -38,11 +38,11 @@ func (h *Helm) Install(dto *models.InstanceDTO) error {
 	}
 
 	if err := h.createFiles(chartPath, dto); err != nil {
-		return fmt.Errorf("failed to create helm files at %s: %w", chartPath, err)
+		return h.handleInstallError(chartPath, fmt.Errorf("failed to create helm files at %s: %w", chartPath, err))
 	}
 
 	if err := h.dependency(chartPath); err != nil {
-		return fmt.Errorf("%w (helm files kept at %s)", err, chartPath)
+		return h.handleInstallError(chartPath, err)
 	}
 
 	installArgs := []string{
@@ -67,10 +67,10 @@ func (h *Helm) Install(dto *models.InstanceDTO) error {
 			if retryOutput, retryErr := h.execute(forceConflictArgs...); retryErr == nil {
 				output = retryOutput
 			} else {
-				return fmt.Errorf("helm install failed: %w, output: %s (helm files kept at %s)", retryErr, retryOutput, chartPath)
+				return h.handleInstallError(chartPath, fmt.Errorf("helm install failed: %w, output: %s", retryErr, retryOutput))
 			}
 		} else {
-			return fmt.Errorf("helm install failed: %w, output: %s (helm files kept at %s)", err, output, chartPath)
+			return h.handleInstallError(chartPath, fmt.Errorf("helm install failed: %w, output: %s", err, output))
 		}
 	}
 
@@ -79,6 +79,18 @@ func (h *Helm) Install(dto *models.InstanceDTO) error {
 	}
 
 	return nil
+}
+
+func (h *Helm) handleInstallError(chartPath string, err error) error {
+	if config.App.Debug {
+		return fmt.Errorf("%w (helm files kept at %s)", err, chartPath)
+	}
+
+	if cleanupErr := os.RemoveAll(chartPath); cleanupErr != nil {
+		return fmt.Errorf("%w (failed to cleanup helm files at %s: %v)", err, chartPath, cleanupErr)
+	}
+
+	return err
 }
 
 func (h *Helm) dependency(path string) error {

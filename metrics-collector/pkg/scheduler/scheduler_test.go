@@ -34,6 +34,18 @@ func (f *fakeCollector) Collect(ctx context.Context, _ metrics.Repository) error
 
 type fakeRepo struct{}
 
+func (f *fakeRepo) GetMongoDBMonthlyAggregation(context.Context) (*models.MongoAggregation, error) {
+	return nil, nil
+}
+
+func (f *fakeRepo) GetRabbitMQMonthlyAggregation(context.Context) (*models.RabbitAggregation, error) {
+	return nil, nil
+}
+
+func (f *fakeRepo) GetK8sMonthlyAggregation(context.Context) (*models.K8sAggregation, error) {
+	return nil, nil
+}
+
 func (f *fakeRepo) SaveRabbitMQMetric(context.Context, *models.RabbitMQMetric) error { return nil }
 func (f *fakeRepo) SaveMongoDBMetric(context.Context, *models.MongoDBMetric) error   { return nil }
 func (f *fakeRepo) SaveK8sMetric(context.Context, *models.K8sMetric) error           { return nil }
@@ -45,6 +57,10 @@ func (f *fakeRepo) SaveRabbitAggregation(context.Context, *models.RabbitAggregat
 func (f *fakeRepo) SaveMongoAggregation(context.Context, *models.MongoAggregation) error { return nil }
 func (f *fakeRepo) SaveK8sAggregation(context.Context, *models.K8sAggregation) error     { return nil }
 func (f *fakeRepo) SaveLokiAggregation(context.Context, *models.LokiAggregation) error   { return nil }
+
+func (f *fakeRepo) GetLokiMonthlyAggregation(context.Context) (*models.LokiAggregation, error) {
+	return nil, nil
+}
 
 func (f *fakeRepo) GetRabbitMQMetricsForMonth(context.Context) ([]*models.RabbitMQMetric, error) {
 	return nil, nil

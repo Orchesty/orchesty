@@ -203,40 +203,12 @@ func (c *Collector) estimateDataSizeFromChunks(ctx context.Context) (int64, erro
 }
 
 func (c *Collector) aggregateMetrics(ctx context.Context, repo metrics.Repository) error {
-	now := time.Now()
-	metrics, err := repo.GetLokiMetricsForMonth(ctx)
+	agg, err := repo.GetLokiMonthlyAggregation(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to get metrics for month: %w", err)
+		return fmt.Errorf("failed to aggregate metrics in MongoDB: %w", err)
 	}
-
-	if len(metrics) == 0 {
+	if agg == nil {
 		return nil
 	}
-
-	var maxRetentionDays int
-	var totalDailyDataMB float64
-	lastMetric := metrics[len(metrics)-1]
-
-	for _, m := range metrics {
-		if m.RetentionDays > maxRetentionDays {
-			maxRetentionDays = m.RetentionDays
-		}
-		totalDailyDataMB += m.DailyDataSizeMB
-	}
-
-	avgDailyDataMB := totalDailyDataMB / float64(len(metrics))
-	estimatedTotalMB := avgDailyDataMB * float64(maxRetentionDays)
-
-	currentMonth := now.Format("2006-01")
-
-	agg := &models.LokiAggregation{
-		Month:            currentMonth,
-		MaxRetentionDays: maxRetentionDays,
-		OldestTimestamp:  lastMetric.OldestTimestamp,
-		AvgDailyDataMB:   utils.RoundFloat(avgDailyDataMB, 2),
-		EstimatedTotalMB: utils.RoundFloat(estimatedTotalMB, 2),
-		LastUpdated:      now,
-	}
-
 	return repo.SaveLokiAggregation(ctx, agg)
 }

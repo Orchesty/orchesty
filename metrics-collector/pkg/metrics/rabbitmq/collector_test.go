@@ -18,6 +18,47 @@ type rabbitRepoStub struct {
 	saveCalls      int
 }
 
+func (r *rabbitRepoStub) GetMongoDBMonthlyAggregation(context.Context) (*models.MongoAggregation, error) {
+	return nil, nil
+}
+
+func (r *rabbitRepoStub) GetRabbitMQMonthlyAggregation(context.Context) (*models.RabbitAggregation, error) {
+	if len(r.monthlyMetrics) == 0 {
+		return nil, nil
+	}
+	var sumMessages float64
+	var maxMessages int64
+	var sumDisk, sumRam float64
+	var maxDisk, maxRam float64
+	for _, m := range r.monthlyMetrics {
+		sumMessages += float64(m.TotalMessages)
+		if m.TotalMessages > maxMessages {
+			maxMessages = m.TotalMessages
+		}
+		sumDisk += m.TotalDiskMB
+		if m.TotalDiskMB > maxDisk {
+			maxDisk = m.TotalDiskMB
+		}
+		sumRam += m.TotalRamMB
+		if m.TotalRamMB > maxRam {
+			maxRam = m.TotalRamMB
+		}
+	}
+	count := float64(len(r.monthlyMetrics))
+	now := time.Now()
+	agg := &models.RabbitAggregation{
+		Month:       now.Format("2006-01"),
+		AvgMessages: sumMessages / count,
+		MaxMessages: maxMessages,
+		AvgDiskMB:   sumDisk / count,
+		MaxDiskMB:   maxDisk,
+		AvgRamMB:    sumRam / count,
+		MaxRamMB:    maxRam,
+		LastUpdated: now,
+	}
+	return agg, nil
+}
+
 func (r *rabbitRepoStub) SaveRabbitMQMetric(context.Context, *models.RabbitMQMetric) error {
 	return nil
 }
@@ -39,6 +80,14 @@ func (r *rabbitRepoStub) SaveK8sAggregation(context.Context, *models.K8sAggregat
 }
 func (r *rabbitRepoStub) SaveLokiAggregation(context.Context, *models.LokiAggregation) error {
 	return nil
+}
+
+func (r *rabbitRepoStub) GetLokiMonthlyAggregation(context.Context) (*models.LokiAggregation, error) {
+	return nil, nil
+}
+
+func (r *rabbitRepoStub) GetK8sMonthlyAggregation(context.Context) (*models.K8sAggregation, error) {
+	return nil, nil
 }
 
 func (r *rabbitRepoStub) GetRabbitMQMetricsForMonth(context.Context) ([]*models.RabbitMQMetric, error) {

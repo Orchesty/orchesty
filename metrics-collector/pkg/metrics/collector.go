@@ -17,10 +17,10 @@ type Repository interface {
 	SaveK8sAggregation(ctx context.Context, agg *models.K8sAggregation) error
 	SaveLokiAggregation(ctx context.Context, agg *models.LokiAggregation) error
 
-	GetRabbitMQMetricsForMonth(ctx context.Context) ([]*models.RabbitMQMetric, error)
-	GetMongoDBMetricsForMonth(ctx context.Context) ([]*models.MongoDBMetric, error)
-	GetK8sMetricsForMonth(ctx context.Context) ([]*models.K8sMetric, error)
-	GetLokiMetricsForMonth(ctx context.Context) ([]*models.LokiMetric, error)
+	GetRabbitMQMonthlyAggregation(ctx context.Context) (*models.RabbitAggregation, error)
+	GetMongoDBMonthlyAggregation(ctx context.Context) (*models.MongoAggregation, error)
+	GetK8sMonthlyAggregation(ctx context.Context) (*models.K8sAggregation, error)
+	GetLokiMonthlyAggregation(ctx context.Context) (*models.LokiAggregation, error)
 }
 
 type Collector interface {

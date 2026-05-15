@@ -180,49 +180,12 @@ func (c *Collector) isQueueExcluded(queueName string) bool {
 }
 
 func (c *Collector) aggregateMetrics(ctx context.Context, repo metrics.Repository) error {
-	now := time.Now()
-	metrics, err := repo.GetRabbitMQMetricsForMonth(ctx)
+	agg, err := repo.GetRabbitMQMonthlyAggregation(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to get metrics for month: %w", err)
+		return fmt.Errorf("failed to aggregate metrics in MongoDB: %w", err)
 	}
-
-	if len(metrics) == 0 {
+	if agg == nil {
 		return nil
 	}
-
-	var sumMessages float64
-	var maxMessages int64
-	var sumDisk, sumRam float64
-	var maxDisk, maxRam float64
-
-	for _, m := range metrics {
-		sumMessages += float64(m.TotalMessages)
-		if m.TotalMessages > maxMessages {
-			maxMessages = m.TotalMessages
-		}
-		sumDisk += m.TotalDiskMB
-		if m.TotalDiskMB > maxDisk {
-			maxDisk = m.TotalDiskMB
-		}
-		sumRam += m.TotalRamMB
-		if m.TotalRamMB > maxRam {
-			maxRam = m.TotalRamMB
-		}
-	}
-
-	count := float64(len(metrics))
-	currentMonth := now.Format("2006-01")
-
-	agg := &models.RabbitAggregation{
-		Month:       currentMonth,
-		AvgMessages: utils.RoundFloat(sumMessages/count, 0),
-		MaxMessages: maxMessages,
-		AvgDiskMB:   utils.RoundFloat(sumDisk/count, 2),
-		MaxDiskMB:   utils.RoundFloat(maxDisk, 2),
-		AvgRamMB:    utils.RoundFloat(sumRam/count, 2),
-		MaxRamMB:    utils.RoundFloat(maxRam, 2),
-		LastUpdated: now,
-	}
-
 	return repo.SaveRabbitAggregation(ctx, agg)
 }

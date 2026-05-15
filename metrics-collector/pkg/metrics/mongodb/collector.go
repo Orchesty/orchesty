@@ -104,45 +104,12 @@ func (c *Collector) fetchMetrics(ctx context.Context) (*models.MongoDBMetric, er
 }
 
 func (c *Collector) aggregateMetrics(ctx context.Context, repo metrics.Repository) error {
-	now := time.Now()
-	metrics, err := repo.GetMongoDBMetricsForMonth(ctx)
+	agg, err := repo.GetMongoDBMonthlyAggregation(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to get metrics for month: %w", err)
+		return fmt.Errorf("failed to aggregate metrics in MongoDB: %w", err)
 	}
-
-	if len(metrics) == 0 {
+	if agg == nil {
 		return nil
 	}
-
-	var sumDataSize, sumStorageSize, sumDocuments float64
-	var maxDataSize, maxStorageSize float64
-
-	for _, m := range metrics {
-		sumDataSize += m.DataSizeMB
-		sumStorageSize += m.StorageSizeMB
-		sumDocuments += float64(m.TotalDocuments)
-
-		if m.DataSizeMB > maxDataSize {
-			maxDataSize = m.DataSizeMB
-		}
-		if m.StorageSizeMB > maxStorageSize {
-			maxStorageSize = m.StorageSizeMB
-		}
-	}
-
-	count := float64(len(metrics))
-
-	currentMonth := now.Format("2006-01")
-
-	agg := &models.MongoAggregation{
-		Month:            currentMonth,
-		AvgDataSizeMB:    utils.RoundFloat(sumDataSize/count, 2),
-		MaxDataSizeMB:    utils.RoundFloat(maxDataSize, 2),
-		AvgStorageSizeMB: utils.RoundFloat(sumStorageSize/count, 2),
-		MaxStorageSizeMB: utils.RoundFloat(maxStorageSize, 2),
-		AvgDocuments:     utils.RoundFloat(sumDocuments/count, 0),
-		LastUpdated:      now,
-	}
-
 	return repo.SaveMongoAggregation(ctx, agg)
 }

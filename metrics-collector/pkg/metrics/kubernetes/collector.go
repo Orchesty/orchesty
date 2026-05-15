@@ -171,49 +171,12 @@ func (c *Collector) fetchMetrics(ctx context.Context) (*models.K8sMetric, error)
 }
 
 func (c *Collector) aggregateMetrics(ctx context.Context, repo metrics.Repository) error {
-	aggCtx, cancel := context.WithTimeout(ctx, collectorCtxTimeout)
-	defer cancel()
-
-	now := time.Now()
-	metrics, err := repo.GetK8sMetricsForMonth(aggCtx)
+	agg, err := repo.GetK8sMonthlyAggregation(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to get metrics for month: %w", err)
+		return fmt.Errorf("failed to aggregate metrics in MongoDB: %w", err)
 	}
-
-	if len(metrics) == 0 {
+	if agg == nil {
 		return nil
 	}
-
-	var sumVCPU, sumMemory float64
-	var maxVCPU, maxMemory float64
-
-	for _, m := range metrics {
-		sumVCPU += m.TotalVCPU
-		sumMemory += m.TotalMemoryMB
-
-		if m.TotalVCPU > maxVCPU {
-			maxVCPU = m.TotalVCPU
-		}
-		if m.TotalMemoryMB > maxMemory {
-			maxMemory = m.TotalMemoryMB
-		}
-	}
-
-	count := float64(len(metrics))
-
-	currentMonth := now.Format("2006-01")
-
-	agg := &models.K8sAggregation{
-		Month:       currentMonth,
-		AvgVCPU:     utils.RoundFloat(sumVCPU/count, 2),
-		MaxVCPU:     utils.RoundFloat(maxVCPU, 2),
-		AvgMemoryMB: utils.RoundFloat(sumMemory/count, 2),
-		MaxMemoryMB: utils.RoundFloat(maxMemory, 2),
-		LastUpdated: now,
-	}
-
-	aggSaveCtx, aggSaveCancel := context.WithTimeout(ctx, collectorCtxTimeout)
-	defer aggSaveCancel()
-
-	return repo.SaveK8sAggregation(aggSaveCtx, agg)
+	return repo.SaveK8sAggregation(ctx, agg)
 }

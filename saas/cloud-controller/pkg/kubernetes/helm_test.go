@@ -33,6 +33,17 @@ func withHelmConfig(t *testing.T, rootDir, version, bridgePoolKey, clusterConfig
 	})
 }
 
+func withAppDebug(t *testing.T, debug bool) {
+	t.Helper()
+
+	originalDebug := config.App.Debug
+	config.App.Debug = debug
+
+	t.Cleanup(func() {
+		config.App.Debug = originalDebug
+	})
+}
+
 func testHelmDTO() *models.InstanceDTO {
 	return &models.InstanceDTO{
 		Instance:            "instance-test",
@@ -254,6 +265,60 @@ func TestInstallRetriesWithForceConflictsOnApplyConflict(t *testing.T) {
 	}
 	if lastCall[len(lastCall)-1] != "--force-conflicts" {
 		t.Fatalf("expected --force-conflicts in retry call, got %v", lastCall)
+	}
+}
+
+func TestInstallRemovesHelmFilesOnErrorInNonDebugMode(t *testing.T) {
+	tempDir := t.TempDir()
+	withHelmConfig(t, tempDir, "~2.1.15", "bridgepool", "")
+	withAppDebug(t, false)
+
+	helm := &Helm{
+		executeFn: func(args ...string) (string, error) {
+			if len(args) >= 2 && args[0] == "dependency" && args[1] == "build" {
+				return "dependency failed", errors.New("boom")
+			}
+			return "ok", nil
+		},
+	}
+
+	err := helm.Install(testHelmDTO())
+	if err == nil {
+		t.Fatal("expected error")
+	}
+
+	chartPath := filepath.Join(tempDir, "instance-test")
+	if _, statErr := os.Stat(chartPath); !os.IsNotExist(statErr) {
+		t.Fatalf("expected chart path to be removed, stat error: %v", statErr)
+	}
+}
+
+func TestInstallKeepsHelmFilesOnErrorInDebugMode(t *testing.T) {
+	tempDir := t.TempDir()
+	withHelmConfig(t, tempDir, "~2.1.15", "bridgepool", "")
+	withAppDebug(t, true)
+
+	helm := &Helm{
+		executeFn: func(args ...string) (string, error) {
+			if len(args) >= 2 && args[0] == "dependency" && args[1] == "build" {
+				return "dependency failed", errors.New("boom")
+			}
+			return "ok", nil
+		},
+	}
+
+	err := helm.Install(testHelmDTO())
+	if err == nil {
+		t.Fatal("expected error")
+	}
+
+	chartPath := filepath.Join(tempDir, "instance-test")
+	if !strings.Contains(err.Error(), "helm files kept at "+chartPath) {
+		t.Fatalf("expected kept-files message in error, got %v", err)
+	}
+
+	if _, statErr := os.Stat(chartPath); statErr != nil {
+		t.Fatalf("expected chart path to exist, got %v", statErr)
 	}
 }
 
