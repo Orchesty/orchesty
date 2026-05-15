@@ -4,7 +4,7 @@ import type { Auth0VueClient } from '@auth0/auth0-vue'
 import type { User } from '@/types/auth'
 import * as authService from '@/services/authService'
 import { useActivityTracker } from '@/composables/useActivityTracker'
-import { isAuth0Enabled, auth0Plugin } from '@/auth/auth0-plugin'
+import { isAuth0Active, getAuth0Plugin } from '@/auth/auth0-plugin'
 import { useCloudMode } from '@/composables/useCloudMode'
 import { STORAGE_KEYS } from '@/config'
 
@@ -21,7 +21,11 @@ export const useAuthStore = defineStore('auth', () => {
   let _auth0: Auth0VueClient | null = null
 
   const isAuthenticated = computed(() => {
-    if (isAuth0Enabled) {
+    // With Auth0 active (standalone deployment) the user object may be lazily
+    // hydrated, so the JWT alone is enough to be considered authenticated.
+    // Cloud-handoff sessions also produce a JWT but populate `user` from the
+    // handoff payload — either branch satisfies the cloud invariant.
+    if (isAuth0Active()) {
       return !!token.value
     }
     return !!token.value && !!user.value
@@ -30,7 +34,11 @@ export const useAuthStore = defineStore('auth', () => {
   const { lastActivityTime, touch: touchActivity } = useActivityTracker()
 
   function startSessionTimer(): void {
-    if (isAuth0Enabled && !hasCloudHandoffSession()) return
+    // The session timer drives `refreshAuthToken()`. Auth0 manages its own
+    // silent renewal so the timer is redundant when Auth0 is active — UNLESS
+    // we're on a cloud-handoff session, where token rotation goes through
+    // our backend `/api/user/check_logged` endpoint instead of Auth0.
+    if (isAuth0Active() && !hasCloudHandoffSession()) return
 
     stopSessionTimer()
 
@@ -64,7 +72,11 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function refreshAuthToken(): Promise<void> {
-    if (isAuth0Enabled && _auth0 && !hasCloudHandoffSession()) {
+    // Auth0 silent refresh — only when the Auth0 client is actually
+    // installed (i.e. NOT cloud mode). On cloud-handoff sessions we never
+    // call into Auth0 even if a stale `_auth0` reference exists, because
+    // the SDK would try to renew on the instance origin.
+    if (isAuth0Active() && _auth0 && !hasCloudHandoffSession()) {
       try {
         const accessToken = await _auth0.getAccessTokenSilently()
         token.value = accessToken
@@ -155,23 +167,29 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = null
     user.value = null
 
-    if (isAuth0Enabled) {
+    if (isAuth0Active()) {
       clearAuth0Cache()
     }
 
+    // Cloud mode: NEVER call Auth0 SDK from the instance origin. The cloud
+    // frontend owns the Auth0 session — we just hand control back to its
+    // sign-out endpoint, which will drop the cloud-side Auth0 cookies and
+    // redirect to the cloud sign-in page. If a stale `_auth0` reference
+    // somehow exists in cloud mode (shouldn't, since we never install the
+    // plugin in cloud), it is ignored.
     if (cloudMode.value && cloudUrl.value) {
-      if (auth0Plugin) {
-        await auth0Plugin.logout({ openUrl: false })
-      }
       window.location.href = `${cloudUrl.value}/sign-out`
       return
     }
 
-    if (isAuth0Enabled && _auth0) {
-      await _auth0.logout({ logoutParams: { returnTo: window.location.origin } })
+    // Standalone with Auth0 active: classic Auth0 logout round-trip.
+    const plugin = getAuth0Plugin()
+    if (isAuth0Active() && plugin) {
+      await plugin.logout({ logoutParams: { returnTo: window.location.origin } })
       return
     }
 
+    // Legacy non-Auth0 self-hosted deployment.
     await authService.logout()
     window.location.href = '/sign-in'
   }
@@ -180,7 +198,13 @@ export const useAuthStore = defineStore('auth', () => {
     const storedToken = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN)
     const storedUser = localStorage.getItem(STORAGE_KEYS.AUTH_USER)
 
-    if (isAuth0Enabled && !hasCloudHandoffSession()) {
+    // With Auth0 active (standalone), the SDK is the source of truth and
+    // hydrates `token`/`user` via `handleAuth0Callback`. We skip localStorage
+    // hydration to avoid stale-token resurrection after sign-out.
+    // Cloud-handoff sessions (where the Auth0 client is NOT installed) DO
+    // hydrate from localStorage — the JWT was written there by the handoff
+    // handler during boot.
+    if (isAuth0Active() && !hasCloudHandoffSession()) {
       return
     }
 

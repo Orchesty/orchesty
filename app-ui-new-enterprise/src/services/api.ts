@@ -1,6 +1,6 @@
 import axios, { type InternalAxiosRequestConfig } from 'axios'
 import type { LoginResponse } from '@/types/auth'
-import { isAuth0Enabled } from '@/auth/auth0-plugin'
+import { isAuth0Active, getAuth0Plugin } from '@/auth/auth0-plugin'
 import { useCloudMode } from '@/composables/useCloudMode'
 import { BACKEND_URL, STORAGE_KEYS } from '@/config'
 
@@ -44,7 +44,21 @@ function forceLogout() {
   localStorage.removeItem(STORAGE_KEYS.AUTH_USER)
   localStorage.removeItem(STORAGE_KEYS.CLOUD_HANDOFF_SESSION)
 
-  if (isAuth0Enabled) {
+  const { cloudMode, cloudUrl } = useCloudMode()
+
+  // Cloud mode takes precedence over Auth0 ENV state. Even if Auth0 ENVs
+  // happen to be present, the cloud invariant says: send the user back to
+  // the cloud frontend to retry the handoff. Setting CLOUD_HANDOFF_FAILED
+  // surfaces a retry banner on the cloud sign-in (it does NOT trap the
+  // router on the local /sign-in anymore — see router/index.ts).
+  if (cloudMode.value && cloudUrl.value) {
+    sessionStorage.setItem(STORAGE_KEYS.CLOUD_HANDOFF_FAILED, 'true')
+    const returnUrl = encodeURIComponent(window.location.origin)
+    window.location.href = `${cloudUrl.value}/sign-in?redirect_to=${returnUrl}&handoff_retry=1`
+    return
+  }
+
+  if (isAuth0Active()) {
     Object.keys(localStorage)
       .filter((k) => k.startsWith('@@auth0spajs@@'))
       .forEach((k) => localStorage.removeItem(k))
@@ -53,13 +67,6 @@ function forceLogout() {
     if (window.location.pathname !== '/auth-error') {
       window.location.href = '/auth-error'
     }
-    return
-  }
-
-  const { cloudMode, cloudUrl } = useCloudMode()
-  if (cloudMode.value && cloudUrl.value) {
-    sessionStorage.setItem(STORAGE_KEYS.CLOUD_HANDOFF_FAILED, 'true')
-    window.location.href = '/sign-in'
     return
   }
 
@@ -118,7 +125,11 @@ async function retryWithRefresh(
   originalRequest._retry = true
   try {
     const newToken = await refreshFn()
-    const prefix = isAuth0Enabled ? 'Bearer ' : ''
+    // Any deployment that has Auth0 ENVs configured uses Bearer-style auth
+    // (so do cloud-handoff sessions, since the cloud frontend also issues
+    // JWTs). Legacy non-Auth0 self-hosted instances send the raw token.
+    const useBearer = isAuth0Active() || localStorage.getItem(STORAGE_KEYS.CLOUD_HANDOFF_SESSION) === 'true'
+    const prefix = useBearer ? 'Bearer ' : ''
     originalRequest.headers.Authorization = `${prefix}${newToken}`
     return api(originalRequest)
   } catch (refreshError) {
@@ -132,9 +143,12 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN)
     if (token) {
-      config.headers.Authorization = isAuth0Enabled
-        ? `Bearer ${token}`
-        : token
+      // Bearer-style for Auth0 (standalone) AND cloud-handoff sessions. The
+      // cloud frontend issues JWTs identical in shape to Auth0 access tokens
+      // and the Symfony backend's `Auth0Authenticator` accepts both as long
+      // as the audience/issuer match.
+      const useBearer = isAuth0Active() || localStorage.getItem(STORAGE_KEYS.CLOUD_HANDOFF_SESSION) === 'true'
+      config.headers.Authorization = useBearer ? `Bearer ${token}` : token
     }
     return config
   },
@@ -151,21 +165,28 @@ api.interceptors.response.use(
       return Promise.reject(error)
     }
 
-    if (isAuth0Enabled) {
+    const hasCloudHandoff = localStorage.getItem(STORAGE_KEYS.CLOUD_HANDOFF_SESSION) === 'true'
+
+    // Cloud-handoff session: refresh through our backend, NOT Auth0. The
+    // SDK isn't installed in cloud mode, and even if it were, silent renewal
+    // from the instance origin would hit the callback-mismatch wall.
+    if (hasCloudHandoff) {
+      if (SKIP_REFRESH_URLS.some((url) => originalRequest.url?.includes(url))) {
+        return Promise.reject(error)
+      }
+      return retryWithRefresh(originalRequest, doRefresh)
+    }
+
+    // Standalone with Auth0 active: SDK silent renewal.
+    if (isAuth0Active()) {
       if (SKIP_REFRESH_URLS.some((url) => originalRequest.url?.includes(url))) {
         return Promise.reject(error)
       }
 
-      const hasCloudHandoff = localStorage.getItem(STORAGE_KEYS.CLOUD_HANDOFF_SESSION) === 'true'
-
-      if (hasCloudHandoff) {
-        return retryWithRefresh(originalRequest, doRefresh)
-      }
-
       return retryWithRefresh(originalRequest, async () => {
-        const { auth0Plugin } = await import('@/auth/auth0-plugin')
-        if (!auth0Plugin) throw new Error('Auth0 plugin not available')
-        const newToken = await auth0Plugin.getAccessTokenSilently()
+        const plugin = getAuth0Plugin()
+        if (!plugin) throw new Error('Auth0 plugin not available')
+        const newToken = await plugin.getAccessTokenSilently()
         localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, newToken)
         return newToken
       })

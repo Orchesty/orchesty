@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\CloudWebhookController;
 use Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\CloudMemberSyncService;
 use Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Handler\CloudUserSyncHandler;
+use Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Service\HandoffConsumeClient;
 use Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Service\HandoffSyncLock;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\UserBundle\Model\Security\SecurityManager;
@@ -54,18 +55,19 @@ final class CloudWebhookControllerTest extends TestCase
         $lock = $this->createMock(HandoffSyncLock::class);
         $lock->expects(self::never())->method('acquire');
 
-        $controller = $this->makeController($existing, $userSync, $lock);
+        $controller = $this->makeController($existing, $userSync, $lock, 'inst-1');
 
         $token   = $this->makeHandoffToken([
             'accountId'    => 'acc-1',
             'email'        => 'member@example.com',
             'instanceId'   => 'inst-1',
             'isOrgMember'  => TRUE,
+            'jti'          => 'jti-1',
             'name'         => 'Member',
             'picture'      => '',
             'role'         => 'DEVELOPER',
             'ts'           => $this->msNow(),
-            'v'            => 2,
+            'v'            => 3,
             'webhookToken' => 'wt-1',
         ]);
         $request = new Request([], [], [], [], [], [], Json::encode(['token' => $token]));
@@ -100,18 +102,19 @@ final class CloudWebhookControllerTest extends TestCase
         $lock->expects(self::once())->method('acquire')->with('inst-2')->willReturn(TRUE);
         $lock->expects(self::once())->method('release')->with('inst-2');
 
-        $controller = $this->makeController(NULL, $userSync, $lock);
+        $controller = $this->makeController(NULL, $userSync, $lock, 'inst-2');
 
         $token   = $this->makeHandoffToken([
             'accountId'    => 'acc-2',
             'email'        => 'newcomer@example.com',
             'instanceId'   => 'inst-2',
             'isOrgMember'  => TRUE,
+            'jti'          => 'jti-2',
             'name'         => 'New Comer',
             'picture'      => '',
             'role'         => 'OWNER',
             'ts'           => $this->msNow(),
-            'v'            => 2,
+            'v'            => 3,
             'webhookToken' => 'wt-2',
         ]);
         $request = new Request([], [], [], [], [], [], Json::encode(['token' => $token]));
@@ -137,15 +140,19 @@ final class CloudWebhookControllerTest extends TestCase
         $lock = $this->createMock(HandoffSyncLock::class);
         $lock->expects(self::never())->method('acquire');
 
-        $controller = $this->makeController(NULL, $userSync, $lock);
+        $controller = $this->makeController(NULL, $userSync, $lock, 'inst-3');
 
-        // Backward-compatible v1 payload (no webhookToken / instanceId).
+        // No `webhookToken` => controller provisions the visitor but must not
+        // schedule a backfill (no lock / no syncUsers).
         $token   = $this->makeHandoffToken([
             'email'       => 'legacy@example.com',
+            'instanceId'  => 'inst-3',
             'isOrgMember' => TRUE,
+            'jti'         => 'jti-3',
             'name'        => 'Legacy',
             'picture'     => '',
             'ts'          => $this->msNow(),
+            'v'           => 3,
         ]);
         $request = new Request([], [], [], [], [], [], Json::encode(['token' => $token]));
 
@@ -171,18 +178,19 @@ final class CloudWebhookControllerTest extends TestCase
         $lock->expects(self::once())->method('acquire')->with('inst-4')->willReturn(FALSE);
         $lock->expects(self::never())->method('release');
 
-        $controller = $this->makeController(NULL, $userSync, $lock);
+        $controller = $this->makeController(NULL, $userSync, $lock, 'inst-4');
 
         $token   = $this->makeHandoffToken([
             'accountId'    => 'acc-4',
             'email'        => 'parallel@example.com',
             'instanceId'   => 'inst-4',
             'isOrgMember'  => TRUE,
+            'jti'          => 'jti-4',
             'name'         => '',
             'picture'      => '',
             'role'         => 'DEVELOPER',
             'ts'           => $this->msNow(),
-            'v'            => 2,
+            'v'            => 3,
             'webhookToken' => 'wt-4',
         ]);
         $request = new Request([], [], [], [], [], [], Json::encode(['token' => $token]));
@@ -207,18 +215,19 @@ final class CloudWebhookControllerTest extends TestCase
         $lock->expects(self::once())->method('acquire')->with('inst-5')->willReturn(TRUE);
         $lock->expects(self::once())->method('release')->with('inst-5');
 
-        $controller = $this->makeController(NULL, $userSync, $lock);
+        $controller = $this->makeController(NULL, $userSync, $lock, 'inst-5');
 
         $token   = $this->makeHandoffToken([
             'accountId'    => 'acc-5',
             'email'        => 'flaky@example.com',
             'instanceId'   => 'inst-5',
             'isOrgMember'  => TRUE,
+            'jti'          => 'jti-5',
             'name'         => '',
             'picture'      => '',
             'role'         => 'BILLING',
             'ts'           => $this->msNow(),
-            'v'            => 2,
+            'v'            => 3,
             'webhookToken' => 'wt-5',
         ]);
         $request = new Request([], [], [], [], [], [], Json::encode(['token' => $token]));
@@ -266,12 +275,14 @@ final class CloudWebhookControllerTest extends TestCase
         $userSync = $this->createMock(CloudUserSyncHandler::class);
         $userSync->expects(self::never())->method('provisionSingleUser');
 
-        $controller = $this->makeController(NULL, $userSync, $this->createMock(HandoffSyncLock::class));
+        $controller = $this->makeController(NULL, $userSync, $this->createMock(HandoffSyncLock::class), 'inst-expired');
 
         $token   = $this->makeHandoffToken([
-            'email' => 'late@example.com',
-            'ts'    => $this->msNow() - (10 * 60 * 1_000), // 10 minutes ago > 5min budget
-            'v'     => 2,
+            'email'      => 'late@example.com',
+            'instanceId' => 'inst-expired',
+            'jti'        => 'jti-expired',
+            'ts'         => $this->msNow() - (10 * 60 * 1_000), // 10 minutes ago > 5min budget
+            'v'          => 3,
         ]);
         $request = new Request([], [], [], [], [], [], Json::encode(['token' => $token]));
 
@@ -281,14 +292,18 @@ final class CloudWebhookControllerTest extends TestCase
     }
 
     /**
-     * @param User|NULL            $existingUser user the repo returns for findOneBy()
-     * @param CloudUserSyncHandler $userSync
-     * @param HandoffSyncLock      $lock
+     * @param User|NULL                 $existingUser  user the repo returns for findOneBy()
+     * @param CloudUserSyncHandler      $userSync
+     * @param HandoffSyncLock           $lock
+     * @param string                    $instanceId    expected audience id for HMAC binding
+     * @param HandoffConsumeClient|NULL $consumeClient defaults to a stub returning OUTCOME_CONSUMED
      */
     private function makeController(
         ?User $existingUser,
         CloudUserSyncHandler $userSync,
         HandoffSyncLock $lock,
+        string $instanceId = '',
+        ?HandoffConsumeClient $consumeClient = NULL,
     ): CloudWebhookController
     {
         $userRepo = $this->createMock(DocumentRepository::class);
@@ -300,12 +315,19 @@ final class CloudWebhookControllerTest extends TestCase
         $security = $this->createMock(SecurityManager::class);
         $security->method('createToken')->willReturn('local-jwt');
 
+        if ($consumeClient === NULL) {
+            $consumeClient = $this->createMock(HandoffConsumeClient::class);
+            $consumeClient->method('consume')->willReturn(['outcome' => HandoffConsumeClient::OUTCOME_CONSUMED]);
+        }
+
         return new CloudWebhookController(
             $userSync,
             $this->createMock(CloudMemberSyncService::class),
             $lock,
+            $consumeClient,
             $security,
             $dm,
+            $instanceId,
             self::SECRET,
         );
     }

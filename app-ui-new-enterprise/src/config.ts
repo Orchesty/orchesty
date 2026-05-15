@@ -17,6 +17,15 @@ export const STORAGE_KEYS = {
   LAST_TOKEN_REFRESH: 'lastTokenRefreshTime',
   CLOUD_HANDOFF_SESSION: 'cloud_handoff_session',
   CLOUD_HANDOFF_FAILED: 'cloud_handoff_failed',
+  // sessionStorage — anti-loop guard. Set whenever the router decides to
+  // redirect the user back to the cloud sign-in. The cloud sign-in is the
+  // ONLY UI that should be allowed to bounce us back here; if it does so
+  // within the loop window, we surface the error in the local
+  // /auth-error view instead of bouncing again, which would otherwise
+  // lock the user into an infinite redirect cycle when the instance↔cloud
+  // handoff is misconfigured (e.g. cloud BE unreachable from the pod).
+  CLOUD_BOUNCE_AT: 'cloud_bounce_at',
+  CLOUD_BOUNCE_COUNT: 'cloud_bounce_count',
   PENDING_INVITE_TOKEN: 'pending_invite_token',
   AUTH0_LOGIN_FAILED: 'auth0_login_failed',
   TRACE_HISTORY: 'trace_history',

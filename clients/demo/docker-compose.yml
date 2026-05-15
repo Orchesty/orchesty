@@ -213,7 +213,11 @@ services:
             JWT_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
             AUTH0_DOMAIN: dev-qsa0lopaqbhr0vmj.eu.auth0.com
             AUTH0_AUDIENCE: https://api.orchesty.cloud
-            ORCHESTY_CLOUD_BACKEND_URL: http://host.docker.internal:3000
+            # Port comes from `orchesty-cloud/apps/backend/.env` (PORT). Default 3030
+            # because :3000 is commonly grabbed by Grafana / other dev tools on
+            # the host. Override with CLOUD_BACKEND_HOST_PORT in clients/demo/.env
+            # if you run the cloud BE elsewhere.
+            ORCHESTY_CLOUD_BACKEND_URL: http://host.docker.internal:${CLOUD_BACKEND_HOST_PORT:-3030}
             ORCHESTY_CLOUD_FRONTEND_URL: http://localhost:5173
             ORCHESTY_CLOUD_STARTING_POINT_URL: ''
             ORCHESTY_CLOUD_INSTANCE_ID: ${ORCHESTY_CLOUD_INSTANCE_ID:-5d3e1061-5863-4292-8d95-9a238db8b48a}
@@ -271,7 +275,7 @@ services:
             MONGODB_DB: ${MAIN_DB}
             METRICS_DSN: ${METRICS_DSN}
             METRICS_DB: metrics
-            ORCHESTY_CLOUD_BACKEND_URL: http://host.docker.internal:3000
+            ORCHESTY_CLOUD_BACKEND_URL: http://host.docker.internal:${CLOUD_BACKEND_HOST_PORT:-3030}
             ORCHESTY_CLOUD_FRONTEND_URL: http://localhost:5173
             ORCHESTY_CLOUD_INSTANCE_ID: ${ORCHESTY_CLOUD_INSTANCE_ID:-5d3e1061-5863-4292-8d95-9a238db8b48a}
             ORCHESTY_CLOUD_INSTANCE_SECRET: ${ORCHESTY_CLOUD_INSTANCE_SECRET:-0027c895-2aa1-11f1-872c-0e85bfc47da4}

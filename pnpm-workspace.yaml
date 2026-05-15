@@ -2,6 +2,9 @@ packages:
   - app-ui-new
   - app-ui-new-enterprise
 
+minimumReleaseAgeExclude:
+  - rete-editor
+
 allowBuilds:
   browser-tabs-lock: false
   esbuild: false
