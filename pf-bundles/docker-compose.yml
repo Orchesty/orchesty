@@ -46,6 +46,10 @@ services:
             - ${DEV_IP}:27017:27017
         volumes:
             - mongo:/data/db
+        ulimits:
+            nofile:
+                soft: 10240
+                hard: 10240
 
     rabbitmq:
         image: rabbitmq:management-alpine
