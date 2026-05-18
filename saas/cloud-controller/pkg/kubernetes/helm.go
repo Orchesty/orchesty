@@ -12,6 +12,8 @@ import (
 	"cloud-controller/pkg/config"
 	"cloud-controller/pkg/kubernetes/templates"
 	"cloud-controller/pkg/models"
+	"cloud-controller/pkg/sanitize"
+	"unicode"
 )
 
 const (
@@ -323,7 +325,7 @@ func (h *Helm) getKubeConfigArgs() []string {
 }
 
 func sanitizeK8sName(value string) (string, error) {
-	value = strings.ToLower(strings.TrimSpace(value))
+	value = sanitize.StripDiacritics(value)
 	if value == "" {
 		return "", fmt.Errorf("instance display name is empty")
 	}
@@ -333,6 +335,10 @@ func sanitizeK8sName(value string) (string, error) {
 
 	lastWasDash := false
 	for _, char := range value {
+		if unicode.Is(unicode.Mn, char) {
+			continue
+		}
+
 		isLowercaseLetter := char >= 'a' && char <= 'z'
 		isDigit := char >= '0' && char <= '9'
 

@@ -11,6 +11,9 @@ import (
 	"math/big"
 	"regexp"
 	"strings"
+	"unicode"
+
+	"cloud-controller/pkg/sanitize"
 )
 
 const maxInstanceURLPrefixLength = 20
@@ -214,7 +217,7 @@ func NewInstanceDTO(instanceInfo RequestInstanceInfo, instanceCredentials Reques
 		return nil, fmt.Errorf("instanceDisplayName is empty")
 	}
 
-	instanceUrlPrefix := strings.TrimSpace(instanceInfo.InstanceUrlPrefix)
+	instanceUrlPrefix := sanitizeInstanceURLPrefix(instanceInfo.InstanceUrlPrefix)
 	if instanceUrlPrefix == "" {
 		return nil, fmt.Errorf("instanceUrlPrefix is empty")
 	}
@@ -456,4 +459,23 @@ func generateECKeyPair() (privateKeyPEM, publicKeyPEM string, err error) {
 	pubPEM := pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: pubKeyBytes})
 
 	return string(privPEM), string(pubPEM), nil
+}
+
+func sanitizeInstanceURLPrefix(value string) string {
+	normalized := sanitize.StripDiacritics(value)
+
+	result := strings.Builder{}
+	result.Grow(len(normalized))
+
+	for _, character := range normalized {
+		if unicode.Is(unicode.Mn, character) {
+			continue
+		}
+
+		if unicode.IsLetter(character) || unicode.IsDigit(character) {
+			result.WriteRune(character)
+		}
+	}
+
+	return result.String()
 }

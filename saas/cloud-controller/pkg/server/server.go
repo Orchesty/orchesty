@@ -1,10 +1,12 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 	"sync"
@@ -260,11 +262,14 @@ func (s *Server) statusHandler(writer http.ResponseWriter, _ *http.Request) {
 
 func (s *Server) createInstance(writer http.ResponseWriter, request *http.Request) {
 	var body service.CreateInstanceRequest
-	decoder := json.NewDecoder(request.Body)
-	decoder.DisallowUnknownFields()
+	rawBody, err := readRawBody(request)
+	if err != nil {
+		writeErrorWithContext(writer, request, http.StatusBadRequest, err, map[string]string{"rawBody": rawBody})
+		return
+	}
 
-	if err := decoder.Decode(&body); err != nil {
-		writeError(writer, http.StatusBadRequest, err)
+	if err := decodeJSONBody(rawBody, &body); err != nil {
+		writeErrorWithContext(writer, request, http.StatusBadRequest, err, map[string]string{"rawBody": rawBody})
 		return
 	}
 
@@ -273,11 +278,11 @@ func (s *Server) createInstance(writer http.ResponseWriter, request *http.Reques
 		var inputErr *service.InputError
 		switch {
 		case errors.As(err, &inputErr):
-			writeError(writer, http.StatusBadRequest, err)
+			writeErrorWithContext(writer, request, http.StatusBadRequest, err, body)
 		case errors.Is(err, service.ErrInstanceUnavailable):
-			writeError(writer, http.StatusConflict, err)
+			writeErrorWithContext(writer, request, http.StatusConflict, err, body)
 		default:
-			writeError(writer, http.StatusInternalServerError, err)
+			writeErrorWithContext(writer, request, http.StatusInternalServerError, err, body)
 		}
 		return
 	}
@@ -286,14 +291,19 @@ func (s *Server) createInstance(writer http.ResponseWriter, request *http.Reques
 }
 
 func (s *Server) deleteInstance(writer http.ResponseWriter, request *http.Request) {
-	if err := s.instanceService.DeleteInstance(request.URL.Query().Get("instance")); err != nil {
+	input := map[string]string{
+		"instance": request.URL.Query().Get("instance"),
+		"query":    request.URL.RawQuery,
+	}
+
+	if err := s.instanceService.DeleteInstance(input["instance"]); err != nil {
 		var inputErr *service.InputError
 		if errors.As(err, &inputErr) {
-			writeError(writer, http.StatusBadRequest, err)
+			writeErrorWithContext(writer, request, http.StatusBadRequest, err, input)
 			return
 		}
 
-		writeError(writer, http.StatusInternalServerError, err)
+		writeErrorWithContext(writer, request, http.StatusInternalServerError, err, input)
 		return
 	}
 
@@ -302,11 +312,14 @@ func (s *Server) deleteInstance(writer http.ResponseWriter, request *http.Reques
 
 func (s *Server) updateInstance(writer http.ResponseWriter, request *http.Request) {
 	var body service.UpdateInstanceRequest
-	decoder := json.NewDecoder(request.Body)
-	decoder.DisallowUnknownFields()
+	rawBody, err := readRawBody(request)
+	if err != nil {
+		writeErrorWithContext(writer, request, http.StatusBadRequest, err, map[string]string{"rawBody": rawBody})
+		return
+	}
 
-	if err := decoder.Decode(&body); err != nil {
-		writeError(writer, http.StatusBadRequest, err)
+	if err := decodeJSONBody(rawBody, &body); err != nil {
+		writeErrorWithContext(writer, request, http.StatusBadRequest, err, map[string]string{"rawBody": rawBody})
 		return
 	}
 
@@ -315,9 +328,9 @@ func (s *Server) updateInstance(writer http.ResponseWriter, request *http.Reques
 		var inputErr *service.InputError
 		switch {
 		case errors.As(err, &inputErr):
-			writeError(writer, http.StatusBadRequest, err)
+			writeErrorWithContext(writer, request, http.StatusBadRequest, err, body)
 		default:
-			writeError(writer, http.StatusInternalServerError, err)
+			writeErrorWithContext(writer, request, http.StatusInternalServerError, err, body)
 		}
 		return
 	}
@@ -327,22 +340,25 @@ func (s *Server) updateInstance(writer http.ResponseWriter, request *http.Reques
 
 func (s *Server) suspendInstance(writer http.ResponseWriter, request *http.Request) {
 	var body models.SuspendInstanceRequest
-	decoder := json.NewDecoder(request.Body)
-	decoder.DisallowUnknownFields()
+	rawBody, err := readRawBody(request)
+	if err != nil {
+		writeErrorWithContext(writer, request, http.StatusBadRequest, err, map[string]string{"rawBody": rawBody})
+		return
+	}
 
-	if err := decoder.Decode(&body); err != nil {
-		writeError(writer, http.StatusBadRequest, err)
+	if err := decodeJSONBody(rawBody, &body); err != nil {
+		writeErrorWithContext(writer, request, http.StatusBadRequest, err, map[string]string{"rawBody": rawBody})
 		return
 	}
 
 	if err := s.instanceService.SuspendInstance(body.Instance); err != nil {
 		var inputErr *service.InputError
 		if errors.As(err, &inputErr) {
-			writeError(writer, http.StatusBadRequest, err)
+			writeErrorWithContext(writer, request, http.StatusBadRequest, err, body)
 			return
 		}
 
-		writeError(writer, http.StatusInternalServerError, err)
+		writeErrorWithContext(writer, request, http.StatusInternalServerError, err, body)
 		return
 	}
 
@@ -356,22 +372,25 @@ func (s *Server) suspendInstance(writer http.ResponseWriter, request *http.Reque
 
 func (s *Server) resumeInstance(writer http.ResponseWriter, request *http.Request) {
 	var body models.ResumeInstanceRequest
-	decoder := json.NewDecoder(request.Body)
-	decoder.DisallowUnknownFields()
+	rawBody, err := readRawBody(request)
+	if err != nil {
+		writeErrorWithContext(writer, request, http.StatusBadRequest, err, map[string]string{"rawBody": rawBody})
+		return
+	}
 
-	if err := decoder.Decode(&body); err != nil {
-		writeError(writer, http.StatusBadRequest, err)
+	if err := decodeJSONBody(rawBody, &body); err != nil {
+		writeErrorWithContext(writer, request, http.StatusBadRequest, err, map[string]string{"rawBody": rawBody})
 		return
 	}
 
 	if err := s.instanceService.ResumeInstance(body.Instance); err != nil {
 		var inputErr *service.InputError
 		if errors.As(err, &inputErr) {
-			writeError(writer, http.StatusBadRequest, err)
+			writeErrorWithContext(writer, request, http.StatusBadRequest, err, body)
 			return
 		}
 
-		writeError(writer, http.StatusInternalServerError, err)
+		writeErrorWithContext(writer, request, http.StatusInternalServerError, err, body)
 		return
 	}
 
@@ -393,4 +412,48 @@ func writeJSON(writer http.ResponseWriter, statusCode int, body any) {
 
 func writeError(writer http.ResponseWriter, statusCode int, err error) {
 	writeJSON(writer, statusCode, map[string]string{"error": err.Error()})
+}
+
+func writeErrorWithContext(writer http.ResponseWriter, request *http.Request, statusCode int, err error, input any) {
+	logErrorWithContext(request, input, err)
+	writeError(writer, statusCode, err)
+}
+
+func logErrorWithContext(request *http.Request, input any, err error) {
+	inputJSON, marshalErr := json.Marshal(input)
+	if marshalErr != nil {
+		inputJSON = []byte(fmt.Sprintf("%v", input))
+	}
+
+	config.Logger.Error(fmt.Errorf(
+		"request failed: route=%s %s, input=%s, error=%w",
+		request.Method,
+		request.URL.Path,
+		string(inputJSON),
+		err,
+	))
+}
+
+func readRawBody(request *http.Request) (string, error) {
+	bodyBytes, err := io.ReadAll(request.Body)
+	if err != nil {
+		return "", fmt.Errorf("failed to read request body: %w", err)
+	}
+
+	return string(bodyBytes), nil
+}
+
+func decodeJSONBody(rawBody string, destination any) error {
+	decoder := json.NewDecoder(bytes.NewReader([]byte(rawBody)))
+	decoder.DisallowUnknownFields()
+
+	if err := decoder.Decode(destination); err != nil {
+		return err
+	}
+
+	if err := decoder.Decode(&struct{}{}); err != io.EOF {
+		return errors.New("request body must contain only one JSON object")
+	}
+
+	return nil
 }

@@ -190,6 +190,32 @@ func TestNewInstanceDTOWithForceInstanceId(t *testing.T) {
 	}
 }
 
+func TestNewInstanceDTOSanitizesInstanceURLPrefix(t *testing.T) {
+	dto, err := NewInstanceDTO(
+		RequestInstanceInfo{InstanceDisplayName: "Test Instance", InstanceUrlPrefix: " Žluťoučký-kůň! 123_# "},
+		RequestInstanceCredentials{},
+		Customizations{},
+	)
+	if err != nil {
+		t.Fatalf("expected NewInstanceDTO without error, got %v", err)
+	}
+
+	if dto.InstanceUrlPrefix != "zlutouckykun123" {
+		t.Fatalf("expected sanitized instanceUrlPrefix 'zlutouckykun123', got %q", dto.InstanceUrlPrefix)
+	}
+}
+
+func TestNewInstanceDTORejectsEmptySanitizedInstanceURLPrefix(t *testing.T) {
+	_, err := NewInstanceDTO(
+		RequestInstanceInfo{InstanceDisplayName: "Test Instance", InstanceUrlPrefix: " !!!___--- "},
+		RequestInstanceCredentials{},
+		Customizations{},
+	)
+	if err == nil || err.Error() != "instanceUrlPrefix is empty" {
+		t.Fatalf("expected instanceUrlPrefix is empty error, got %v", err)
+	}
+}
+
 func assertLength(t *testing.T, value string, expected int, field string) {
 	t.Helper()
 

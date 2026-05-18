@@ -463,6 +463,7 @@ func TestSanitizeK8sName(t *testing.T) {
 		hasError bool
 	}{
 		{name: "spaces and uppercase", input: "Test Instance", expected: "test-instance"},
+		{name: "diacritics", input: "Žluťoučký kůň", expected: "zlutoucky-kun"},
 		{name: "special characters", input: "  Demo@Prod! 2026  ", expected: "demo-prod-2026"},
 		{name: "only invalid characters", input: "@@@", hasError: true},
 		{name: "empty string", input: "   ", hasError: true},
