@@ -40,7 +40,9 @@ export interface FakturaPayload {
         firma?: `code:${string}`;
         stredisko?: `code:${string}`;
         typUcOp?: `code:${string}`;
+        'polozkyFaktury@removeAll'?: 'true';
         polozkyFaktury?: PolozkaFaktury[];
+        'prilohy@removeAll'?: 'true';
     }[];
 }
 
@@ -58,7 +60,9 @@ export interface ZavazekPayload {
         firma?: `code:${string}`;
         stredisko?: `code:${string}`;
         typUcOp?: `code:${string}`;
+        'polozkyZavazku@removeAll'?: 'true';
         polozkyZavazku?: PolozkaFaktury[];
+        'prilohy@removeAll'?: 'true';
     }[];
 }
 /* eslint-enable @typescript-eslint/naming-convention */

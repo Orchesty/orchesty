@@ -111,7 +111,9 @@ export default class WflowDocumentToFlexibeeFakturaPrijataMapper extends ACommon
                         firma,
                         stredisko,
                         typUcOp,
+                        'polozkyFaktury@removeAll': 'true' as const,
                         polozkyFaktury,
+                        'prilohy@removeAll': 'true' as const,
                     }],
                 },
             }).setForceFollowers(FLEXI_BEE_CREATE_FAKTURA_PRIJATA_NAME);
@@ -133,7 +135,9 @@ export default class WflowDocumentToFlexibeeFakturaPrijataMapper extends ACommon
                     firma,
                     stredisko,
                     typUcOp,
+                    'polozkyZavazku@removeAll': 'true' as const,
                     polozkyZavazku: polozkyFaktury,
+                    'prilohy@removeAll': 'true' as const,
                 }],
             },
         }).setForceFollowers(FLEXI_BEE_CREATE_ZAVAZEK_NAME);
