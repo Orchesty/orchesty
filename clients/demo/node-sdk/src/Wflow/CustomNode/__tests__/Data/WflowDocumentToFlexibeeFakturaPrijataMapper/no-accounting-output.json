@@ -20,6 +20,7 @@
           "firma": "code:AAAA",
           "id": "ext:40830940-fc60-4ffd-a143-37ed2022bd21",
           "mena": "code:CZK",
+          "polozkyFaktury@removeAll": "true",
           "polozkyFaktury": [
             {
               "cenaMj": 2000,
@@ -55,6 +56,7 @@
             }
           ],
           "popis": "Fakturujeme Vám za dodané zboží či služby:\r\nDovolujeme si Vás upozornit, že v případě nedodržení data splatnosti uvedeného na faktuře Vám můžeme účtovat zákonný úrok z prodlení.",
+          "prilohy@removeAll": "true",
           "typDokl": "code:FAKTURA"
         }
       ]

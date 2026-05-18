@@ -22,6 +22,7 @@
           "firma": "code:AAAA",
           "id": "ext:40830940-fc60-4ffd-a143-37ed2022bd21",
           "mena": "code:CZK",
+          "polozkyZavazku@removeAll": "true",
           "polozkyZavazku": [
             {
               "cenaMj": 100,
@@ -33,6 +34,7 @@
             }
           ],
           "popis": "Účtenka z Wflow",
+          "prilohy@removeAll": "true",
           "stredisko": "code:SALES&MARKETING",
           "typDokl": "code:OST. ZÁVAZKY",
           "typUcOp": "code:NÁKUP SLUŽBY"

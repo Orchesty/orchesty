@@ -1,6 +1,6 @@
 {
     "environment": {
-        "docker_pf_bridge_image": "orchesty/bridge:1.0",
+        "docker_pf_bridge_image": "orchesty/bridge:2.1",
         "rabbitmq_host": "rabbitmq:5672",
         "rabbitmq_user": "guest",
         "rabbitmq_pass": "guest",
