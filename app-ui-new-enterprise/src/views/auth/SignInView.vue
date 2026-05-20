@@ -4,7 +4,14 @@ import { useRouter } from 'vue-router'
 import { useAuth0 } from '@auth0/auth0-vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import { useAuthStore } from '@/stores/auth'
-import { isAuth0Enabled } from '@/auth/auth0-plugin'
+import { isAuth0Active } from '@/auth/auth0-plugin'
+
+// SignInView is only ever rendered in standalone (non-cloud) deployments —
+// the router's cloud guard redirects /sign-in to ${cloudUrl}/sign-in before
+// this component ever mounts. `isAuth0Active()` therefore tells us whether
+// to show SSO buttons (Auth0 active in this standalone deploy) or the bare
+// email/password form (legacy non-Auth0 self-hosted deploy).
+const isAuth0Enabled = isAuth0Active()
 
 const router = useRouter()
 const authStore = useAuthStore()

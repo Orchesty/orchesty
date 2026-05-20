@@ -1,23 +1,27 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
-import { isAuth0Enabled } from '@/auth/auth0-plugin'
 import { resetPassword as legacyResetPassword } from '@/services/authService'
 import { useCloudMode } from '@/composables/useCloudMode'
 
-const { cloudUrl, loadCloudMode } = useCloudMode()
+const { cloudMode, cloudUrl, loadCloudMode } = useCloudMode()
 
 const email = ref('')
 const error = ref('')
 const success = ref(false)
 const submitting = ref(false)
 
+// Belt-and-suspenders. The router's cloud guard already redirects
+// /forgot-password to the cloud frontend before this view mounts, so in
+// theory we never run here on a cloud instance. This guard catches the
+// edge case where /api/status hasn't returned yet when the guard fires
+// (rare, but a stale browser cache plus a slow status response could open
+// the window). The redirect itself remains gated on `cloudUrl` so we don't
+// navigate to a half-formed URL on first paint.
 onMounted(async () => {
-  if (isAuth0Enabled) {
-    await loadCloudMode()
-    if (cloudUrl.value) {
-      window.location.href = `${cloudUrl.value}/forgot-password`
-    }
+  await loadCloudMode()
+  if (cloudMode.value && cloudUrl.value) {
+    window.location.href = `${cloudUrl.value}/forgot-password`
   }
 })
 

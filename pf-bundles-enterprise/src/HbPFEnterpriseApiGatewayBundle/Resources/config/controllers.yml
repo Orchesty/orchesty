@@ -34,8 +34,18 @@ services:
             - '@hbpf.cloud.handler.user_sync'
             - '@hbpf.cloud.member_sync'
             - '@hbpf.cloud.handoff_sync_lock'
+            - '@hbpf.cloud.handoff_consume_client'
             - '@hbpf.user.manager.security'
             - '@doctrine_mongodb.odm.default_document_manager'
+            - '%orchesty_cloud_instance_id%'
+            - '%orchesty_cloud_instance_secret%'
+
+    hbpf.cloud.handoff_consume_client:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\Service\HandoffConsumeClient
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '%orchesty_cloud_backend_url%'
+            - '%orchesty_cloud_instance_id%'
             - '%orchesty_cloud_instance_secret%'
 
     hbpf.cloud.handler.user_sync:

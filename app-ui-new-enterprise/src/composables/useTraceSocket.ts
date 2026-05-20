@@ -73,9 +73,15 @@ export interface UseTraceSocketReturn {
  * server validates it via /api/user/check_logged and matches the user against the
  * `?user=` query parameter.
  *
- * Tokens are read from localStorage (auth0 access token). On socket close caused by
- * an auth error, we attempt to refresh the token via `auth0Plugin.getAccessTokenSilently()`
- * before reconnecting.
+ * Tokens are read from localStorage. On socket close caused by an auth error or
+ * after the periodic refresh tick, the token is rotated through one of two paths:
+ *
+ *   - Cloud-handoff session: refresh via `/api/user/check_logged` on the instance
+ *     backend, which mints a fresh JWT for the current handoff identity. We
+ *     never call Auth0 from a cloud instance origin — the SDK isn't installed
+ *     in cloud mode and a silent renewal from the instance host would hit the
+ *     Auth0 callback-mismatch wall.
+ *   - Standalone (Auth0 active): `auth0Plugin.getAccessTokenSilently()` as before.
  *
  * Outbound messages sent before the socket is open are queued and flushed once
  * authentication completes.
@@ -113,9 +119,27 @@ export function useTraceSocket(options: UseTraceSocketOptions = {}): UseTraceSoc
 
   const refreshTokenSilently = async (): Promise<string | null> => {
     try {
-      const { auth0Plugin } = await import('@/auth/auth0-plugin')
-      if (!auth0Plugin) return null
-      const newToken = await auth0Plugin.getAccessTokenSilently()
+      // Cloud-handoff session: refresh via the instance backend. The Auth0
+      // SDK is NOT installed in cloud mode (see auth/auth0-plugin.ts) and
+      // calling getAccessTokenSilently() would either throw or attempt a
+      // silent renewal iframe on the instance origin — both wrong.
+      const hasCloudHandoff = localStorage.getItem(STORAGE_KEYS.CLOUD_HANDOFF_SESSION) === 'true'
+      if (hasCloudHandoff) {
+        const { default: api } = await import('@/services/api')
+        const response = await api.get('/api/user/check_logged')
+        const newToken = response?.data?.token
+        if (typeof newToken === 'string' && newToken.length > 0) {
+          localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, newToken)
+          return newToken
+        }
+        return null
+      }
+
+      const { getAuth0Plugin, isAuth0Active } = await import('@/auth/auth0-plugin')
+      if (!isAuth0Active()) return null
+      const plugin = getAuth0Plugin()
+      if (!plugin) return null
+      const newToken = await plugin.getAccessTokenSilently()
       if (newToken) {
         localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, newToken)
         return newToken

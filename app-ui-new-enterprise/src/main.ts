@@ -6,7 +6,7 @@ import 'rete-editor/style.css'
 import App from './App.vue'
 import { createEnterpriseRouter } from './router'
 import { useAuthStore } from '@/stores/auth'
-import { auth0Plugin, isAuth0Enabled } from '@/auth/auth0-plugin'
+import { buildAuth0Plugin } from '@/auth/auth0-plugin'
 import { useCloudMode } from '@/composables/useCloudMode'
 import { handleCloudAuthHandoff } from '@/services/cloudAuthService'
 import { TITLE } from '@/config'
@@ -18,7 +18,18 @@ async function bootstrap() {
   const pinia = createPinia()
   app.use(pinia)
 
-  const { loadCloudMode } = useCloudMode()
+  // Order matters:
+  //   1) loadCloudMode() — fetches /api/status; tells us whether we're a
+  //      cloud-managed instance or a standalone deployment. Drives ALL
+  //      subsequent auth wiring.
+  //   2) handleCloudAuthHandoff() — consumes any ?cloud_auth= token that
+  //      was set as the URL query by the cloud frontend redirect. Stores
+  //      the JWT in localStorage + sets CLOUD_HANDOFF_SESSION flag.
+  //   3) buildAuth0Plugin(cloudMode) — installs Auth0 ONLY in non-cloud
+  //      mode. Cloud instances must never own an Auth0 client; see
+  //      auth/auth0-plugin.ts for the rationale.
+  //   4) Router + store init — both depend on the final auth wiring.
+  const { loadCloudMode, cloudMode } = useCloudMode()
   await loadCloudMode()
 
   if (TITLE) {
@@ -27,8 +38,9 @@ async function bootstrap() {
 
   await handleCloudAuthHandoff()
 
-  if (isAuth0Enabled && auth0Plugin) {
-    app.use(auth0Plugin)
+  const plugin = buildAuth0Plugin(cloudMode.value)
+  if (plugin) {
+    app.use(plugin)
   }
 
   app.use(createEnterpriseRouter())

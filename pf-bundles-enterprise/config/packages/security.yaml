@@ -24,6 +24,13 @@ security:
         unsecured_cloud_handoff:
             pattern: ^/api/cloud/session-handoff
             security: false
+        # Invite verification called by the cloud BE during the
+        # /accept-invite/:token flow (invite still lives on the instance,
+        # cloud only proxies). Authorised via the shared instanceSecret in
+        # the JSON body — checked at the controller level.
+        unsecured_cloud_verify_invite:
+            pattern: ^/api/cloud/verify-invite
+            security: false
         unsecured_cloud_metrics:
             pattern: ^/api/orchesty/metrics
             security: false

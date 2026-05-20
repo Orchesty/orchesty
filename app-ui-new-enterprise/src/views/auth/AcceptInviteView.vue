@@ -8,7 +8,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import { verifyResetToken, activateUser, setNewPassword } from '@/services/authService'
 import { useToast } from '@/composables/useToast'
 import { useCloudMode } from '@/composables/useCloudMode'
-import { isAuth0Enabled } from '@/auth/auth0-plugin'
+import { isAuth0Active } from '@/auth/auth0-plugin'
 import { STORAGE_KEYS } from '@/config'
 
 interface Props {
@@ -20,6 +20,12 @@ const props = defineProps<Props>()
 const router = useRouter()
 const { showToast } = useToast()
 const { cloudMode } = useCloudMode()
+
+// Like SignInView, this component is only ever rendered in standalone
+// deployments — the router's cloud guard redirects /accept-invite to the
+// cloud frontend before mount. `isAuth0Enabled` here is a template-facing
+// alias kept for backward compatibility with the existing template.
+const isAuth0Enabled = isAuth0Active()
 const auth0 = isAuth0Enabled ? useAuth0() : null
 
 const password = ref('')

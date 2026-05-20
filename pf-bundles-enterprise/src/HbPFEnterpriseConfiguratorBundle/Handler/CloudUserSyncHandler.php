@@ -12,6 +12,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFrameworkEnterprise\Acl\PermissionPresets;
 use Hanaboso\UserBundle\Document\TmpUser;
+use Hanaboso\UserBundle\Document\Token;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\Utils\System\ControllerUtils;
 use Psr\Log\LoggerInterface;
@@ -209,6 +210,64 @@ final class CloudUserSyncHandler
         $this->removeTmpUser($email);
 
         return $user;
+    }
+
+    /**
+     * Consume an instance-side invite token that was forwarded inside a
+     * cloud handoff payload (invite-flow A).
+     *
+     * Flow recap:
+     *   1. Admin invites email X in pipes  -> InvitationManager creates
+     *      TmpUser(email=X) + Token(hash=$t).
+     *   2. The cloud /accept-invite/:t page validates $t against this
+     *      instance, sends the user through cloud SSO, then calls the
+     *      session-handoff endpoint with `linkInviteToken=$t`.
+     *   3. Cloud mints a handoff JWT containing `linkInviteToken=$t` and
+     *      redirects to the instance.
+     *   4. CloudWebhookController validates the JWT and either finds an
+     *      existing User or provisions one inline. Then it calls THIS
+     *      method to discard the now-redundant invite token/TmpUser so
+     *      the same link can't be reused and the admin sees the invite
+     *      as "accepted" in the UI.
+     *
+     * Best-effort: a missing/expired token is a silent no-op. The user is
+     * already authenticated via the handoff JWT; cleaning up the invite
+     * record is a courtesy, not a security boundary.
+     *
+     * @param User   $user        the just-authenticated user (kept for signature symmetry / future audit)
+     * @param string $inviteToken raw invite-token hash from the cloud handoff payload
+     */
+    public function acceptInviteForUser(User $user, string $inviteToken): void
+    {
+        $user;
+
+        try {
+            /** @var Token|null $token */
+            $token = $this->dm->getRepository(Token::class)->findOneBy(['hash' => $inviteToken]);
+            if (!$token) {
+                return;
+            }
+
+            // Use the typed accessors directly so we don't trip on Token::
+            // getUserOrTmpUser() which throws LogicException when neither
+            // relation is set (legitimate edge case after a stale token
+            // was partially cleaned up).
+            $tmp      = $token->getTmpUser();
+            $existing = $token->getUser();
+            if ($tmp instanceof TmpUser) {
+                $this->dm->remove($tmp);
+            } elseif ($existing instanceof User) {
+                $existing->setToken(NULL);
+            }
+
+            $this->dm->remove($token);
+            $this->dm->flush();
+        } catch (Throwable $e) {
+            $this->logger->error(
+                sprintf('[CloudUserSyncHandler] acceptInviteForUser failed: %s', $e->getMessage()),
+                ['exception' => $e],
+            );
+        }
     }
 
     /**
