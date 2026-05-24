@@ -218,7 +218,13 @@ final class Schema
     {
         $node = $this->nodes[$id];
 
-        return sprintf('%s:%s:%s', $node->getId(), $node->getName(), $node->getPipesType());
+        return sprintf(
+            '%s:%s:%s:%s',
+            $node->getId(),
+            $node->getName(),
+            $node->getPipesType(),
+            $node->getWorker(),
+        );
     }
 
     /**

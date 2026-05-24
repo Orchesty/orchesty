@@ -147,6 +147,7 @@ final class TopologySchemaUtils
             $schemaIndex[] = sprintf('schema_key_%s', $nodeKey);
             $schemaIndex[] = sprintf('schema_id_%s_%s', $nodeKey, $nodeBody->getId());
             $schemaIndex[] = sprintf('schema_name_%s_%s', $nodeKey, $nodeBody->getName());
+            $schemaIndex[] = sprintf('schema_worker_%s_%s', $nodeKey, $nodeBody->getWorker());
             $schemaIndex[] = sprintf('schema_handler_%s_%s', $nodeKey, $nodeBody->getHandler());
             $schemaIndex[] = sprintf('schema_pipes_type_%s_%s', $nodeKey, $nodeBody->getPipesType());
             $schemaIndex[] = sprintf('schema_cron_time_%s_%s', $nodeKey, $nodeBody->getCronTime());
