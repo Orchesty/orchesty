@@ -2,6 +2,13 @@ import { useToast } from './useToast'
 import api from '@/services/api'
 import { getNextCronRun } from '@/utils/cronParser'
 
+export interface RunProcessResult {
+  message: string
+  started: boolean
+  startingPoint: string
+  correlationId: string
+}
+
 export function useCronNodeActions() {
   const { showToast } = useToast()
 
@@ -22,13 +29,14 @@ export function useCronNodeActions() {
     nodeId: string,
     nodeName: string,
     jsonData: string,
-  ): Promise<void> => {
+  ): Promise<RunProcessResult[]> => {
     try {
-      await api.post(`/api/topologies/${topologyId}/run`, {
-        startingPoints: [nodeId],
-        body: jsonData,
-      })
+      const response = await api.post<RunProcessResult[]>(
+        `/api/topologies/${topologyId}/run`,
+        { startingPoints: [nodeId], body: jsonData },
+      )
       showToast(`Process "${nodeName}" started successfully`, 'success', 3000)
+      return response.data ?? []
     } catch (error) {
       showToast('Failed to start process', 'error', 3000)
       throw error
