@@ -62,6 +62,7 @@ class TopologyManager
     private const string MESSAGE        = 'message';
     private const string STARTED        = 'started';
     private const string STARTING_POINT = 'startingPoint';
+    private const string CORRELATION_ID = 'correlationId';
 
     /**
      * @var DocumentManager
@@ -189,7 +190,9 @@ class TopologyManager
         try {
             $response = $this->curl->send($request);
             if ($response->getStatusCode() === 200) {
-                return self::formatTopologyRunMessage($startingPoint, TRUE);
+                $correlationId = $response->getJsonBody()['correlation_id'] ?? '';
+
+                return self::formatTopologyRunMessage($startingPoint, TRUE, '', $correlationId);
             }
 
             return self::formatTopologyRunMessage($startingPoint, FALSE, $response->getJsonBody()[self::MESSAGE]);
@@ -1122,12 +1125,19 @@ class TopologyManager
      * @param string $startingPointId
      * @param bool   $started
      * @param string $message
+     * @param string $correlationId
      *
      * @return mixed[]
      */
-    private function formatTopologyRunMessage(string $startingPointId, bool $started, string $message = ''): array
+    private function formatTopologyRunMessage(
+        string $startingPointId,
+        bool $started,
+        string $message = '',
+        string $correlationId = '',
+    ): array
     {
         return [
+            self::CORRELATION_ID => $correlationId,
             self::MESSAGE        => $message,
             self::STARTED        => $started,
             self::STARTING_POINT => $startingPointId,

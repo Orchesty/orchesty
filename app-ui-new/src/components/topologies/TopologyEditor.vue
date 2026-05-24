@@ -1024,7 +1024,7 @@ const handleRunProcess = async (jsonData: string) => {
     }
 
     const backendId = resolveBackendId(selectedNode.value.id)
-    await runProcess(
+    const runResult = await runProcess(
       props.topologyId,
       backendId,
       selectedNode.value.name || selectedNode.value.label,
@@ -1034,7 +1034,13 @@ const handleRunProcess = async (jsonData: string) => {
     breakpointCounts.value = {}
     processStartNodeName.value = selectedNode.value.name || selectedNode.value.label
     processStartedAt.value = new Date().toISOString()
-    polling.startPolling()
+
+    const correlationId = runResult.find((r) => r.correlationId)?.correlationId
+    if (correlationId) {
+      polling.startPollingWithId(correlationId)
+    } else {
+      polling.startPolling()
+    }
     emit('process-run')
   } catch (error) {
     console.error('Failed to run process:', error)
