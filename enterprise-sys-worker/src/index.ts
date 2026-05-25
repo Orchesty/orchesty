@@ -23,6 +23,7 @@ import CloudInviteEmailMapper from './CustomNode/CloudInviteEmailMapper';
 import CloudLimitThresholdEmailMapper from './CustomNode/CloudLimitThresholdEmailMapper';
 import CloudNotificationMapper from './CustomNode/CloudNotificationMapper';
 import CloudRestoreAccessEmailMapper from './CustomNode/CloudRestoreAccessEmailMapper';
+import CloudVerifyEmailMapper from './CustomNode/CloudVerifyEmailMapper';
 import ForgotPasswordEmailMapper from './CustomNode/ForgotPasswordEmailMapper';
 import InviteEmailMapper from './CustomNode/InviteEmailMapper';
 import LimitOverflowEmailMapper from './CustomNode/LimitOverflowEmailMapper';
@@ -172,6 +173,7 @@ export function prepare(): void {
     container.setNode(new CloudInviteEmailMapper(), ecomailApp);
     container.setNode(new CloudRestoreAccessEmailMapper(), ecomailApp);
     container.setNode(new CloudForgotPasswordEmailMapper(), ecomailApp);
+    container.setNode(new CloudVerifyEmailMapper(), ecomailApp);
     container.setNode(new CloudLimitThresholdEmailMapper(), ecomailApp);
 
     container.setNode(new AdminInviteEmailMapper(), ecomailApp);

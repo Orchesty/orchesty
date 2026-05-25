@@ -1,0 +1,188 @@
+{
+    "_documentation": {
+        "purpose": "Reference snapshot of the live system-cloud-transaction-emails topology used by Orchesty Cloud (orchesty-cloud/apps/backend/src/services/systemTopologyService.ts).",
+        "deployment": "NOT importable. The live topology lives in the production system Orchesty instance and is edited manually in the topology editor. This file documents the expected shape so DevOps / operators can verify the live topology matches.",
+        "events": [
+            "invite           — POST /api/invitations             → cloud-invite-email-mapper",
+            "restore-access   — admin restore action              → cloud-restore-access-email-mapper",
+            "forgot-password  — POST /api/auth/forgot-password    → cloud-forgot-password-email-mapper",
+            "verify-email     — POST /api/accounts/onboarding     → cloud-verify-email-mapper  (added with Phase 0 e-mail verification, requires CloudVerifyEmailMapper node registered in this worker)"
+        ],
+        "all_branches_share": "ecomail-send-message (single Ecomail connector — sender configured via the [system] form on the install)"
+    },
+    "nodes": [
+        {
+            "type": "flow",
+            "id": "f1a2b3c4d5e60001",
+            "label": "Event",
+            "shape": "circle",
+            "property": null,
+            "action": null,
+            "name": "invite",
+            "position": { "x": 75, "y": 195 }
+        },
+        {
+            "type": "flow",
+            "id": "f1a2b3c4d5e60002",
+            "label": "Event",
+            "shape": "circle",
+            "property": null,
+            "action": null,
+            "name": "restore-access",
+            "position": { "x": 75, "y": 355 }
+        },
+        {
+            "type": "flow",
+            "id": "f1a2b3c4d5e60003",
+            "label": "Event",
+            "shape": "circle",
+            "property": null,
+            "action": null,
+            "name": "forgot-password",
+            "position": { "x": 75, "y": 515 }
+        },
+        {
+            "type": "flow",
+            "id": "f1a2b3c4d5e60004",
+            "label": "Event",
+            "shape": "circle",
+            "property": null,
+            "action": null,
+            "name": "verify-email",
+            "position": { "x": 75, "y": 675 }
+        },
+        {
+            "type": "flow",
+            "id": "a1b2c3d4e5f70001",
+            "label": "Custom Action",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "cloud-invite-email-mapper",
+                "worker": "sys-worker",
+                "type": "custom",
+                "app": null
+            },
+            "name": null,
+            "position": { "x": 315, "y": 195 }
+        },
+        {
+            "type": "flow",
+            "id": "a1b2c3d4e5f70002",
+            "label": "Custom Action",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "cloud-restore-access-email-mapper",
+                "worker": "sys-worker",
+                "type": "custom",
+                "app": null
+            },
+            "name": null,
+            "position": { "x": 315, "y": 355 }
+        },
+        {
+            "type": "flow",
+            "id": "a1b2c3d4e5f70003",
+            "label": "Custom Action",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "cloud-forgot-password-email-mapper",
+                "worker": "sys-worker",
+                "type": "custom",
+                "app": null
+            },
+            "name": null,
+            "position": { "x": 315, "y": 515 }
+        },
+        {
+            "type": "flow",
+            "id": "a1b2c3d4e5f70004",
+            "label": "Custom Action",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "cloud-verify-email-mapper",
+                "worker": "sys-worker",
+                "type": "custom",
+                "app": null
+            },
+            "name": null,
+            "position": { "x": 315, "y": 675 }
+        },
+        {
+            "type": "flow",
+            "id": "b5ee2b7e369b50c9",
+            "label": "Connector",
+            "shape": "square",
+            "property": null,
+            "action": {
+                "name": "ecomail-send-message",
+                "worker": "sys-worker",
+                "type": "connector",
+                "app": "ecomail"
+            },
+            "name": null,
+            "position": { "x": 555, "y": 435 }
+        }
+    ],
+    "connections": [
+        {
+            "id": "c1a2b3c4d5e60001",
+            "from": "f1a2b3c4d5e60001",
+            "to": "a1b2c3d4e5f70001",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "c1a2b3c4d5e60002",
+            "from": "f1a2b3c4d5e60002",
+            "to": "a1b2c3d4e5f70002",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "c1a2b3c4d5e60003",
+            "from": "f1a2b3c4d5e60003",
+            "to": "a1b2c3d4e5f70003",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "c1a2b3c4d5e60004",
+            "from": "f1a2b3c4d5e60004",
+            "to": "a1b2c3d4e5f70004",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "d1a2b3c4d5e60001",
+            "from": "a1b2c3d4e5f70001",
+            "to": "b5ee2b7e369b50c9",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "d1a2b3c4d5e60002",
+            "from": "a1b2c3d4e5f70002",
+            "to": "b5ee2b7e369b50c9",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "d1a2b3c4d5e60003",
+            "from": "a1b2c3d4e5f70003",
+            "to": "b5ee2b7e369b50c9",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        },
+        {
+            "id": "d1a2b3c4d5e60004",
+            "from": "a1b2c3d4e5f70004",
+            "to": "b5ee2b7e369b50c9",
+            "sourceOutput": "output",
+            "targetInput": "input"
+        }
+    ]
+}
