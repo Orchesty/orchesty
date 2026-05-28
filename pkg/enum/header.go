@@ -61,3 +61,17 @@ const (
 	Header_AuditEntityFieldsHeader = "audit-entity-fields"
 	Header_AuditCheckpoint         = "audit-checkpoint"
 )
+
+var IdentityHeaders = []string{
+	Header_CorrelationId,
+	Header_ProcessId,
+	Header_ParentProcessId,
+	Header_PreviousNodeId,
+	Header_NodeId,
+	Header_NodeName,
+	Header_TopologyId,
+	Header_SequenceId,
+	Header_User,
+	Header_WorkerFollowers,
+	Header_SystemEvent,
+}

@@ -1,17 +1,18 @@
 package model
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/hanaboso/go-utils/pkg/timex"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/rs/zerolog"
-	"io/ioutil"
-	"net/http"
-	"strconv"
 )
 
 type ProcessMessage struct {
@@ -161,10 +162,26 @@ func (pm *ProcessMessage) IntoOriginalAmqp() amqp.Publishing {
 	}
 }
 
-func (pm *ProcessMessage) FromHttpResponse(response *http.Response) *ProcessMessage {
-	responseBody, _ := ioutil.ReadAll(response.Body)
+func (pm *ProcessMessage) FromHttpResponse(response *http.Response) error {
+	responseBody, err := io.ReadAll(response.Body)
+	if err != nil {
+		return fmt.Errorf("failed to read worker response body: %w", err)
+	}
+	if len(bytes.TrimSpace(responseBody)) == 0 {
+		return fmt.Errorf("worker returned empty response body")
+	}
+
 	var messageDto MessageDto
-	_ = json.Unmarshal(responseBody, &messageDto)
+	if err := json.Unmarshal(responseBody, &messageDto); err != nil {
+		return fmt.Errorf("failed to parse worker response envelope: %w", err)
+	}
+
+	preserved := make(map[string]interface{}, len(enum.IdentityHeaders))
+	for _, h := range enum.IdentityHeaders {
+		if v, ok := pm.Headers[h]; ok {
+			preserved[h] = v
+		}
+	}
 
 	pm.bodyBackup = pm.Body
 	pm.Body = []byte(messageDto.Body)
@@ -174,7 +191,11 @@ func (pm *ProcessMessage) FromHttpResponse(response *http.Response) *ProcessMess
 		pm.Headers = make(map[string]interface{})
 	}
 
-	return pm
+	for h, v := range preserved {
+		pm.Headers[h] = v
+	}
+
+	return nil
 }
 
 func (pm *ProcessMessage) Copy() *ProcessMessage {

@@ -1,11 +1,21 @@
 package model
 
 import (
+	"io"
+	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"github.com/stretchr/testify/assert"
 )
+
+func httpResponse(body string) *http.Response {
+	return &http.Response{
+		Body:       io.NopCloser(strings.NewReader(body)),
+		StatusCode: 200,
+	}
+}
 
 func TestProcessDto_GetHeader(t *testing.T) {
 	dto := prepareDto()
@@ -62,6 +72,68 @@ func prepareDto() ProcessMessage {
 	dto.SetHeader("int", "666")
 
 	return dto
+}
+
+func TestProcessDto_FromHttpResponse_PartialEchoPreservesIdentity(t *testing.T) {
+	dto := &ProcessMessage{}
+	dto.SetHeader(enum.Header_CorrelationId, "corr-1")
+	dto.SetHeader(enum.Header_ProcessId, "proc-1")
+	dto.SetHeader(enum.Header_NodeId, "node-1")
+	dto.SetHeader(enum.Header_TopologyId, "topo-1")
+
+	err := dto.FromHttpResponse(httpResponse(`{"headers":{"result-code":"0"},"body":"{}"}`))
+	assert.Nil(t, err)
+
+	assert.Equal(t, "corr-1", dto.Headers[enum.Header_CorrelationId])
+	assert.Equal(t, "proc-1", dto.Headers[enum.Header_ProcessId])
+	assert.Equal(t, "node-1", dto.Headers[enum.Header_NodeId])
+	assert.Equal(t, "topo-1", dto.Headers[enum.Header_TopologyId])
+	assert.Equal(t, "0", dto.Headers["result-code"])
+}
+
+func TestProcessDto_FromHttpResponse_IdentityWinsOverWorker(t *testing.T) {
+	dto := &ProcessMessage{}
+	dto.SetHeader(enum.Header_CorrelationId, "corr-bridge")
+
+	err := dto.FromHttpResponse(httpResponse(`{"headers":{"correlation-id":"corr-worker"},"body":"{}"}`))
+	assert.Nil(t, err)
+
+	assert.Equal(t, "corr-bridge", dto.Headers[enum.Header_CorrelationId])
+}
+
+func TestProcessDto_FromHttpResponse_EmptyBodyErrorsNoMutation(t *testing.T) {
+	dto := &ProcessMessage{Body: []byte("original")}
+	dto.SetHeader(enum.Header_CorrelationId, "corr-1")
+
+	err := dto.FromHttpResponse(httpResponse("   "))
+	assert.NotNil(t, err)
+
+	assert.Equal(t, []byte("original"), dto.Body)
+	assert.Equal(t, "corr-1", dto.Headers[enum.Header_CorrelationId])
+}
+
+func TestProcessDto_FromHttpResponse_NonJSONErrorsNoMutation(t *testing.T) {
+	dto := &ProcessMessage{Body: []byte("original")}
+	dto.SetHeader(enum.Header_CorrelationId, "corr-1")
+
+	err := dto.FromHttpResponse(httpResponse("<html>503</html>"))
+	assert.NotNil(t, err)
+
+	assert.Equal(t, []byte("original"), dto.Body)
+	assert.Equal(t, "corr-1", dto.Headers[enum.Header_CorrelationId])
+}
+
+func TestProcessDto_FromHttpResponse_ValidEnvelope(t *testing.T) {
+	dto := &ProcessMessage{Body: []byte("original")}
+	dto.KeepRepeatHeaders = true
+
+	err := dto.FromHttpResponse(httpResponse(`{"headers":{"result-code":"0"},"body":"new-body"}`))
+	assert.Nil(t, err)
+
+	assert.Equal(t, []byte("new-body"), dto.Body)
+	assert.Equal(t, []byte("original"), dto.bodyBackup)
+	assert.False(t, dto.KeepRepeatHeaders)
+	assert.Equal(t, "0", dto.Headers["result-code"])
 }
 
 func TestProcessDto_CopyBatchItem_StripsParentAuditHeaders(t *testing.T) {

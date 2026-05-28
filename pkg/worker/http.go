@@ -95,7 +95,18 @@ func (h httpBeforeProcess) BeforeProcess(node types.Node, dto *model.ProcessMess
 		Str(enum.LogHeader_LevelName, "debug").
 		Msgf("Total request duration: %dms for endpoint POST[/%s]", duration.Milliseconds(), node.Settings().ActionPath)
 
-	dto.FromHttpResponse(response)
+	if err := dto.FromHttpResponse(response); err != nil {
+		if response.StatusCode < 300 {
+			RecordFailure(host, nodeId, correlationId)
+			if IsPoisoned(host, nodeId, correlationId) {
+				log.Warn().EmbedObject(dto).
+					Bool(enum.LogHeader_IsForUi, true).
+					Msgf("Worker %s returned malformed response, poisoning correlationId %s after %d failures", host, correlationId, config.App.WorkerMaxFailures)
+				return dto.Trash(fmt.Errorf("worker returned malformed response, correlationId poisoned after %d failures: %w", config.App.WorkerMaxFailures, err))
+			}
+			return dto.Error(err)
+		}
+	}
 
 	// Business audit checkpoint emission.
 	//
