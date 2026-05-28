@@ -1,5 +1,0 @@
-parameters:
-    acl_rule:
-        owner:
-            user: ['read', 'write']
-            group: ['read', 'write']

@@ -1,7 +1,0 @@
-{
-    "http": "DELETE /audit/entities/:id",
-    "body": [],
-    "headers": {
-        "HTTP_Authorization": "jwt"
-    }
-}

@@ -1,65 +1,25 @@
-TEST=make test
-DOWN=make docker-down-clean
-VENDOR=rm -rf vendor || true
-VAR=rm -rf var || true
-DOCKER=make docker-up-force
-COMPOSER=make composer-update
+DC=docker compose exec -T ui
+IMAGE=dkr.hanaboso.net/pipes/pipes/frontend:$(TAG)
 
-test: test-php test-go test-js
+.env:
+	sed -e "s/{DEV_UID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -u); else echo '1001'; fi)/g" \
+		-e "s/{DEV_GID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -g); else echo '1001'; fi)/g" \
+		.env.dist > .env
 
-test-go:
-	cd bridge && $(TEST) && $(DOWN)
-	cd counter && $(TEST) && $(DOWN)
-	cd cron && $(TEST) && $(DOWN)
-	cd detector && $(TEST) && $(DOWN)
-	cd limiter && $(TEST) && $(DOWN)
-	cd starting-point && $(TEST) && $(DOWN)
-	cd notifier && $(TEST) && $(DOWN)
-	cd topology-generator && $(TEST) && $(DOWN)
-	cd trace && $(TEST) && $(DOWN)
+docker-compose.ci.yml:
+	# Comment out any port
+	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
 
-test-php:
-	cd pf-bundles && $(TEST) && $(DOWN)
-	cd applinth && $(TEST) && $(DOWN)
-	cd clients/demo/pipes-api && $(TEST) && $(DOWN)
+init: .env
+	docker compose up -d --force-recreate
+	$(DC) pnpm install
 
-test-js:
-	cd applinth-admin-ui && $(TEST)
-	cd applinth-marketplace-ui && $(TEST)
-	cd clients/demo/node-sdk && $(TEST) && $(DOWN)
-	cd saas/applinth-billing-processor && $(TEST) && $(DOWN)
-	cd saas/console-api && $(TEST) && $(DOWN)
-	cd saas/usccp && $(TEST) && $(DOWN)
-	cd worker-api && $(TEST) && $(DOWN)
+rebuild:
+	cp .dockerignore ../.dockerignore
+	docker buildx build -f Dockerfile --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) ../. || rm ../.dockerignore
+	rm ../.dockerignore || true
 
-vendor-remove: var-remove
-	cd pf-bundles && $(VENDOR)
-	cd applinth && $(VENDOR)
-	cd clients/demo/pipes-api && $(VENDOR)
+test:
+	$(DC) pnpm run type-check
 
-var-remove:
-	cd pf-bundles && $(VAR)
-	cd applinth && $(VAR)
-	cd clients/demo/pipes-api && $(VAR)
-
-vendor-refresh:
-	cd pf-bundles && $(VENDOR) && $(DOCKER) && $(COMPOSER)
-	cd applinth && $(VENDOR) && $(DOCKER) && $(COMPOSER)
-	cd clients/demo/pipes-api && $(VENDOR) && $(DOCKER) && $(COMPOSER)
-
-rebuild-all:
-	cd detector && make build TAG=$(TAG)
-	cd topology-generator && make build TAG=$(TAG)
-	cd starting-point && make build TAG=$(TAG)
-	cd pf-bundles && make build TAG=$(TAG)
-	cd frontend && make build-dev TAG=$(TAG)
-	cd cron && make build TAG=$(TAG)
-	cd counter && make build TAG=$(TAG)
-	cd app-ui-new && make rebuild TAG=$(TAG)
-	cd app-ui-new-enterprise && make rebuild TAG=$(TAG)
-	cd clients/demo/node-sdk && make build TAG=$(TAG)
-	cd applinth && make build TAG=$(TAG)
-	cd notifier && make build TAG=$(TAG)
-	cd trace && make build TAG=$(TAG)
-	cd worker-api && make build TAG=$(TAG)
-	cd cloud-trace-llm-worker && make build TAG=$(TAG)
+ci-test: init test

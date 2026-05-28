@@ -1,6 +1,0 @@
-venv
-.idea
-build
-dist
-hb_pipes_metrics.egg-info
-*__pycache__*

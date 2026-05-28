@@ -1,9 +1,0 @@
-{
-    "http": "GET /api/applications/null/authorize?sdk=php-sdk&redirect_url=http://example.com",
-    "body": {
-        "password": "password"
-    },
-    "headers": {
-        "HTTP_Authorization": "jwt"
-    }
-}

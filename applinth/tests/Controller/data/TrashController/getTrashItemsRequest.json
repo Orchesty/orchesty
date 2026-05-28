@@ -1,7 +1,0 @@
-{
-    "http": "GET /api/applinth/trash",
-    "headers": {
-        "HTTP_Authorization": "jwt"
-    },
-    "body": {}
-}

@@ -1,6 +1,0 @@
-apiVersion: v2
-name: mongodb
-description: MongoDB server
-type: application
-version: 0.1.1
-appVersion: 5.0.9

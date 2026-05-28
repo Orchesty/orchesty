@@ -1,9 +1,0 @@
-services:
-  ui:
-    image: ui:tag
-    build: docker
-    user: ${DEV_UID}:${DEV_GID}
-    working_dir: /var/www/app-ui-new-enterprise
-    volumes:
-      - ../:/var/www:cached
-    command: sleep infinity

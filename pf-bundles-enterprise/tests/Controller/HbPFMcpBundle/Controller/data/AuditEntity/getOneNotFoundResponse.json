@@ -1,9 +1,0 @@
-{
-    "http": 404,
-    "body": {
-        "error_code": 0,
-        "message": "Document AuditEntity with key 'unknown' not found!",
-        "status": "INTERNAL_SERVER_ERROR",
-        "type": "Doctrine\\ODM\\MongoDB\\DocumentNotFoundException"
-    }
-}

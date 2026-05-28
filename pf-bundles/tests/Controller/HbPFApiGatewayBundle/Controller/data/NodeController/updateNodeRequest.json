@@ -1,9 +1,0 @@
-{
-    "http": "PATCH /api/nodes/:id",
-    "body": {
-        "enabled": false
-    },
-    "headers": {
-        "HTTP_Authorization": "jwt"
-    }
-}

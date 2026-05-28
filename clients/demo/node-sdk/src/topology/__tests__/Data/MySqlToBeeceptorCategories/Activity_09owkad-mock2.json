@@ -1,7 +1,0 @@
-{
-    "http": "POST https://test.free.beeceptor.com/api/categories",
-    "code": 200,
-    "body": {
-        "id": "6ca39d34-af02-48e6-bbb5-76efe745d100"
-    }
-}

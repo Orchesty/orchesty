@@ -1,6 +1,0 @@
-.env
-.idea
-node_modules
-dist
-coverage
-.pnpm-store

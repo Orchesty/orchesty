@@ -1,7 +1,0 @@
-{
-    "http": "GET /api/logs-old",
-    "body": [],
-    "headers": {
-        "HTTP_Authorization": "jwt"
-    }
-}

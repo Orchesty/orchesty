@@ -1,7 +1,0 @@
-{
-    "http": "POST /api/user/register",
-    "body": {
-        "email": "email@example.com"
-    },
-    "headers": []
-}

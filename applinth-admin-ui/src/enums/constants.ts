@@ -1,2 +1,0 @@
-export const PAGINATION_RECORDS_PER_PAGE = 10
-export const PAGINATION_NO_LIMIT = -1

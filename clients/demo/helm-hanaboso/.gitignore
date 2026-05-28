@@ -1,7 +1,0 @@
-/charts/*
-!/charts/rabbitmq
-!/charts/mongodb
-!/charts/influxdb
-!/charts/pipes
-
-/*secrets*.yaml

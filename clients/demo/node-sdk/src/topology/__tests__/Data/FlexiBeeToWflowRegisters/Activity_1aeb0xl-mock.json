@@ -1,5 +1,0 @@
-{
-    "http": "PATCH https://api.wflow.com/api/test-organization/registers/chartofaccounts",
-    "code": 200,
-    "body": ""
-}

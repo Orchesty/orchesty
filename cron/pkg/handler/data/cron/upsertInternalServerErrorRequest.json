@@ -1,4 +1,0 @@
-{
-    "http": "PATCH /crons",
-    "body": "This is not valid JSON!"
-}

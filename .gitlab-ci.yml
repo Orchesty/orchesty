@@ -1,34 +1,21 @@
-include:
-  - local: "/.gitlab/ci/essentials.gitlab-ci.yml"
+.base-frontend:
+  variables:
+    DIR: app-ui
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}frontend
 
-  - local: "/.gitlab/ci/test.gitlab-ci.yml"
-  - local: "/.gitlab/ci/build.gitlab-ci.yml"
-  - local: "/.gitlab/ci/deploy.gitlab-ci.yml"
-  - local: "/.gitlab/ci/git-mirror.gitlab-ci.yml"
-  - local: "/.gitlab/ci/release.gitlab-ci.yml"
+frontend:test:
+  stage: test
+  extends:
+    - .base-test
+    - .base-frontend
 
-  - local: "/app-ui-new/.gitlab-ci.yml"
-  - local: "/app-ui-new-enterprise/.gitlab-ci.yml"
-  - local: "/applinth/.gitlab-ci.yml"
-  - local: "/applinth-admin-ui/.gitlab-ci.yml"
-  - local: "/applinth-marketplace-ui/.gitlab-ci.yml"
-  - local: "/bridge/.gitlab-ci.yml"
-  - local: "/cloud-trace-llm-worker/.gitlab-ci.yml"
-  - local: "/counter/.gitlab-ci.yml"
-  - local: "/cron/.gitlab-ci.yml"
-  - local: "/detector/.gitlab-ci.yml"
-  - local: "/enterprise-sys-worker/.gitlab-ci.yml"
-  - local: "/limiter/.gitlab-ci.yml"
-  - local: "/metrics-collector/.gitlab-ci.yml"
-  - local: "/notifier/.gitlab-ci.yml"
-  - local: "/pf-bundles/.gitlab-ci.yml" # aka backend
-  - local: "/pf-bundles-enterprise/.gitlab-ci.yml" # aka enterprise backend
-  - local: "/saas/applinth-billing-processor/.gitlab-ci.yml"
-  - local: "/saas/cloud-controller/.gitlab-ci.yml"
-  - local: "/saas/console-api/.gitlab-ci.yml"
-  - local: "/saas/usccp/.gitlab-ci.yml"
-  - local: "/starting-point/.gitlab-ci.yml"
-  - local: "/topology-generator/.gitlab-ci.yml"
-  - local: "/trace/.gitlab-ci.yml"
-  - local: "/tunel-proxy/.gitlab-ci.yml"
-  - local: "/worker-api/.gitlab-ci.yml"
+frontend:build:
+  stage: build
+  variables:
+    MAKE_TARGET: rebuild
+  needs:
+    - job: frontend:test
+      optional: false
+  extends:
+    - .base-dind-build
+    - .base-frontend

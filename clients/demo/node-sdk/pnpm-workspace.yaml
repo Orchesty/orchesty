@@ -1,9 +1,0 @@
-overrides:
-  eslint: $eslint
-
-allowBuilds:
-  oracledb: false
-  protobufjs: true
-  unrs-resolver: true
-
-confirmModulesPurge: false

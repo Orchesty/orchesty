@@ -1,7 +1,0 @@
-{
-    "http": "POST /api/user/list",
-    "headers": {
-        "HTTP_Authorization": "jwt"
-    },
-    "body": []
-}

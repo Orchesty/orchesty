@@ -1,19 +1,44 @@
-.idea
-.vscode
+# Logs
+logs
 *.log
-go/pkg
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-clients/topology/*
-!clients/topology/.gitkeep
-.DS_Store
 node_modules
-Help/.dist
+.DS_Store
+dist
+dist-ssr
+coverage
+*.local
 
-_old_ci/*
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-.pnpm-store
+*.tsbuildinfo
 
-public_repo
+.eslintcache
 
-docker-compose.ci.yml
-docker-compose.ci.yaml
+# Cypress
+/cypress/videos/
+/cypress/screenshots/
+
+# Vitest
+__screenshots__/
+
+# Logs folders (but not in views/components)
+logs/
+**/logs/
+!**/views/logs/
+!**/components/logs/
+
+.env

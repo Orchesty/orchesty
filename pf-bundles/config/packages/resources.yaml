@@ -1,6 +1,0 @@
-parameters:
-    db_res:
-        resources:
-            user: Hanaboso\UserBundle\Document\User
-            tmp_user: Hanaboso\UserBundle\Document\TmpUser
-            token: Hanaboso\UserBundle\Document\Token

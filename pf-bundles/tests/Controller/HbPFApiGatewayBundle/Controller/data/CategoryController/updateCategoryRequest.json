@@ -1,9 +1,0 @@
-{
-    "http": "PUT /api/categories/:id",
-    "body": {
-        "name": "Another Category"
-    },
-    "headers": {
-        "HTTP_Authorization": "jwt"
-    }
-}

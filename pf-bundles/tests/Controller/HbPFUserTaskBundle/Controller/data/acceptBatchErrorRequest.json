@@ -1,7 +1,0 @@
-{
-    "http": "POST /user-task/accept",
-    "headers": {
-        "HTTP_Authorization": "jwt"
-    },
-    "body": {}
-}

@@ -1,7 +1,0 @@
-{
-    "http": "GET /topologies/{topologyId}/versions/node/{nodeName}",
-    "body": {},
-    "headers": {
-        "HTTP_Authorization": "jwt"
-    }
-}

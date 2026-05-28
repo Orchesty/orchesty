@@ -1,9 +1,0 @@
-{
-    "http": "PUT /audit/entities/unknown",
-    "body": {
-        "name": "name"
-    },
-    "headers": {
-        "HTTP_Authorization": "jwt"
-    }
-}

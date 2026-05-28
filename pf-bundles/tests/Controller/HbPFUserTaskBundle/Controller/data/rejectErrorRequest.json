@@ -1,7 +1,0 @@
-{
-    "http": "POST /user-task/losos/reject",
-    "headers": {
-        "HTTP_Authorization": "jwt"
-    },
-    "body": {}
-}

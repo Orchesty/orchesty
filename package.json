@@ -1,10 +1,95 @@
 {
-  "private": true,
+  "name": "@orchesty/ui-core",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./style.css": "./dist/ui-core.css",
+    "./*": "./dist/*"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build:help": "node Help/scripts/build-help.mjs ./Help ./Help/.dist"
+    "dev": "vite",
+    "build": "run-p type-check \"build-only {@}\" --",
+    "build:lib": "vite build --mode lib",
+    "build:lib:watch": "vite build --mode lib --watch",
+    "preview": "vite preview",
+    "test:unit": "vitest",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --build",
+    "lint": "eslint . --fix --cache",
+    "format": "prettier --write --experimental-cli src/"
+  },
+  "peerDependencies": {
+    "@vuepic/vue-datepicker": "^12.0.0",
+    "@vueuse/core": "^11.0.0",
+    "apexcharts": "^5.0.0",
+    "axios": "^1.0.0",
+    "flowbite": "^4.0.0",
+    "lucide-vue-next": "^0.400.0",
+    "pinia": "^3.0.0",
+    "vue": "^3.5.0",
+    "vue-router": "^4.0.0",
+    "vue3-apexcharts": "^1.0.0"
+  },
+  "dependencies": {
+    "@vuepic/vue-datepicker": "^12.0.0",
+    "@vueuse/core": "^11.0.0",
+    "ajv": "^8.18.0",
+    "apexcharts": "^5.0.0",
+    "axios": "^1.0.0",
+    "clsx": "^2.1.1",
+    "cron-parser": "^5.5.0",
+    "cronstrue": "^3.14.0",
+    "flowbite": "^4.0.0",
+    "flowbite-datepicker": "^2.0.0",
+    "lucide-vue-next": "^0.400.0",
+    "marked": "^17.0.5",
+    "minisearch": "^7.2.0",
+    "pinia": "^3.0.0",
+    "rete-editor": "file:local-packages/rete-editor-1.5.9.tgz",
+    "tailwind-merge": "^2.6.1",
+    "vue": "^3.5.0",
+    "vue-router": "^4.0.0",
+    "vue3-apexcharts": "^1.0.0"
   },
   "devDependencies": {
-    "gray-matter": "^4.0.3",
-    "minisearch": "^7.2.0"
+    "@tailwindcss/typography": "^0.5.19",
+    "@tailwindcss/vite": "^4.2.2",
+    "@tsconfig/node24": "^24.0.4",
+    "@types/jsdom": "^27.0.0",
+    "@types/node": "^24.12.0",
+    "@vitejs/plugin-vue": "^6.0.5",
+    "@vitest/eslint-plugin": "^1.6.13",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/eslint-config-typescript": "^14.7.0",
+    "@vue/test-utils": "^2.4.6",
+    "@vue/tsconfig": "^0.8.1",
+    "eslint": "^9.39.4",
+    "eslint-plugin-vue": "~10.5.1",
+    "jiti": "^2.6.1",
+    "jsdom": "^27.4.0",
+    "npm-run-all2": "^8.0.4",
+    "postcss": "^8.5.8",
+    "prettier": "3.6.2",
+    "start-server-and-test": "^2.1.5",
+    "tailwindcss": "^4.2.2",
+    "typescript": "~5.9.3",
+    "vite": "^7.3.1",
+    "vite-plugin-vue-devtools": "^8.1.1",
+    "vitest": "^4.1.1",
+    "vue-tsc": "^3.2.6"
   }
 }

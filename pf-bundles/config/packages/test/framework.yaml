@@ -1,5 +1,0 @@
-framework:
-    test: true
-    session:
-        cookie_secure: false
-        cookie_samesite: 'none'

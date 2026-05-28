@@ -1,7 +1,0 @@
-{
-    "http": "POST /api/applinth/trash/reject",
-    "headers": {
-        "HTTP_Authorization": "jwt"
-    },
-    "body": {}
-}

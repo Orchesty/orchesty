@@ -1,5 +1,0 @@
-mock
-PyYAML
-flask
-Flask-JSON
-lxml

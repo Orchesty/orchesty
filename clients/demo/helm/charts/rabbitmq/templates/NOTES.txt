@@ -1,5 +1,0 @@
-1. Get the application URL by running these commands:
-  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "rabbitmq.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
-  echo "Visit http://127.0.0.1:15672 to access RabbitMQ management console"
-  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 15672:15672
-  

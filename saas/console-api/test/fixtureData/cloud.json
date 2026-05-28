@@ -1,8 +1,0 @@
-{
-    "tenantId": "t1",
-    "plan": "basic",
-    "price": 100,
-    "period": "monthly",
-    "startDate": "2022-02-02",
-    "closeDate": "2022-02-02"
-}
