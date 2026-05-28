@@ -162,7 +162,10 @@ final class MetricConnectorHeatmapAggregationFilter extends GridAggregationFilte
                 ->sortBy('created', 'desc')
                 ->output()
                 ->field('applicationId')
-                ->locf();
+                ->locf()
+                ->match()
+                ->field('nodeId')
+                ->notEqual(NULL);
         }
 
         $addSortationsCallback();
@@ -238,7 +241,10 @@ final class MetricConnectorHeatmapAggregationFilter extends GridAggregationFilte
                 ->expression('$_id.hour')
                 ->densify('created')
                 ->partitionByFields('nodeId')
-                ->range([$densifyStart, $densifyEnd], $binSize, 'millisecond');
+                ->range([$densifyStart, $densifyEnd], $binSize, 'millisecond')
+                ->match()
+                ->field('nodeId')
+                ->notEqual(NULL);
         }
     }
 
