@@ -803,6 +803,7 @@ const initNodesData = (editor: EditorCore, backendNodes: BackendNode[]) => {
         label: editorNode.label,
         name: editorNode.name,
         crontab: backend?.cron_time || '',
+        params: backend?.cron_params || '',
         enabled: backend?.enabled ?? true,
         nextRun: '',
       }
@@ -812,6 +813,7 @@ const initNodesData = (editor: EditorCore, backendNodes: BackendNode[]) => {
         label: editorNode.label,
         name: editorNode.name,
         crontab: '',
+        params: '',
         enabled: backend?.enabled ?? true,
         nextRun: ''
       }
@@ -911,21 +913,22 @@ const selectedNodeAsTask = computed<ScheduledTask | null>(() => {
     topologyId: props.topologyId,
     crontab: nodeData.crontab || '',
     nextRun: nextRunDate,
-    params: '',
+    params: nodeData.params || '',
     status: nodeData.enabled ? 'enabled' : 'disabled',
   }
 })
 
-const handleCrontabSave = async (backendNodeId: string, crontab: string) => {
+const handleCrontabSave = async (backendNodeId: string, crontab: string, params: string) => {
   if (!selectedNode.value) return
 
   try {
-    await updateCrontab(backendNodeId, crontab)
+    await updateCrontab(backendNodeId, crontab, params)
 
     const editorNodeId = selectedNode.value.id
     const nodeData = nodesData.value[editorNodeId]
     if (nodeData) {
       nodeData.crontab = crontab
+      nodeData.params = params
     }
 
     editorCore.value?.refreshNodeLabel(editorNodeId)

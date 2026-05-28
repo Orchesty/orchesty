@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, nextTick, onMounted, computed, watch, inject } from 'vue'
+import { ref, nextTick, onMounted, computed, watch, inject, useSlots } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import TopologyProcessesTab from '@/components/topologies/TopologyProcessesTab.vue'
 import TopologyLogsTab from '@/components/topologies/TopologyLogsTab.vue'
@@ -51,6 +51,9 @@ const props = withDefaults(defineProps<Props>(), {
 })
 const route = useRoute()
 const router = useRouter()
+const slots = useSlots()
+
+const connectorDetailEnabled = computed(() => !!slots['topology-connector-detail-drawer'])
 
 const { showToast } = useToast()
 const { setLastTopology, getLastTopology } = useLastTopology()
@@ -846,7 +849,12 @@ onMounted(async () => {
         :topology-id="topology._id"
         :topology-name="topology.name"
         :refresh-key="refreshKey"
-      />
+        :connector-detail-enabled="connectorDetailEnabled"
+      >
+        <template #connector-detail-drawer="slotProps">
+          <slot name="topology-connector-detail-drawer" v-bind="slotProps" />
+        </template>
+      </TopologyProcessesTab>
       <TopologyLogsTab
         v-else-if="activeTopologyTab === 'logs'"
         :topology-id="topology._id"

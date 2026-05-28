@@ -43,12 +43,12 @@ export function useCronNodeActions() {
     }
   }
 
-  const updateCrontab = async (nodeId: string, crontab: string): Promise<string> => {
+  const updateCrontab = async (nodeId: string, crontab: string, params: string): Promise<string> => {
     try {
       await api.patch(`/api/nodes/${nodeId}`, {
         cron: {
           time: crontab,
-          params: '',
+          params,
         },
       })
       const nextRunDate = getNextCronRun(crontab)
