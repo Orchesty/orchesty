@@ -158,7 +158,7 @@ services:
             WORKER_API: http://worker-api:8080/
             TOPOLOGY_API_DSN: topology-api:8080
             #DOCKER_PF_BRIDGE_IMAGE: orchesty/bridge:${VERSION}
-            DOCKER_PF_BRIDGE_IMAGE: dkr.hanaboso.net/pipes/pipes/pf-bridge:new-ui
+            DOCKER_PF_BRIDGE_IMAGE: dkr.hanaboso.net/pipes/pipes/pf-bridge:master
             JWT_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
             AUTH0_DOMAIN: dev-qsa0lopaqbhr0vmj.eu.auth0.com
             AUTH0_AUDIENCE: https://api.orchesty.cloud
@@ -209,7 +209,7 @@ services:
             WORKER_API: http://worker-api:8080/
             TOPOLOGY_API_DSN: topology-api:8080
             #DOCKER_PF_BRIDGE_IMAGE: orchesty/bridge:${VERSION}
-            DOCKER_PF_BRIDGE_IMAGE: dkr.hanaboso.net/pipes/pipes/pf-bridge:new-ui
+            DOCKER_PF_BRIDGE_IMAGE: dkr.hanaboso.net/pipes/pipes/pf-bridge:master
             JWT_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
             AUTH0_DOMAIN: dev-qsa0lopaqbhr0vmj.eu.auth0.com
             AUTH0_AUDIENCE: https://api.orchesty.cloud
@@ -396,19 +396,6 @@ services:
             - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
             - ./../../detector/:/app:cached
         command: /bin/sh -c 'su-exec root chmod 666 /var/run/docker.sock && go run main.go'
-
-    frontend:
-        build: ./../../app-ui/docker
-        user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www/app-ui
-        environment:
-            VITE_BACKEND_URL: ${BACKEND_URL}
-            VITE_STARTING_POINT_URL: http://${DEV_IP}:82
-        ports:
-            - ${DEV_IP}:80:3000
-        volumes:
-            - ../../app-ui:/var/www/app-ui:cached
-        command: sh -c 'pnpm install && pnpm run start'
 
     frontend-new:
         build: ./../../app-ui-new/docker

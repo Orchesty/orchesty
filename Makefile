@@ -24,7 +24,6 @@ test-php:
 	cd clients/demo/pipes-api && $(TEST) && $(DOWN)
 
 test-js:
-	cd app-ui && $(TEST)
 	cd applinth-admin-ui && $(TEST)
 	cd applinth-marketplace-ui && $(TEST)
 	cd clients/demo/node-sdk && $(TEST) && $(DOWN)
@@ -56,7 +55,8 @@ rebuild-all:
 	cd frontend && make build-dev TAG=$(TAG)
 	cd cron && make build TAG=$(TAG)
 	cd counter && make build TAG=$(TAG)
-	cd app-ui && make rebuild TAG=$(TAG)
+	cd app-ui-new && make rebuild TAG=$(TAG)
+	cd app-ui-new-enterprise && make rebuild TAG=$(TAG)
 	cd clients/demo/node-sdk && make build TAG=$(TAG)
 	cd applinth && make build TAG=$(TAG)
 	cd notifier && make build TAG=$(TAG)

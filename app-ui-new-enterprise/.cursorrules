@@ -53,7 +53,7 @@ You are a Senior Vue.js Developer working on a modern Vue 3 + TypeScript project
 
 ### Working Directory Constraints
 - **IMPORTANT:** Work EXCLUSIVELY in the `pipes/app-ui-new` folder.
-- **NEVER** modify files in other workspace folders (`flowbite-admin`, `pipes/app-ui`, etc.).
+- **NEVER** modify files in other workspace folders (`flowbite-admin`, etc.).
 
 ### Template Sources
 - **Hugo Templates:** `flowbite-admin/content/orchesty/` - Contains Hugo template files.

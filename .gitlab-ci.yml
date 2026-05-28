@@ -7,7 +7,6 @@ include:
   - local: "/.gitlab/ci/git-mirror.gitlab-ci.yml"
   - local: "/.gitlab/ci/release.gitlab-ci.yml"
 
-  # - local: "/app-ui/.gitlab-ci.yml"
   - local: "/app-ui-new/.gitlab-ci.yml"
   - local: "/app-ui-new-enterprise/.gitlab-ci.yml"
   - local: "/applinth/.gitlab-ci.yml"
