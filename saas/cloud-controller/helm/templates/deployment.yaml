@@ -125,6 +125,16 @@ spec:
             {{- end }}
             - name: GCS_SERVICE_ACCOUNT_EMAIL
               value: {{ .Values.gcs.serviceAccountEmail | quote }}
+            - name: GCS_HMAC_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.name }}
+                  key: {{ .Values.secret.keys.gcsHmacAccessKey }}
+            - name: GCS_HMAC_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.name }}
+                  key: {{ .Values.secret.keys.gcsHmacSecretKey }}
           livenessProbe:
             httpGet:
               path: /status

@@ -26,12 +26,16 @@ func withGCSConfig(t *testing.T, serverURL string) {
 	originalLocation := config.GCS.Location
 	originalEndpoint := config.GCS.Endpoint
 	originalSAEmail := config.GCS.ServiceAccountEmail
+	originalHMACAccessKey := config.GCS.HMACAccessKey
+	originalHMACSecretKey := config.GCS.HMACSecretKey
 
 	config.GCS.Enabled = true
 	config.GCS.ProjectID = "test-project"
 	config.GCS.Location = "eu"
 	config.GCS.Endpoint = serverURL + "/storage/v1/"
 	config.GCS.ServiceAccountEmail = "test@test-project.iam.gserviceaccount.com"
+	config.GCS.HMACAccessKey = ""
+	config.GCS.HMACSecretKey = ""
 
 	t.Cleanup(func() {
 		config.GCS.Enabled = originalEnabled
@@ -39,6 +43,8 @@ func withGCSConfig(t *testing.T, serverURL string) {
 		config.GCS.Location = originalLocation
 		config.GCS.Endpoint = originalEndpoint
 		config.GCS.ServiceAccountEmail = originalSAEmail
+		config.GCS.HMACAccessKey = originalHMACAccessKey
+		config.GCS.HMACSecretKey = originalHMACSecretKey
 	})
 }
 
@@ -111,6 +117,46 @@ func TestCreateBucketSuccess(t *testing.T) {
 
 	if requests[1].Method != http.MethodPost {
 		t.Fatalf("expected POST for HMAC, got %s", requests[1].Method)
+	}
+}
+
+func TestCreateBucketUsesGlobalHMACCredentials(t *testing.T) {
+	requests := make([]capturedRequest, 0)
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		requests = append(requests, capturedRequest{
+			Method: request.Method,
+			Path:   request.URL.Path,
+		})
+
+		if strings.Contains(request.URL.Path, "hmacKeys") {
+			t.Fatal("global HMAC should avoid createHMACKey call")
+		}
+
+		writer.WriteHeader(http.StatusOK)
+		_, _ = writer.Write([]byte(`{"name":"logs-instance-abc123"}`))
+	}))
+	defer server.Close()
+
+	withGCSConfig(t, server.URL)
+	config.GCS.HMACAccessKey = "GLOBALACCESS"
+	config.GCS.HMACSecretKey = "GLOBALSECRET"
+
+	client := NewClient()
+	creds, err := client.CreateBucket(testDTO(true))
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	if creds == nil {
+		t.Fatal("expected global HMAC credentials, got nil")
+	}
+
+	if creds.AccessKey != "GLOBALACCESS" || creds.SecretKey != "GLOBALSECRET" {
+		t.Fatalf("expected global credentials, got %+v", creds)
+	}
+
+	if len(requests) != 1 {
+		t.Fatalf("expected only bucket create request, got %d", len(requests))
 	}
 }
 
@@ -308,6 +354,32 @@ func TestCreateBucketConflictReturnsNilCreds(t *testing.T) {
 	}
 }
 
+func TestCreateBucketConflictReturnsGlobalCreds(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+		writer.WriteHeader(http.StatusConflict)
+		_, _ = writer.Write([]byte(`{"error":"bucket already exists"}`))
+	}))
+	defer server.Close()
+
+	withGCSConfig(t, server.URL)
+	config.GCS.HMACAccessKey = "GLOBALACCESS"
+	config.GCS.HMACSecretKey = "GLOBALSECRET"
+
+	client := NewClient()
+	creds, err := client.CreateBucket(testDTO(true))
+	if err != nil {
+		t.Fatalf("expected no error on conflict with global creds, got %v", err)
+	}
+
+	if creds == nil {
+		t.Fatal("expected global credentials on conflict")
+	}
+
+	if creds.AccessKey != "GLOBALACCESS" || creds.SecretKey != "GLOBALSECRET" {
+		t.Fatalf("expected global credentials, got %+v", creds)
+	}
+}
+
 func TestDeleteHMACKeySuccess(t *testing.T) {
 	requests := make([]capturedRequest, 0)
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -355,6 +427,22 @@ func TestDeleteHMACKeyEmptyIdNoOp(t *testing.T) {
 	client := NewClient()
 	if err := client.DeleteHMACKey(""); err != nil {
 		t.Fatalf("expected no error for empty key, got %v", err)
+	}
+}
+
+func TestDeleteHMACKeySkipsGlobalKey(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+		t.Fatal("no request should be made for configured global key")
+	}))
+	defer server.Close()
+
+	withGCSConfig(t, server.URL)
+	config.GCS.HMACAccessKey = "GLOBALACCESS"
+	config.GCS.HMACSecretKey = "GLOBALSECRET"
+
+	client := NewClient()
+	if err := client.DeleteHMACKey("GLOBALACCESS"); err != nil {
+		t.Fatalf("expected no error for global key, got %v", err)
 	}
 }
 

@@ -27,6 +27,8 @@ secret:
     rabbitAdminPass: rabbit_admin_pass
     kongValkeyUser: kong_valkey_user
     kongValkeyPass: kong_valkey_pass
+    gcsHmacAccessKey: gcs_hmac_access_key
+    gcsHmacSecretKey: gcs_hmac_secret_key
 
 env:
   appDebug: true

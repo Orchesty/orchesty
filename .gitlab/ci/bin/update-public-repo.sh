@@ -3,7 +3,7 @@ set -ex
 
 PUBLIC_REPO=git@github.com:Orchesty/orchesty.git
 
-BRANCHES="2.1.0 2.1.1"
+BRANCHES="3.0.0 master"
 # BRANCHES="master"
 
 get_subtrees() {
@@ -19,7 +19,8 @@ get_subtrees() {
         2.0.0) echo "app-ui bridge counter cron detector fluentd limiter pf-bundles starting-point topology-generator worker-api" ;;
         2.1.0) echo "app-ui bridge counter cron detector fluentd limiter pf-bundles starting-point topology-generator worker-api" ;;
         2.1.1) echo "app-ui bridge counter cron detector fluentd limiter pf-bundles starting-point topology-generator worker-api" ;;
-        master) echo "app-ui bridge counter cron detector fluentd limiter pf-bundles starting-point topology-generator worker-api" ;;
+        3.0.0) echo "app-ui bridge counter cron detector limiter pf-bundles starting-point topology-generator worker-api" ;;
+        master) echo "app-ui bridge counter cron detector limiter pf-bundles starting-point topology-generator worker-api" ;;
         *) echo "" ;;
     esac
 }

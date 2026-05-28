@@ -94,6 +94,8 @@ type gcs struct {
 	ProjectID           string `env:"GCS_PROJECT_ID" default:""`
 	CredentialsFile     string `env:"GCS_CREDENTIALS_FILE" default:""`
 	ServiceAccountEmail string `env:"GCS_SERVICE_ACCOUNT_EMAIL" default:""`
+	HMACAccessKey       string `env:"GCS_HMAC_ACCESS_KEY" default:""`
+	HMACSecretKey       string `env:"GCS_HMAC_SECRET_KEY" default:""`
 }
 
 type cloud struct {

@@ -106,13 +106,21 @@ func (c *Client) CreateBucket(dto *models.InstanceDTO) (*HMACCredentials, error)
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusConflict {
-		// Bucket already exists; treat as success without credentials.
+		// Bucket already exists; reuse the configured global HMAC if available.
+		if creds := c.globalHMACCredentials(); creds != nil {
+			return creds, nil
+		}
+
 		return nil, nil
 	}
 
 	if resp.StatusCode >= 400 {
 		respBody, _ := io.ReadAll(resp.Body)
 		return nil, fmt.Errorf("GCS create bucket %s returned %d: %s", bucketName, resp.StatusCode, string(respBody))
+	}
+
+	if creds := c.globalHMACCredentials(); creds != nil {
+		return creds, nil
 	}
 
 	creds, err := c.createHMACKey()
@@ -241,6 +249,10 @@ func (c *Client) DeleteHMACKey(accessKeyId string) error {
 		return nil
 	}
 
+	if globalCreds := c.globalHMACCredentials(); globalCreds != nil && accessKeyId == globalCreds.AccessKey {
+		return nil
+	}
+
 	// Deactivate the key first
 	deactivateURL := fmt.Sprintf("%s/projects/%s/hmacKeys/%s", config.GCS.S3Endpoint(), config.GCS.ProjectID, accessKeyId)
 	deactivateBody, _ := json.Marshal(map[string]string{"state": "INACTIVE"})
@@ -322,4 +334,15 @@ func (c *Client) createHMACKey() (*HMACCredentials, error) {
 		AccessKey: result.Metadata.AccessId,
 		SecretKey: result.Secret,
 	}, nil
+}
+
+func (c *Client) globalHMACCredentials() *HMACCredentials {
+	if config.GCS.HMACAccessKey == "" || config.GCS.HMACSecretKey == "" {
+		return nil
+	}
+
+	return &HMACCredentials{
+		AccessKey: config.GCS.HMACAccessKey,
+		SecretKey: config.GCS.HMACSecretKey,
+	}
 }
