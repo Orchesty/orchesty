@@ -113,7 +113,7 @@ final class TopologyController
     {
         try {
             return $this->getResponse($this->topologyHandler->getTopology($id));
-        } catch (TopologyException|MongoDBException $e) {
+        } catch (MongoDBException|TopologyException $e) {
             return $this->getErrorResponse($e);
         }
     }
@@ -267,11 +267,141 @@ final class TopologyController
      *
      * @return Response
      */
+    #[Route(
+        '/topologies/{id}/schema.json',
+        requirements: ['id' => '\w+'],
+        defaults: ['_format' => 'json'],
+        methods: ['GET'],
+    )]
+    public function getTopologyJsonSchemaAction(string $id): Response
+    {
+        try {
+            return $this->getResponse($this->topologyHandler->getTopologyJsonSchema($id));
+        } catch (TopologyException $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param string  $id
+     *
+     * @return Response
+     */
+    #[Route(
+        '/topologies/{id}/schema.json',
+        requirements: ['id' => '\w+'],
+        defaults: ['_format' => 'json'],
+        methods: ['PUT'],
+    )]
+    public function saveTopologyJsonSchemaAction(Request $request, string $id): Response
+    {
+        try {
+            return $this->getResponse($this->topologyHandler->saveTopologyJsonSchema($id, $request->request->all()));
+        } catch (Throwable $e) {
+            return $this->getErrorResponse(
+                $e,
+                in_array(
+                    $e->getCode(),
+                    [
+                        TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND,
+                        TopologyException::TOPOLOGY_NODE_TYPE_NOT_FOUND,
+                        TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST,
+                        TopologyException::TOPOLOGY_NODE_CRON_NOT_VALID,
+                        TopologyException::UNSUPPORTED_SCHEMA,
+                    ],
+                    TRUE,
+                ) ? 400 : 500,
+            );
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param string  $id
+     *
+     * @return Response
+     */
+    #[Route(
+        '/topologies/check/{id}/schema.json',
+        requirements: ['id' => '\w+'],
+        defaults: ['_format' => 'json'],
+        methods: ['POST'],
+    )]
+    public function checkTopologyJsonSchemaDifferencesAction(Request $request, string $id): Response
+    {
+        try {
+            return $this->getResponse(
+                $this->topologyHandler->checkTopologyJsonSchemaDifferences($id, $request->request->all()),
+            );
+        } catch (Throwable $e) {
+            return $this->getErrorResponse(
+                $e,
+                in_array(
+                    $e->getCode(),
+                    [
+                        TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND,
+                        TopologyException::TOPOLOGY_NODE_TYPE_NOT_FOUND,
+                        TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST,
+                        TopologyException::TOPOLOGY_NODE_CRON_NOT_VALID,
+                        TopologyException::UNSUPPORTED_SCHEMA,
+                    ],
+                    TRUE,
+                ) ? 400 : 500,
+            );
+        }
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
     #[Route('/topologies/{id}/publish', requirements: ['id' => '\w+'], methods: ['POST'])]
     public function publishTopologyAction(string $id): Response
     {
         try {
             $res = $this->topologyHandler->publishTopology($id);
+
+            return $this->getResponse($res->getBody(), $res->getStatusCode());
+        } catch (TopologyException $e) {
+            $status = $e->getCode() === TopologyException::SLOT_LIMIT_REACHED
+                ? Response::HTTP_CONFLICT
+                : Response::HTTP_INTERNAL_SERVER_ERROR;
+
+            return $this->getErrorResponse($e, $status);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route('/topologies/{id}/republish', requirements: ['id' => '\w+'], methods: ['POST'])]
+    public function republishTopologyAction(string $id): Response
+    {
+        try {
+            $res = $this->topologyHandler->republishTopology($id);
+
+            return $this->getResponse($res->getBody(), $res->getStatusCode());
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route('/topologies/{id}/unpublish', requirements: ['id' => '\w+'], methods: ['POST'])]
+    public function unpublishTopologyAction(string $id): Response
+    {
+        try {
+            $res = $this->topologyHandler->unpublishTopology($id);
 
             return $this->getResponse($res->getBody(), $res->getStatusCode());
         } catch (Throwable $e) {
@@ -306,7 +436,7 @@ final class TopologyController
     public function deleteTopologyAction(Request $request, string $id): Response
     {
         try {
-            $removeWithTasks = $request->get('removeWithTasks');
+            $removeWithTasks = $request->query->getBoolean('removeWithTasks');
             $res             = $this->topologyHandler->deleteTopology($id, $removeWithTasks);
 
             return $this->getResponse($res->getBody(), $res->getStatusCode());

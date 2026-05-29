@@ -58,6 +58,33 @@ final class UserController extends AbstractController
     /**
      * @return Response
      */
+    #[Route('/user/exists', methods: ['GET'])]
+    public function userExistsAction(): Response
+    {
+        return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::userExistsAction');
+    }
+
+    /**
+     * @return Response
+     */
+    #[Route('/user/setup', methods: ['POST'])]
+    public function setupAction(): Response
+    {
+        return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::setupAction');
+    }
+
+    /**
+     * @return Response
+     */
+    #[Route('/user/invite', methods: ['POST'])]
+    public function inviteAction(): Response
+    {
+        return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::inviteAction');
+    }
+
+    /**
+     * @return Response
+     */
     #[Route('/user/register', methods: ['POST'])]
     public function registerAction(): Response
     {
@@ -158,6 +185,49 @@ final class UserController extends AbstractController
             'Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::getAllUsersAction',
             [],
             $request->query->all(),
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/user/invited/list', methods: ['POST'])]
+    public function getAllInvitedUsersAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::getAllInvitedUsersAction',
+            [],
+            $request->query->all(),
+        );
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route('/user/invited/{id}/regenerate', methods: ['POST'])]
+    public function regenerateInviteAction(string $id): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::regenerateInviteAction',
+            ['id' => $id],
+        );
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route('/user/invited/{id}/delete', methods: ['DELETE'])]
+    public function deleteInvitedUserAction(string $id): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::deleteInvitedUserAction',
+            ['id' => $id],
         );
     }
 

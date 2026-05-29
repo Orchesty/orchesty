@@ -20,13 +20,14 @@ use Hanaboso\Utils\Exception\DateTimeException;
 class ApplicationInstall
 {
 
-    use IdTrait;
     use CreatedTrait;
-    use UpdatedTrait;
     use DeletedTrait;
+    use IdTrait;
+    use UpdatedTrait;
 
-    public const string USER = 'user';
     public const string KEY  = 'key';
+    public const string SDK  = 'sdk';
+    public const string USER = 'user';
 
     /**
      * @var string
@@ -59,6 +60,12 @@ class ApplicationInstall
     private array $nonEncryptedSettings = [];
 
     /**
+     * @var string
+     */
+    #[ODM\Field(type: 'string')]
+    private string $sdk = '';
+
+    /**
      * ApplicationInstall constructor.
      *
      * @throws DateTimeException
@@ -68,7 +75,6 @@ class ApplicationInstall
         $this->created = DateTimeUtils::getUtcDateTime();
         $this->updated = DateTimeUtils::getUtcDateTime();
     }
-
 
     /**
      * @param string $user
@@ -163,6 +169,26 @@ class ApplicationInstall
     }
 
     /**
+     * @return string
+     */
+    public function getSdk(): string
+    {
+        return $this->sdk;
+    }
+
+    /**
+     * @param string $sdk
+     *
+     * @return ApplicationInstall
+     */
+    public function setSdk(string $sdk): self
+    {
+        $this->sdk = $sdk;
+
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function isEnabled(): bool
@@ -197,6 +223,7 @@ class ApplicationInstall
             'nonEncryptedSettings'   => $this->getNonEncryptedSettings(),
             'updated'                => $this->getUpdated()->format(DateTimeUtils::DATE_TIME),
             self::KEY  => $this->getKey(),
+            self::SDK  => $this->getSdk(),
             self::USER => $this->getUser(),
         ];
     }

@@ -4,10 +4,10 @@
         "items": [],
         "paging": {
             "page": 1,
-            "itemsPerPage": 50,
+            "itemsPerPage": 0,
             "total": 0,
-            "nextPage": 2,
-            "lastPage": 2,
+            "nextPage": 1,
+            "lastPage": 1,
             "previousPage": 1
         }
     }

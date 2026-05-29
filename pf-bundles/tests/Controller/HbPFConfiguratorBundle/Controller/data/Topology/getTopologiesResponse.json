@@ -12,7 +12,8 @@
                 "version": 1,
                 "category": null,
                 "enabled": true,
-                "cronSettings": []
+                "cronSettings": [],
+                "bridgeOutOfSync": false
             },
             {
                 "_id": "5e32b04ce99e002a011e0d25",
@@ -24,7 +25,8 @@
                 "version": 1,
                 "category": null,
                 "enabled": true,
-                "cronSettings": []
+                "cronSettings": [],
+                "bridgeOutOfSync": false
             }
         ],
         "total": 4,

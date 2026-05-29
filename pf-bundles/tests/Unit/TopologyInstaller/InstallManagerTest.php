@@ -16,6 +16,7 @@ use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
 use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
 use Monolog\Logger;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
@@ -26,6 +27,7 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  */
 #[CoversClass(InstallManager::class)]
 #[CoversClass(NullCache::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class InstallManagerTest extends KernelTestCaseAbstract
 {
 
@@ -88,12 +90,8 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $this->setProperty($topo, 'id', '123');
         $manager = $this->createManager($topo);
 
-        $dm = $this->createMock(DocumentManager::class);
-        $dm->expects(self::any())->method('persist')->willThrowException(new Exception());
-        $this->setProperty($manager, 'dm', $dm);
-
         $dto = new CompareResultDto();
-        $dto->addCreate(new TopologyFile('file.tplg', __DIR__ . '/data/file.tplg'));
+        $dto->addCreate(new TopologyFile('file.tplg.json', __DIR__ . '/data/file.tplg.json'));
 
         $result = $this->invokeMethod($manager, 'makeCreate', [$dto, '']);
 
@@ -111,11 +109,13 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $manager = $this->createManager($topo);
 
         $dm = $this->createMock(DocumentManager::class);
-        $dm->expects(self::any())->method('persist')->willThrowException(new Exception());
+        $dm->expects(self::atLeastOnce())->method('persist')->willThrowException(new Exception());
         $this->setProperty($manager, 'dm', $dm);
 
         $dto = new CompareResultDto();
-        $dto->addUpdate(new UpdateObject($topo, new TopologyFile('file-upl.tplg', __DIR__ . '/data/file-upl.tplg')));
+        $dto->addUpdate(
+            new UpdateObject($topo, new TopologyFile('file-upl.tplg.json', __DIR__ . '/data/file-upl.tplg.json')),
+        );
 
         $result = $this->invokeMethod($manager, 'makeUpdate', [$dto, '']);
 
@@ -150,7 +150,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $manager = $this->createManager($topo);
 
         $dm = $this->createMock(DocumentManager::class);
-        $dm->expects(self::any())->method('persist')->willThrowException(new Exception());
+        $dm->expects(self::atLeastOnce())->method('persist')->willThrowException(new Exception());
         $this->setProperty($manager, 'dm', $dm);
 
         $dto = new CompareResultDto();
@@ -178,7 +178,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $topologyManager->method('createTopology')->willReturn(new Topology());
         $topologyManager->method('publishTopology')->willReturn(new Topology());
         $topologyManager->method('updateTopology')->willReturn($savedTopo);
-        $topologyManager->method('saveTopologySchema')->willReturn($savedTopo);
+        $topologyManager->method('saveTopologyJsonSchema')->willReturn($savedTopo);
         $topologyManager->method('deleteTopology')->willReturnCallback(
             static function (): void {
             },

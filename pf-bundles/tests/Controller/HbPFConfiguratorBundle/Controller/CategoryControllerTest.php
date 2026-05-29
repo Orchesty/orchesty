@@ -10,6 +10,7 @@ use Hanaboso\PipesFramework\Database\Document\Category;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler;
 use LogicException;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
@@ -22,6 +23,7 @@ use PipesFrameworkTests\ControllerTestCaseAbstract;
 #[CoversClass(CategoryController::class)]
 #[CoversClass(CategoryHandler::class)]
 #[CoversClass(CategoryManager::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class CategoryControllerTest extends ControllerTestCaseAbstract
 {
 
@@ -98,7 +100,7 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
         $categories = $this->createCategories(2);
 
         $manager = self::createPartialMock(CategoryManager::class, ['updateCategory']);
-        $manager->expects(self::any())->method('updateCategory')->willThrowException(new MongoDBException());
+        $manager->expects(self::atLeastOnce())->method('updateCategory')->willThrowException(new MongoDBException());
         self::getContainer()->set('hbpf.configurator.manager.category', $manager);
 
         $this->assertResponseLogged(

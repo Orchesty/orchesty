@@ -15,8 +15,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 abstract class KernelTestCaseAbstract extends KernelTestCase
 {
 
-    use PrivateTrait;
     use PHPMock;
+    use PrivateTrait;
     use RestoreErrorHandlersTrait;
 
     /**

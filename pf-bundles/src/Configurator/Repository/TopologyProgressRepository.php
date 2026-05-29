@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Configurator\Repository;
 
 use DateTime;
+use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
@@ -87,6 +88,70 @@ final class TopologyProgressRepository extends DocumentRepository
             ->field('id')
             ->expression('$createdDay')
             ->field('total')->sum('$processedCount')
+            ->getAggregation()->getIterator()->toArray();
+    }
+
+    /**
+     * Aggregates per-topology activity in a time window.
+     *
+     * Each result row carries the topologyId (in `_id`), the run count and
+     * the number of runs that finished successfully, finished with at least
+     * one failed step (`nok > 0`) or are still in flight (no `finished`
+     * timestamp yet). The youngest and oldest run timestamps are also
+     * surfaced so the renderer can show "last seen at …".
+     *
+     * Backed by `IK_multiCounter_created_topologyId_nok_finished`, so the
+     * Mongo planner can satisfy this entirely from the index without a
+     * collection scan.
+     *
+     * @param DateTimeInterface      $from start of the window (inclusive)
+     * @param DateTimeInterface|null $to   end of the window (exclusive); null leaves it open-ended
+     *
+     * @return array<int, array<string, mixed>>
+     * @throws Exception
+     */
+    public function getActivityByTopology(DateTimeInterface $from, ?DateTimeInterface $to): array
+    {
+        $ab = $this->createAggregationBuilder();
+
+        $match = $ab->match()->field('created')->gte(
+            DateTimeUtils::getUtcDateTime($from->format(DateTimeUtils::DATE_TIME_UTC)),
+        );
+        if ($to !== NULL) {
+            $match->field('created')->lt(DateTimeUtils::getUtcDateTime($to->format(DateTimeUtils::DATE_TIME_UTC)));
+        }
+
+        return $ab
+            ->group()
+                ->field('id')->expression('$topologyId')
+                ->field('runs')->sum(1)
+                ->field('success')->sum(
+                    $ab->expr()->cond(
+                        $ab->expr()->and(
+                            $ab->expr()->ne('$finished', NULL),
+                            $ab->expr()->eq('$nok', 0),
+                        ),
+                        1,
+                        0,
+                    ),
+                )
+                ->field('failed')->sum(
+                    $ab->expr()->cond(
+                        $ab->expr()->gt('$nok', 0),
+                        1,
+                        0,
+                    ),
+                )
+                ->field('running')->sum(
+                    $ab->expr()->cond(
+                        $ab->expr()->eq('$finished', NULL),
+                        1,
+                        0,
+                    ),
+                )
+                ->field('lastRunAt')->max('$created')
+                ->field('firstRunAt')->min('$created')
+            ->sort(['runs' => -1, 'lastRunAt' => -1])
             ->getAggregation()->getIterator()->toArray();
     }
 

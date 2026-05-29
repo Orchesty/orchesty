@@ -22,8 +22,8 @@ use Hanaboso\Utils\String\Json;
 class Topology
 {
 
-    use IdTrait;
     use DeletedTrait;
+    use IdTrait;
 
     /**
      * @var string
@@ -74,6 +74,12 @@ class Topology
     protected string $rawBpmn = '';
 
     /**
+     * @var string
+     */
+    #[ODM\Field(type: 'string')]
+    protected string $json = '';
+
+    /**
      * @var string|null
      */
     #[ODM\Field(type: 'string')]
@@ -93,13 +99,23 @@ class Topology
     protected Collection $applications;
 
     /**
+     * Set whenever a node setting is changed via API (e.g. prefetch) without
+     * the bridge being regenerated. Cleared on the next successful republish.
+     * Lets the UI show a "stale bridge" banner so users know their changes
+     * are persisted but not yet propagated to the running consumer.
+     *
+     * @var bool
+     */
+    #[ODM\Field(type: 'bool', options: ['default' => 0])]
+    protected bool $bridgeOutOfSync = FALSE;
+
+    /**
      * Topology constructor.
      */
     public function __construct()
     {
         $this->applications = new ArrayCollection([]);
     }
-
 
     /**
      * @return string
@@ -112,9 +128,9 @@ class Topology
     /**
      * @param string $name
      *
-     * @return Topology
+     * @return static
      */
-    public function setName(string $name): self
+    public function setName(string $name): static
     {
         $this->name = $name;
 
@@ -132,9 +148,9 @@ class Topology
     /**
      * @param int $version
      *
-     * @return Topology
+     * @return static
      */
-    public function setVersion(int $version): self
+    public function setVersion(int $version): static
     {
         $this->version = $version;
 
@@ -152,9 +168,9 @@ class Topology
     /**
      * @param string $descr
      *
-     * @return Topology
+     * @return static
      */
-    public function setDescr(string $descr): self
+    public function setDescr(string $descr): static
     {
         $this->descr = $descr;
 
@@ -172,10 +188,10 @@ class Topology
     /**
      * @param string $visibility
      *
-     * @return Topology
+     * @return static
      * @throws EnumException
      */
-    public function setVisibility(string $visibility): self
+    public function setVisibility(string $visibility): static
     {
         if (!TopologyStatusEnum::tryFrom($visibility)) {
             throw new EnumException();
@@ -196,10 +212,10 @@ class Topology
     /**
      * @param string $status
      *
-     * @return Topology
+     * @return static
      * @throws EnumException
      */
-    public function setStatus(string $status): self
+    public function setStatus(string $status): static
     {
         if (!StatusEnum::tryFrom($status)) {
             throw new EnumException();
@@ -220,9 +236,9 @@ class Topology
     /**
      * @param bool $enabled
      *
-     * @return Topology
+     * @return static
      */
-    public function setEnabled(bool $enabled): self
+    public function setEnabled(bool $enabled): static
     {
         $this->enabled = $enabled;
 
@@ -240,9 +256,9 @@ class Topology
     /**
      * @param mixed[] $bpmn
      *
-     * @return Topology
+     * @return static
      */
-    public function setBpmn(array $bpmn): self
+    public function setBpmn(array $bpmn): static
     {
         $this->bpmn = Json::encode($bpmn);
 
@@ -260,13 +276,41 @@ class Topology
     /**
      * @param string $rawBpmn
      *
-     * @return Topology
+     * @return static
      */
-    public function setRawBpmn(string $rawBpmn): self
+    public function setRawBpmn(string $rawBpmn): static
     {
         $this->rawBpmn = $rawBpmn;
 
         return $this;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getJson(): array
+    {
+        return $this->json ? Json::decode($this->json) : [];
+    }
+
+    /**
+     * @param mixed[] $json
+     *
+     * @return static
+     */
+    public function setJson(array $json): static
+    {
+        $this->json = Json::encode($json);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRawJson(): string
+    {
+        return $this->json;
     }
 
     /**
@@ -280,9 +324,9 @@ class Topology
     /**
      * @param string|null $category
      *
-     * @return Topology
+     * @return static
      */
-    public function setCategory(?string $category): self
+    public function setCategory(?string $category): static
     {
         $this->category = $category;
 
@@ -292,9 +336,9 @@ class Topology
     /**
      * @param string $contentHash
      *
-     * @return Topology
+     * @return static
      */
-    public function setContentHash(string $contentHash): self
+    public function setContentHash(string $contentHash): static
     {
         $this->contentHash = $contentHash;
 
@@ -310,6 +354,26 @@ class Topology
     }
 
     /**
+     * @return bool
+     */
+    public function isBridgeOutOfSync(): bool
+    {
+        return $this->bridgeOutOfSync;
+    }
+
+    /**
+     * @param bool $bridgeOutOfSync
+     *
+     * @return static
+     */
+    public function setBridgeOutOfSync(bool $bridgeOutOfSync): static
+    {
+        $this->bridgeOutOfSync = $bridgeOutOfSync;
+
+        return $this;
+    }
+
+    /**
      * @return TopologyApplication[]
      */
     public function getApplications(): array
@@ -320,9 +384,9 @@ class Topology
     /**
      * @param TopologyApplication[] $applications
      *
-     * @return Topology
+     * @return static
      */
-    public function setApplications(array $applications): self
+    public function setApplications(array $applications): static
     {
         $this->applications = new ArrayCollection($applications);
 

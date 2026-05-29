@@ -10,6 +10,7 @@
         "version": 1,
         "category": null,
         "enabled": false,
-        "cronSettings": []
+        "cronSettings": [],
+        "bridgeOutOfSync": false
     }
 }

@@ -42,9 +42,9 @@ final class UsageStatsEventListener implements EventSubscriberInterface
      * @param BillingEvent $event
      *
      * @return void
-     * @throws MongoDBException
-     * @throws EnumException
      * @throws DateTimeException
+     * @throws EnumException
+     * @throws MongoDBException
      */
     public function onProcessBillingEvent(BillingEvent $event): void
     {

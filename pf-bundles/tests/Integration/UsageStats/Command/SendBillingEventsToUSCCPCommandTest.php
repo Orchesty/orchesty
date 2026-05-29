@@ -21,6 +21,7 @@ use Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent;
 use Hanaboso\PipesFramework\UsageStats\Enum\EventTypeEnum;
 use Hanaboso\PipesFramework\UsageStats\Repository\UsageStatsEventRepository;
 use Hanaboso\Utils\Exception\DateTimeException;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\Exception;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
@@ -39,14 +40,15 @@ use Symfony\Component\HttpKernel\KernelInterface;
 #[CoversClass(OperationUsageStatsSender::class)]
 #[CoversClass(UsageStatsEventRepository::class)]
 #[CoversClass(TopologyProgressRepository::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class SendBillingEventsToUSCCPCommandTest extends DatabaseTestCaseAbstract
 {
 
     /**
      * @return void
      * @throws DateTimeException
-     * @throws MongoDBException
      * @throws Exception
+     * @throws MongoDBException
      */
     public function testExecute(): void
     {
@@ -129,7 +131,7 @@ final class SendBillingEventsToUSCCPCommandTest extends DatabaseTestCaseAbstract
                         'day'   => '2023-01-01',
                         'total' => 1,
                     ],
-                    'iid'     => 'orchesty',
+                    'iid'     => 'local',
                     'type'    => 'orchesty_operation',
                     'version' => 1,
                 ],
@@ -139,7 +141,7 @@ final class SendBillingEventsToUSCCPCommandTest extends DatabaseTestCaseAbstract
                         'day'   => '2022-01-03',
                         'total' => 8,
                     ],
-                    'iid'     => 'orchesty',
+                    'iid'     => 'local',
                     'type'    => 'orchesty_operation',
                     'version' => 1,
                 ],
@@ -159,7 +161,7 @@ final class SendBillingEventsToUSCCPCommandTest extends DatabaseTestCaseAbstract
                         'day'   => '2023-01-03',
                         'total' => 31,
                     ],
-                    'iid'     => 'orchesty',
+                    'iid'     => 'local',
                     'type'    => 'orchesty_operation',
                     'version' => 1,
                 ],
@@ -244,6 +246,11 @@ final class SendBillingEventsToUSCCPCommandTest extends DatabaseTestCaseAbstract
             ->setOperationBillingData(new OperationBillingData('2023-01-03', 23))
             ->setSent(1_687_261_631)
             ->setVersion(1);
+        $this->setProperty($multiCounterData, 'id', uniqid());
+        $this->setProperty($multiCounterData2, 'id', uniqid());
+        $this->setProperty($multiCounterData3, 'id', uniqid());
+        $this->setProperty($multiCounterData4, 'id', uniqid());
+        $this->setProperty($multiCounterData5, 'id', uniqid());
         $dm->persist($multiCounterData);
         $dm->persist($multiCounterData2);
         $dm->persist($multiCounterData3);

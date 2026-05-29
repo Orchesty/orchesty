@@ -64,7 +64,7 @@ final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
         );
     }
 
-    /**
+    /*
      * ---------------------------------------- HELPERS ------------------------------------
      */
 
@@ -79,6 +79,7 @@ final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
             ->setTotal(2)
             ->setStartedAt(DateTimeUtils::getUtcDateTime('2010-10-10 10:10:10'))
             ->setFinishedAt(DateTimeUtils::getUtcDateTime('2010-10-10 10:10:10')->modify('+ 10 second'));
+        $this->setProperty($progress, 'id', uniqid());
 
         $this->pfd($progress);
     }

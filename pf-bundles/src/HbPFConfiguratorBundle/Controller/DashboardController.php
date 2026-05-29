@@ -40,7 +40,7 @@ final class DashboardController
     #[Route('/dashboards/default', methods: ['GET'])]
     public function getDashboardAction(Request $request): Response
     {
-        $range = $request->get('range', '24h');
+        $range = $request->request->getString('range', '24h');
 
         return $this->getResponse(Json::encode($this->dashboardHandler->getMetrics($range)));
     }

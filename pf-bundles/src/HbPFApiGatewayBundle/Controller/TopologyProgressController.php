@@ -27,6 +27,7 @@ final class TopologyProgressController extends AbstractController
     #[Route('/progress/topology/{topologyId}', methods: ['GET'])]
     public function getProgressTopologyAction(Request $request, string $topologyId): Response
     {
+        // TODO RB: Remove this after new UI
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyProgressController::getProgressTopologyAction',
             [
@@ -44,6 +45,7 @@ final class TopologyProgressController extends AbstractController
     #[Route('/progress', methods: ['GET'])]
     public function getProgressesAction(Request $request): Response
     {
+        // TODO RB: Remove this after new UI
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyProgressController::getProgressesAction',
             [

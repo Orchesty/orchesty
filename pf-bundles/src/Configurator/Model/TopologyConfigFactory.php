@@ -17,6 +17,7 @@ use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
 use Hanaboso\Utils\String\DsnParser;
 use Hanaboso\Utils\String\Json;
+use Hanaboso\Utils\System\PipesHeaders;
 
 /**
  * Class TopologyConfigFactory
@@ -34,11 +35,9 @@ final class TopologyConfigFactory
     public const string RABBITMQ_PASS          = 'rabbitmq_pass';
     public const string RABBITMQ_VHOST         = 'rabbitmq_vhost';
     public const string METRICS_DSN            = 'metrics_dsn';
-    public const string WORKER_DEFAULT_PORT    = 'worker_default_port';
     public const string MONOLITH_API_HOST      = 'monolith_api_host';
     public const string XML_PARSER_API_HOST    = 'xml_parser_api_host';
     public const string MONGODB_DSN            = 'mongodb_dsn';
-    public const string UDP_LOGGER_URL         = 'udp_logger_url';
     public const string TOPOLOGY_POD_LABELS    = 'topology_pod_labels';
     public const string STARTING_POINT_DSN     = 'starting_point_dsn';
     public const string ORCHESTY_API_KEY       = 'orchesty_api_key';
@@ -133,14 +132,24 @@ final class TopologyConfigFactory
                     self::TYPE     => $this->getWorkerByType($node),
                 ];
             default:
-                $host   = $this->getHost($node->getType(), $node->getSystemConfigs());
-                $path   = $this->getPaths($node);
+                $host    = $this->getHost($node->getType(), $node->getSystemConfigs());
+                $path    = $this->getPaths($node);
+                $sdkName = $node->getSdk();
+                $sdk     = $sdkName !== ''
+                    ? $this->sdkRepository->findByName($sdkName)
+                    : $this->sdkRepository->findByHost($host);
+
+                if ($sdk->isTunnel()) {
+                    $path[self::PROCESS_PATH] = sprintf('/call/%s%s', $sdkName, $path[self::PROCESS_PATH]);
+                    $path[self::STATUS_PATH]  = sprintf('/call/%s%s', $sdkName, $path[self::STATUS_PATH]);
+                }
+
                 $parsed = explode(':', $host);
 
                 return [
                     self::SETTINGS => [
                         self::APPLICATION  => $node->getApplication(),
-                        self::HEADERS      => $this->sdkRepository->findByHost($host),
+                        self::HEADERS      => array_merge($sdk->getHeaders(), [PipesHeaders::SDK => $sdk->getName()]),
                         self::HOST         => $parsed[0],
                         self::METHOD       => CurlManager::METHOD_POST,
                         self::PORT         => (int) ($parsed[1] ?? $this->getPort($node->getType())),
@@ -188,8 +197,6 @@ final class TopologyConfigFactory
             self::RABBITMQ_VHOST         => $this->configs[self::RABBITMQ_VHOST],
             self::STARTING_POINT_DSN     => $this->configs[self::STARTING_POINT_DSN],
             self::TOPOLOGY_POD_LABELS    => $this->configs[self::TOPOLOGY_POD_LABELS],
-            self::UDP_LOGGER_URL         => $this->configs[self::UDP_LOGGER_URL],
-            self::WORKER_DEFAULT_PORT    => (int) $this->configs[self::WORKER_DEFAULT_PORT],
         ];
     }
 

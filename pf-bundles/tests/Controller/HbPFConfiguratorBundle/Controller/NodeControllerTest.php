@@ -9,6 +9,7 @@ use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
@@ -20,6 +21,7 @@ use PipesFrameworkTests\ControllerTestCaseAbstract;
 #[CoversClass(NodeController::class)]
 #[CoversClass(NodeHandler::class)]
 #[CoversClass(NodeManager::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class NodeControllerTest extends ControllerTestCaseAbstract
 {
 

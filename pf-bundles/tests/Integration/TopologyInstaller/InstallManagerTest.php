@@ -16,6 +16,8 @@ use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
 use Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\Utils\File\File;
+use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Predis\Client;
@@ -32,6 +34,7 @@ use Predis\Connection\Parameters;
 #[CoversClass(UpdateObject::class)]
 #[CoversClass(TopologiesComparator::class)]
 #[CoversClass(RedisCache::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class InstallManagerTest extends DatabaseTestCaseAbstract
 {
 
@@ -134,21 +137,15 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
      */
     private function createTopologies(): void
     {
-        $xmlDecoder = self::getContainer()->get('rest.decoder.xml');
-        $topology   = new Topology();
+        $sdkUrlMap = [];
+
+        $topology = new Topology();
         $topology
             ->setName('file')
-            ->setRawBpmn($this->load('file.tplg', TRUE))
+            ->setJson($this->loadJson('file.tplg.json', TRUE))
             ->setContentHash(
                 TopologySchemaUtils::getIndexHash(
-                    TopologySchemaUtils::getSchemaObject(
-                        $xmlDecoder->decode(
-                            $this->load(
-                                'file.tplg',
-                                TRUE,
-                            ),
-                        ),
-                    ),
+                    TopologySchemaUtils::getSchemaObjectFromJson($this->loadJson('file.tplg.json', TRUE), $sdkUrlMap),
                 ),
             )
             ->setEnabled(TRUE)
@@ -158,17 +155,10 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
         $topology3 = new Topology();
         $topology3
             ->setName('file2')
-            ->setRawBpmn($this->load('file2.tplg', FALSE))
+            ->setJson($this->loadJson('file2.tplg.json', FALSE))
             ->setContentHash(
                 TopologySchemaUtils::getIndexHash(
-                    TopologySchemaUtils::getSchemaObject(
-                        $xmlDecoder->decode(
-                            $this->load(
-                                'file2.tplg',
-                                FALSE,
-                            ),
-                        ),
-                    ),
+                    TopologySchemaUtils::getSchemaObjectFromJson($this->loadJson('file2.tplg.json', FALSE), $sdkUrlMap),
                 ),
             )
             ->setEnabled(TRUE)
@@ -188,17 +178,17 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
      * @param string $name
      * @param bool   $change
      *
-     * @return string
+     * @return mixed[]
      */
-    private function load(string $name, bool $change): string
+    private function loadJson(string $name, bool $change): array
     {
         $content = File::getContent(sprintf('%s/data/%s', __DIR__, $name));
 
-        if (!$change) {
-            return $content;
+        if ($change) {
+            $content = str_replace('salesforce-create-contact-mapper', 'salesforce-updaet-contact-mapper', $content);
         }
 
-        return str_replace('salesforce-create-contact-mapper', 'salesforce-updaet-contact-mapper', $content);
+        return Json::decode($content);
     }
 
 }

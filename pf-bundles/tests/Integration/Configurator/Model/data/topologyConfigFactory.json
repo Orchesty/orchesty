@@ -1,14 +1,12 @@
 {
     "environment": {
-        "docker_pf_bridge_image": "orchesty/bridge:1.0",
+        "docker_pf_bridge_image": "orchesty/bridge:2.1",
         "rabbitmq_host": "rabbitmq:5672",
         "rabbitmq_user": "guest",
         "rabbitmq_pass": "guest",
         "rabbitmq_vhost": "\/",
         "metrics_dsn": "mongodb://mongo",
-        "worker_default_port": 8000,
         "mongodb_dsn": "mongodb://mongo",
-        "udp_logger_url": "fluentd:5120",
         "topology_pod_labels": "",
         "starting_point_dsn": "starting-point:8080",
         "orchesty_api_key": ""
@@ -32,7 +30,8 @@
                     "prefetch": 10,
                     "timeout": 60,
                     "headers": {
-                        "key": "value"
+                        "key": "value",
+                        "sdk": "name"
                     }
                 }
             },
@@ -55,7 +54,8 @@
                     "prefetch": null,
                     "timeout": null,
                     "headers": {
-                        "key": "value"
+                        "key": "value",
+                        "sdk": "name2"
                     }
                 }
             }
@@ -73,7 +73,8 @@
                     "prefetch": null,
                     "timeout": null,
                     "headers": {
-                        "key": "value"
+                        "key": "value",
+                        "sdk": "name2"
                     }
                 }
             }

@@ -10,8 +10,8 @@ use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
-use Hanaboso\RestBundle\Exception\XmlDecoderException;
-use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
+use Hanaboso\Utils\String\Json;
+use JsonException;
 use Symfony\Component\Finder\SplFileInfo;
 
 /**
@@ -26,13 +26,13 @@ final class TopologiesComparator
      * TopologiesComparator constructor.
      *
      * @param TopologyRepository $repository
-     * @param XmlDecoder         $decoder
+     * @param mixed[]            $sdkUrlMap
      * @param mixed[]            $dirs
      * @param bool               $checkInfiniteLoop
      */
     public function __construct(
         private TopologyRepository $repository,
-        private XmlDecoder $decoder,
+        private array $sdkUrlMap,
         private array $dirs,
         private bool $checkInfiniteLoop,
     )
@@ -41,9 +41,9 @@ final class TopologiesComparator
 
     /**
      * @return CompareResultDto
+     * @throws JsonException
      * @throws MongoDBException
      * @throws TopologyException
-     * @throws XmlDecoderException
      */
     public function compare(): CompareResultDto
     {
@@ -88,12 +88,13 @@ final class TopologiesComparator
      * @param SplFileInfo $file
      *
      * @return bool
+     * @throws JsonException
      * @throws TopologyException
-     * @throws XmlDecoderException
      */
     private function isEqual(Topology $topology, SplFileInfo $file): bool
     {
-        $newSchema = TopologySchemaUtils::getSchemaObject($this->decoder->decode($file->getContents()));
+        $data      = Json::decode($file->getContents());
+        $newSchema = TopologySchemaUtils::getSchemaObjectFromJson($data, $this->sdkUrlMap);
 
         return $topology->getContentHash() == TopologySchemaUtils::getIndexHash($newSchema, $this->checkInfiniteLoop);
     }

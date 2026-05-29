@@ -53,8 +53,8 @@ final class ApiTokenManager
      * @param GridRequestDtoInterface $dto
      *
      * @return array<mixed>
-     * @throws MongoDBException
      * @throws Exception
+     * @throws MongoDBException
      */
     public function getAllBy(GridRequestDtoInterface $dto): array
     {

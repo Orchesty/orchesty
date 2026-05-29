@@ -9,6 +9,7 @@ services:
             - '@hbpf.transport.curl_manager'
             - '@hbpf.redirect'
             - '%backendHost%'
+            - '%tunnelProxyHost%'
         calls:
             - ['setLogger',['@monolog.logger.commons']]
 
@@ -24,3 +25,9 @@ services:
         arguments:
             - '@Hanaboso\UserBundle\Model\Security\JWTAuthenticator'
             - '@hbpf.database_manager_locator'
+
+    hbpp.application.webhook_config_manager:
+        class: Hanaboso\PipesFramework\Application\Manager\WebhookConfigManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpp.service.locator'

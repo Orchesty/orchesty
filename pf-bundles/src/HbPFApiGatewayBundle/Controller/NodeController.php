@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -26,6 +27,20 @@ final class NodeController extends AbstractController
     }
 
     /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/applications/topologies/nodes', methods: ['GET'])]
+    public function getTopologiesNodesAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getTopologiesNodesAction',
+            ['request' => $request],
+        );
+    }
+
+    /**
      * @param string $id
      *
      * @return Response
@@ -36,6 +51,17 @@ final class NodeController extends AbstractController
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodesAction',
             ['id' => $id],
+        );
+    }
+
+    /**
+     * @return Response
+     */
+    #[Route('/nodes/connectors', methods: ['GET'], priority: 10)]
+    public function getConnectorNodesAction(): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getConnectorNodesAction',
         );
     }
 

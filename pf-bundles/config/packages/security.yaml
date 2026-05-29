@@ -13,10 +13,18 @@ security:
             pattern: ^/api/applications/authorize/token
             security: false
         unsecured_user_api:
-            pattern: ^/api/(user/login|user/logout|user/\w+/activate|user/\w+/set_password|user/reset_password|user/register|user/\w+/verify)
+            pattern: ^/api/(user/login|user/logout|user/\w+/activate|user/\w+/set_password|user/reset_password|user/register|user/exists|user/setup|user/\w+/verify)
             security: false
         unsecured_status_api:
             pattern: ^/api/status
+            security: false
+        # Internal endpoint called by the Go bridge when its global limit
+        # checker transitions to over-limit. Same trust model as /api/status:
+        # backend lives on the private docker network, public access is gated
+        # by a reverse proxy. The route validates the topologyId format
+        # ([a-f0-9]{24}) at the controller level.
+        unsecured_internal_terminate:
+            pattern: ^/api/resources/bridges/[a-f0-9]{24}/terminate$
             security: false
 
         secured_usage_stats_events:

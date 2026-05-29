@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFLogsBundle\Controller;
 
+use Exception;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\HbPFLogsBundle\Handler\LogsHandler;
 use Hanaboso\Utils\String\Json;
@@ -24,9 +25,9 @@ final class LogsController
     /**
      * LogsController constructor.
      *
-     * @param LogsHandler $logsHandler
+     * @param LogsHandler $handler
      */
-    public function __construct(private LogsHandler $logsHandler)
+    public function __construct(private readonly LogsHandler $handler)
     {
     }
 
@@ -35,7 +36,7 @@ final class LogsController
      *
      * @return Response
      */
-    #[Route('/logs', methods: ['GET', 'OPTIONS'])]
+    #[Route('/logs-old', methods: ['GET', 'OPTIONS'])]
     public function getDataForTableAction(Request $request): Response
     {
         $filter     = Json::decode($request->query->get('filter', '{}'));
@@ -57,7 +58,23 @@ final class LogsController
 
         $dto = new GridRequestDto($filter);
 
-        return new JsonResponse($this->logsHandler->getData($dto, $timeMargin));
+        return new JsonResponse($this->handler->getData($dto, $timeMargin));
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     * @throws Exception
+     */
+    #[Route('/logs', methods: [Request::METHOD_GET])]
+    public function getLogsAction(Request $request): Response
+    {
+        return $this->getResponse(
+            $this->handler->getLogs(
+                new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+            ),
+        );
     }
 
 }

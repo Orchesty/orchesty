@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller;
 
+use Exception;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler;
 use Hanaboso\Utils\String\Json;
@@ -27,7 +28,7 @@ final class UserTaskController
      *
      * @param UserTaskHandler $handler
      */
-    public function __construct(private UserTaskHandler $handler)
+    public function __construct(private readonly UserTaskHandler $handler)
     {
         $this->logger = new NullLogger();
     }
@@ -51,6 +52,22 @@ final class UserTaskController
 
     /**
      * @param Request $request
+     *
+     * @return Response
+     * @throws Exception
+     */
+    #[Route('/user-tasks', methods: [Request::METHOD_GET])]
+    public function getUserTasksAction(Request $request): Response
+    {
+        return $this->getResponse(
+            $this->handler->getUserTasks(
+                new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+            ),
+        );
+    }
+
+    /**
+     * @param Request $request
      * @param string  $id
      *
      * @return Response
@@ -59,8 +76,8 @@ final class UserTaskController
     public function acceptAction(Request $request, string $id): Response
     {
         try {
-            $topologyId = $request->get('topologyId');
-            $nodeId     = $request->get('nodeId');
+            $topologyId = $request->request->getString('topologyId');
+            $nodeId     = $request->request->getString('nodeId');
 
             return $this->getResponse($this->handler->accept($id, $topologyId, $nodeId));
         } catch (Throwable $t) {
@@ -77,8 +94,8 @@ final class UserTaskController
     public function acceptBatchAction(Request $request): Response
     {
         try {
-            $topologyId = $request->get('topologyId');
-            $nodeId     = $request->get('nodeId');
+            $topologyId = $request->request->getString('topologyId');
+            $nodeId     = $request->request->getString('nodeId');
 
             return $this->getResponse($this->handler->acceptBatch($request->toArray(),$topologyId, $nodeId));
         } catch (Throwable $t) {

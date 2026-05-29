@@ -22,11 +22,13 @@ final class IncludeCommands extends BundleApplication
         'rabbit_mq:publisher:pipes-user-task',
         'service:install',
         'topology:install',
+        'topology:migrate',
         'usage_stats:send-events',
         'user:create',
         'user:delete',
         'user:list',
         'user:password:change',
+        'webhook:seed-configs',
     ];
 
     /**
@@ -56,13 +58,19 @@ final class IncludeCommands extends BundleApplication
     }
 
     /**
-     * @param Command $command
+     * @param callable|Command $command
      *
      * @return Command|null
      */
-    public function add(Command $command): ?Command
+    public function addCommand(callable|Command $command): ?Command
     {
-        return parent::add($command->setHidden(!in_array($command->getName(), $this->getIncludedCommands(), TRUE)));
+        if (!$command instanceof Command) {
+            $command = new Command(NULL, $command);
+        }
+
+        return parent::addCommand(
+            $command->setHidden(!in_array($command->getName(), $this->getIncludedCommands(), TRUE)),
+        );
     }
 
 }

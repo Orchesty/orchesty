@@ -22,8 +22,8 @@ use Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode;
 class Node
 {
 
-    use IdTrait;
     use DeletedTrait;
+    use IdTrait;
 
     /**
      * @var string|null
@@ -87,10 +87,27 @@ class Node
     protected ?string $cronParams = NULL;
 
     /**
+     * @var string
+     */
+    #[ODM\Field(type: 'string')]
+    protected string $sdk = '';
+
+    /**
      * @var string|null
      */
     #[ODM\Field(type: 'string')]
     protected ?string $systemConfigs = NULL;
+
+    /**
+     * Webhook subscription event name (only set on Webhook nodes).
+     * Pulled from the editor's `action.name` for nodes whose schema baseLabel
+     * is `Webhook`. Used by {@see WebhookConfigManager} to keep the matching
+     * `WebhookConfig` document in sync with the topology schema.
+     *
+     * @var string
+     */
+    #[ODM\Field(type: 'string')]
+    protected string $eventName = '';
 
     /**
      * Node constructor.
@@ -104,15 +121,17 @@ class Node
         $this->handler       = HandlerEnum::EVENT->value;
         $this->name          = '';
         $this->schemaId      = '';
+        $this->sdk           = '';
         $this->systemConfigs = NULL;
         $this->type          = TypeEnum::CUSTOM->value;
         $this->application   = '';
+        $this->eventName     = '';
     }
 
     /**
      * @return string|null
      */
-    public function getApplication(): string |null
+    public function getApplication(): ?string
     {
         return $this->application;
     }
@@ -125,6 +144,26 @@ class Node
     public function setApplication(string $application): self
     {
         $this->application = $application;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSdk(): string
+    {
+        return $this->sdk;
+    }
+
+    /**
+     * @param string $sdk
+     *
+     * @return Node
+     */
+    public function setSdk(string $sdk): self
+    {
+        $this->sdk = $sdk;
 
         return $this;
     }
@@ -366,18 +405,52 @@ class Node
     }
 
     /**
+     * @return string
+     */
+    public function getEventName(): string
+    {
+        return $this->eventName;
+    }
+
+    /**
+     * @param string $eventName
+     *
+     * @return Node
+     */
+    public function setEventName(string $eventName): self
+    {
+        $this->eventName = $eventName;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPrefetch(): int
+    {
+        $configs = $this->getSystemConfigs();
+
+        return $configs ? $configs->getPrefetch() : 1;
+    }
+
+    /**
      * @return mixed[]
      */
     public function toArray(): array
     {
         return [
+            'application' => $this->getApplication(),
             'cron_params' => $this->getCronParams(),
             'cron_time'   => $this->getCron(),
             'enabled'     => $this->isEnabled(),
+            'event_name'  => $this->getEventName(),
             'handler'     => $this->getHandler(),
             'name'        => $this->getName(),
             'next'        => $this->getNext(),
+            'prefetch'    => $this->getPrefetch(),
             'schema_id'   => $this->getSchemaId(),
+            'sdk'         => $this->getSdk(),
             'topology_id' => $this->getTopology(),
             'type'        => $this->getType(),
             '_id'         => $this->getId(),

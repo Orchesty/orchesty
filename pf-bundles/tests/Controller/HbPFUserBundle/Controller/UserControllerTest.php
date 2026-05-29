@@ -16,6 +16,7 @@ use Hanaboso\UserBundle\Model\Security\SecurityManagerException;
 use Hanaboso\UserBundle\Model\User\UserManagerException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Monolog\Logger;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,6 +31,7 @@ use Symfony\Component\HttpFoundation\Request;
 #[CoversClass(UserHandler::class)]
 #[CoversClass(UserManager::class)]
 #[CoversClass(UserDocumentFilter::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class UserControllerTest extends ControllerTestCaseAbstract
 {
 
@@ -54,7 +56,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     public function testGetAllUsersEntity(): void
     {
         $handler = self::createPartialMock(UserHandler::class, ['getAllUsers']);
-        $handler->expects(self::any())->method('getAllUsers')->willReturn(['paging' => ['total' => 1]]);
+        $handler->expects(self::atLeastOnce())->method('getAllUsers')->willReturn(['paging' => ['total' => 1]]);
         $controller = new UserController($handler);
 
         self::assertSame(200, $controller->getAllUsersAction(new Request())->getStatusCode());
@@ -146,7 +148,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     public function testGetAllUsersErr(): void
     {
         $handler = self::createPartialMock(UserHandler::class, ['getAllUsers']);
-        $handler->expects(self::any())->method('getAllUsers')->willThrowException(new MongoDBException());
+        $handler->expects(self::atLeastOnce())->method('getAllUsers')->willThrowException(new MongoDBException());
         $controller = new UserController($handler,);
         $controller->setLogger(new Logger('logger'));
 
@@ -160,7 +162,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     public function testGetAllUsersInvalid(): void
     {
         $handler = self::createPartialMock(UserHandler::class, ['getAllUsers']);
-        $handler->expects(self::any())->method('getAllUsers')->willThrowException(new LicenseException());
+        $handler->expects(self::atLeastOnce())->method('getAllUsers')->willThrowException(new LicenseException());
         $controller = new UserController($handler,);
         $controller->setLogger(new Logger('logger'));
 
@@ -187,7 +189,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     public function testGetUserEntityError(): void
     {
         $handler = self::createPartialMock(UserHandler::class, ['getUserDetail', 'getAllUsers']);
-        $handler->expects(self::any())->method('getUserDetail')->willThrowException(new UserManagerException());
+        $handler->expects(self::atLeastOnce())->method('getUserDetail')->willThrowException(new UserManagerException());
         $handler->method('getAllUsers')->willReturn(['paging' => ['total' => 1]]);
         $controller = new UserController($handler);
 
@@ -230,7 +232,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     public function testSaveSettingsErr(): void
     {
         $handler = self::createPartialMock(UserHandler::class, ['saveSettings', 'getAllUsers']);
-        $handler->expects(self::any())->method('saveSettings')->willThrowException(new MongoDBException());
+        $handler->expects(self::atLeastOnce())->method('saveSettings')->willThrowException(new MongoDBException());
         $handler->method('getAllUsers')->willReturn(['paging' => ['total' => 1]]);
         $controller = new UserController($handler);
         $controller->setLogger(new Logger('logger'));
@@ -250,7 +252,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     public function testLoginUserActionErr(): void
     {
         $handler = self::createPartialMock(UserHandler::class, ['login', 'getAllUsers']);
-        $handler->expects(self::any())->method('login')->willThrowException(new SecurityManagerException());
+        $handler->expects(self::atLeastOnce())->method('login')->willThrowException(new SecurityManagerException());
         $handler->method('getAllUsers')->willReturn(['paging' => ['total' => 1]]);
         $controller = new UserController($handler);
         $controller->setLogger(new Logger('logger'));
@@ -265,7 +267,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     public function testLoginUserActionErrPipes(): void
     {
         $handler = self::createPartialMock(UserHandler::class, ['login', 'getAllUsers']);
-        $handler->expects(self::any())->method('login')->willThrowException(new PipesFrameworkException());
+        $handler->expects(self::atLeastOnce())->method('login')->willThrowException(new PipesFrameworkException());
         $handler->method('getAllUsers')->willReturn(['paging' => ['total' => 1]]);
         $controller = new UserController($handler);
         $controller->setLogger(new Logger('logger'));

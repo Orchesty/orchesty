@@ -15,6 +15,7 @@ use Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
@@ -24,6 +25,7 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  * @package PipesFrameworkTests\Integration\Configurator\Model
  */
 #[CoversClass(TopologyConfigFactory::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
 {
 
@@ -170,7 +172,7 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
     public function testPatchRequestForCron(): void
     {
         $sender = self::createPartialMock(CurlManager::class, ['send']);
-        $sender->expects(self::any())->method('send')->willThrowException(new CurlException());
+        $sender->expects(self::atLeastOnce())->method('send')->willThrowException(new CurlException());
         self::getContainer()->set('hbpf.transport.curl_manager', $sender);
 
         $manager = self::getContainer()->get('hbpf.configurator.manager.topology');

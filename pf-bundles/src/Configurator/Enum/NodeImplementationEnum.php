@@ -14,5 +14,6 @@ enum NodeImplementationEnum: string
     case CUSTOM    = 'custom';
     case USER      = 'user';
     case BATCH     = 'batch';
+    case WEBHOOK   = 'webhook';
 
 }

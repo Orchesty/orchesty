@@ -3,6 +3,7 @@
     "body": {
         "id": "5e32ae5cb04e0b3566176113",
         "name": "One",
+        "type": "http",
         "url": "One",
         "headers": []
     }

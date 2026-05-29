@@ -11,6 +11,7 @@ use Hanaboso\UserBundle\Model\User\UserManagerException;
 use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\System\PipesHeaders;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use RabbitMqBundle\Consumer\Callback\Exception\CallbackException;
@@ -29,6 +30,7 @@ use Throwable;
  * @covers  \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener
  */
 #[CoversClass(ControllerExceptionListener::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
 {
 

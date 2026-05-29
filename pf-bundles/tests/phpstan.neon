@@ -24,7 +24,7 @@ parameters:
 		-
 			message: '#expects array, array|ArrayAccess given#'
 			path: ../tests/*
-		- 
+		-
 			identifier: missingType.generics
 		-
 			message: '#.*#'
@@ -46,14 +46,19 @@ parameters:
 			- PipesFrameworkTests\DatabaseTestCaseAbstract
 			- PipesFrameworkTests\KernelTestCaseAbstract
 			- Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator
+			- Hanaboso\MongoDataGrid\GridAggregationFilterAbstract
+			- Hanaboso\PipesFramework\Configurator\Model\TopologyManager
+			- Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler
 
 		classesNotRequiredToBeAbstractOrFinal:
+			- Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler
 			- Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\AppInstallUsageStatsSender
 			- Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\OperationUsageStatsSender
 			- Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\SenderManager
 			- Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode
 			- Hanaboso\PipesFramework\Application\Document\ApplicationInstall
 			- Hanaboso\PipesFramework\Application\Document\Webhook
+			- Hanaboso\PipesFramework\Application\Document\WebhookConfig
 			- Hanaboso\PipesFramework\Database\Document\Category
 			- Hanaboso\PipesFramework\Database\Document\Node
 			- Hanaboso\PipesFramework\Database\Document\TopologyApplication
@@ -61,6 +66,8 @@ parameters:
 			- Hanaboso\PipesFramework\Configurator\Document\NodeProgress
 			- Hanaboso\PipesFramework\Configurator\Document\Sdk
 			- Hanaboso\PipesFramework\Configurator\Document\TopologyProgress
+			- Hanaboso\PipesFramework\Configurator\Document\Limiter
+			- Hanaboso\PipesFramework\Configurator\Document\LimiterMessage
 			- Hanaboso\PipesFramework\Logs\Document\Logs
 			- Hanaboso\PipesFramework\Logs\Document\Pipes
 			- Hanaboso\PipesFramework\Logs\Document\Stacktrace
@@ -71,6 +78,10 @@ parameters:
 			- Hanaboso\PipesFramework\Metrics\Document\ContainerMetrics
 			- Hanaboso\PipesFramework\Metrics\Document\ContainerMetricsFields
 			- Hanaboso\PipesFramework\Metrics\Document\ContainerMetricsFieldsPods
+			- Hanaboso\PipesFramework\Metrics\Document\LimiterMetrics
+			- Hanaboso\PipesFramework\Metrics\Document\LimiterMetricsFields
+			- Hanaboso\PipesFramework\Metrics\Document\RepeaterMetrics
+			- Hanaboso\PipesFramework\Metrics\Document\RepeaterMetricsFields
 			- Hanaboso\PipesFramework\Metrics\Document\MonolithMetrics
 			- Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields
 			- Hanaboso\PipesFramework\Metrics\Document\ProcessesMetrics
@@ -80,8 +91,13 @@ parameters:
 			- Hanaboso\PipesFramework\Metrics\Document\RabbitConsumerFields
 			- Hanaboso\PipesFramework\Metrics\Document\RabbitConsumerMetrics
 			- Hanaboso\PipesFramework\Metrics\Document\Tags
+			- Hanaboso\PipesFramework\Metrics\Document\TagsCamelCase
+			- Hanaboso\PipesFramework\Metrics\Document\UserTaskMetrics
+			- Hanaboso\PipesFramework\Metrics\Document\UserTaskMetricsFields
 			- Hanaboso\PipesFramework\UserTask\Document\UserTask
 			- Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage
 			- Hanaboso\PipesFramework\User\Document\UserSettings
 			- Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent
 			- Hanaboso\PipesFramework\Configurator\Document\ApiToken
+			- Hanaboso\PipesFramework\Configurator\Model\TopologyManager
+			- Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler

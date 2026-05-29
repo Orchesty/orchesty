@@ -18,6 +18,7 @@ use Hanaboso\PipesFramework\Configurator\Repository\ApiTokenRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\SdkRepository;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
@@ -27,6 +28,7 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  * @package PipesFrameworkTests\Unit\Configurator\Model\TopologyGenerator
  */
 #[CoversClass(TopologyGeneratorBridge::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
 {
 
@@ -183,7 +185,7 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
         $managerLocator->method('getDm')->willReturn($documentManager);
 
         $sdkRepository = self::createPartialMock(SdkRepository::class, ['findByHost']);
-        $sdkRepository->method('findByHost')->willReturn([]);
+        $sdkRepository->method('findByHost')->willReturn((new Sdk())->setName('sdk')->setHeaders([]));
 
         $dm = self::createPartialMock(DocumentManager::class, ['getRepository']);
         $dm->method('getRepository')->willReturnCallback(

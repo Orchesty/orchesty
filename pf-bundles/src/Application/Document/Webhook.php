@@ -17,8 +17,8 @@ use Hanaboso\Utils\Exception\DateTimeException;
 class Webhook
 {
 
-    use IdTrait;
     use CreatedTrait;
+    use IdTrait;
 
     public const string USER        = 'user';
     public const string APPLICATION = 'application';
@@ -64,6 +64,12 @@ class Webhook
      */
     #[ODM\Field(type: 'string')]
     private string $webhookId;
+
+    /**
+     * @var string
+     */
+    #[ODM\Field(type: 'string')]
+    private string $sdk = '';
 
     /**
      * @var bool
@@ -197,6 +203,26 @@ class Webhook
     public function setApplication(string $application): self
     {
         $this->application = $application;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSdk(): string
+    {
+        return $this->sdk;
+    }
+
+    /**
+     * @param string $sdk
+     *
+     * @return Webhook
+     */
+    public function setSdk(string $sdk): self
+    {
+        $this->sdk = $sdk;
 
         return $this;
     }

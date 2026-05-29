@@ -51,7 +51,7 @@ final class CategoryParser
     /**
      * @var string|null
      */
-    private string|null $matchedRootAlias = '';
+    private ?string $matchedRootAlias = '';
 
     /**
      * @var ObjectRepository<Category>&CategoryRepository
@@ -252,8 +252,8 @@ final class CategoryParser
      */
     private function removeExcluded(): void
     {
-        if (isset($this->excludes[$this->matchedRootAlias])) {
-            foreach ($this->excludes[$this->matchedRootAlias] as $exclude) {
+        if (isset($this->excludes[$this->matchedRootAlias ?? ''])) {
+            foreach ($this->excludes[$this->matchedRootAlias ?? ''] as $exclude) {
                 $this->removeElement($this->tmpFilePath, $exclude);
             }
         }
@@ -276,8 +276,8 @@ final class CategoryParser
      */
     private function setAliases(): void
     {
-        if (isset($this->aliases[$this->matchedRootAlias])) {
-            foreach ($this->aliases[$this->matchedRootAlias] as $alias => $value) {
+        if (isset($this->aliases[$this->matchedRootAlias ?? ''])) {
+            foreach ($this->aliases[$this->matchedRootAlias ?? ''] as $alias => $value) {
                 $this->replaceElement($this->tmpFilePath, $value, $alias);
             }
         }

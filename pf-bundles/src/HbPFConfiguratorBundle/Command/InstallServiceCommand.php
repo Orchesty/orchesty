@@ -20,6 +20,7 @@ final class InstallServiceCommand extends Command
 
     private const string NAME = 'name';
     private const string URL  = 'url';
+    private const string TYPE = 'type';
 
     /**
      * InstallServiceCommand constructor.
@@ -40,8 +41,9 @@ final class InstallServiceCommand extends Command
             ->setName('service:install')
             ->addArgument(self::NAME, InputArgument::REQUIRED, 'Name of service')
             ->addArgument(self::URL, InputArgument::REQUIRED, 'Url of service')
-            ->setDescription('Required arguments are: name and url.')
-            ->setHelp('Required arguments are: name and url.');
+            ->addArgument(self::TYPE, InputArgument::OPTIONAL, 'Type of service', Sdk::TYPE_HTTP)
+            ->setDescription('Required arguments are: name and url. Optional: type (http|tunnel).')
+            ->setHelp('Required arguments are: name and url. Optional: type (http|tunnel).');
     }
 
     /**
@@ -56,16 +58,30 @@ final class InstallServiceCommand extends Command
 
         $name = $input->getArgument(self::NAME);
         $url  = $input->getArgument(self::URL);
+        $type = $input->getArgument(self::TYPE);
+
+        if (!in_array($type, [Sdk::TYPE_HTTP, Sdk::TYPE_TUNNEL], TRUE)) {
+            $output->writeln(
+                sprintf(
+                    "Invalid type '%s'. Allowed values are: %s, %s.",
+                    $type,
+                    Sdk::TYPE_HTTP,
+                    Sdk::TYPE_TUNNEL,
+                ),
+            );
+
+            return 1;
+        }
 
         $topologies = $this->manager->getAll();
         foreach ($topologies as $topology) {
-            if ($topology->getName() === $name && $topology->getUrl() === $url) {
+            if ($topology->getName() === $name && $topology->getUrl() === $url && $topology->getType() === $type) {
                 $output->writeln('Allready exists!');
 
                 return 0;
             }
         }
-        $this->manager->create([Sdk::NAME => $name, Sdk::URL => $url]);
+        $this->manager->create([Sdk::NAME => $name, Sdk::URL => $url, Sdk::TYPE => $type]);
         $output->writeln('Done!');
 
         return 0;

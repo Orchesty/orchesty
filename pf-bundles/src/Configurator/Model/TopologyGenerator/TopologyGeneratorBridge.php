@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\Persistence\ObjectRepository;
 use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
@@ -24,6 +25,7 @@ use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\Traits\LoggerTrait;
 use JsonException;
 use Psr\Log\NullLogger;
+use Throwable;
 
 /**
  * Class TopologyGeneratorBridge
@@ -39,11 +41,13 @@ final class TopologyGeneratorBridge
     public const string STARTING_POINT = 'starting-point';
     public const string LIMITER        = 'limiter';
 
-    protected const string BASE_TOPOLOGY_URL      = 'http://%s/v1/api/topologies/%s';
-    protected const string GET_TOPOLOGY_HOST_URL  = 'http://%s/v1/api/topologies/%s/host';
-    protected const string GENERATOR_TOPOLOGY_URL = 'http://%s/v1/api/topologies/%s';
-    protected const string STARTING_POINT_URL     = '%s/topologies/%s/invalidate-cache';
-    protected const string LIMITER_URL            = '%s/terminate/topology-api/%s';
+    protected const string BASE_TOPOLOGY_URL       = 'http://%s/v1/api/topologies/%s';
+    protected const string GET_TOPOLOGY_HOST_URL   = 'http://%s/v1/api/topologies/%s/host';
+    protected const string GENERATOR_TOPOLOGY_URL  = 'http://%s/v1/api/topologies/%s';
+    protected const string STARTING_POINT_URL      = '%s/topologies/%s/invalidate-cache';
+    protected const string LIMITER_URL             = '%s/terminate/topology-id/%s';
+    protected const string LIMITER_CORRELATION_URL = '%s/terminate/correlation-id/%s';
+    protected const string LIMITER_SNAPSHOT_URL    = '%s/metrics/snapshot';
 
     private const array HEADERS = ['Content-Type' => 'application/json'];
 
@@ -53,7 +57,7 @@ final class TopologyGeneratorBridge
     private DocumentManager $dm;
 
     /**
-     * @var ApiTokenRepository
+     * @var ObjectRepository<ApiToken>&ApiTokenRepository
      */
     private ApiTokenRepository $apiTokenRepository;
 
@@ -84,10 +88,10 @@ final class TopologyGeneratorBridge
      *
      * @return ResponseDto
      * @throws CurlException
-     * @throws TopologyConfigException
+     * @throws JsonException
      * @throws LockException
      * @throws MappingException
-     * @throws JsonException
+     * @throws TopologyConfigException
      */
     public function generateTopology(string $topologyId): ResponseDto
     {
@@ -144,6 +148,28 @@ final class TopologyGeneratorBridge
      *
      * @return ResponseDto
      * @throws CurlException
+     * @throws JsonException
+     * @throws LockException
+     * @throws MappingException
+     * @throws TopologyConfigException
+     */
+    public function restartTopology(string $topologyId): ResponseDto
+    {
+        $this->generateTopology($topologyId);
+
+        try {
+            $this->stopTopology($topologyId, FALSE);
+        } catch (Throwable) {
+        }
+
+        return $this->runTopology($topologyId);
+    }
+
+    /**
+     * @param string $topologyId
+     *
+     * @return ResponseDto
+     * @throws CurlException
      */
     public function deleteTopology(string $topologyId): ResponseDto
     {
@@ -193,6 +219,45 @@ final class TopologyGeneratorBridge
     }
 
     /**
+     * @param string  $correlationId
+     * @param mixed[] $headers
+     *
+     * @return mixed[]
+     * @throws CurlException
+     */
+    public function removeAllLimiterMessagesByCorrelationId(string $correlationId, array $headers): array
+    {
+        $uri         = sprintf(self::LIMITER_CORRELATION_URL, $this->configs[self::LIMITER], $correlationId);
+        $requestDto  = new RequestDto(new Uri($uri), CurlManager::METHOD_DELETE, new ProcessDto(), '', $headers);
+        $responseDto = $this->curlManager->send($requestDto);
+
+        if ($responseDto->getStatusCode() === 200) {
+            return Json::decode($responseDto->getBody());
+        } else {
+            throw new CurlException(sprintf('Request error: %s', $responseDto->getReasonPhrase()));
+        }
+    }
+
+    /**
+     * @param mixed[] $headers
+     *
+     * @return mixed[]
+     * @throws CurlException
+     */
+    public function getLimiterSnapshot(array $headers): array
+    {
+        $uri         = sprintf(self::LIMITER_SNAPSHOT_URL, $this->configs[self::LIMITER]);
+        $requestDto  = new RequestDto(new Uri($uri), CurlManager::METHOD_GET, new ProcessDto(), '', $headers);
+        $responseDto = $this->curlManager->send($requestDto);
+
+        if ($responseDto->getStatusCode() === 200) {
+            return Json::decode($responseDto->getBody());
+        } else {
+            throw new CurlException(sprintf('Request error: %s', $responseDto->getReasonPhrase()));
+        }
+    }
+
+    /*
      * ------------------------------- HELPERS -------------------------------
      */
 

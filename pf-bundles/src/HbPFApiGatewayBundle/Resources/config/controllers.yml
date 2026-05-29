@@ -47,6 +47,12 @@ services:
         arguments:
             - '@hbpp.service.locator'
 
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookConfigController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookConfigController
+        arguments:
+            - '@hbpp.application.webhook_config_manager'
+            - '@hbpp.service.locator'
+
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyProgressController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyProgressController
 
@@ -59,3 +65,10 @@ services:
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UsageStatsController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UsageStatsController
 
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ProcessController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ProcessController
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\HelpController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\HelpController
+        arguments:
+            $helpDir: '%kernel.project_dir%/../Help/.dist'

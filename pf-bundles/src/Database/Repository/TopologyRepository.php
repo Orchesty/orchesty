@@ -17,7 +17,8 @@ use MongoDB\BSON\ObjectId;
  *
  * @package Hanaboso\PipesFramework\Database\Repository
  *
- * @phpstan-extends DocumentRepository<Topology>
+ * @phpstan-template T of Topology
+ * @phpstan-extends DocumentRepository<T>
  */
 final  class TopologyRepository extends DocumentRepository
 {
@@ -25,12 +26,12 @@ final  class TopologyRepository extends DocumentRepository
     /**
      * @param string $name
      *
-     * @return Topology[]
+     * @return T[]
      * @throws MongoDBException
      */
     public function getRunnableTopologies(string $name): array
     {
-        /** @var Iterator<Topology> $result */
+        /** @var Iterator<T> $result */
         $result = $this->createQueryBuilder()
             ->field('name')->equals($name)
             ->field('enabled')->equals(TRUE)
@@ -76,13 +77,34 @@ final  class TopologyRepository extends DocumentRepository
     }
 
     /**
+     * Count topologies that currently occupy a topology slot. A "slot" is
+     * consumed by every published row (bridge), regardless of `enabled` -
+     * disabling a topology only stops the start nodes, the bridge keeps
+     * running and holds infrastructure. The slot is only freed by
+     * decommission / unpublish / delete.
+     *
+     * @throws MongoDBException
+     */
+    public function getPublishedCount(): int
+    {
+        /** @var int $result */
+        $result = $this->createQueryBuilder()
+            ->field('deleted')->equals(FALSE)
+            ->field('visibility')->equals(TopologyStatusEnum::PUBLIC->value)
+            ->count()
+            ->getQuery()->execute();
+
+        return $result;
+    }
+
+    /**
      * @param string $name
      *
      * @return int
      */
     public function getMaxVersion(string $name): int
     {
-        /** @var Topology|null $result */
+        /** @var T|null $result */
         $result = $this->createQueryBuilder()
             ->field('name')->equals($name)
             ->sort('version', 'DESC')
@@ -115,18 +137,18 @@ final  class TopologyRepository extends DocumentRepository
     }
 
     /**
-     * @return Topology[]
+     * @return T[]
      * @throws MongoDBException
      */
     public function getTopologies(): array
     {
-        /** @var Iterator<Topology> $topology */
+        /** @var Iterator<T> $topology */
         $topology = $this->createQueryBuilder()
             ->field('visibility')->equals(TopologyStatusEnum::PUBLIC->value)
             ->field('deleted')->equals(FALSE)
             ->sort('version')
             ->getQuery()->execute();
-        /** @var Topology[] $results */
+        /** @var T[] $results */
         $results = $topology->toArray();
 
         $res = [];
@@ -139,12 +161,12 @@ final  class TopologyRepository extends DocumentRepository
     }
 
     /**
-     * @return Topology[]
+     * @return T[]
      * @throws MongoDBException
      */
     public function getPublicEnabledTopologies(): array
     {
-        /** @var Iterator<Topology> $result */
+        /** @var Iterator<T> $result */
         $result = $this->createQueryBuilder()
             ->field('visibility')->equals(TopologyStatusEnum::PUBLIC->value)
             ->field('enabled')->equals(TRUE)
@@ -158,7 +180,7 @@ final  class TopologyRepository extends DocumentRepository
     /**
      * @param Category $category
      *
-     * @return Topology[]
+     * @return T[]
      */
     public function getTopologiesByCategory(Category $category): array
     {
@@ -168,12 +190,12 @@ final  class TopologyRepository extends DocumentRepository
     /**
      * @param string $id
      *
-     * @return Topology
+     * @return T
      * @throws Exception
      */
     public function getTopologyById(string $id): Topology
     {
-        /** @var Topology|null $topology */
+        /** @var T|null $topology */
         $topology = $this->findOneBy(['id' => $id, 'deleted' => FALSE]);
 
         if (!$topology) {
@@ -193,7 +215,7 @@ final  class TopologyRepository extends DocumentRepository
      */
     public function getActiveTopologiesVersions(string $topologyId): array
     {
-        /** @var Iterator<Topology> $result */
+        /** @var Iterator<T> $result */
         $result = $this->createAggregationBuilder()
             ->match()
             ->field('deleted')->equals(FALSE)
@@ -215,6 +237,28 @@ final  class TopologyRepository extends DocumentRepository
             ->getIterator();
 
         return $result->toArray();
+    }
+
+    /**
+     * @param string $name
+     * @param string $excludeId
+     *
+     * @return void
+     * @throws MongoDBException
+     */
+    public function disableOtherVersions(string $name, string $excludeId): void
+    {
+        $this
+            ->createQueryBuilder()
+            ->updateMany()
+            ->field('name')->equals($name)
+            ->field('enabled')->equals(TRUE)
+            ->field('deleted')->equals(FALSE)
+            ->field('visibility')->equals(TopologyStatusEnum::PUBLIC->value)
+            ->field('id')->notEqual($excludeId)
+            ->field('enabled')->set(FALSE)
+            ->getQuery()
+            ->execute();
     }
 
 }

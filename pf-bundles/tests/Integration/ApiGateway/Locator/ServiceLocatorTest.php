@@ -12,6 +12,7 @@ use Hanaboso\PipesFramework\Configurator\Enum\NodeImplementationEnum;
 use Hanaboso\Utils\String\Base64;
 use Hanaboso\Utils\String\Json;
 use LogicException;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Psr\Log\NullLogger;
@@ -23,8 +24,56 @@ use Symfony\Component\HttpFoundation\Request;
  * @package PipesFrameworkTests\Integration\ApiGateway\Locator
  */
 #[CoversClass(ServiceLocator::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class ServiceLocatorTest extends DatabaseTestCaseAbstract
 {
+
+    /**
+     * @throws Exception
+     */
+    public function testGetApplications(): void
+    {
+        $dto = new ResponseDto(200, '', Json::encode(['items' => [[
+            'description'   => 'Description',
+            'isInstallable' => TRUE,
+            'key'           => 'null',
+            'logo'          => 'Logo',
+            'name'          => 'Null',
+        ]]]), []);
+
+        $secondDto = new ResponseDto(200, '', Json::encode(['items' => [[
+            'authorized'    => TRUE,
+            'description'   => 'Description',
+            'enabled'       => TRUE,
+            'isInstallable' => TRUE,
+            'key'           => 'null',
+            'logo'          => 'Logo',
+            'name'          => 'Null',
+        ]]]), []);
+
+        $res = $this->createLocator($dto, FALSE, $secondDto)->getApplications('user');
+        self::assertEquals(
+            [
+                [
+                    'applications' => [
+                        [
+                            'activated'   => TRUE,
+                            'authorized'  => TRUE,
+                            'description' => 'Description',
+                            'installable' => TRUE,
+                            'installed'   => TRUE,
+                            'key'         => 'null',
+                            'logo'        => 'Logo',
+                            'name'        => 'Null',
+                        ],
+                    ],
+                    'name'         => 'name',
+                    'url'          => 'host',
+                ],
+            ],
+            $res,
+        );
+    }
 
     /**
      * @throws Exception
@@ -179,7 +228,11 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     {
         $dto = new ResponseDto(200, '', Json::encode(['key' => 'null']), []);
 
-        $res = $this->createLocator($dto)->authorizationToken('null', 'user', ['param1' => 'aaa', 'state' => ['abc']]);
+        $res = $this->createLocator($dto)->authorizationToken(
+            'null',
+            'user',
+            ['param1' => 'aaa', 'state' => Base64::base64UrlEncode('user:null:name')],
+        );
         self::assertEquals(['key' => 'null', 'host' => 'host'], $res);
     }
 
@@ -192,7 +245,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
 
         $res = $this->createLocator($dto)->authorizationQueryToken([
             'param1' => 'aaa',
-            'state' => Base64::base64UrlEncode('name:name'),
+            'state' => Base64::base64UrlEncode('name:name:name'),
         ]);
         self::assertEquals(['key' => 'null', 'host' => 'host'], $res);
     }
@@ -246,6 +299,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
                     'batch'     => ['key' => 'null'],
                     'connector' => ['key' => 'null'],
                     'custom'    => ['key' => 'null'],
+                    'webhook'   => [],
                 ],
             ],
             $res,
@@ -266,9 +320,10 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
                     'user' => ['user-task'],
                 ],
                 'name' => [
-                    NodeImplementationEnum::BATCH->value => [],
+                    NodeImplementationEnum::BATCH->value     => [],
                     NodeImplementationEnum::CONNECTOR->value => [],
-                    NodeImplementationEnum::CUSTOM->value => [],
+                    NodeImplementationEnum::CUSTOM->value    => [],
+                    NodeImplementationEnum::WEBHOOK->value   => [],
                 ],
             ],
             $res,
@@ -321,19 +376,23 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $this->createLocator($dto)->runSyncActions($req, 'key', 'name', 'someMethod');
     }
 
-    /**
+    /*
      * ------------------------------------ HELPERS --------------------------------------------
      */
 
     /**
      * @param ResponseDto $dto
      * @param bool        $exception
+     * @param ResponseDto $secondDto
      *
      * @return ServiceLocator
      * @throws Exception
      */
-    private function createLocator(ResponseDto $dto, bool $exception = FALSE): ServiceLocator
-    {
+    private function createLocator(
+        ResponseDto $dto,
+        bool $exception = FALSE,
+        ?ResponseDto $secondDto = NULL,
+    ): ServiceLocator {
         $sdk = new Sdk();
         $sdk->setName('name')->setUrl('host');
         $this->dm->persist($sdk);
@@ -344,6 +403,8 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
 
         if ($exception) {
             $curl->method('send')->willThrowException(new Exception());
+        } else if ($secondDto) {
+            $curl->method('send')->willReturnOnConsecutiveCalls($dto, $secondDto);
         } else {
             $curl->method('send')->willReturn($dto);
         }

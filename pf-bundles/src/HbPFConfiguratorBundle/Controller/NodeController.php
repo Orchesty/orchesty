@@ -32,6 +32,21 @@ final class NodeController
     }
 
     /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/applications/topologies/nodes', methods: ['GET'])]
+    public function getTopologiesNodesAction(Request $request): Response
+    {
+        try {
+            return $this->getResponse($this->nodeHandler->getTopologiesWithNodes($request->query->getBoolean('all')));
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
      * @param string $id
      *
      * @return Response
@@ -40,6 +55,15 @@ final class NodeController
     public function getNodesAction(string $id): Response
     {
         return $this->getResponse($this->nodeHandler->getNodes($id));
+    }
+
+    /**
+     * @return Response
+     */
+    #[Route('/nodes/connectors', methods: ['GET'], priority: 10)]
+    public function getConnectorNodesAction(): Response
+    {
+        return $this->getResponse($this->nodeHandler->getConnectorNodes());
     }
 
     /**

@@ -18,6 +18,7 @@ use Hanaboso\Utils\Traits\LoggerTrait;
 use LogicException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
@@ -34,6 +35,20 @@ final class ServiceLocator implements LoggerAwareInterface
     public const array USER_TASK_LIST      = ['user-task'];
     public const string CUSTOM_ACTION_PATH = '%sapi/topologies/%s/nodes/%s/run-by-name';
 
+    private const string ITEMS          = 'items';
+    private const string KEY            = 'key';
+    private const string URL            = 'url';
+    private const string NAME           = 'name';
+    private const string LOGO           = 'logo';
+    private const string DESCRIPTION    = 'description';
+    private const string INSTALLABLE    = 'installable';
+    private const string INSTALLED      = 'installed';
+    private const string ACTIVATED      = 'activated';
+    private const string AUTHORIZED     = 'authorized';
+    private const string ENABLED        = 'enabled';
+    private const string IS_INSTALLABLE = 'isInstallable';
+    private const string APPLICATIONS   = 'applications';
+
     /**
      * @var ObjectRepository<Sdk>&SdkRepository
      */
@@ -46,21 +61,76 @@ final class ServiceLocator implements LoggerAwareInterface
      * @param CurlManager       $curlManager
      * @param RedirectInterface $redirect
      * @param string            $backendHost
+     * @param string            $tunnelProxyHost
      */
     public function __construct(
         DocumentManager $dm,
         private readonly CurlManager $curlManager,
         private readonly RedirectInterface $redirect,
         private readonly string $backendHost,
+        private readonly string $tunnelProxyHost = '',
     )
     {
         $this->sdkRepository = $dm->getRepository(Sdk::class);
         $this->logger        = new NullLogger();
     }
 
-    /**
+    /*
      * --------------------------------------------- APP Store -----------------------------------------
      */
+
+    /**
+     * @param string $user
+     *
+     * @return mixed[]
+     */
+    public function getApplications(string $user): array
+    {
+        /** @var array<string, mixed[]> $applications */
+        $applications = [];
+
+        foreach ($this->getSdks() as $sdk) {
+            $sdkName                = $sdk->getName();
+            $applications[$sdkName] = [
+                self::APPLICATIONS => [],
+                self::NAME         => $sdkName,
+                self::URL          => $sdk->getUrl(),
+            ];
+
+            $availableApplications = $this->doRequest('applications', $sdkName);
+            $installedApplications = $this->doRequest(
+                sprintf('applications/users/%s/sdk/%s', $user, $sdkName),
+                $sdkName,
+            );
+
+            foreach ($availableApplications[self::ITEMS] ?? [] as $application) {
+                $applications[$sdkName][self::APPLICATIONS][$application[self::KEY]] = [
+                    self::ACTIVATED    => FALSE,
+                    self::AUTHORIZED   => FALSE,
+                    self::DESCRIPTION  => $application[self::DESCRIPTION],
+                    self::INSTALLABLE  => $application[self::IS_INSTALLABLE],
+                    self::INSTALLED    => FALSE,
+                    self::KEY          => $application[self::KEY],
+                    self::LOGO         => $application[self::LOGO],
+                    self::NAME         => $application[self::NAME],
+                ];
+            }
+
+            foreach ($installedApplications[self::ITEMS] ?? [] as $application) {
+                if (!array_key_exists($application[self::KEY], $applications[$sdkName][self::APPLICATIONS])) {
+                    continue;
+                }
+
+                $applications[$sdkName][self::APPLICATIONS][$application[self::KEY]][self::INSTALLED]  = TRUE;
+                $applications[$sdkName][self::APPLICATIONS][$application[self::KEY]][self::ACTIVATED]  = $application[self::ENABLED];
+                $applications[$sdkName][self::APPLICATIONS][$application[self::KEY]][self::AUTHORIZED] = $application[self::AUTHORIZED];
+            }
+
+            $applications[$sdkName][self::APPLICATIONS] = array_values($applications[$sdkName][self::APPLICATIONS]);
+        }
+
+        return array_values($applications);
+    }
 
     /**
      * @param string $sdk
@@ -110,7 +180,7 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function getUserApps(string $user, string $sdk, string $exclude = ''): array
     {
-        $res = $this->doRequest(sprintf('applications/users/%s', $user), $sdk);
+        $res = $this->doRequest(sprintf('applications/users/%s/sdk/%s', $user, $sdk), $sdk);
         if ($res === [] || !isset($res['items'])) {
             $res['items'] = [];
         }
@@ -145,7 +215,7 @@ final class ServiceLocator implements LoggerAwareInterface
         string $sdk,
         string $customActionPath = self::CUSTOM_ACTION_PATH,
     ): array {
-        $res = $this->doRequest(sprintf('applications/%s/users/%s', $key, $user), $sdk);
+        $res = $this->doRequest(sprintf('applications/%s/users/%s/sdk/%s', $key, $user, $sdk), $sdk);
 
         if (isset($res['customActions'])) {
             $res['customActions'] = $this->prepareCustomActionsUrls($res['customActions'], $customActionPath);
@@ -167,7 +237,7 @@ final class ServiceLocator implements LoggerAwareInterface
     {
         try {
             $resp = $this->doRequest(
-                sprintf('applications/%s/users/%s/install', $key, $user),
+                sprintf('applications/%s/users/%s/sdk/%s/install', $key, $user, $sdk),
                 $sdk,
                 CurlManager::METHOD_POST,
                 [],
@@ -180,7 +250,7 @@ final class ServiceLocator implements LoggerAwareInterface
                 sprintf('applications/%s/sync/afterInstallCallback', $key),
                 $sdk,
                 CurlManager::METHOD_POST,
-                ['user' => $user, 'name' => $key],
+                ['user' => $user, 'name' => $key, 'sdk' => $sdk],
                 FALSE,
                 [],
                 TRUE,
@@ -205,7 +275,7 @@ final class ServiceLocator implements LoggerAwareInterface
             $this->changeState($key, $user, $sdk, ['enabled' => FALSE]);
 
             $resp = $this->doRequest(
-                sprintf('applications/%s/users/%s/uninstall', $key, $user),
+                sprintf('applications/%s/users/%s/sdk/%s/uninstall', $key, $user, $sdk),
                 $sdk,
                 CurlManager::METHOD_DELETE,
                 [],
@@ -218,7 +288,7 @@ final class ServiceLocator implements LoggerAwareInterface
                 sprintf('applications/%s/sync/afterUninstallCallback', $key),
                 $sdk,
                 CurlManager::METHOD_POST,
-                ['user' => $user, 'name' => $key],
+                ['user' => $user, 'name' => $key, 'sdk' => $sdk],
                 FALSE,
                 [],
                 TRUE,
@@ -241,7 +311,7 @@ final class ServiceLocator implements LoggerAwareInterface
     public function changeState(string $key, string $user, string $sdk, array $data): array
     {
         $resp = $this->doRequest(
-            sprintf('applications/%s/users/%s/changeState', $key, $user),
+            sprintf('applications/%s/users/%s/sdk/%s/changeState', $key, $user, $sdk),
             $sdk,
             CurlManager::METHOD_PUT,
             $data,
@@ -253,7 +323,7 @@ final class ServiceLocator implements LoggerAwareInterface
             sprintf('applications/%s/sync/%s', $key, $action),
             $sdk,
             CurlManager::METHOD_POST,
-            ['user' => $user, 'name' => $key],
+            ['user' => $user, 'name' => $key, 'sdk' => $sdk],
             FALSE,
             [],
             TRUE,
@@ -273,7 +343,7 @@ final class ServiceLocator implements LoggerAwareInterface
     public function updateApp(string $key, string $user, string $sdk, array $data): array
     {
         return $this->doRequest(
-            sprintf('applications/%s/users/%s/settings', $key, $user),
+            sprintf('applications/%s/users/%s/sdk/%s/settings', $key, $user, $sdk),
             $sdk,
             CurlManager::METHOD_PUT,
             $data,
@@ -291,7 +361,7 @@ final class ServiceLocator implements LoggerAwareInterface
     public function updateAppPassword(string $key, string $user, string $sdk, array $data): array
     {
         return $this->doRequest(
-            sprintf('applications/%s/users/%s/password', $key, $user),
+            sprintf('applications/%s/users/%s/sdk/%s/password', $key, $user, $sdk),
             $sdk,
             CurlManager::METHOD_PUT,
             $data,
@@ -307,9 +377,17 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function authorizationToken(string $key, string $user, array $query): array
     {
+        $sdk = explode(':', Base64::base64UrlDecode($query['state']))[2];
+
         return $this->doRequest(
-            sprintf('applications/%s/users/%s/authorize/token%s', $key, $user, $this->queryToString($query)),
-            $this->getSdkNameByInstalledApplication($key),
+            sprintf(
+                'applications/%s/users/%s/sdk/%s/authorize/token%s',
+                $key,
+                $user,
+                $sdk,
+                $this->queryToString($query),
+            ),
+            $sdk,
         );
     }
 
@@ -320,11 +398,11 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function authorizationQueryToken(array $query): array
     {
-        $key = explode(':', Base64::base64UrlDecode($query['state']))[1];
+        $sdk = explode(':', Base64::base64UrlDecode($query['state']))[2];
 
         return $this->doRequest(
             sprintf('applications/authorize/token%s', $this->queryToString($query)),
-            $this->getSdkNameByInstalledApplication($key),
+            $sdk,
         );
     }
 
@@ -337,7 +415,7 @@ final class ServiceLocator implements LoggerAwareInterface
     public function authorize(string $key, string $user, string $sdk, string $redirect): void
     {
         $url = $this->doRequest(
-            sprintf('applications/%s/users/%s/authorize?redirect_url=%s', $key, $user, $redirect),
+            sprintf('applications/%s/users/%s/sdk/%s/authorize?redirect_url=%s', $key, $user, $sdk, $redirect),
             $sdk,
         );
         if (!isset($url['authorizeUrl'])) {
@@ -355,10 +433,17 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function listSyncActions(string $key, string $sdk): array
     {
-        return $this->doRequest(
+        $raw = $this->doRequest(
             sprintf('applications/%s/sync/list', $key),
             $sdk,
         );
+
+        // SDK returns a plain JSON list (e.g. ["trace"]); doRequest however
+        // always merges a `host` key into the response, which corrupts list
+        // shapes into objects. Strip the artifact and return values only.
+        unset($raw['host']);
+
+        return array_values($raw);
     }
 
     /**
@@ -383,7 +468,7 @@ final class ServiceLocator implements LoggerAwareInterface
         )[0];
     }
 
-    /**
+    /*
      * --------------------------------------------- Nodes -----------------------------------------
      */
 
@@ -392,44 +477,30 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function getNodes(): array
     {
+        $nodeTypes = [
+            NodeImplementationEnum::BATCH->value     => 'batch/list',
+            NodeImplementationEnum::CONNECTOR->value => 'connector/list',
+            NodeImplementationEnum::CUSTOM->value    => 'custom-node/list',
+        ];
+
         $n = [];
         foreach ($this->getSdks() as $sdk) {
             try {
-                $ip   = $sdk->getUrl();
                 $name = $sdk->getName();
-                $con  = new RequestDto(
-                    new Uri(sprintf('%s/connector/list', $ip)),
-                    CurlManager::METHOD_GET,
-                    new ProcessDto(),
-                );
-                $cst  = new RequestDto(
-                    new Uri(sprintf('%s/custom-node/list', $ip)),
-                    CurlManager::METHOD_GET,
-                    new ProcessDto(),
-                );
-                $btch = new RequestDto(
-                    new Uri(sprintf('%s/batch/list', $ip)),
-                    CurlManager::METHOD_GET,
-                    new ProcessDto(),
-                );
-
-                try {
-                    $n[$name][NodeImplementationEnum::CONNECTOR->value] = $this->curlManager->send($con)->getJsonBody();
-                } catch (Throwable) {
-                    $n[$name][NodeImplementationEnum::CONNECTOR->value] = [];
+                foreach ($nodeTypes as $type => $path) {
+                    try {
+                        $dto             = new RequestDto(
+                            new Uri($this->buildSdkUrl($sdk, $path)),
+                            CurlManager::METHOD_GET,
+                            new ProcessDto(),
+                        );
+                        $n[$name][$type] = $this->curlManager->send($dto)->getJsonBody();
+                    } catch (Throwable) {
+                        $n[$name][$type] = [];
+                    }
                 }
 
-                try {
-                    $n[$name][NodeImplementationEnum::CUSTOM->value] = $this->curlManager->send($cst)->getJsonBody();
-                } catch (Throwable) {
-                    $n[$name][NodeImplementationEnum::CUSTOM->value] = [];
-                }
-
-                try {
-                    $n[$name][NodeImplementationEnum::BATCH->value] = $this->curlManager->send($btch)->getJsonBody();
-                } catch (Throwable) {
-                    $n[$name][NodeImplementationEnum::BATCH->value] = [];
-                }
+                $n[$name][NodeImplementationEnum::WEBHOOK->value] = $this->getWebhookCatalogForSdk($sdk);
             } catch (Throwable $t) {
                 $this->logger->error($t->getMessage(), ['Exception' => $t, 'Sdk' => $sdk]);
             }
@@ -439,7 +510,7 @@ final class ServiceLocator implements LoggerAwareInterface
         return $n;
     }
 
-    /**
+    /*
      * -------------------------------------------- Webhooks -----------------------------------------
      */
 
@@ -448,16 +519,20 @@ final class ServiceLocator implements LoggerAwareInterface
      * @param string  $user
      * @param string  $sdk
      * @param mixed[] $body
+     * @param bool    $throw
      *
      * @return mixed[]
      */
-    public function subscribeWebhook(string $key, string $user, string $sdk, array $body): array
+    public function subscribeWebhook(string $key, string $user, string $sdk, array $body, bool $throw = FALSE): array
     {
         return $this->doRequest(
-            sprintf('webhook/applications/%s/users/%s/subscribe', $key, $user),
+            sprintf('webhook/applications/%s/users/%s/sdk/%s/subscribe', $key, $user, $sdk),
             $sdk,
             CurlManager::METHOD_POST,
             $body,
+            FALSE,
+            [],
+            $throw,
         );
     }
 
@@ -466,16 +541,20 @@ final class ServiceLocator implements LoggerAwareInterface
      * @param string  $user
      * @param string  $sdk
      * @param mixed[] $body
+     * @param bool    $throw
      *
      * @return mixed[]
      */
-    public function unSubscribeWebhook(string $key, string $user, string $sdk, array $body): array
+    public function unSubscribeWebhook(string $key, string $user, string $sdk, array $body, bool $throw = FALSE): array
     {
         return $this->doRequest(
-            sprintf('webhook/applications/%s/users/%s/unsubscribe', $key, $user),
+            sprintf('webhook/applications/%s/users/%s/sdk/%s/unsubscribe', $key, $user, $sdk),
             $sdk,
             CurlManager::METHOD_POST,
             $body,
+            FALSE,
+            [],
+            $throw,
         );
     }
 
@@ -486,12 +565,7 @@ final class ServiceLocator implements LoggerAwareInterface
     public function getSdkNameByInstalledApplication(string $key): string
     {
         foreach ($this->getSdks() as $sdk) {
-            $hasApplication = array_find(
-                $this->doRequest('applications', $sdk->getName())['items'] ?? [],
-                static fn(array $application): bool => $application['key'] === $key,
-            ) !== NULL;
-
-            if ($hasApplication) {
+            if ($this->isApplicationInstalledOnSdk($key, $sdk->getName())) {
                 return $sdk->getName();
             }
         }
@@ -500,6 +574,28 @@ final class ServiceLocator implements LoggerAwareInterface
     }
 
     /**
+     * @param string $key
+     * @param string $sdk
+     *
+     * @return bool
+     */
+    public function isApplicationInstalledOnSdk(string $key, string $sdk): bool
+    {
+        return array_find(
+            $this->doRequest('applications', $sdk)['items'] ?? [],
+            static fn(array $application): bool => $application['key'] === $key,
+        ) !== NULL;
+    }
+
+    /**
+     * @return Sdk[]
+     */
+    public function getSdks(): array
+    {
+        return $this->sdkRepository->findAll();
+    }
+
+    /*
      * --------------------------------------------- HELPERS -----------------------------------------
      */
 
@@ -527,16 +623,33 @@ final class ServiceLocator implements LoggerAwareInterface
         bool $allowOriginalResponse = FALSE,
     ): array
     {
-        $out = [];
-        $sdk = array_values(array_filter(
+        $out  = [];
+        $sdks = array_values(array_filter(
             $this->getSdks(),
             static fn(Sdk $sdk): bool => $sdk->getName() === $sdkName,
-        ))[0];
+        ));
+
+        if ($sdks === []) {
+            // Surface a useful error instead of letting `[0]` raise
+            // "Undefined array key 0" — that warning was previously
+            // bubbling up through the API gateway as a 502 with no clue
+            // about the actual cause (a stale / misnamed SDK identifier
+            // on a Node or WebhookConfig).
+            throw new RuntimeException(
+                sprintf(
+                    'Unknown SDK "%s" — not registered in the Sdk catalogue. Available: %s',
+                    $sdkName,
+                    implode(', ', array_map(static fn(Sdk $s): string => $s->getName(), $this->getSdks())) ?: '<none>',
+                ),
+            );
+        }
+
+        $sdk = $sdks[0];
         try {
-            $ip = $sdk->getUrl();
+            $requestUrl = $this->buildSdkUrl($sdk, $url);
 
             $dto = new RequestDto(
-                new Uri(sprintf('%s/%s', $ip, $url)),
+                new Uri($requestUrl),
                 $method,
                 new ProcessDto(),
                 '',
@@ -552,7 +665,7 @@ final class ServiceLocator implements LoggerAwareInterface
                     $out[] = $res->getBody();
                 }else if ($res->getJsonBody() !== []) {
                     if (!$multiple) {
-                        $out = array_merge($res->getJsonBody(), ['host' => $ip]);
+                        $out = array_merge($res->getJsonBody(), ['host' => $this->getSdkBaseUrl($sdk)]);
                     } else {
                         $out = array_merge($out, $res->getJsonBody());
                     }
@@ -582,11 +695,90 @@ final class ServiceLocator implements LoggerAwareInterface
     }
 
     /**
-     * @return Sdk[]
+     * @param Sdk $sdk
+     *
+     * @return string
      */
-    private function getSdks(): array
+    private function getSdkBaseUrl(Sdk $sdk): string
     {
-        return $this->sdkRepository->findAll();
+        return $sdk->isTunnel() ? $this->tunnelProxyHost : $sdk->getUrl();
+    }
+
+    /**
+     * @param Sdk    $sdk
+     * @param string $path
+     *
+     * @return string
+     */
+    private function buildSdkUrl(Sdk $sdk, string $path): string
+    {
+        $base = $this->getSdkBaseUrl($sdk);
+        $path = ltrim($path, '/');
+
+        return $sdk->isTunnel()
+            ? sprintf('%s/call/%s/%s', $base, $sdk->getName(), $path)
+            : sprintf('%s/%s', $base, $path);
+    }
+
+    /**
+     * Builds the per-SDK webhook bucket consumed by the editor's webhook
+     * picker — one entry per application that exposes any subscriptions via
+     * `AWebhookApplication::syncListWebhookEvents`.
+     *
+     * Errors per application are swallowed: an app that doesn't implement the
+     * sync action simply contributes nothing.
+     *
+     * @param Sdk $sdk
+     *
+     * @return array<int, array{application: string, name: string, logo: string, events: mixed[]}>
+     */
+    private function getWebhookCatalogForSdk(Sdk $sdk): array
+    {
+        $sdkName = $sdk->getName();
+        $catalog = [];
+
+        try {
+            $availableApplications = $this->doRequest('applications', $sdkName);
+        } catch (Throwable) {
+            return [];
+        }
+
+        foreach ($availableApplications[self::ITEMS] ?? [] as $application) {
+            $key = $application[self::KEY] ?? NULL;
+            if ($key === NULL) {
+                continue;
+            }
+
+            try {
+                $events = $this->doRequest(
+                    sprintf('applications/%s/sync/listWebhookEvents?user=%s&sdk=%s', $key, 'system', $sdkName),
+                    $sdkName,
+                );
+            } catch (Throwable) {
+                continue;
+            }
+
+            // doRequest() merges a synthetic `host` key into single-call
+            // responses (see `runSyncActions` / non-multiple branch). Drop it
+            // before passing through `array_values`, otherwise the SDK base
+            // URL leaks into the events list as a stray string item — same
+            // pattern as the comment on the list-action path above.
+            unset($events['host']);
+
+            // Apps that don't extend AWebhookApplication respond with empty / scalar.
+            if ($events === []) {
+                continue;
+            }
+
+            $catalog[] = [
+                'application' => (string) $key,
+                'events'      => array_values($events),
+                'logo'        => (string) ($application[self::LOGO] ?? ''),
+                'name'        => (string) ($application[self::NAME] ?? $key),
+            ];
+        }
+
+        return $catalog;
     }
 
     /**

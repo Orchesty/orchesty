@@ -5,6 +5,8 @@ namespace Hanaboso\PipesFramework\UserTask\Model;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\Persistence\ObjectRepository;
+use Exception;
 use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
@@ -23,7 +25,7 @@ use RabbitMqBundle\Publisher\Publisher;
  *
  * @package Hanaboso\PipesFramework\UserTask\Model
  */
-final class UserTaskManager
+final readonly class UserTaskManager
 {
 
     private const string STATE_HEADER = 'user-task-state';
@@ -31,49 +33,46 @@ final class UserTaskManager
     private const string STATE_REJECT = 'reject';
 
     /**
-     * @var UserTaskRepository
+     * @var ObjectRepository<UserTask>&UserTaskRepository
      */
     private UserTaskRepository $userTaskRepository;
 
     /**
-     * @var TopologyRepository
+     * @var ObjectRepository<Topology>&TopologyRepository
      */
     private TopologyRepository $topologyRepository;
 
     /**
-     * @var NodeRepository
+     * @var ObjectRepository<Node>&NodeRepository
      */
     private NodeRepository $nodeRepository;
 
     /**
      * UserTaskManager constructor.
      *
-     * @param DocumentManager $dm
-     * @param UserTaskFilter  $filter
-     * @param Publisher       $publisher
+     * @param DocumentManager           $dm
+     * @param UserTaskFilter            $filter
+     * @param UserTaskAggregationFilter $aggregationFilter
+     * @param Publisher                 $publisher
      */
     public function __construct(
         private DocumentManager $dm,
         private UserTaskFilter $filter,
+        private UserTaskAggregationFilter $aggregationFilter,
         private Publisher $publisher,
     )
     {
-        $userTaskRepository       = $dm->getRepository(UserTask::class);
-        $this->userTaskRepository = $userTaskRepository;
-
-        $topologyRepository       = $dm->getRepository(Topology::class);
-        $this->topologyRepository = $topologyRepository;
-
-        $nodeRepository       = $dm->getRepository(Node::class);
-        $this->nodeRepository = $nodeRepository;
+        $this->userTaskRepository = $dm->getRepository(UserTask::class);
+        $this->topologyRepository = $dm->getRepository(Topology::class);
+        $this->nodeRepository     = $dm->getRepository(Node::class);
     }
 
     /**
      * @param string $id
      *
      * @return UserTask
-     * @throws MongoDBException
      * @throws MappingException
+     * @throws MongoDBException
      */
     public function get(string $id): UserTask
     {
@@ -180,6 +179,17 @@ final class UserTaskManager
                 ],
             );
         }, $res);
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return array<mixed>
+     * @throws Exception
+     */
+    public function getUserTasks(GridRequestDtoInterface $dto): array
+    {
+        return $this->aggregationFilter->getData($dto)->toArray();
     }
 
     /**

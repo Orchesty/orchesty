@@ -126,6 +126,7 @@ final class TopologyController extends AbstractController
     )]
     public function getTopologySchemaAction(string $id): Response
     {
+        // TODO RB: Remove this after new UI
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologySchemaAction',
             ['id' => $id],
@@ -145,6 +146,7 @@ final class TopologyController extends AbstractController
     )]
     public function saveTopologySchemaAction(string $id): Response
     {
+        // TODO RB: Remove this after new UI
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::saveTopologySchemaAction',
             ['id' => $id],
@@ -164,8 +166,66 @@ final class TopologyController extends AbstractController
     )]
     public function checkTopologySchemaDifferencesAction(string $id): Response
     {
+        // TODO RB: Remove this after new UI
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::checkTopologySchemaDifferencesAction',
+            ['id' => $id],
+        );
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route(
+        '/topologies/{id}/schema.json',
+        requirements: ['id' => '\w+'],
+        defaults: ['_format' => 'json'],
+        methods: ['GET'],
+    )]
+    public function getTopologyJsonSchemaAction(string $id): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologyJsonSchemaAction',
+            ['id' => $id],
+        );
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route(
+        '/topologies/{id}/schema.json',
+        requirements: ['id' => '\w+'],
+        defaults: ['_format' => 'json'],
+        methods: ['PUT'],
+    )]
+    public function saveTopologyJsonSchemaAction(string $id): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::saveTopologyJsonSchemaAction',
+            ['id' => $id],
+        );
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route(
+        '/topologies/check/{id}/schema.json',
+        requirements: ['id' => '\w+'],
+        defaults: ['_format' => 'json'],
+        methods: ['POST'],
+    )]
+    public function checkTopologyJsonSchemaDifferencesAction(string $id): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::checkTopologyJsonSchemaDifferencesAction',
             ['id' => $id],
         );
     }
@@ -180,6 +240,34 @@ final class TopologyController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::publishTopologyAction',
+            ['id' => $id],
+        );
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route('/topologies/{id}/republish', requirements: ['id' => '\w+'], methods: ['POST'])]
+    public function republishTopologyAction(string $id): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::republishTopologyAction',
+            ['id' => $id],
+        );
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route('/topologies/{id}/unpublish', requirements: ['id' => '\w+'], methods: ['POST'])]
+    public function unpublishTopologyAction(string $id): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::unpublishTopologyAction',
             ['id' => $id],
         );
     }

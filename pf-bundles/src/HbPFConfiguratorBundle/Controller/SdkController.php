@@ -67,7 +67,7 @@ final class SdkController extends AbstractController
     {
         try {
             return $this->getResponse($this->handler->create($request->request->all()));
-        } catch (PipesFrameworkException | MongoDBException $e) {
+        } catch (MongoDBException | PipesFrameworkException $e) {
             return $this->getErrorResponse($e, 400);
         }
     }
@@ -99,6 +99,36 @@ final class SdkController extends AbstractController
         try {
             return $this->getResponse($this->handler->delete($id));
         } catch (DocumentNotFoundException | MongoDBException $e) {
+            return $this->getErrorResponse($e, 404);
+        }
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route('/sdks/{id}/tunnel-env', requirements: ['id' => '\w+'], methods: ['GET'])]
+    public function getTunnelEnvAction(string $id): Response
+    {
+        try {
+            return $this->getResponse($this->handler->getTunnelEnv($id));
+        } catch (DocumentNotFoundException $e) {
+            return $this->getErrorResponse($e, 404);
+        }
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route('/sdks/{id}/env', requirements: ['id' => '\w+'], methods: ['GET'])]
+    public function getEnvAction(string $id): Response
+    {
+        try {
+            return $this->getResponse($this->handler->getEnv($id));
+        } catch (DocumentNotFoundException $e) {
             return $this->getErrorResponse($e, 404);
         }
     }

@@ -9,7 +9,11 @@
         "handler": "event",
         "enabled": true,
         "schema_id": "",
+        "sdk": "",
         "cron_time": null,
-        "cron_params": null
+        "cron_params": null,
+        "application": "",
+        "event_name": "",
+        "prefetch": 1
     }
 }

@@ -11,6 +11,7 @@ use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract;
 use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Throwable;
@@ -23,6 +24,7 @@ use Throwable;
 #[CoversClass(MetricsController::class)]
 #[CoversClass(MetricsHandler::class)]
 #[CoversClass(MetricsManagerAbstract::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class MetricsControllerTest extends ControllerTestCaseAbstract
 {
 
@@ -183,9 +185,9 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
         $manager = self::createPartialMock(MongoMetricsManager::class, [$fn]);
 
         if ($return instanceof Throwable) {
-            $manager->expects(self::any())->method($fn)->willThrowException($return);
+            $manager->expects(self::atLeastOnce())->method($fn)->willThrowException($return);
         } else {
-            $manager->expects(self::any())->method($fn)->willReturn($return);
+            $manager->expects(self::atLeastOnce())->method($fn)->willReturn($return);
         }
 
         self::getContainer()->set('hbpf.metrics.manager.mongo_metrics', $manager);

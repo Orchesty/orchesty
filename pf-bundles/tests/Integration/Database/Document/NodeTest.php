@@ -38,6 +38,7 @@ final class NodeTest extends DatabaseTestCaseAbstract
             ->setNext([$embedNode])
             ->setHandler('action')
             ->setEnabled(TRUE)
+            ->setSdk('sdk')
             ->setSystemConfigs(new SystemConfigDto())
             ->setCronParams(NULL)
             ->setSchemaId('789')
@@ -52,6 +53,7 @@ final class NodeTest extends DatabaseTestCaseAbstract
         self::assertSame('789', $node->getSchemaId());
         self::assertSame('mapper', $node->getType());
         self::assertSame('cron', $node->getCron());
+        self::assertSame('sdk', $node->getSdk());
         self::assertEquals(2, count($node->getNext()));
         self::assertInstanceOf(SystemConfigDto::class, $node->getSystemConfigs());
         self::assertNull($node->getCronParams());

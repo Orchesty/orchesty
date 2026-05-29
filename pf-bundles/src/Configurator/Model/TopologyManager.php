@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\Persistence\ObjectRepository;
 use Exception;
@@ -18,13 +19,16 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\PipesFramework\Application\Manager\WebhookConfigManager;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
+use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\Database\Document\TopologyApplication;
 use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Database\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
@@ -33,17 +37,19 @@ use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\Utils\Cron\CronParser;
 use Hanaboso\Utils\Exception\EnumException;
-use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\String\Strings;
 use Hanaboso\Utils\Traits\UrlBuilderTrait;
 use JsonException;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use Throwable;
 
 /**
  * Class TopologyManager
  *
  * @package Hanaboso\PipesFramework\Configurator\Model
  */
-final class TopologyManager
+class TopologyManager
 {
 
     use UrlBuilderTrait;
@@ -56,6 +62,7 @@ final class TopologyManager
     private const string MESSAGE        = 'message';
     private const string STARTED        = 'started';
     private const string STARTING_POINT = 'startingPoint';
+    private const string CORRELATION_ID = 'correlationId';
 
     /**
      * @var DocumentManager
@@ -68,9 +75,17 @@ final class TopologyManager
     private TopologyRepository $topologyRepository;
 
     /**
-     * @var NodeRepository
+     * @var ObjectRepository<Node>&NodeRepository
      */
     private NodeRepository $nodeRepository;
+
+    /**
+     * Optional WebhookConfigManager (set via DI). Kept as a separate setter
+     * so older service wiring without webhook support keeps booting.
+     */
+    private ?WebhookConfigManager $webhookConfigManager = NULL;
+
+    private LoggerInterface $logger;
 
     /**
      * TopologyManager constructor.
@@ -80,6 +95,8 @@ final class TopologyManager
      * @param bool                   $checkInfiniteLoop
      * @param CurlManagerInterface   $curl
      * @param string                 $startingPointHost
+     * @param string                 $tunnelProxyHost
+     * @param class-string<Topology> $topologyClass
      */
     function __construct(
         DatabaseManagerLocator $dml,
@@ -87,19 +104,53 @@ final class TopologyManager
         private bool $checkInfiniteLoop,
         private CurlManagerInterface $curl,
         string $startingPointHost,
+        private string $tunnelProxyHost = '',
+        protected string $topologyClass = Topology::class,
     )
     {
         /** @var DocumentManager $dm */
         $dm       = $dml->getDm();
         $this->dm = $dm;
 
-        $topoRepo                 = $this->dm->getRepository(Topology::class);
-        $this->topologyRepository = $topoRepo;
+        $this->topologyRepository = $this->dm->getRepository($this->topologyClass);
+        $this->nodeRepository     = $this->dm->getRepository(Node::class);
 
-        $nodeRepo             = $this->dm->getRepository(Node::class);
-        $this->nodeRepository = $nodeRepo;
+        $this->host   = rtrim($startingPointHost, '/');
+        $this->logger = new NullLogger();
+    }
 
-        $this->host = rtrim($startingPointHost, '/');
+    /**
+     * Inject the WebhookConfigManager so each schema save can keep
+     * {@see WebhookConfig} documents in sync with the topology graph.
+     *
+     * Wired via DI's `calls:` so the manager remains optional from a typing
+     * standpoint and old test fixtures that build TopologyManager directly do
+     * not need to know about it.
+     *
+     * @param WebhookConfigManager $manager
+     *
+     * @return self
+     */
+    public function setWebhookConfigManager(WebhookConfigManager $manager): self
+    {
+        $this->webhookConfigManager = $manager;
+
+        return $this;
+    }
+
+    /**
+     * Optional logger so we can surface swallowed cascade failures (the schema
+     * save must not abort if a webhook upsert fails, but we still want to know).
+     *
+     * @param LoggerInterface $logger
+     *
+     * @return self
+     */
+    public function setLogger(LoggerInterface $logger): self
+    {
+        $this->logger = $logger;
+
+        return $this;
     }
 
     /**
@@ -139,7 +190,9 @@ final class TopologyManager
         try {
             $response = $this->curl->send($request);
             if ($response->getStatusCode() === 200) {
-                return self::formatTopologyRunMessage($startingPoint, TRUE);
+                $correlationId = $response->getJsonBody()['correlation_id'] ?? '';
+
+                return self::formatTopologyRunMessage($startingPoint, TRUE, '', $correlationId);
             }
 
             return self::formatTopologyRunMessage($startingPoint, FALSE, $response->getJsonBody()[self::MESSAGE]);
@@ -152,8 +205,8 @@ final class TopologyManager
      * @param mixed[] $data
      *
      * @return Topology
-     * @throws TopologyException
      * @throws MongoDBException
+     * @throws TopologyException
      */
     public function createTopology(array $data): Topology
     {
@@ -165,9 +218,10 @@ final class TopologyManager
             );
         }
 
-        $topology = $this->setTopologyData(new Topology(), $data);
+        $topology = $this->setTopologyData(new $this->topologyClass(), $data);
         $topology->setVersion($this->topologyRepository->getMaxVersion($data['name']) + 1);
         $topology->setRawBpmn(sprintf(self::DEFAULT_SCHEME, $topology->getName()));
+        $topology->setJson(['connections' => [], 'nodes' => []]);
 
         $this->dm->persist($topology);
         $this->dm->flush();
@@ -180,8 +234,8 @@ final class TopologyManager
      * @param mixed[]  $data
      *
      * @return Topology
-     * @throws TopologyException
      * @throws MongoDBException
+     * @throws TopologyException
      */
     public function updateTopology(Topology $topology, array $data): Topology
     {
@@ -189,6 +243,11 @@ final class TopologyManager
         $topology = $this->checkTopologyName($topology, $data);
         $topology = $this->setTopologyData($topology, $data);
         $this->dm->flush();
+
+        if (isset($data['enabled']) && $data['enabled']
+            && $topology->getVisibility() === TopologyStatusEnum::PUBLIC->value) {
+            $this->topologyRepository->disableOtherVersions($topology->getName(), $topology->getId());
+        }
 
         return $topology;
     }
@@ -201,10 +260,10 @@ final class TopologyManager
      * @return Topology
      * @throws CronException
      * @throws CurlException
+     * @throws JsonException
+     * @throws MongoDBException
      * @throws NodeException
      * @throws TopologyException
-     * @throws MongoDBException
-     * @throws JsonException
      */
     public function saveTopologySchema(Topology $topology, string $content, array $data): Topology
     {
@@ -237,7 +296,7 @@ final class TopologyManager
         }
 
         $topology
-            ->setApplications($newSchemaObject->getApplicationList())
+            ->setApplications($this->patchTunnelApplicationHosts($newSchemaObject->getApplicationList()))
             ->setBpmn($data)
             ->setRawBpmn($content);
         $this->dm->flush();
@@ -264,12 +323,81 @@ final class TopologyManager
     }
 
     /**
+     * @param Topology    $topology
+     * @param mixed[]     $data
+     * @param string|null $forceHost
+     *
+     * @return Topology
+     * @throws JsonException
+     * @throws MongoDBException
+     * @throws TopologyException
+     */
+    public function saveTopologyJsonSchema(Topology $topology, array $data, ?string $forceHost = NULL): Topology
+    {
+        $sdkUrlMap       = $forceHost !== NULL ? $this->getForcedSdkUrlMap($data, $forceHost) : $this->getSdkUrlMap();
+        $newSchemaObject = TopologySchemaUtils::getSchemaObjectFromJson($data, $sdkUrlMap);
+        $newSchemaSha256 = TopologySchemaUtils::getIndexHash($newSchemaObject, $this->checkInfiniteLoop);
+
+        $cloned              = FALSE;
+        $originalContentHash = $topology->getContentHash();
+
+        if ($originalContentHash !== $newSchemaSha256) {
+            if ($originalContentHash !== '' && $topology->getVisibility() === TopologyStatusEnum::PUBLIC->value) {
+                $topology = $this->cloneTopologyShallow($topology, $newSchemaSha256);
+                $cloned   = TRUE;
+            } else {
+                $topology->setContentHash($newSchemaSha256);
+            }
+        }
+
+        try {
+            if ($cloned || $originalContentHash === '') {
+                $this->generateNodes($topology, $newSchemaObject);
+            } else {
+                $this->updateNodes($topology, $newSchemaObject);
+            }
+        } catch (TopologyException $e) {
+            $topology->setContentHash('');
+            $this->removeNodesByTopology($topology);
+
+            throw $e;
+        }
+
+        $topology
+            ->setApplications($this->patchTunnelApplicationHosts($newSchemaObject->getApplicationList()))
+            ->setJson($data);
+        $this->dm->flush();
+
+        return $topology;
+    }
+
+    /**
+     * @param Topology $topology
+     * @param mixed[]  $data
+     *
+     * @return bool
+     * @throws TopologyException
+     */
+    public function checkTopologyJsonSchemaIsSame(Topology $topology, array $data): bool
+    {
+        $sdkUrlMap = $this->getSdkUrlMap();
+
+        $oldSchemaObject = TopologySchemaUtils::getSchemaObjectFromJson($topology->getJson(), $sdkUrlMap);
+        $newSchemaObject = TopologySchemaUtils::getSchemaObjectFromJson($data, $sdkUrlMap);
+
+        $oldSchemaSha256 = TopologySchemaUtils::getSchemaFullIndexHash($oldSchemaObject);
+        $newSchemaSha256 = TopologySchemaUtils::getSchemaFullIndexHash($newSchemaObject);
+
+        return $oldSchemaSha256 === $newSchemaSha256;
+    }
+
+    /**
      * @param Topology $topology
      *
      * @return Topology
-     * @throws TopologyException
      * @throws EnumException
      * @throws MongoDBException
+     * @throws TopologyException
      */
     public function publishTopology(Topology $topology): Topology
     {
@@ -306,10 +434,10 @@ final class TopologyManager
      * @param Topology $topology
      *
      * @return Topology
+     * @throws JsonException
+     * @throws MongoDBException
      * @throws NodeException
      * @throws TopologyException
-     * @throws MongoDBException
-     * @throws JsonException
      */
     public function cloneTopology(Topology $topology): Topology
     {
@@ -328,7 +456,9 @@ final class TopologyManager
                 ->setHandler($topologyNode->getHandler())
                 ->setEnabled($topologyNode->isEnabled())
                 ->setCron($topologyNode->getCron())
-                ->setCronParams($topologyNode->getCronParams());
+                ->setCronParams($topologyNode->getCronParams())
+                ->setSdk($topologyNode->getSdk())
+                ->setApplication($topologyNode->getApplication() ?? '');
             $this->dm->persist($nodeCopy);
 
             $settings = $topologyNode->getSystemConfigs();
@@ -380,44 +510,65 @@ final class TopologyManager
 
     /**
      * @return mixed[]
-     * @throws CronException
-     * @throws CurlException
      */
     public function getCronTopologies(): array
     {
-        $data   = Json::decode($this->cronManager->getAll()->getBody());
+        /** @var Node[] $cronNodes */
+        $cronNodes = $this->nodeRepository->findBy([
+            'deleted' => FALSE,
+            'type'    => TypeEnum::CRON->value,
+        ]);
+
+        $ids = array_values(array_unique(array_map(
+            static fn(Node $node): string => $node->getTopology(),
+            $cronNodes,
+        )));
+
+        $topologies = [];
+
+        if ($ids) {
+            /** @var Topology $topology */
+            foreach ($this->topologyRepository->findBy(['id' => ['$in' => $ids], 'deleted' => FALSE]) as $topology) {
+                $topologies[$topology->getId()] = $topology;
+            }
+        }
+
         $result = [];
 
-        foreach ($data as $item) {
-            /** @var Topology[] $topologies */
-            $topologies = $this->topologyRepository->findBy(['id' => $item['topology'], 'deleted' => FALSE]);
+        foreach ($cronNodes as $node) {
+            $topology = $topologies[$node->getTopology()] ?? NULL;
 
-            foreach ($topologies as $topology) {
-                $result[] = [
-                    'node'     => [
-                        'name' => $item['node'],
-                    ],
-                    'time'     => $item['time'],
-                    'topology' => [
-                        'id'      => $topology->getId(),
-                        'name'    => $topology->getName(),
-                        'status'  => $topology->isEnabled(),
-                        'version' => $topology->getVersion(),
-                    ],
-                ];
+            if (!$topology) {
+                continue;
             }
+
+            $result[] = [
+                'node'     => [
+                    'id'         => $node->getId(),
+                    'name'       => $node->getName(),
+                    'parameters' => $node->getCronParams(),
+                    'status'     => $node->isEnabled(),
+                ],
+                'time'     => $node->getCron() ?? '',
+                'topology' => [
+                    'id'      => $topology->getId(),
+                    'name'    => $topology->getName(),
+                    'status'  => $topology->isEnabled(),
+                    'version' => $topology->getVersion(),
+                ],
+            ];
         }
 
         usort(
             $result,
             static function (array $one, array $two): int {
-                $result = $one['topology']['status'] <=> $two['topology']['status'];
+                $result = strcasecmp($one['topology']['name'], $two['topology']['name']);
 
                 if (!$result) {
                     $result = $one['topology']['version'] <=> $two['topology']['version'];
                 }
 
-                return $result * -1;
+                return $result;
             },
         );
 
@@ -464,7 +615,7 @@ final class TopologyManager
         return [];
     }
 
-    /**
+    /*
      * ----------------------------------------------- HELPERS -----------------------------------------------
      */
 
@@ -474,10 +625,10 @@ final class TopologyManager
      *
      * @return Topology
      */
-    private function cloneTopologyShallow(Topology $topology, string $hash): Topology
+    protected function cloneTopologyShallow(Topology $topology, string $hash): Topology
     {
-        $version = $this->topologyRepository->getMaxVersion($topology->getName());
-        $res     = (new Topology())
+        $version        = $this->topologyRepository->getMaxVersion($topology->getName());
+        $clonedTopology = (new $this->topologyClass())
             ->setName($topology->getName())
             ->setVersion($version + 1)
             ->setDescr($topology->getDescr())
@@ -485,11 +636,127 @@ final class TopologyManager
             ->setEnabled(FALSE)
             ->setContentHash($hash)
             ->setBpmn($topology->getBpmn())
+            ->setJson($topology->getJson())
             ->setRawBpmn($topology->getRawBpmn());
 
-        $this->dm->persist($res);
+        $this->dm->persist($clonedTopology);
 
-        return $res;
+        return $clonedTopology;
+    }
+
+    /**
+     * @param Topology $topology
+     * @param mixed[]  $data
+     *
+     * @return Topology
+     */
+    protected function setTopologyData(Topology $topology, array $data): Topology
+    {
+        if (isset($data['name'])) {
+            $topology->setName($data['name']);
+        }
+
+        if (isset($data['description'])) {
+            $topology->setDescr($data['description']);
+        }
+
+        if (isset($data['enabled'])) {
+            $topology->setEnabled($data['enabled']);
+        }
+
+        if (array_key_exists('category', $data)) {
+            $topology->setCategory($data['category']);
+        }
+
+        return $topology;
+    }
+
+    /**
+     * @return string
+     */
+    private function getTunnelProxyHostWithoutScheme(): string
+    {
+        return (string) preg_replace('#^https?://#', '', $this->tunnelProxyHost);
+    }
+
+    /**
+     * @return array<string, bool> worker name => TRUE for tunnel SDKs
+     */
+    private function getTunnelSdkNames(): array
+    {
+        $tunnelSdks = [];
+        foreach ($this->dm->getRepository(Sdk::class)->findAll() as $sdk) {
+            if ($sdk->isTunnel()) {
+                $tunnelSdks[$sdk->getName()] = TRUE;
+            }
+        }
+
+        return $tunnelSdks;
+    }
+
+    /**
+     * @return mixed[] worker name => SDK URL
+     */
+    private function getSdkUrlMap(): array
+    {
+        $map       = [];
+        $proxyHost = $this->getTunnelProxyHostWithoutScheme();
+
+        foreach ($this->dm->getRepository(Sdk::class)->findAll() as $sdk) {
+            $map[$sdk->getName()] = $sdk->isTunnel() ? $proxyHost : $sdk->getUrl();
+        }
+
+        return $map;
+    }
+
+    /**
+     * @param TopologyApplication[] $apps
+     *
+     * @return TopologyApplication[]
+     */
+    private function patchTunnelApplicationHosts(array $apps): array
+    {
+        $tunnelSdks = $this->getTunnelSdkNames();
+        if ($tunnelSdks === []) {
+            return $apps;
+        }
+
+        $proxyHost = rtrim($this->getTunnelProxyHostWithoutScheme(), '/');
+        $patched   = [];
+        foreach ($apps as $app) {
+            if (isset($tunnelSdks[$app->getSdk()])) {
+                $patched[] = new TopologyApplication(
+                    $app->getKey(),
+                    sprintf('%s/call/%s', $proxyHost, $app->getSdk()),
+                    $app->getSdk(),
+                );
+            } else {
+                $patched[] = $app;
+            }
+        }
+
+        return $patched;
+    }
+
+    /**
+     * @param mixed[] $data
+     * @param string  $forceHost
+     *
+     * @return mixed[]
+     */
+    private function getForcedSdkUrlMap(array $data, string $forceHost): array
+    {
+        $map = [];
+
+        foreach ($data['nodes'] ?? [] as $node) {
+            $worker = $node['action']['worker'] ?? '';
+
+            if ($worker !== '') {
+                $map[$worker] = $forceHost;
+            }
+        }
+
+        return $map;
     }
 
     /**
@@ -507,6 +774,7 @@ final class TopologyManager
             if ($node->getType() === TypeEnum::CRON->value) {
                 $this->cronManager->delete($node);
             }
+            $this->cascadeWebhookConfigDelete($topology, $node);
         }
 
         $this->dm->flush();
@@ -516,9 +784,9 @@ final class TopologyManager
      * @param Topology $topology
      * @param Schema   $dto
      *
-     * @throws TopologyException
-     * @throws NodeException
      * @throws MongoDBException
+     * @throws NodeException
+     * @throws TopologyException
      */
     private function generateNodes(Topology $topology, Schema $dto): void
     {
@@ -542,9 +810,9 @@ final class TopologyManager
      * @param Topology $topology
      * @param Schema   $dto
      *
+     * @throws MongoDBException
      * @throws NodeException
      * @throws TopologyException
-     * @throws MongoDBException
      */
     private function updateNodes(Topology $topology, Schema $dto): void
     {
@@ -574,6 +842,18 @@ final class TopologyManager
         foreach ($nodes as $node) {
             $nodeIds[] = $node->getId();
         }
+
+        /** @var Iterator<Node> $orphanedWebhookNodes */
+        $orphanedWebhookNodes = $this->nodeRepository->createQueryBuilder()
+            ->field('topology')->equals($topology->getId())
+            ->field('_id')->notIn($nodeIds)
+            ->field('type')->equals(TypeEnum::WEBHOOK->value)
+            ->getQuery()->execute();
+
+        foreach ($orphanedWebhookNodes as $orphan) {
+            $this->cascadeWebhookConfigDelete($topology, $orphan);
+        }
+
         $this->nodeRepository->createQueryBuilder()->remove()
             ->field('topology')->equals($topology->getId())
             ->field('_id')->notIn($nodeIds)
@@ -585,9 +865,9 @@ final class TopologyManager
      * @param mixed[]       $nodes
      * @param NodeSchemaDto $dto
      *
+     * @throws MongoDBException
      * @throws NodeException
      * @throws TopologyException
-     * @throws MongoDBException
      */
     private function createNode(Topology $topology, array &$nodes, NodeSchemaDto $dto): void
     {
@@ -631,20 +911,87 @@ final class TopologyManager
      */
     private function setNodeAttributes(Topology $topology, Node $node, NodeSchemaDto $dto): Node
     {
+        // Preserve API-managed prefetch when the schema would otherwise reset
+        // it. The Rete editor builds its DTO with the SystemConfigDto default
+        // prefetch=1, so saving a layout without going through the BPMN
+        // editor would clobber values the user set via the Prefetch settings
+        // modal. Treat any DTO prefetch >1 as an explicit BPMN override (the
+        // legacy editor still pushes `@pipes:rabbitPrefetch` from the
+        // schema), and fall back to the existing DB value otherwise.
+        $configs       = $dto->getSystemConfigs();
+        $existing      = $node->getSystemConfigs();
+        $existingValue = $existing?->getPrefetch() ?? 1;
+        if ($configs->getPrefetch() <= 1 && $existingValue > 1) {
+            $configs->setPrefetch($existingValue);
+        }
+        // Clamp the merged value into the supported range (1..20) so legacy
+        // BPMN schemas with absurd values can't bypass NodeManager's bounds.
+        $clamped = max(1, min(20, $configs->getPrefetch()));
+        if ($clamped !== $configs->getPrefetch()) {
+            $configs->setPrefetch($clamped);
+        }
+
         $node
             ->setName($dto->getName())
             ->setType($dto->getPipesType())
             ->setSchemaId($dto->getId())
-            ->setSystemConfigs($dto->getSystemConfigs())
+            ->setSystemConfigs($configs)
             ->setTopology($topology->getId())
             ->setHandler(
                 Strings::endsWith($dto->getHandler(), 'vent') ? HandlerEnum::EVENT->value : HandlerEnum::ACTION->value,
             )
-            ->setCronParams(urldecode($dto->getCronParams()))
-            ->setCron($dto->getCronTime())
-            ->setApplication($dto->getApplication());
+            ->setApplication($dto->getApplication())
+            ->setSdk($dto->getWorker())
+            ->setEventName($dto->getEventName());
+
+        if ($dto->getCronTime() !== '') {
+            $node
+                ->setCronParams(urldecode($dto->getCronParams()))
+                ->setCron($dto->getCronTime());
+        }
 
         return $node;
+    }
+
+    /**
+     * Best-effort cascade delete of WebhookConfig (and live registration)
+     * when a webhook node is removed from the schema.
+     *
+     * Note: there is no symmetrical `cascadeWebhookConfigUpsert` — webhook
+     * configs are now created lazily on the *first subscribe* in the UI
+     * (`WebhookConfigManager::subscribeForNode`). Persisting an "intent"
+     * config at schema-save time turned out to be a leaky abstraction
+     * (orphan banners on unrelated saves, modal showing "Not configured" for
+     * nodes the user just dropped in, etc.) and added no functional value.
+     *
+     * @param Topology $topology
+     * @param Node     $node
+     *
+     * @return void
+     */
+    private function cascadeWebhookConfigDelete(Topology $topology, Node $node): void
+    {
+        if ($this->webhookConfigManager === NULL) {
+            return;
+        }
+
+        if ($node->getType() !== TypeEnum::WEBHOOK->value) {
+            return;
+        }
+
+        try {
+            $this->webhookConfigManager->deleteForNode($topology, $node);
+        } catch (Throwable $t) {
+            $this->logger->error(
+                sprintf(
+                    'Webhook config delete failed for topology=%s node=%s: %s',
+                    $topology->getName(),
+                    $node->getName(),
+                    $t->getMessage(),
+                ),
+                ['exception' => $t],
+            );
+        }
     }
 
     /**
@@ -740,35 +1087,8 @@ final class TopologyManager
      * @param mixed[]  $data
      *
      * @return Topology
-     */
-    private function setTopologyData(Topology $topology, array $data): Topology
-    {
-        if (isset($data['name'])) {
-            $topology->setName($data['name']);
-        }
-
-        if (isset($data['description'])) {
-            $topology->setDescr($data['description']);
-        }
-
-        if (isset($data['enabled'])) {
-            $topology->setEnabled($data['enabled']);
-        }
-
-        if (array_key_exists('category', $data)) {
-            $topology->setCategory($data['category']);
-        }
-
-        return $topology;
-    }
-
-    /**
-     * @param Topology $topology
-     * @param mixed[]  $data
-     *
-     * @return Topology
-     * @throws TopologyException
      * @throws MongoDBException
+     * @throws TopologyException
      */
     private function checkTopologyName(Topology $topology, array $data): Topology
     {
@@ -805,12 +1125,19 @@ final class TopologyManager
      * @param string $startingPointId
      * @param bool   $started
      * @param string $message
+     * @param string $correlationId
      *
      * @return mixed[]
      */
-    private function formatTopologyRunMessage(string $startingPointId, bool $started, string $message = ''): array
+    private function formatTopologyRunMessage(
+        string $startingPointId,
+        bool $started,
+        string $message = '',
+        string $correlationId = '',
+    ): array
     {
         return [
+            self::CORRELATION_ID => $correlationId,
             self::MESSAGE        => $message,
             self::STARTED        => $started,
             self::STARTING_POINT => $startingPointId,

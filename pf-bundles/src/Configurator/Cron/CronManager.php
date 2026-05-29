@@ -42,8 +42,8 @@ final class CronManager
 
     /**
      * @return ResponseDto
-     * @throws CurlException
      * @throws CronException
+     * @throws CurlException
      */
     public function getAll(): ResponseDto
     {

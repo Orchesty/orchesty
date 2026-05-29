@@ -17,10 +17,49 @@ use Hanaboso\Utils\Exception\DateTimeException;
     collection: 'MultiCounter',
     repositoryClass: 'Hanaboso\PipesFramework\Configurator\Repository\TopologyProgressRepository',
 )]
+#[ODM\Index(
+    keys: ['created' => 'asc'],
+    name: 'IK_multiCounter_created',
+    expireAfterSeconds: 2_628_000,
+)]
+#[ODM\Index(
+    keys: ['finished' => 'asc'],
+    name: 'IK_multiCounter_finished',
+)]
+#[ODM\Index(
+    keys: ['topologyId' => 'asc', 'created' => 'desc'],
+    name: 'IK_multiCounter_topologyId_created',
+)]
+#[ODM\Index(
+    keys: ['finished' => 'asc', 'created' => 'desc'],
+    name: 'IK_multiCounter_finished_created',
+)]
+#[ODM\Index(
+    keys: ['topologyId' => 'asc', 'finished' => 'asc', 'created' => 'desc'],
+    name: 'IK_multiCounter_topologyId_finished_created',
+)]
+#[ODM\Index(
+    keys: ['nok' => 'asc', 'finished' => 'asc', 'created' => 'desc'],
+    name: 'IK_multiCounter_nok_finished_created',
+)]
+#[ODM\Index(
+    keys: ['topologyId' => 'asc', 'nok' => 'asc', 'finished' => 'asc', 'created' => 'desc'],
+    name: 'IK_multiCounter_topologyId_nok_finished_created',
+)]
+#[ODM\Index(
+    keys: ['created' => 'asc', 'topologyId' => 'asc', 'nok' => 'asc', 'finished' => 'asc'],
+    name: 'IK_multiCounter_created_topologyId_nok_finished',
+)]
 class TopologyProgress
 {
 
     use IdTrait;
+
+    /**
+     * @var string
+     */
+    #[ODM\Id(type: 'string', strategy: 'NONE')]
+    protected string $id;
 
     /**
      * @var string
@@ -69,6 +108,18 @@ class TopologyProgress
      */
     #[ODM\Field(type: 'string')]
     private ?string $user = NULL;
+
+    /**
+     * @var bool
+     */
+    #[ODM\Field(type: 'bool')]
+    private bool $terminated = FALSE;
+
+    /**
+     * @var string
+     */
+    #[ODM\Field(type: 'string')]
+    private string $source = 'auto';
 
     /**
      * @return string
@@ -239,6 +290,46 @@ class TopologyProgress
     }
 
     /**
+     * @return bool
+     */
+    public function isTerminated(): bool
+    {
+        return $this->terminated;
+    }
+
+    /**
+     * @param bool $terminated
+     *
+     * @return TopologyProgress
+     */
+    public function setTerminated(bool $terminated): self
+    {
+        $this->terminated = $terminated;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSource(): string
+    {
+        return $this->source;
+    }
+
+    /**
+     * @param string $source
+     *
+     * @return TopologyProgress
+     */
+    public function setSource(string $source): self
+    {
+        $this->source = $source;
+
+        return $this;
+    }
+
+    /**
      * @return mixed[]
      * @throws DateTimeException
      */
@@ -256,8 +347,9 @@ class TopologyProgress
             'id'             => $this->topologyId,
             'nodesProcessed' => $count,
             'nodesTotal'     => $this->total,
+            'source'         => $this->source,
             'started'        => $this->startedAt->format(DateTimeUtils::DATE_TIME_UTC),
-            'status'         => $count < $this->total ? 'IN PROGRESS' : ($this->nok > 0 ? 'FAILED' : 'SUCCESS'),
+            'status'         => $this->terminated ? 'TERMINATED' : ($count < $this->total ? 'IN PROGRESS' : ($this->nok > 0 ? 'FAILED' : 'SUCCESS')),
             'user'           => $this->user ?? '',
         ];
     }
@@ -270,12 +362,7 @@ class TopologyProgress
      */
     public static function durationInMs(DateTime $start, DateTime $end): int
     {
-        $startSecs = $start->getTimestamp() * 1_000;
-        $endSecs   = $end->getTimestamp() * 1_000;
-        $startMs   = (int) ($start->format('u') / 1_000); // @phpstan-ignore-line
-        $endMs     = (int) ($end->format('u') / 1_000); // @phpstan-ignore-line
-
-        return $endSecs - $startSecs + $endMs - $startMs;
+        return  (int) $end->format('Uv') - (int) $start->format('Uv');
     }
 
 }

@@ -7,6 +7,19 @@ use Exception;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorGraphAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorHeatmapAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorOverviewAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitApplicationAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitGraphAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitTotalAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricProcessAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricRequestAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricUserTaskAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricUserTaskGraphAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricUserTaskTotalAggregationFilter;
 
 /**
  * Trait MongoTestTrait
@@ -73,6 +86,44 @@ trait MongoTestTrait
         $consumerTable = self::getContainer()->getParameter('mongodb.rabbit_consumer_table');
         /** @var DocumentManager $metricsDm */
         $metricsDm = self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager');
+        /** @var MetricConnectorOverviewAggregationFilter $metricConnectorOverviewAggregationFilter */
+        $metricConnectorOverviewAggregationFilter = self::getContainer()->get(
+            'hbpf.metric-connector-overview.aggregation-filter',
+        );
+        /** @var MetricConnectorAggregationFilter $metricConnectorAggregationFilter */
+        $metricConnectorAggregationFilter = self::getContainer()->get('hbpf.metric-connector.aggregation-filter');
+        /** @var MetricConnectorGraphAggregationFilter $metricConnectorGraphAggregationFilter */
+        $metricConnectorGraphAggregationFilter = self::getContainer()->get(
+            'hbpf.metric-connector-graph.aggregation-filter',
+        );
+        /** @var MetricRequestAggregationFilter $metricRequestAggregationFilter */
+        $metricRequestAggregationFilter = self::getContainer()->get('hbpf.metric-request.aggregation-filter');
+        /** @var MetricProcessAggregationFilter $metricProcessAggregationFilter */
+        $metricProcessAggregationFilter = self::getContainer()->get('hbpf.metric-process.aggregation-filter');
+        /** @var MetricLimitAggregationFilter $metricLimitAggregationFilter */
+        $metricLimitAggregationFilter = self::getContainer()->get('hbpf.metric-limit.aggregation-filter');
+        /** @var MetricLimitApplicationAggregationFilter $metricLimitApplicationAggregationFilter */
+        $metricLimitApplicationAggregationFilter = self::getContainer()->get(
+            'hbpf.metric-limit-application.aggregation-filter',
+        );
+        /** @var MetricLimitTotalAggregationFilter $metricLimitTotalAggregationFilter */
+        $metricLimitTotalAggregationFilter = self::getContainer()->get('hbpf.metric-limit-total.aggregation-filter');
+        /** @var MetricLimitGraphAggregationFilter $metricLimitGraphAggregationFilter */
+        $metricLimitGraphAggregationFilter = self::getContainer()->get('hbpf.metric-limit-graph.aggregation-filter');
+        /** @var MetricUserTaskAggregationFilter $metricUserTaskAggregationFilter */
+        $metricUserTaskAggregationFilter = self::getContainer()->get('hbpf.metric-user-task.aggregation-filter');
+        /** @var MetricUserTaskTotalAggregationFilter $metricUserTaskTotalAggregationFilter */
+        $metricUserTaskTotalAggregationFilter = self::getContainer()->get(
+            'hbpf.metric-user-task-total.aggregation-filter',
+        );
+        /** @var MetricUserTaskGraphAggregationFilter $metricUserTaskGraphAggregationFilter */
+        $metricUserTaskGraphAggregationFilter = self::getContainer()->get(
+            'hbpf.metric-user-task-graph.aggregation-filter',
+        );
+        /** @var MetricConnectorHeatmapAggregationFilter $metricConnectorHeatmapAggregationFilter */
+        $metricConnectorHeatmapAggregationFilter = self::getContainer()->get(
+            'hbpf.metric-connector-heatmap.aggregation-filter',
+        );
 
         return new MongoMetricsManager(
             $this->dm,
@@ -83,6 +134,19 @@ trait MongoTestTrait
             $connTable,
             $metricsDm,
             $consumerTable,
+            $metricConnectorOverviewAggregationFilter,
+            $metricConnectorAggregationFilter,
+            $metricConnectorGraphAggregationFilter,
+            $metricRequestAggregationFilter,
+            $metricProcessAggregationFilter,
+            $metricLimitAggregationFilter,
+            $metricLimitApplicationAggregationFilter,
+            $metricLimitTotalAggregationFilter,
+            $metricLimitGraphAggregationFilter,
+            $metricUserTaskAggregationFilter,
+            $metricUserTaskTotalAggregationFilter,
+            $metricUserTaskGraphAggregationFilter,
+            $metricConnectorHeatmapAggregationFilter,
         );
     }
 

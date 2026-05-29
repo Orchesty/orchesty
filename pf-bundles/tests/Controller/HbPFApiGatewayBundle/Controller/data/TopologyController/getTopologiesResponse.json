@@ -12,7 +12,8 @@
                 "version": 1,
                 "category": null,
                 "enabled": true,
-                "cronSettings": []
+                "cronSettings": [],
+                "bridgeOutOfSync": false
             }
         ],
         "total": 1,

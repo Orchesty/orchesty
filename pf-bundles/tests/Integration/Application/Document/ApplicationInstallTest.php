@@ -26,6 +26,7 @@ final class ApplicationInstallTest extends DatabaseTestCaseAbstract
         $applicationInstall = (new ApplicationInstall())
             ->setUser('user')
             ->setKey('null-key')
+            ->setSdk('sdk')
             ->setExpires(DateTimeUtils::getUtcDateTime('now'))
             ->setNonEncryptedSettings(['lock' => TRUE])
             ->addNonEncryptedSettings(['unlock' => FALSE]);
@@ -37,7 +38,7 @@ final class ApplicationInstallTest extends DatabaseTestCaseAbstract
 
         self::assertInstanceOf(DateTime::class, $applicationInstall->getExpires());
         self::assertEquals(['lock' => TRUE, 'unlock' => FALSE], $applicationInstall->getNonEncryptedSettings());
-        self::assertEquals(8, count($applicationInstall->toArray()));
+        self::assertEquals(9, count($applicationInstall->toArray()));
     }
 
 }

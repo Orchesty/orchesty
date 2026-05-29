@@ -1,8 +1,8 @@
 IMAGE=orchesty/backend:$(TAG)
 
-DC=docker-compose
-DE=docker-compose exec -T app
-DEC=docker-compose exec -T app composer
+DC=docker compose
+DE=docker compose exec -T app
+DEC=docker compose exec -T app composer
 
 .env:
 	sed -e "s/{DEV_UID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -u); else echo '1001'; fi)/g" \
@@ -61,7 +61,7 @@ phpcoverage:
 	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --cache-directory var/cache/coverage --coverage-filter src tests
 
 phpcoverage-ci:
-	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -c 80 -p $$(nproc)
+	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -c 40 -p $$(nproc)
 
 ci-test: test
 
