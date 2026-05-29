@@ -1,22 +1,12 @@
 IMAGE=orchesty/bridge:$(TAG)
 
-DC=docker-compose
-DE=docker-compose exec -T app
-DR=docker-compose exec -T rabbitmq
+DC=docker compose
+DE=docker compose exec -T app
+DR=docker compose exec -T rabbitmq
 
 TEST_IMAGE = bridge:test
 TOPOLOGY_ID = 690e1281a439e5b99905ffa3
 TOPOLOGY_NAME = benchmark
-
-ALIAS?=alias
-Darwin:
-	sudo ifconfig lo0 $(ALIAS) $(shell awk '$$1 ~ /^DEV_IP/' .env | sed -e "s/^DEV_IP=//")
-Linux:
-	@echo 'skipping ...'
-.lo0-up:
-	-@make `uname`
-.lo0-down:
-	-@make `uname` ALIAS='-alias'
 
 .env:
 	sed -e "s/{DEV_UID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -u); else echo '1001'; fi)/g" \
@@ -26,11 +16,11 @@ Linux:
 build:
 	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) .
 
-docker-up-force: .env .lo0-up
+docker-up-force: .env
 	$(DC) pull
 	$(DC) up -d --force-recreate --remove-orphans
 
-docker-down-clean: .env .lo0-down
+docker-down-clean: .env
 	$(DC) down -v
 
 docker-compose.ci.yml:
@@ -61,5 +51,5 @@ ci-test: test
 
 run-demo-bridge:
 	docker build -t $(TEST_IMAGE) .
-	docker compose -f ../clients/topology/$(TOPOLOGY_ID)-$(TOPOLOGY_NAME)/docker-compose.yml up -d --force-recreate
-	docker compose -f ../clients/topology/$(TOPOLOGY_ID)-$(TOPOLOGY_NAME)/docker-compose.yml logs -f topology-$(TOPOLOGY_ID)
+	#docker compose -f ../clients/topology/$(TOPOLOGY_ID)-$(TOPOLOGY_NAME)/docker-compose.yml up -d --force-recreate
+	#docker compose -f ../clients/topology/$(TOPOLOGY_ID)-$(TOPOLOGY_NAME)/docker-compose.yml logs -f topology-$(TOPOLOGY_ID)

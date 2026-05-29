@@ -15,6 +15,7 @@ type Container struct {
 	Repeater   types.Publisher
 	Counter    types.Publisher
 	Limiter    types.Publisher
+	Events     types.Publisher
 }
 
 func NewContainer(client *rabbitmq.Client, topology model.Topology) Container {
@@ -27,6 +28,7 @@ func NewContainer(client *rabbitmq.Client, topology model.Topology) Container {
 	if err := client.InitializeQueuesExchanges(); err != nil {
 		log.Fatal().Err(err).Send()
 	}
+	container.initSharedExchanges(client)
 
 	return container
 }
@@ -47,6 +49,21 @@ func (this *Container) initServiceQueues(client *rabbitmq.Client) {
 	this.Limiter = client.NewPublisher("", enum.Queue_Limiter)
 	this.Repeater = client.NewPublisher("", enum.Queue_Repeater)
 	this.Counter = client.NewPublisher("", enum.Queue_Counter)
+}
+
+// initSharedExchanges declares exchanges that are shared across all bridge
+// instances and must NOT be deleted by Destroy(). They are declared directly
+// via DeclareExchange instead of AddExchange so they stay out of the client's
+// internal registry and are therefore skipped during teardown.
+func (this *Container) initSharedExchanges(client *rabbitmq.Client) {
+	if err := client.DeclareExchange(rabbitmq.Exchange{
+		Name:    "orchesty.events",
+		Kind:    "topic",
+		Options: rabbitmq.DefaultExchangeOptions,
+	}); err != nil {
+		log.Fatal().Err(err).Msg("failed to declare shared exchange orchesty.events")
+	}
+	this.Events = client.NewPublisher("orchesty.events", "topology.message")
 }
 
 func (this *Container) initNodes(client *rabbitmq.Client, topology model.Topology) {

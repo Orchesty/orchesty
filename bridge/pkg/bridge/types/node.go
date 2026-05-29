@@ -12,6 +12,7 @@ type Node interface {
 	CursorPublisher() Publisher
 	NodeName() string
 	Application() string
+	Sdk() string
 	TopologyName() string
 	WorkerType() enum.WorkerType
 }

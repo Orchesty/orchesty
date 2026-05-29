@@ -3,6 +3,7 @@ package bridge
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"sort"
 	"strings"
 	"sync"
@@ -50,6 +51,7 @@ type node struct {
 	mongodb       *mongo.MongoDb
 	metrics       metrics.Interface
 	counter       counter
+	events        events
 }
 
 func (n *node) Followers() types.Publishers {
@@ -74,6 +76,16 @@ func (n *node) TopologyName() string {
 
 func (n *node) Application() string {
 	return n.Node.Application
+}
+
+func (n *node) Sdk() string {
+	if sdk, ok := n.Node.Settings.Headers[enum.Header_Sdk]; ok {
+		if s, ok := sdk.(string); ok {
+			return s
+		}
+	}
+
+	return ""
 }
 
 func (n *node) Settings() model.NodeSettings {
@@ -108,6 +120,7 @@ func (n *node) start() {
 func (n *node) process(dto *model.ProcessMessage) bool {
 	dto.Status = enum.MessageStatus_Consumed
 	dto.SetHeader(enum.Header_NodeId, n.Node.ID)
+	dto.SetHeader(enum.Header_NodeName, n.Node.Name)
 	dto.SetHeader(enum.Header_TopologyId, n.topologyId)
 	dto.SetHeader(enum.Header_WorkerFollowers, n.followersList)
 	if topology.IsSystemTopology(n.topologyName) {
@@ -123,9 +136,19 @@ func (n *node) process(dto *model.ProcessMessage) bool {
 		// Error   -> Metrics, Counter err, Nack
 		// Trash   -> Metrics, Counter err, Ack, Mongo
 		// Pending ->     -       -         Ack
+		// Discard ->                       Ack (skip everything)
+
+		status := result.Status()
+
+		if status == enum.ProcessStatus_Discard {
+			IncrementDiscardCount()
+			if err := result.Message().Ack(); err != nil {
+				log.Error().Err(err).EmbedObject(result.Message()).Msg("failed to ack discarded message")
+			}
+			return true
+		}
 
 		ack := true
-		status := result.Status()
 		if status == enum.ProcessStatus_Error {
 			ack = false
 		}
@@ -142,18 +165,30 @@ func (n *node) process(dto *model.ProcessMessage) bool {
 		// Known errors or end of repeats goes to trash and Acked
 		if status == enum.ProcessStatus_Trash {
 			result.Message().Status = enum.MessageStatus_Trash
-			// Log message's error to show in UI what failed and went to Trash
-			log.Error().
-				Err(result.Error()).
-				EmbedObject(result.Message()).
-				Bool(enum.LogHeader_IsForUi, true).
-				Send()
-			if trashId, err := n.mongodb.StoreUserTask(result, n.Node.Name, n.topologyName); err != nil {
-				log.Error().Err(err).EmbedObject(result.Message()).Send()
-				ack = false
-			} else {
-				trashId := trashId.Hex()
-				sendFinishedProcess(result.Message(), enum.StatusType_TrashMessage, &trashId, n.topologyName)
+
+			nodeId := result.Message().GetHeaderOrDefault(enum.Header_NodeId, "")
+			correlationId := result.Message().GetHeaderOrDefault(enum.Header_CorrelationId, "")
+			resultMessage := result.Message().GetHeaderOrDefault(enum.Header_ResultMessage, "")
+			if result.Error() != nil {
+				resultMessage = result.Error().Error()
+			}
+
+			if ShouldTrash(nodeId, correlationId, resultMessage) {
+				// Log message's error to show in UI what failed and went to Trash
+				log.Error().
+					Err(result.Error()).
+					EmbedObject(result.Message()).
+					Bool(enum.LogHeader_IsForUi, true).
+					Send()
+				if trashId, err := n.mongodb.StoreUserTask(result, n.Node.Name, n.topologyName); err != nil {
+					log.Error().Err(err).EmbedObject(result.Message()).Send()
+					ack = false
+				} else {
+					RecordTrashed(nodeId, correlationId, resultMessage)
+					trashId := trashId.Hex()
+					sendFinishedProcess(result.Message(), enum.StatusType_TrashMessage, &trashId, n.topologyName)
+					n.events.send(result.Message(), trashId, n.topologyName)
+				}
 			}
 		}
 
@@ -177,6 +212,10 @@ func (n *node) process(dto *model.ProcessMessage) bool {
 }
 
 func (n *node) innerProcess(dto *model.ProcessMessage) (model.ProcessResult, int) {
+	if !topology.IsSystemTopology(n.topologyName) && IsOverLimit() {
+		return dto.Discard(fmt.Errorf("storage or message limit exceeded")), 0
+	}
+
 	result := n.checkTrash(dto)
 	if !result.IsOk() {
 		return result, 0
@@ -252,7 +291,9 @@ func (n *node) sendMetrics(dto model.ProcessResult) {
 	err := n.metrics.Send(
 		config.Metrics.Measurement,
 		map[string]interface{}{
-			"node_id": msg.GetHeaderOrDefault(enum.Header_NodeId, ""),
+			"node_id":        msg.GetHeaderOrDefault(enum.Header_NodeId, ""),
+			"topology_id":    msg.GetHeaderOrDefault(enum.Header_TopologyId, ""),
+			"correlation_id": msg.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
 		},
 		map[string]interface{}{
 			"waiting_duration": int(msg.ProcessStarted - msg.Published),
@@ -267,7 +308,7 @@ func (n *node) sendMetrics(dto model.ProcessResult) {
 	}
 }
 
-func newNode(n model.Node, topologyId, topologyName string, rabbitContainer rabbit.Container, wg *sync.WaitGroup, limiter limiter, repeater repeater, mongodb *mongo.MongoDb, metrics metrics.Interface, counter counter) *node {
+func newNode(n model.Node, topologyId, topologyName string, rabbitContainer rabbit.Container, wg *sync.WaitGroup, limiter limiter, repeater repeater, mongodb *mongo.MongoDb, metrics metrics.Interface, counter counter, events events) *node {
 	w, err := worker.Get(n.Worker)
 	if err != nil {
 		log.Fatal().Err(err).Send()
@@ -295,6 +336,7 @@ func newNode(n model.Node, topologyId, topologyName string, rabbitContainer rabb
 		mongodb:       mongodb,
 		metrics:       metrics,
 		counter:       counter,
+		events:        events,
 	}
 
 	if n.Worker == enum.WorkerType_Batch {

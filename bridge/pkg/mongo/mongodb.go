@@ -46,6 +46,7 @@ type AuditData struct {
 type MongoDb struct {
 	connection            *mongodb.Connection
 	collection            *mongo.Collection
+	limiterCollection     *mongo.Collection
 	auditEntityCollection *mongo.Collection
 	auditDataCollection   *mongo.Collection
 }
@@ -123,12 +124,24 @@ func (m *MongoDb) Close() {
 	m.connection.Disconnect()
 }
 
+func (m *MongoDb) CountLimiterMessages() (int64, error) {
+	ctx, cancel := m.connection.Context()
+	defer cancel()
+
+	count, err := m.limiterCollection.CountDocuments(ctx, bson.M{})
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 func NewMongoDb() *MongoDb {
 	mongoDb := &mongodb.Connection{}
 	mongoDb.Connect(config.MongoDb.Dsn)
 	return &MongoDb{
 		connection:            mongoDb,
 		collection:            mongoDb.Database.Collection(config.MongoDb.UserTaskCollection),
+		limiterCollection:     mongoDb.Database.Collection(config.MongoDb.LimiterCollection),
 		auditEntityCollection: mongoDb.Database.Collection(config.MongoDb.AuditEntityCollection),
 		auditDataCollection:   mongoDb.Database.Collection(config.MongoDb.AuditDataCollection),
 	}

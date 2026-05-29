@@ -3,16 +3,17 @@ package bridge
 import (
 	"context"
 	"fmt"
-	metrics "github.com/hanaboso/go-metrics/pkg"
-	"github.com/hanaboso/pipes/bridge/pkg/mongo"
-	"github.com/hanaboso/pipes/bridge/pkg/rabbit"
 	"sync"
 	"time"
 
+	metrics "github.com/hanaboso/go-metrics/pkg"
 	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
 	"github.com/hanaboso/pipes/bridge/pkg/config"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
+	"github.com/hanaboso/pipes/bridge/pkg/mongo"
+	"github.com/hanaboso/pipes/bridge/pkg/rabbit"
+	"github.com/hanaboso/pipes/bridge/pkg/worker"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
@@ -30,6 +31,7 @@ type Bridge struct {
 	mongodb         *mongo.MongoDb
 	metrics         metrics.Interface
 	counter         counter
+	events          events
 	nodes           map[string]*node
 }
 
@@ -63,11 +65,17 @@ func NewBridge(rabbitClient *rabbitmq.Client, mongodb *mongo.MongoDb, topology m
 		mongodb:         mongodb,
 		metrics:         metrics.Connect(config.Metrics.Dsn),
 		counter:         newCounter(rabbitContainer),
+		events:          newEvents(rabbitContainer),
 		nodes:           map[string]*node{},
 	}
 }
 
 func (b *Bridge) start(ctx context.Context) {
+	go worker.StartCleanup(ctx)
+	go StartLimitsChecker(ctx, b.mongodb, b.events, b.topology.ID)
+	initTrashDedup(b.events)
+	go StartTrashDedupCleanup(ctx)
+
 	workerWg := &sync.WaitGroup{}
 	for _, node := range b.topology.Shards {
 		// Starts only one worker per node
@@ -77,7 +85,7 @@ func (b *Bridge) start(ctx context.Context) {
 
 		workerWg.Add(1)
 		go func(shard model.NodeShard, wg *sync.WaitGroup) {
-			worker := newNode(*shard.Node, b.topology.ID, b.topology.Name, b.rabbitContainer, wg, b.limiter, b.repeater, b.mongodb, b.metrics, b.counter)
+			worker := newNode(*shard.Node, b.topology.ID, b.topology.Name, b.rabbitContainer, wg, b.limiter, b.repeater, b.mongodb, b.metrics, b.counter, b.events)
 			b.nodes[shard.Node.ID] = worker
 			worker.start()
 		}(node, workerWg)

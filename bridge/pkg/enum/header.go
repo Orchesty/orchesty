@@ -9,6 +9,8 @@ const (
 	// TODO deprecated totok by mělo být vyřešeno novým gateway workerem
 	Header_ForceTargetQueue = "force-target-queue"
 	Header_NodeId           = "node-id"
+	Header_NodeName         = "node-name"
+	Header_SequenceId       = "sequence-id"
 	Header_ResultCode       = "result-code"
 	Header_ResultMessage    = "result-message"
 	// Debug detail
@@ -17,6 +19,10 @@ const (
 	// TODO deprecated totok by mělo být vyřešeno novým gateway workerem
 	Header_WorkerFollowers = "worker-followers"
 	Header_SystemEvent     = "system-event"
+	Header_Source          = "source"
+
+	Source_UI   = "ui"
+	Source_Auto = "auto"
 
 	// Target queue from repeater
 	Header_RepeatQueue = "repeat-queue"
@@ -37,6 +43,7 @@ const (
 	Header_LimitMessageFromLimiter = "limit-message-from-limiter"
 	Header_Application             = "application"
 	Header_Applications            = "applications"
+	Header_Sdk                     = "sdk"
 
 	// enum.UserTask (pending, failed) marker for counter & if message came from db
 	Header_UserTaskState = "user-task-state"
@@ -52,4 +59,5 @@ const (
 	Header_AuditEntityHeader       = "audit-entity"
 	Header_AuditEntityIdsHeader    = "audit-entity-ids"
 	Header_AuditEntityFieldsHeader = "audit-entity-fields"
+	Header_AuditCheckpoint         = "audit-checkpoint"
 )
