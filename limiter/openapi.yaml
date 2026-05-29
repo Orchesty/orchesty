@@ -1,0 +1,27 @@
+openapi: 3.0.0
+
+info:
+    title: Limiter
+    description: Limiter API
+    version: '1.0'
+
+paths: {}
+
+components:
+    schemas:
+        RabbitMessage:
+            type: object
+            properties:
+                headers:
+                    type: object
+                    properties:
+                        limit-key:
+                            type: string
+                        limit-time:
+                            type: string
+                        limit-value:
+                            type: string
+                        limit-return-exchange:
+                            type: string
+                        limit-return-routing-key:
+                            type: string
