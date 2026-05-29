@@ -116,6 +116,7 @@ func (pm ParsedMessage) ProcessInitQuery() mongo.WriteModel {
 			"user":           user,
 			"finished":       nil,
 			"systemEvent":    pm.ProcessMessage.GetBoolHeaderOrDefault(enum.Header_SystemEvent, false),
+			"source":         pm.ProcessMessage.GetHeaderOrDefault(enum.Header_Source, "auto"),
 		},
 	}
 	t := true
@@ -173,6 +174,7 @@ func (pm ParsedMessage) SubProcessInitQuery() mongo.WriteModel {
 			"correlationId":  corrId,
 			"parentId":       pm.ProcessMessage.GetHeaderOrDefault(enum.Header_ParentProcessId, corrId),
 			"systemEvent":    pm.ProcessMessage.GetBoolHeaderOrDefault(enum.Header_SystemEvent, false),
+			"source":         pm.ProcessMessage.GetHeaderOrDefault(enum.Header_Source, "auto"),
 		},
 	}
 	t := true
@@ -208,14 +210,20 @@ func (pm ParsedMessage) FinishProcessQuery() mongo.WriteModel {
 			"$set": bson.M{
 				"finished": bson.M{
 					"$cond": bson.A{
+						bson.M{"$eq": bson.A{"$terminated", true}},
+						"$finished",
 						bson.M{
-							"$gte": bson.A{
-								"$processedCount",
-								"$total",
+							"$cond": bson.A{
+								bson.M{
+									"$gte": bson.A{
+										"$processedCount",
+										"$total",
+									},
+								},
+								pm.GetPublishedTimestamp(),
+								nil,
 							},
 						},
-						pm.GetPublishedTimestamp(),
-						nil,
 					},
 				},
 			},
@@ -237,14 +245,20 @@ func (pm ParsedMessage) FinishSubProcessQuery() mongo.WriteModel {
 			"$set": bson.M{
 				"finished": bson.M{
 					"$cond": bson.A{
+						bson.M{"$eq": bson.A{"$terminated", true}},
+						"$finished",
 						bson.M{
-							"$eq": bson.A{
-								"$processedCount",
-								"$total",
+							"$cond": bson.A{
+								bson.M{
+									"$eq": bson.A{
+										"$processedCount",
+										"$total",
+									},
+								},
+								pm.GetPublishedTimestamp(),
+								nil,
 							},
 						},
-						pm.GetPublishedTimestamp(),
-						nil,
 					},
 				},
 			},

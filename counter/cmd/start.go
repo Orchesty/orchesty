@@ -30,7 +30,7 @@ var startCmd = &cobra.Command{
 func start(_ *cobra.Command, _ []string) {
 	log.Info().Msg("Starting multi-counter...")
 	ctx, cancel := context.WithCancel(context.Background())
-	rabbitMq := rabbit.NewRabbitService()
+	rmq := rabbit.NewRabbitService()
 	mongoDb := mongo.NewMongo()
 
 	go func() {
@@ -41,10 +41,10 @@ func start(_ *cobra.Command, _ []string) {
 		cancel()
 	}()
 
-	c := counter.NewMultiCounter(rabbitMq, mongoDb)
+	c := counter.NewMultiCounter(rmq.Client, rmq.Events, mongoDb)
 	go c.Start(ctx)
 
 	<-ctx.Done()
 	log.Info().Msg("Stopping multi-counter...")
-	rabbitMq.Close()
+	rmq.Client.Close()
 }
