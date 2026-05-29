@@ -2,11 +2,12 @@ package services
 
 import (
 	"fmt"
-	v12 "k8s.io/api/core/v1"
 	"log"
 	"os"
 	"strings"
 	"testing"
+
+	v12 "k8s.io/api/core/v1"
 
 	"github.com/hanaboso/go-log/pkg/zap"
 	"github.com/stretchr/testify/require"
@@ -35,7 +36,7 @@ var (
 		Prefix:            "",
 		Network:           "demo_default",
 		MultiNode:         true,
-		WorkerDefaultPort: 0,
+		BridgePort:        0,
 	}
 )
 
@@ -486,16 +487,7 @@ func TestClient_Generate(t *testing.T) {
 			RabbitMqHost:        "",
 			MetricsDsn:          "",
 			MetricsService:      "",
-			WorkerDefaultPort:   8888,
 			GeneratorMode:       "",
-			Limits: model.Limits{
-				Memory: "128Mi",
-				CPU:    "100m",
-			},
-			Requests: model.Requests{
-				Memory: "128Mi",
-				CPU:    "100m",
-			},
 		},
 	}, testConfigGenerator, testDb{
 		mockGetTopology: func(id string) (topology *model.Topology, e error) {
@@ -551,16 +543,7 @@ func TestClient_GenerateMulti(t *testing.T) {
 			RabbitMqHost:        "",
 			MetricsDsn:          "",
 			MetricsService:      "",
-			WorkerDefaultPort:   8888,
 			GeneratorMode:       "",
-			Limits: model.Limits{
-				Memory: "128Mi",
-				CPU:    "100m",
-			},
-			Requests: model.Requests{
-				Memory: "128Mi",
-				CPU:    "100m",
-			},
 		},
 	}, testConfigGenerator, testDb{
 		mockGetTopology: func(id string) (topology *model.Topology, e error) {
@@ -621,7 +604,6 @@ func TestClient_DeleteAllFails(t *testing.T) {
 			RabbitMqHost:        "",
 			MetricsDsn:          "",
 			MetricsService:      "",
-			WorkerDefaultPort:   8888,
 			GeneratorMode:       "",
 		},
 	}, testConfigGenerator, testDb{
@@ -782,13 +764,13 @@ func TestClient_GenerateFails(t *testing.T) {
 		TopologyPath:      "/srv/app/topology/topology.json",
 		ProjectSourcePath: "/tmp",
 
-		Mode:              "compose",
-		ClusterConfig:     "",
-		Namespace:         "",
-		Prefix:            "",
-		Network:           "demo_default",
-		MultiNode:         false,
-		WorkerDefaultPort: 0,
+		Mode:          "compose",
+		ClusterConfig: "",
+		Namespace:     "",
+		Prefix:        "",
+		Network:       "demo_default",
+		MultiNode:     false,
+		BridgePort:    0,
 	}
 
 	nodeConfig := model.NodeConfig{
@@ -798,16 +780,7 @@ func TestClient_GenerateFails(t *testing.T) {
 			RabbitMqHost:        "test:99",
 			MetricsDsn:          "",
 			MetricsService:      "",
-			WorkerDefaultPort:   8888,
 			GeneratorMode:       "compose",
-			Limits: model.Limits{
-				Memory: "64Mi",
-				CPU:    "200m",
-			},
-			Requests: model.Requests{
-				Memory: "64Mi",
-				CPU:    "200m",
-			},
 		},
 	}
 
@@ -933,7 +906,7 @@ func TestGetKubernetesConfig(t *testing.T) {
 		Prefix:            "",
 		Network:           "",
 		MultiNode:         false,
-		WorkerDefaultPort: 0,
+		BridgePort:        0,
 	})
 
 	require.NotNil(t, err)

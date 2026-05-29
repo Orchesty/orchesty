@@ -39,7 +39,7 @@ func TestDockerClient_MultiNodeDockerCompose(t *testing.T) {
 		Prefix:            "",
 		Network:           "demo_default",
 		MultiNode:         true,
-		WorkerDefaultPort: 0,
+		BridgePort:        0,
 	}
 
 	setupDockerTest()
@@ -50,12 +50,7 @@ func TestDockerClient_MultiNodeDockerCompose(t *testing.T) {
 			RabbitMqHost:        "localhost:56",
 			MetricsDsn:          "metrics:963",
 			MetricsService:      "",
-			WorkerDefaultPort:   8888,
 			GeneratorMode:       "compose",
-			Limits: model.Limits{
-				Memory: "128M",
-				CPU:    "0.5",
-			},
 		},
 	}, multiConfigGenerator, db, topologyID)
 	if err != nil {
@@ -109,18 +104,16 @@ func TestDockerClient_MultiNodeDockerCompose(t *testing.T) {
 
 func TestDockerClient_DockerCompose(t *testing.T) {
 	configGenerator := config.GeneratorConfig{
-		Path:                     "/tmp",
-		TopologyPath:             "/srv/app/topology/topology.json",
-		ProjectSourcePath:        "/tmp",
-		Mode:                     "compose",
-		ClusterConfig:            "",
-		Namespace:                "",
-		Prefix:                   "",
-		Network:                  "demo_default",
-		MultiNode:                false,
-		WorkerDefaultPort:        0,
-		WorkerDefaultLimitMemory: "2048",
-		WorkerDefaultLimitCPU:    "2",
+		Path:              "/tmp",
+		TopologyPath:      "/srv/app/topology/topology.json",
+		ProjectSourcePath: "/tmp",
+		Mode:              "compose",
+		ClusterConfig:     "",
+		Namespace:         "",
+		Prefix:            "",
+		Network:           "demo_default",
+		MultiNode:         false,
+		BridgePort:        0,
 	}
 
 	setupDockerTest()
@@ -131,7 +124,6 @@ func TestDockerClient_DockerCompose(t *testing.T) {
 			RabbitMqHost:        "test:99",
 			MetricsDsn:          "",
 			MetricsService:      "",
-			WorkerDefaultPort:   8888,
 			GeneratorMode:       "compose",
 		},
 	}, configGenerator, db, topologyID)
@@ -193,18 +185,18 @@ func TestDockerClient_DockerCompose(t *testing.T) {
 func TestDockerClient_Swarm(t *testing.T) {
 	setupDockerTest()
 	configGenerator := config.GeneratorConfig{
-		Path:                     "/tmp",
-		TopologyPath:             "/srv/app/topology/topology.json",
-		ProjectSourcePath:        "/tmp",
-		Mode:                     "swarm",
-		ClusterConfig:            "",
-		Namespace:                "",
-		Prefix:                   "pre4",
-		Network:                  "demo_default_swarm",
-		MultiNode:                true,
-		WorkerDefaultPort:        800,
-		WorkerDefaultLimitMemory: "2048",
-		WorkerDefaultLimitCPU:    "2",
+		Path:              "/tmp",
+		TopologyPath:      "/srv/app/topology/topology.json",
+		ProjectSourcePath: "/tmp",
+		Mode:              "swarm",
+		ClusterConfig:     "",
+		Namespace:         "",
+		Prefix:            "pre4",
+		Network:           "demo_default_swarm",
+		MultiNode:         true,
+		BridgePort:        800,
+		BridgeLimitMemory: "2048",
+		BridgeLimitCPU:    "2",
 	}
 
 	ts, err := NewTopologyService(model.NodeConfig{
@@ -214,7 +206,6 @@ func TestDockerClient_Swarm(t *testing.T) {
 			RabbitMqHost:        "test:99",
 			MetricsDsn:          "",
 			MetricsService:      "",
-			WorkerDefaultPort:   8888,
 			GeneratorMode:       "swarm",
 		},
 	}, configGenerator, db, topologyID)
@@ -287,7 +278,7 @@ func TestDockerClient_RunStopFails(t *testing.T) {
 		Prefix:            "",
 		Network:           "demo_default",
 		MultiNode:         true,
-		WorkerDefaultPort: 0,
+		BridgePort:        0,
 	}
 
 	testDockerCli := mockDockerCli{}
@@ -327,7 +318,7 @@ func TestDockerClient_RunStopFails(t *testing.T) {
 			Prefix:            "",
 			Network:           "demo_default",
 			MultiNode:         true,
-			WorkerDefaultPort: 0,
+			BridgePort:        0,
 		}, "start")
 		require.NotNil(t, err)
 	})
@@ -357,7 +348,7 @@ func TestDockerClient_RunStopFails(t *testing.T) {
 			Prefix:            "",
 			Network:           "demo_default",
 			MultiNode:         true,
-			WorkerDefaultPort: 0,
+			BridgePort:        0,
 		}, "start")
 		require.NotNil(t, err)
 		require.Equal(t, "error getting running containers, Reason: failed to get topology info", err.Error())
@@ -385,7 +376,7 @@ func TestDockerClient_RunStopFails(t *testing.T) {
 			Prefix:            "",
 			Network:           "demo_default",
 			MultiNode:         true,
-			WorkerDefaultPort: 0,
+			BridgePort:        0,
 		}, "stop")
 		require.NotNil(t, err)
 		require.Equal(t, "error stopping dockerCli composer. Reason: failed stopping docker compose", err.Error())
@@ -400,13 +391,13 @@ func TestDockerClient_GenerateFails(t *testing.T) {
 		TopologyPath:      "/srv/app/topology/topology.json",
 		ProjectSourcePath: "/tmp",
 
-		Mode:              "compose",
-		ClusterConfig:     "",
-		Namespace:         "",
-		Prefix:            "",
-		Network:           "demo_default",
-		MultiNode:         false,
-		WorkerDefaultPort: 0,
+		Mode:          "compose",
+		ClusterConfig: "",
+		Namespace:     "",
+		Prefix:        "",
+		Network:       "demo_default",
+		MultiNode:     false,
+		BridgePort:    0,
 	}
 
 	nodeConfig := model.NodeConfig{
@@ -416,7 +407,6 @@ func TestDockerClient_GenerateFails(t *testing.T) {
 			RabbitMqHost:        "test:99",
 			MetricsDsn:          "",
 			MetricsService:      "",
-			WorkerDefaultPort:   8888,
 			GeneratorMode:       "compose",
 		},
 	}
@@ -459,7 +449,7 @@ func TestDockerClient_DeleteFails(t *testing.T) {
 		Prefix:            "",
 		Network:           "",
 		MultiNode:         false,
-		WorkerDefaultPort: 0,
+		BridgePort:        0,
 	})
 	require.NotNil(t, err)
 	require.Equal(t, "failed to get topology. Reason: cant return topology for test purpose", err.Error())
@@ -477,7 +467,7 @@ func TestDockerClient_DeleteSwarmFails(t *testing.T) {
 		Prefix:            "",
 		Network:           "",
 		MultiNode:         false,
-		WorkerDefaultPort: 0,
+		BridgePort:        0,
 	}
 	testSwarmCLi := mockDockerCli{
 		mockStopSwarm: func(topology *model.Topology, prefix string) error {
@@ -515,7 +505,7 @@ func TestDockerClient_RunStopSwarmFails(t *testing.T) {
 		Prefix:            "",
 		Network:           "",
 		MultiNode:         false,
-		WorkerDefaultPort: 0,
+		BridgePort:        0,
 	}
 
 	t.Run("Testing that RunStopSwarm fails on getting topology", func(t *testing.T) {

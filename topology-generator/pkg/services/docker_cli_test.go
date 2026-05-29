@@ -1,9 +1,10 @@
 package services
 
 import (
-	"github.com/stretchr/testify/require"
 	"testing"
 	"topology-generator/pkg/config"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetSwarmCreateConfigCmd(t *testing.T) {
@@ -17,7 +18,7 @@ func TestGetSwarmCreateConfigCmd(t *testing.T) {
 		Prefix:            "",
 		Network:           "demo_default",
 		MultiNode:         true,
-		WorkerDefaultPort: 0,
+		BridgePort:        0,
 	})
 	require.Equal(t, "docker", cmd, "Returned command should be docker")
 	require.Equal(t, "config", params[0])
@@ -36,7 +37,7 @@ func TestGetSwarmRunCmd(t *testing.T) {
 		Prefix:            "",
 		Network:           "demo_default",
 		MultiNode:         true,
-		WorkerDefaultPort: 0,
+		BridgePort:        0,
 	})
 	require.Equal(t, "docker", cmd, "Returned command should be docker")
 	require.Equal(t, "stack", params[0])

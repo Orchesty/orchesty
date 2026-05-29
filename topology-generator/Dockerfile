@@ -11,5 +11,5 @@ RUN apk update --no-cache && \
 COPY --from=0 /topology-generator /bin/topology-generator
 RUN setcap cap_net_bind_service=+ep /bin/topology-generator
 WORKDIR /bin
-ENV DOCKER_API_VERSION=1.37
+ENV DOCKER_API_VERSION=1.45
 CMD ./topology-generator server

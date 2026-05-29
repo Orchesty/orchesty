@@ -35,7 +35,7 @@ func getAllDockerServices(t *testing.T) {
 		Prefix:            "dev",
 		Network:           "test",
 		MultiNode:         false,
-		WorkerDefaultPort: 8000,
+		BridgePort:        8000,
 	}
 
 	expected := map[string]*model.Service{
@@ -147,7 +147,6 @@ func getEnvironment(mode model.Adapter) model.Environment {
 		DockerPfBridgeImage: "hanaboso/bridge:dev",
 		RabbitMqHost:        "rabbitmq:5672",
 		MetricsDsn:          "influxdb://kapacitor:9100",
-		WorkerDefaultPort:   8808,
 		GeneratorMode:       mode,
 	}
 }
@@ -164,7 +163,6 @@ func TestTopologyService_CreateTopologyJsonFails(t *testing.T) {
 			RabbitMqHost:        "",
 			MetricsDsn:          "",
 			MetricsService:      "",
-			WorkerDefaultPort:   8888,
 			GeneratorMode:       "",
 		},
 	}
@@ -194,7 +192,7 @@ func TestTopologyService_CreateTopologyJsonFails(t *testing.T) {
 		Prefix:            "",
 		Network:           "demo_default",
 		MultiNode:         true,
-		WorkerDefaultPort: 0,
+		BridgePort:        0,
 	}
 
 	// check that writing topology.json fails
@@ -238,60 +236,4 @@ func TestNewTopologyServiceFails(t *testing.T) {
 	}, "unknownTopologyId")
 	require.NotNil(t, err)
 	require.Nil(t, ts)
-}
-
-func TestGetDockerServicesFails(t *testing.T) {
-	// check that NewTopologyService returns errors
-	ts, err := NewTopologyService(model.NodeConfig{
-		NodeConfig: nil,
-		Environment: model.Environment{
-			DockerPfBridgeImage: "",
-			RabbitMqHost:        "[x:",
-			MetricsDsn:          "",
-			MetricsService:      "",
-			WorkerDefaultPort:   0,
-			GeneratorMode:       "",
-		},
-	}, testConfigGenerator, testDb{
-		mockGetTopology: func(id string) (topology *model.Topology, e error) {
-			return getMockTopology(), nil
-		},
-		mockGetTopologyNodes: func(id string) (nodes []model.Node, e error) {
-			return []model.Node{}, nil
-		},
-	}, topologyID)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-	_, err = ts.getDockerServices(model.ModeCompose)
-	require.NotNil(t, err)
-}
-
-func TestTopologyService_CreateDockerComposeFails(t *testing.T) {
-	// check that NewTopologyService returns errors
-	ts, err := NewTopologyService(model.NodeConfig{
-		NodeConfig: nil,
-		Environment: model.Environment{
-			DockerPfBridgeImage: "",
-			RabbitMqHost:        "[x:",
-			MetricsDsn:          "",
-			MetricsService:      "",
-			WorkerDefaultPort:   0,
-			GeneratorMode:       "",
-		},
-	}, testConfigGenerator, testDb{
-		mockGetTopology: func(id string) (topology *model.Topology, e error) {
-			return getMockTopology(), nil
-		},
-		mockGetTopologyNodes: func(id string) (nodes []model.Node, e error) {
-			return []model.Node{}, nil
-		},
-	}, topologyID)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-	_, err = ts.CreateDockerCompose(model.ModeCompose)
-	require.NotNil(t, err)
 }

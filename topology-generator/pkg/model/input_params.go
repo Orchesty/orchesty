@@ -23,18 +23,6 @@ const (
 	ModeKubernetes Adapter = "k8s"
 )
 
-// Limits set resource limits
-type Limits struct {
-	Memory string `json:"memory"`
-	CPU    string `json:"cpu"`
-}
-
-// Requests set resource limits
-type Requests struct {
-	Memory string `json:"memory"`
-	CPU    string `json:"cpu"`
-}
-
 // NodeConfig NodeConfig
 type NodeConfig struct {
 	NodeConfig  map[string]NodeUserParams `json:"node_config"`
@@ -49,21 +37,17 @@ type NodeUserParams struct {
 
 // Environment Environment
 type Environment struct {
-	DockerPfBridgeImage string   `json:"docker_pf_bridge_image"`
-	RabbitMqHost        string   `json:"rabbitmq_host"`
-	RabbitMqUser        string   `json:"rabbitmq_user"`
-	RabbitMqPass        string   `json:"rabbitmq_pass"`
-	RabbitMqVHost       string   `json:"rabbitmq_vhost"`
-	MetricsDsn          string   `json:"metrics_dsn"`
-	MongodbDsn          string   `json:"mongodb_dsn"`
-	MetricsService      string   `json:"metrics_service"`
-	WorkerDefaultPort   int      `json:"worker_default_port"`
-	GeneratorMode       Adapter  `json:"platform"`
-	Limits              Limits   `json:"limits"`
-	Requests            Requests `json:"requests"`
-	UdpLoggerUrl        string   `json:"udp_logger_url"`
-	StartingPointDsn    string   `json:"starting_point_dsn"`
-	OrchestyApiKey      string   `json:"orchesty_api_key"`
+	DockerPfBridgeImage string  `json:"docker_pf_bridge_image"`
+	RabbitMqHost        string  `json:"rabbitmq_host"`
+	RabbitMqUser        string  `json:"rabbitmq_user"`
+	RabbitMqPass        string  `json:"rabbitmq_pass"`
+	RabbitMqVHost       string  `json:"rabbitmq_vhost"`
+	MetricsDsn          string  `json:"metrics_dsn"`
+	MongodbDsn          string  `json:"mongodb_dsn"`
+	MetricsService      string  `json:"metrics_service"`
+	GeneratorMode       Adapter `json:"platform"`
+	StartingPointDsn    string  `json:"starting_point_dsn"`
+	OrchestyApiKey      string  `json:"orchesty_api_key"`
 }
 
 func (p *NodeConfig) GetTopologyJson(t *Topology, nodes []Node) (TopologyJson, error) {
@@ -134,10 +118,8 @@ func (p *NodeConfig) GetTopologyJson(t *Topology, nodes []Node) (TopologyJson, e
 func (e *Environment) GetEnvironment() (map[string]string, error) {
 	var environment = make(map[string]string)
 
-	// TODO: add support for Influx
 	environment["METRICS_DSN"] = e.MetricsDsn
 	environment["MONGODB_DSN"] = e.MongodbDsn
-	environment["UDP_LOGGER_URL"] = e.UdpLoggerUrl
 	environment["STARTING_POINT_DSN"] = e.StartingPointDsn
 	environment["ORCHESTY_API_KEY"] = e.OrchestyApiKey
 

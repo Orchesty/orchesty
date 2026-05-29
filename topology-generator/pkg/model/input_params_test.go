@@ -137,7 +137,6 @@ func getFullEnvironment(t *testing.T) {
 		"MONGODB_DSN":        "",
 		"ORCHESTY_API_KEY":   "",
 		"STARTING_POINT_DSN": "",
-		"UDP_LOGGER_URL":     "",
 	}
 
 	assert.Equal(t, expected, result)
@@ -149,7 +148,6 @@ func getEnvironment(mode Adapter) Environment {
 		RabbitMqHost:        "rabbitmq:20",
 		MetricsDsn:          "influxdb://kapacitor:9100",
 		MetricsService:      "influx",
-		WorkerDefaultPort:   8808,
 		GeneratorMode:       mode,
 	}
 }
