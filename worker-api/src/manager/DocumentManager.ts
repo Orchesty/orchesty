@@ -45,7 +45,6 @@ export default class DocumentManager {
         const id = entity._id;
         delete entity._id;
         if (id) {
-            // eslint-disable-next-line @typescript-eslint/no-deprecated
             await collection.updateOne({ _id: new ObjectId(id) }, { $set: entity });
         } else {
             await collection.insertOne(entity);
@@ -80,6 +79,7 @@ export default class DocumentManager {
                             this.addFilterField(filter, 'key', 'in', query.filter.names);
                         }
                         this.addFilterField(filter, 'user', 'in', query.filter.users);
+                        this.addFilterField(filter, 'sdk', 'in', query.filter.sdks);
                         if (query.filter.enabled !== null) {
                             this.addFilterField(filter, 'enabled', 'eq', query.filter.enabled ?? true);
                         }
@@ -103,6 +103,7 @@ export default class DocumentManager {
                     if (this.isWebhookQuery(query.filter)) {
                         this.addFilterField(filter, 'application', 'in', query.filter.apps);
                         this.addFilterField(filter, 'user', 'in', query.filter.users);
+                        this.addFilterField(filter, 'sdk', 'in', query.filter.sdks);
                     }
                     break;
                 default:
@@ -138,6 +139,7 @@ export default class DocumentManager {
             ids: Joi.array().items(Joi.string()),
             apps: Joi.array().items(Joi.string()),
             users: Joi.array().items(Joi.string()),
+            sdks: Joi.array().items(Joi.string()),
             deleted: Joi.boolean().allow(null),
         });
 
@@ -159,6 +161,7 @@ export default class DocumentManager {
                 Joi.object({ nin: Joi.array().items(Joi.string()) }),
             ),
             users: Joi.array().items(Joi.string()),
+            sdks: Joi.array().items(Joi.string()),
             expires: Joi.string(),
             nonEncrypted: Joi.object<Record<string, number>>({}).pattern(Joi.string(), Joi.any()),
             enabled: Joi.boolean().allow(null),
@@ -228,6 +231,7 @@ interface IApplicationFilter extends IBaseFilter {
     enabled: boolean | null;
     names?: string[] | { nin: string[] };
     users?: string[];
+    sdks?: string[];
     expires?: number;
     nonEncrypted?: Record<string, Record<string, unknown>>;
 }
@@ -237,6 +241,7 @@ type INodeFilter = IBaseFilter;
 interface IWebhookFilter extends IBaseFilter {
     apps?: string[];
     users?: string[];
+    sdks?: string[];
 }
 
 interface IBaseFilter {

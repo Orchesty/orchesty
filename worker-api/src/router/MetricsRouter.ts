@@ -23,11 +23,14 @@ const connectorsInputSchema = Joi.object<IMetricsInput<IConnectorFields>>({
         created: Joi.string().isoDate().required(),
         sent_request_total_duration: Joi.number().required(),
         response_code: Joi.number().required(),
+        response_error: Joi.string(),
     }).required(),
     /* eslint-enable @typescript-eslint/naming-convention */
     tags: Joi.object({
         user_id: Joi.string().required(),
         node_id: Joi.string().required(),
+        node_name: Joi.string(),
+        topology_id: Joi.string(),
         application_id: Joi.string(),
         correlation_id: Joi.string(),
         url: Joi.string(),
@@ -41,7 +44,6 @@ export default class MetricsRouter {
     }
 
     public initRoutes(): void {
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.app.post('/metrics/:measurement', async (req, res) => {
             const { measurement } = req.params;
 

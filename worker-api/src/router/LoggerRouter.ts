@@ -1,7 +1,7 @@
-import axios from 'axios';
 import { Application } from 'express';
 import Joi from 'joi';
-import { fluentdOptions } from '../config/Config';
+import { mongoOptions } from '../config/Config';
+import Mongo from '../database/Mongo';
 import ResultCode from '../enum/ResultCode';
 import { logger } from '../logger/Logger';
 
@@ -31,11 +31,10 @@ const inputSchema = Joi.object<ILogInput>({
 
 export default class LoggerRouter {
 
-    public constructor(private readonly app: Application) {
+    public constructor(private readonly app: Application, private readonly mongo: Mongo) {
     }
 
     public initRoutes(): void {
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.app.post('/logger/logs', async (req, res) => {
             const result = inputSchema.validate(req.body, { allowUnknown: true });
             if (result.error) {
@@ -45,10 +44,15 @@ export default class LoggerRouter {
                 return;
             }
             try {
-                req.body.timestamp = Math.floor(new Date(req.body.timestamp).getTime() / 1000) | 0;
+                if (req.body.isForUi !== true) {
+                    res.json({ message: { status: 'OK', data: '' } });
+                    return;
+                }
 
-                const fluentdResult = await axios.post(`http://${fluentdOptions.fluentdDsn}/orchesty`, req.body);
-                const resp = { message: { status: fluentdResult.statusText, data: fluentdResult.data } };
+                const record = this.createUiLogRecord(req.body as ILogInput);
+                await this.mongo.getCollection(mongoOptions.logsCollection).insertOne(record);
+
+                const resp = { message: { status: 'OK', data: '' } };
                 logger.debug(resp);
                 res.json(resp);
             } catch (e) {
@@ -58,9 +62,47 @@ export default class LoggerRouter {
                     res.json({ message: { error: e.message } });
                     return;
                 }
-                res.json({ message: 'Worker-api: Fluentd unknown error' });
+                res.json({ message: 'Worker-api: Logs unknown error' });
             }
         });
+
+        this.app.post('/logger/loki', (req, res) => {
+            const result = inputSchema.validate(req.body, { allowUnknown: true });
+
+            if (result.error) {
+                logger.error(result.error);
+                res.statusCode = 400;
+                res.json({ message: { error: result.error.message } });
+                return;
+            }
+
+            logger.info(req.body);
+            res.json({ message: { status: 'OK' } });
+        });
+    }
+
+    private createUiLogRecord(log: ILogInput): IUiLogRecord {
+        const timestamp = Math.floor(new Date(log.timestamp).getTime() / 1000) | 0;
+
+        return {
+            message: log.message,
+            pipes: {
+                user_id: log.userId,
+                parent_id: log.parentId,
+                severity: log.level ?? log.levelName,
+                service: log.service,
+                timestamp,
+                node_id: log.nodeId,
+                topology_id: log.topologyId,
+                process_id: log.processId,
+                correlation_id: log.correlationId,
+                applications: log.applications,
+                previousCorrelationId: log.previousCorrelationId,
+                sequenceId: log.sequenceId,
+                previousNodeId: log.previousNodeId,
+            },
+            ts: new Date(),
+        };
     }
 
 }
@@ -73,6 +115,7 @@ interface ILogInput {
     correlationId?: string;
     data?: string;
     isForUi?: boolean;
+    level?: string;
     levelName?: string;
     nodeId?: string;
     nodeName?: string;
@@ -87,4 +130,24 @@ interface ILogInput {
     topologyId?: string;
     topologyName?: string;
     userId?: string;
+}
+
+interface IUiLogRecord {
+    message: string;
+    pipes: {
+        user_id?: string;
+        parent_id?: string;
+        severity?: string;
+        service: string;
+        timestamp: number;
+        node_id?: string;
+        topology_id?: string;
+        process_id?: string;
+        correlation_id?: string;
+        applications?: string;
+        previousCorrelationId?: string;
+        sequenceId?: string;
+        previousNodeId?: string;
+    };
+    ts: Date;
 }

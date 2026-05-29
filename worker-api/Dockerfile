@@ -6,12 +6,14 @@ RUN npm i -g pnpm
 WORKDIR /tmp/_node
 COPY package.json ./
 COPY pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml ./
 RUN pnpm install
 
 # Install prod node packages
 WORKDIR /tmp/_node_prod
 COPY package.json ./
 COPY pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml ./
 RUN pnpm install --production
 
 FROM node:slim AS build
@@ -26,7 +28,7 @@ FROM node:slim AS prod
 
 RUN apt update && apt upgrade -y && apt install -y tzdata
 
-ENV APP_PORT=8000
+ENV APP_PORT=8080
 ENV NODE_ENV=prod
 
 WORKDIR /srv/app

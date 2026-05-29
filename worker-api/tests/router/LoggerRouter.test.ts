@@ -3,6 +3,7 @@ import supertest from 'supertest';
 import { init, IServices } from '../../src';
 import { ORCHESTY_API_KEY } from '../../src/authorization/AuthorizationMiddleware';
 import { ScopeEnum } from '../../src/authorization/ScopeEnum';
+import { mongoOptions } from '../../src/config/Config';
 
 let services: IServices;
 
@@ -59,8 +60,34 @@ describe('Tests for logs router', () => {
             service: 'sdk',
             levelName: 'error',
             message: 'failed',
+            isForUi: true,
         });
         assert.equal(resp.statusCode, 200);
         assert.deepEqual(resp.body, { message: { data: '', status: 'OK' } });
+
+        const logs = await services.mongo.getCollection(mongoOptions.logsCollection).find().toArray();
+        assert.equal(logs.length, 1);
+        assert.equal(logs[0].message, 'failed');
+        assert.equal(logs[0].pipes?.service, 'sdk');
+    });
+
+    it('logs - not for ui is dropped', async () => {
+        const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJzY29wZXMiOlsibWV0cmljOndyaXRlIl19.Er9Nioiq77-sahV5XOoZuFBfIbBEgXV45BfdRsbXWdQ';
+
+        const apiKeyCollection = services.mongo.getApiKeyCollection();
+        await apiKeyCollection.insertOne({ key, scopes: [ScopeEnum.LOG_WRITE] });
+
+        const resp = await supertest(services.app).post('/logger/logs').set(ORCHESTY_API_KEY, key).send({
+            timestamp: 1681225378307,
+            service: 'sdk',
+            message: 'failed',
+            isForUi: false,
+        });
+
+        assert.equal(resp.statusCode, 200);
+        assert.deepEqual(resp.body, { message: { data: '', status: 'OK' } });
+
+        const logs2 = await services.mongo.getCollection(mongoOptions.logsCollection).find().toArray();
+        assert.equal(logs2.length, 0);
     });
 });
