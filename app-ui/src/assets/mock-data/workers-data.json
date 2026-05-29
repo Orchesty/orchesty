@@ -1,0 +1,41 @@
+{
+  "data": [
+    {
+      "id": "worker-1",
+      "name": "Production Worker",
+      "url": "https://worker.prod.example.com",
+      "headers": {
+        "Authorization": "Bearer token123",
+        "X-API-Key": "abc456"
+      }
+    },
+    {
+      "id": "worker-2",
+      "name": "Test Worker",
+      "url": "https://worker.test.example.com",
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    },
+    {
+      "id": "worker-3",
+      "name": "Development Worker",
+      "url": "https://worker.dev.example.com",
+      "headers": {
+        "Authorization": "Bearer dev-token-xyz",
+        "X-Environment": "development",
+        "X-Debug": "true"
+      }
+    },
+    {
+      "id": "worker-4",
+      "name": "Integration Worker",
+      "url": "https://worker.integration.example.com",
+      "headers": {
+        "Authorization": "Bearer integration-token-789",
+        "X-Service-Name": "orchestration-service"
+      }
+    }
+  ]
+}
+
