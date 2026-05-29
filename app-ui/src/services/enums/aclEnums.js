@@ -1,4 +1,0 @@
-export const ACL = {
-  DASHBOARD_PAGE: "DASHBOARD_PAGE",
-  USERS_PAGE: "USERS_PAGE",
-}
