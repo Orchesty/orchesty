@@ -1,10 +1,12 @@
 package services
 
 import (
-	"go.mongodb.org/mongo-driver/v2/bson"
 	"time"
 
+	"go.mongodb.org/mongo-driver/v2/bson"
+
 	"detector/pkg/config"
+
 	metrics "github.com/hanaboso/go-metrics/pkg"
 
 	log "github.com/hanaboso/go-log/pkg"
@@ -66,11 +68,11 @@ func (s *Sender) Start() {
 				}); err != nil {
 					s.logContext().Error(err)
 				}
-				// remove old data
-				_, _ = s.connection.Database.Collection(config.Metrics.ConsumerMeasurement).DeleteMany(nil, bson.M{
-					"fields.created": bson.M{"$lt": now},
-				})
 			}
+			// remove old data
+			_, _ = s.connection.Database.Collection(config.Metrics.ConsumerMeasurement).DeleteMany(nil, bson.M{
+				"fields.created": bson.M{"$lt": now},
+			})
 		case []Container:
 			for _, container := range typed {
 				if err := s.metrics.Send(config.Metrics.ContainerMeasurement, map[string]interface{}{}, map[string]interface{}{
