@@ -1,0 +1,144 @@
+{
+    "connections": [
+        {
+            "from": "node01",
+            "id": "conn01",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "node02"
+        },
+        {
+            "from": "node02",
+            "id": "conn02",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "node03"
+        },
+        {
+            "from": "node03",
+            "id": "conn03",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "node04"
+        },
+        {
+            "from": "node04",
+            "id": "conn04",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "node05"
+        },
+        {
+            "from": "node05",
+            "id": "conn05",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "node06"
+        }
+    ],
+    "nodes": [
+        {
+            "action": null,
+            "id": "node01",
+            "label": "Signal",
+            "name": null,
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "property": null,
+            "shape": "circle",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": null,
+                "name": "salesforce-create-contact-mapper",
+                "type": "custom",
+                "worker": ""
+            },
+            "id": "node02",
+            "label": "Custom Action",
+            "name": null,
+            "position": {
+                "x": 100,
+                "y": 0
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": null,
+                "name": "salesforce-create-contact-connector",
+                "type": "connector",
+                "worker": ""
+            },
+            "id": "node03",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 200,
+                "y": 0
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": null,
+                "name": "salesforce-get-contact-connector",
+                "type": "connector",
+                "worker": ""
+            },
+            "id": "node04",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 300,
+                "y": 0
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": null,
+                "name": "salesforce-updated-contact-mapper",
+                "type": "custom",
+                "worker": ""
+            },
+            "id": "node05",
+            "label": "Custom Action",
+            "name": null,
+            "position": {
+                "x": 400,
+                "y": 0
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": null,
+                "name": "cleverconnectors-update-subscriptions-connector",
+                "type": "connector",
+                "worker": ""
+            },
+            "id": "node06",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 500,
+                "y": 0
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        }
+    ]
+}

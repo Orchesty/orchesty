@@ -1,0 +1,10 @@
+{
+    "http": 200,
+    "body": {
+        "id": "123456789",
+        "name": "key",
+        "type": "http",
+        "url": "value",
+        "headers": []
+    }
+}

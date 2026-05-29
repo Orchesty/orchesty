@@ -1,0 +1,7 @@
+{
+    "http": "GET /api/topologies/:id/schema.bpmn",
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

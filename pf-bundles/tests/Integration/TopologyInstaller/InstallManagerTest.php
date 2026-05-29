@@ -1,0 +1,194 @@
+<?php declare(strict_types=1);
+
+namespace PipesFrameworkTests\Integration\TopologyInstaller;
+
+use Exception;
+use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
+use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\TopologyInstaller\Cache\RedisCache;
+use Hanaboso\PipesFramework\TopologyInstaller\CategoryParser;
+use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
+use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
+use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
+use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
+use Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator;
+use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
+use Hanaboso\Utils\File\File;
+use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PipesFrameworkTests\DatabaseTestCaseAbstract;
+use Predis\Client;
+use Predis\Connection\Parameters;
+
+/**
+ * Class InstallManagerTest
+ *
+ * @package PipesFrameworkTests\Integration\TopologyInstaller
+ */
+#[CoversClass(InstallManager::class)]
+#[CoversClass(CompareResultDto::class)]
+#[CoversClass(TopologyFile::class)]
+#[CoversClass(UpdateObject::class)]
+#[CoversClass(TopologiesComparator::class)]
+#[CoversClass(RedisCache::class)]
+#[AllowMockObjectsWithoutExpectations]
+final class InstallManagerTest extends DatabaseTestCaseAbstract
+{
+
+    /**
+     * @var Client<mixed>
+     */
+    private Client $redis;
+
+    /**
+     * @throws Exception
+     */
+    public function testPrepareInstall(): void
+    {
+        $this->createTopologies();
+        $manager = $this->getManager();
+        $output  = $manager->prepareInstall(TRUE, TRUE, TRUE, 'worker');
+        self::assertArrayHasKey('create', $output);
+        self::assertArrayHasKey('update', $output);
+        self::assertArrayHasKey('delete', $output);
+        self::assertEquals('inner-file', reset($output['create']));
+        self::assertEquals('file', reset($output['update']));
+        self::assertEquals('old-file', reset($output['delete']));
+
+        $res = $this->redis->get(InstallManager::AUTO_INSTALL_KEY);
+        self::assertNotEmpty($res);
+        $this->redis->del([InstallManager::AUTO_INSTALL_KEY]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testMakeInstall(): void
+    {
+        $this->dm->getClient()->dropDatabase('pipes');
+        $this->createTopologies();
+        $manager = $this->getManager();
+        $manager->prepareInstall(TRUE, TRUE, TRUE, '');
+        $res = $this->redis->get(InstallManager::AUTO_INSTALL_KEY);
+        self::assertNotEmpty($res);
+
+        $output = $manager->makeInstall(TRUE, TRUE, TRUE, 'worker');
+        self::assertArrayHasKey('create', $output);
+        self::assertArrayHasKey('update', $output);
+        self::assertArrayHasKey('delete', $output);
+        self::assertEquals(1, count($output['create']));
+        self::assertEquals(1, count($output['update']));
+        self::assertEquals(1, count($output['delete']));
+
+        $res = $this->redis->get(InstallManager::AUTO_INSTALL_KEY);
+        self::assertEmpty($res);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testMakeInstallEx(): void
+    {
+        $manager = $this->getManager();
+        $output  = $manager->makeInstall(TRUE, TRUE, TRUE, '');
+        self::assertArrayHasKey('create', $output);
+        self::assertArrayHasKey('update', $output);
+        self::assertArrayHasKey('delete', $output);
+    }
+
+    /**
+     * @return InstallManager
+     * @throws Exception
+     */
+    private function getManager(): InstallManager
+    {
+        $requestHandler = self::createMock(TopologyGeneratorBridge::class);
+        $requestHandler->method('runTopology')->willReturn(new ResponseDto(200, '', '', []));
+        $requestHandler->method('deleteTopology')->willReturn(new ResponseDto(200, '', '', []));
+
+        $redisDsn        = 'redis://redis:6379';
+        $this->redis     = new Client(Parameters::create($redisDsn));
+        $topologyManager = self::getContainer()->get('hbpf.configurator.manager.topology');
+        $dir             = sprintf('%s/data', __DIR__);
+        $categoryManager = self::getContainer()->get('hbpf.configurator.manager.category');
+        $categoryParser  = new CategoryParser($this->dm, $categoryManager);
+        $categoryParser->addRoot('systems', $dir);
+
+        $xmlDecoder = self::getContainer()->get('rest.decoder.xml');
+        $redisCache = new RedisCache($redisDsn);
+
+        return new InstallManager(
+            $this->dm,
+            $topologyManager,
+            $requestHandler,
+            $categoryParser,
+            $xmlDecoder,
+            $redisCache,
+            [$dir],
+            TRUE,
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function createTopologies(): void
+    {
+        $sdkUrlMap = [];
+
+        $topology = new Topology();
+        $topology
+            ->setName('file')
+            ->setJson($this->loadJson('file.tplg.json', TRUE))
+            ->setContentHash(
+                TopologySchemaUtils::getIndexHash(
+                    TopologySchemaUtils::getSchemaObjectFromJson($this->loadJson('file.tplg.json', TRUE), $sdkUrlMap),
+                ),
+            )
+            ->setEnabled(TRUE)
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value);
+        $this->dm->persist($topology);
+
+        $topology3 = new Topology();
+        $topology3
+            ->setName('file2')
+            ->setJson($this->loadJson('file2.tplg.json', FALSE))
+            ->setContentHash(
+                TopologySchemaUtils::getIndexHash(
+                    TopologySchemaUtils::getSchemaObjectFromJson($this->loadJson('file2.tplg.json', FALSE), $sdkUrlMap),
+                ),
+            )
+            ->setEnabled(TRUE)
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value);
+        $this->dm->persist($topology3);
+
+        $topology2 = new Topology();
+        $topology2
+            ->setName('old-file')
+            ->setEnabled(TRUE)
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value);
+        $this->dm->persist($topology2);
+        $this->dm->flush();
+    }
+
+    /**
+     * @param string $name
+     * @param bool   $change
+     *
+     * @return mixed[]
+     */
+    private function loadJson(string $name, bool $change): array
+    {
+        $content = File::getContent(sprintf('%s/data/%s', __DIR__, $name));
+
+        if ($change) {
+            $content = str_replace('salesforce-create-contact-mapper', 'salesforce-updaet-contact-mapper', $content);
+        }
+
+        return Json::decode($content);
+    }
+
+}

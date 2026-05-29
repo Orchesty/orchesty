@@ -1,0 +1,27 @@
+services:
+    hbpf.user.handler.users:
+        class: Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler
+        arguments:
+            - '@hbpf.user.manager.user'
+            - '@hbpf.user.manager.users'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.user.manager.token'
+            - '@hbpf.user.provider.resource'
+
+    hbpf.user.manager.users:
+        class: Hanaboso\PipesFramework\User\Manager\UserManager
+        arguments:
+            - '@hbpf.user.filter'
+            - '@hbpf.user.filter.tmp_user'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@security.password_hasher_factory'
+
+    hbpf.user.filter:
+        class: Hanaboso\PipesFramework\User\Filter\UserDocumentFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.user.filter.tmp_user:
+        class: Hanaboso\PipesFramework\User\Filter\TmpUserDocumentFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'

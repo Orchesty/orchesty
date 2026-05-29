@@ -1,0 +1,264 @@
+<?php declare(strict_types=1);
+
+namespace Hanaboso\PipesFramework\Database\Repository;
+
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
+use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Exception;
+use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
+use Hanaboso\PipesFramework\Database\Document\Category;
+use Hanaboso\PipesFramework\Database\Document\Topology;
+use LogicException;
+use MongoDB\BSON\ObjectId;
+
+/**
+ * Class TopologyRepository
+ *
+ * @package Hanaboso\PipesFramework\Database\Repository
+ *
+ * @phpstan-template T of Topology
+ * @phpstan-extends DocumentRepository<T>
+ */
+final  class TopologyRepository extends DocumentRepository
+{
+
+    /**
+     * @param string $name
+     *
+     * @return T[]
+     * @throws MongoDBException
+     */
+    public function getRunnableTopologies(string $name): array
+    {
+        /** @var Iterator<T> $result */
+        $result = $this->createQueryBuilder()
+            ->field('name')->equals($name)
+            ->field('enabled')->equals(TRUE)
+            ->field('deleted')->equals(FALSE)
+            ->field('visibility')->equals(TopologyStatusEnum::PUBLIC->value)
+            ->getQuery()->execute();
+
+        return $result->toArray();
+    }
+
+    /**
+     * @return integer
+     * @throws MongoDBException
+     */
+    public function getTotalCount(): int
+    {
+        /** @var int $result */
+        $result = $this->createQueryBuilder()
+            ->field('deleted')->equals(FALSE)
+            ->count()
+            ->getQuery()->execute();
+
+        return $result;
+    }
+
+    /**
+     * @param bool $enabled
+     *
+     * @return int
+     * @throws MongoDBException
+     */
+    public function getCountByEnable(bool $enabled): int
+    {
+        /** @var int $result */
+        $result = $this->createQueryBuilder()
+            ->field('deleted')->equals(FALSE)
+            ->field('enabled')->equals($enabled)
+            ->field('visibility')->equals(TopologyStatusEnum::PUBLIC->value)
+            ->count()
+            ->getQuery()->execute();
+
+        return $result;
+    }
+
+    /**
+     * Count topologies that currently occupy a topology slot. A "slot" is
+     * consumed by every published row (bridge), regardless of `enabled` -
+     * disabling a topology only stops the start nodes, the bridge keeps
+     * running and holds infrastructure. The slot is only freed by
+     * decommission / unpublish / delete.
+     *
+     * @throws MongoDBException
+     */
+    public function getPublishedCount(): int
+    {
+        /** @var int $result */
+        $result = $this->createQueryBuilder()
+            ->field('deleted')->equals(FALSE)
+            ->field('visibility')->equals(TopologyStatusEnum::PUBLIC->value)
+            ->count()
+            ->getQuery()->execute();
+
+        return $result;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return int
+     */
+    public function getMaxVersion(string $name): int
+    {
+        /** @var T|null $result */
+        $result = $this->createQueryBuilder()
+            ->field('name')->equals($name)
+            ->sort('version', 'DESC')
+            ->limit(1)
+            ->getQuery()->getSingleResult();
+
+        if (!$result) {
+            return 0;
+        }
+
+        return $result->getVersion();
+    }
+
+    /**
+     * @param string $topologyName
+     *
+     * @return int
+     * @throws MongoDBException
+     */
+    public function getTopologiesCountByName(string $topologyName): int
+    {
+        /** @var int $result */
+        $result = $this->createQueryBuilder()
+            ->field('name')->equals($topologyName)
+            ->field('deleted')->equals(FALSE)
+            ->count()
+            ->getQuery()->execute();
+
+        return $result;
+    }
+
+    /**
+     * @return T[]
+     * @throws MongoDBException
+     */
+    public function getTopologies(): array
+    {
+        /** @var Iterator<T> $topology */
+        $topology = $this->createQueryBuilder()
+            ->field('visibility')->equals(TopologyStatusEnum::PUBLIC->value)
+            ->field('deleted')->equals(FALSE)
+            ->sort('version')
+            ->getQuery()->execute();
+        /** @var T[] $results */
+        $results = $topology->toArray();
+
+        $res = [];
+        foreach ($results as $result) {
+            $res[$result->getName()] = $result;
+            unset($result);
+        }
+
+        return $res;
+    }
+
+    /**
+     * @return T[]
+     * @throws MongoDBException
+     */
+    public function getPublicEnabledTopologies(): array
+    {
+        /** @var Iterator<T> $result */
+        $result = $this->createQueryBuilder()
+            ->field('visibility')->equals(TopologyStatusEnum::PUBLIC->value)
+            ->field('enabled')->equals(TRUE)
+            ->field('deleted')->equals(FALSE)
+            ->getQuery()
+            ->execute();
+
+        return $result->toArray();
+    }
+
+    /**
+     * @param Category $category
+     *
+     * @return T[]
+     */
+    public function getTopologiesByCategory(Category $category): array
+    {
+        return $this->findBy(['category' => $category->getId(), 'deleted' => FALSE]);
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return T
+     * @throws Exception
+     */
+    public function getTopologyById(string $id): Topology
+    {
+        /** @var T|null $topology */
+        $topology = $this->findOneBy(['id' => $id, 'deleted' => FALSE]);
+
+        if (!$topology) {
+            throw new LogicException(
+                sprintf('Node with id is not found [%s]', $id),
+            );
+        }
+
+        return $topology;
+    }
+
+    /**
+     * @param string $topologyId
+     *
+     * @return mixed[]
+     * @throws Exception
+     */
+    public function getActiveTopologiesVersions(string $topologyId): array
+    {
+        /** @var Iterator<T> $result */
+        $result = $this->createAggregationBuilder()
+            ->match()
+            ->field('deleted')->equals(FALSE)
+            ->field('enabled')->equals(TRUE)
+            ->group()
+            ->field('id')->expression('$name')
+            ->field('topology')->push('$$ROOT')
+            ->field('ids')->push('$_id')
+            ->match()
+            ->field('ids')
+            ->equals(new ObjectId($topologyId))
+            ->unwind('$topology')
+            ->project()
+            ->excludeFields(['_id'])
+            ->field('id')->expression('$topology._id')
+            ->field('name')->expression('$topology.name')
+            ->field('version')->expression('$topology.version')
+            ->getAggregation()
+            ->getIterator();
+
+        return $result->toArray();
+    }
+
+    /**
+     * @param string $name
+     * @param string $excludeId
+     *
+     * @return void
+     * @throws MongoDBException
+     */
+    public function disableOtherVersions(string $name, string $excludeId): void
+    {
+        $this
+            ->createQueryBuilder()
+            ->updateMany()
+            ->field('name')->equals($name)
+            ->field('enabled')->equals(TRUE)
+            ->field('deleted')->equals(FALSE)
+            ->field('visibility')->equals(TopologyStatusEnum::PUBLIC->value)
+            ->field('id')->notEqual($excludeId)
+            ->field('enabled')->set(FALSE)
+            ->getQuery()
+            ->execute();
+    }
+
+}

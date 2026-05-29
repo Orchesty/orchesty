@@ -1,0 +1,101 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.metrics.handler.metrics:
+        class: Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler
+        arguments:
+            - "@doctrine_mongodb.odm.default_document_manager"
+            - "@hbpf.metrics.manager.mongo_metrics"
+
+    hbpf.metrics.manager.mongo_metrics:
+        class: Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager
+        arguments:
+            - "@doctrine_mongodb.odm.default_document_manager"
+            - "%mongodb.node_table%"
+            - "%mongodb.monolith_table%"
+            - "%mongodb.rabbit_table%"
+            - "%mongodb.counter_table%"
+            - "%mongodb.connector_table%"
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+            - '%mongodb.rabbit_consumer_table%'
+            - '@hbpf.metric-connector-overview.aggregation-filter'
+            - '@hbpf.metric-connector.aggregation-filter'
+            - '@hbpf.metric-connector-graph.aggregation-filter'
+            - '@hbpf.metric-request.aggregation-filter'
+            - '@hbpf.metric-process.aggregation-filter'
+            - '@hbpf.metric-limit.aggregation-filter'
+            - '@hbpf.metric-limit-application.aggregation-filter'
+            - '@hbpf.metric-limit-total.aggregation-filter'
+            - '@hbpf.metric-limit-graph.aggregation-filter'
+            - '@hbpf.metric-user-task.aggregation-filter'
+            - '@hbpf.metric-user-task-total.aggregation-filter'
+            - '@hbpf.metric-user-task-graph.aggregation-filter'
+            - '@hbpf.metric-connector-heatmap.aggregation-filter'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+
+    hbpf.metric-connector-overview.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorOverviewAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-connector.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-connector-graph.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorGraphAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-request.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricRequestAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-process.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricProcessAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-limit.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-limit-application.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitApplicationAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-limit-total.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitTotalAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-limit-graph.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitGraphAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-user-task.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricUserTaskAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.metric-user-task-total.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricUserTaskTotalAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-user-task-graph.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricUserTaskGraphAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.metric-connector-heatmap.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorHeatmapAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'

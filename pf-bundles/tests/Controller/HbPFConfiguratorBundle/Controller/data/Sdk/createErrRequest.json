@@ -1,0 +1,7 @@
+{
+    "http": "POST /api/sdks",
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

@@ -1,0 +1,8 @@
+parameters:
+    stdout_path: "%kernel.logs_dir%/stdout_%kernel.environment%.log"
+    public.services: false
+
+framework:
+    session:
+        cookie_secure: false
+        cookie_samesite: 'strict'

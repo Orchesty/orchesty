@@ -1,0 +1,7 @@
+{
+    "http": "DELETE /api/sdks/123",
+    "body":[],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}
