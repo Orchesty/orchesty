@@ -1,5 +1,5 @@
-DC=docker-compose
-DE=docker-compose exec -T app
+DC=docker compose
+DE=docker compose exec -T app
 
 IMAGE := orchesty/limiter:$(TAG)
 
@@ -39,8 +39,12 @@ ci-test: #test
 
 fasttest:
 	$(DE) mkdir var || true
-	$(DE) go test -cover -coverprofile var/coverage.out ./... -count=1
+	$(DE) go test -p 1 -cover -coverprofile var/coverage.out ./... -count=1
 	$(DE) go tool cover -html=var/coverage.out -o var/coverage.html
 
 clean:
-	docker-compose down -v
+	docker compose down -v
+
+run-demo-limiter:
+	docker compose -f ../clients/demo/docker-compose.yml up -d --force-recreate limiter
+	docker compose -f ../clients/demo/docker-compose.yml logs -f limiter

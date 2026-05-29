@@ -18,7 +18,7 @@ func fromDto(message *model.MessageDto) bson.M {
 
 	return bson.M{
 		"nodeId":           message.GetHeader(enum.Header_NodeId),
-		"nodeName":         "",
+		"nodeName":         message.GetHeader(enum.Header_NodeName),
 		"topologyId":       message.GetHeader(enum.Header_TopologyId),
 		"topologyName":     "",
 		"correlationId":    message.GetHeader(enum.Header_CorrelationId),

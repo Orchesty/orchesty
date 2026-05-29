@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/hanaboso/go-log/pkg"
-	"github.com/hanaboso/go-log/pkg/zerolog"
+	"github.com/hanaboso/go-log/pkg/zap"
 	"github.com/jinzhu/configor"
 )
 
@@ -11,7 +11,6 @@ type (
 		App      *app
 		RabbitMq *rabbitMq
 		MongoDb  *mongoDb
-		Logs     *logs
 	}
 
 	rabbitMq struct {
@@ -19,20 +18,20 @@ type (
 	}
 
 	mongoDb struct {
-		Dsn                string `env:"MONGO_DSN" required:"true"`
-		MessageCollection  string `env:"MONGO_COLLECTION" default:"limiter"`
-		UserTaskCollection string `env:"USER_TASK_COLLECTION" default:"UserTask"`
-		ApiTokenCollection string `env:"MONGODB_API_TOKEN_COLLECTION" default:"ApiToken"`
+		Dsn                       string `env:"MONGO_DSN" required:"true"`
+		MetricsDsn                string `env:"METRICS_DSN" required:"true"`
+		MessageCollection         string `env:"MONGO_COLLECTION" default:"limiter"`
+		UserTaskCollection        string `env:"USER_TASK_COLLECTION" default:"UserTask"`
+		ApiTokenCollection        string `env:"MONGODB_API_TOKEN_COLLECTION" default:"ApiToken"`
+		MetricsLimiterCollection  string `env:"MONGO_METRICS_LIMITER_COLLECTION" default:"limiter"`
+		MetricsRepeaterCollection string `env:"MONGO_METRICS_REPEATER_COLLECTION" default:"repeater"`
+		MetricsUserTaskCollection string `env:"MONGO_METRICS_USER_TASK_COLLECTION" default:"userTask"`
 	}
 
 	app struct {
 		Debug            bool   `env:"APP_DEBUG" default:"false"`
 		TcpServerAddress string `env:"LIMITER_ADDR" default:"0.0.0.0:3333"`
 		SystemUser       string
-	}
-
-	logs struct {
-		Url string `env:"UDP_LOGGER_URL" default:"fluentd:5120"`
 	}
 )
 
@@ -41,13 +40,11 @@ var (
 	MongoDb  mongoDb
 	RabbitMq rabbitMq
 	Logger   pkg.Logger
-	Logs     logs
 
 	c = config{
 		App:      &App,
 		MongoDb:  &MongoDb,
 		RabbitMq: &RabbitMq,
-		Logs:     &Logs,
 	}
 )
 
@@ -57,8 +54,7 @@ func init() {
 	}
 	c.App.SystemUser = "orchesty"
 
-	zerolog.NewLogger(zerolog.NewUdpSender(Logs.Url))
-	Logger = zerolog.NewLogger(zerolog.Printer{})
+	Logger = zap.NewLogger()
 
 	if App.Debug {
 		Logger.SetLevel(pkg.DEBUG)

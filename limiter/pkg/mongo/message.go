@@ -180,7 +180,10 @@ func (this MongoSvc) FetchMessages(key string, limit int) ([]Message, error) {
 		}},
 		bson.D{{
 			"$set",
-			bson.D{{"inProcess", true}},
+			bson.D{
+				{"inProcess", true},
+				{"allowedAt", bson.NewDateTimeFromTime(time.Now())},
+			},
 		}},
 	)
 	if err != nil {
