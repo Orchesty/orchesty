@@ -32,7 +32,7 @@ services:
             - ${DEV_IP}:27017:27017
 
     rabbitmq:
-      image: rabbitmq:3-management-alpine
+      image: rabbitmq:management-alpine
       ports:
         - ${DEV_IP}:15672:15672
 
