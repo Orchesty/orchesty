@@ -10,6 +10,7 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 	"net/http"
 	"starting-point/pkg/config"
+	"starting-point/pkg/enum"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/utils"
 	"strings"
@@ -61,6 +62,12 @@ func (this RabbitSvc) SendMessage(
 	user := ""
 	if user = request.Header.Get(utils.UserID); user != "" {
 		h[utils.UserID] = user
+	}
+
+	if source := request.Header.Get(string(enum.Source_Header)); source == string(enum.Source_UI) {
+		h[string(enum.Source_Header)] = source
+	} else {
+		h[string(enum.Source_Header)] = string(enum.Source_Auto)
 	}
 
 	limitHeader, err := GetApplicationLimits(user, topology)
