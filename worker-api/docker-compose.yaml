@@ -1,0 +1,22 @@
+services:
+    worker-api:
+        image: worker-api:tag
+        build: ./docker
+        user: ${DEV_UID}:${DEV_GID}
+        working_dir: /var/www
+        volumes:
+            - ./:/var/www
+        environment:
+            # Envs for tests are load from .jest/testEnvs.js
+            JEST_DOCKER: 1
+            APP_ENV: 'debug'
+            MONGODB_DSN: 'mongodb://mongo:27017/worker-api'
+            METRICS_DB: 'worker-api-metrics'
+            TZ: 'UTC'
+        command: sleep infinity
+        ports:
+            - ${DEV_IP}:80:8080
+    mongo:
+        image: mongo:latest
+        ports:
+            - ${DEV_IP}:27017:27017

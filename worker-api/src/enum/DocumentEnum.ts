@@ -1,0 +1,17 @@
+enum DocumentEnum {
+    APPLICATION_INSTALL = 'ApplicationInstall',
+    WEBHOOK = 'Webhook',
+    NODE = 'Node',
+    API_TOKEN = 'ApiToken',
+    LOGS = 'Logs',
+}
+
+export function isDocumentSupported(document: string): boolean {
+    return ([
+        DocumentEnum.APPLICATION_INSTALL,
+        DocumentEnum.WEBHOOK,
+        DocumentEnum.NODE,
+    ] as string[]).includes(document);
+}
+
+export default DocumentEnum;

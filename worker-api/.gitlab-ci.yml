@@ -1,0 +1,19 @@
+.base-worker-api:
+  variables:
+    DIR: worker-api
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}worker-api
+
+worker-api:test:
+  stage: test
+  extends:
+    - .base-test
+    - .base-worker-api
+
+worker-api:build:
+  stage: build
+  needs:
+    - job: worker-api:test
+      optional: false
+  extends:
+    - .base-dind-build
+    - .base-worker-api
