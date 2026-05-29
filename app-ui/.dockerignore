@@ -1,0 +1,11 @@
+*
+!app-ui
+!app-ui-enterprise
+app-ui/node_modules
+app-ui-enterprise/node_modules
+app-ui/dist
+app-ui-enterprise/dist
+!.npmrc
+!package.json
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
