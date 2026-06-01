@@ -28,7 +28,9 @@ import (
 	"strings"
 
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
+	"github.com/hanaboso/pipes/bridge/pkg/loki"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
@@ -267,15 +269,17 @@ func Emit(
 		cp["payload"] = payload
 	}
 
-	ev := log.Info().EmbedObject(dto).
-		Str(enum.LogHeader_LevelName, "info").
-		Interface(enum.LogHeader_AuditCheckpoint, cp)
-
+	topologyName := ""
 	if node != nil {
-		ev = ev.Str("topologyName", node.TopologyName())
+		topologyName = node.TopologyName()
 	}
 
-	ev.Msg("Audit checkpoint")
+	if loki.Enabled() {
+		labels, line := buildAuditLine(dto, cp, topologyName)
+		loki.SendLog(labels, line)
+	} else {
+		writeAuditEvent(log.Info(), dto, cp, topologyName)
+	}
 
 	if truncated {
 		// Side-channel warning — does NOT pollute the audit log line itself.
@@ -286,6 +290,32 @@ func Emit(
 				dto.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
 			)
 	}
+}
+
+func writeAuditEvent(ev *zerolog.Event, dto *model.ProcessMessage, cp map[string]any, topologyName string) {
+	ev = ev.EmbedObject(dto).
+		Str(enum.LogHeader_LevelName, "info").
+		Interface(enum.LogHeader_AuditCheckpoint, cp)
+
+	if topologyName != "" {
+		ev = ev.Str("topologyName", topologyName)
+	}
+
+	ev.Msg("Audit checkpoint")
+}
+
+func buildAuditLine(dto *model.ProcessMessage, cp map[string]any, topologyName string) (map[string]string, []byte) {
+	var buf bytes.Buffer
+	bufLogger := zerolog.New(&buf).With().Timestamp().Logger()
+	writeAuditEvent(bufLogger.Info(), dto, cp, topologyName)
+
+	labels := map[string]string{
+		enum.LogHeader_CorrelationId: dto.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
+		enum.LogHeader_LevelName:     "info",
+		enum.LogHeader_TopologyId:    dto.GetHeaderOrDefault(enum.Header_TopologyId, ""),
+	}
+
+	return labels, bytes.TrimRight(buf.Bytes(), "\n")
 }
 
 // truncateString returns s clipped to maxLen runes. Operates on runes (not
@@ -404,47 +434,92 @@ func pickFields(entity any, fields []string) map[string]any {
 		if field == "" {
 			continue
 		}
-		val, found := walkPath(m, field)
+		proj, found := projectPath(m, strings.Split(field, "."))
 		if !found {
 			continue
 		}
-		setPath(out, field, val)
+		if pm, ok := proj.(map[string]any); ok {
+			mergeInto(out, pm)
+		}
 	}
 
 	return out
 }
 
-func walkPath(m map[string]any, path string) (any, bool) {
-	cur := any(m)
-	for _, seg := range strings.Split(path, ".") {
-		mp, ok := cur.(map[string]any)
-		if !ok {
-			return nil, false
-		}
-		next, exists := mp[seg]
+func projectPath(src any, segs []string) (any, bool) {
+	if len(segs) == 0 {
+		return src, true
+	}
+
+	switch s := src.(type) {
+	case map[string]any:
+		child, exists := s[segs[0]]
 		if !exists {
 			return nil, false
 		}
-		cur = next
+		sub, ok := projectPath(child, segs[1:])
+		if !ok {
+			return nil, false
+		}
+		return map[string]any{segs[0]: sub}, true
+	case []any:
+		out := make([]any, 0, len(s))
+		found := false
+		for _, elem := range s {
+			if sub, ok := projectPath(elem, segs); ok {
+				found = true
+				out = append(out, sub)
+			} else {
+				out = append(out, map[string]any{})
+			}
+		}
+		if !found {
+			return nil, false
+		}
+		return out, true
+	default:
+		return nil, false
 	}
-	return cur, true
 }
 
-func setPath(out map[string]any, path string, value any) {
-	segs := strings.Split(path, ".")
-	cur := out
-	for i, seg := range segs {
-		if i == len(segs)-1 {
-			cur[seg] = value
-			return
+func mergeInto(dst, src map[string]any) {
+	for k, sv := range src {
+		if dv, exists := dst[k]; exists {
+			dst[k] = mergeValue(dv, sv)
+		} else {
+			dst[k] = sv
 		}
-		next, ok := cur[seg].(map[string]any)
-		if !ok {
-			next = map[string]any{}
-			cur[seg] = next
-		}
-		cur = next
 	}
+}
+
+func mergeValue(a, b any) any {
+	if am, ok := a.(map[string]any); ok {
+		if bm, ok := b.(map[string]any); ok {
+			mergeInto(am, bm)
+			return am
+		}
+	}
+	if aa, ok := a.([]any); ok {
+		if ba, ok := b.([]any); ok {
+			n := len(aa)
+			if len(ba) > n {
+				n = len(ba)
+			}
+			out := make([]any, n)
+			for i := 0; i < n; i++ {
+				switch {
+				case i < len(aa) && i < len(ba):
+					out[i] = mergeValue(aa[i], ba[i])
+				case i < len(aa):
+					out[i] = aa[i]
+				default:
+					out[i] = ba[i]
+				}
+			}
+			return out
+		}
+	}
+	return b
 }
 
 // redactSensitive walks the picked payload recursively and masks any value
