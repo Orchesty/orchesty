@@ -454,14 +454,15 @@ const isSlotLimitError = (error: unknown): { used: number | null; limit: number 
   return parsed ?? { used: null, limit: null }
 }
 
-const handlePublish = async () => {
-  if (!topology.value) return
+const handlePublish = async (): Promise<boolean> => {
+  if (!topology.value) return false
   publishing.value = true
   try {
     await publishTopology(topology.value._id)
     showToast('Topology published successfully', 'success')
     topology.value = await fetchTopologyDetail(props.id, versionId.value)
     await layout.refreshSidebar()
+    return true
   } catch (error) {
     console.error('Failed to publish topology:', error)
     const slotLimit = isSlotLimitError(error)
@@ -472,6 +473,7 @@ const handlePublish = async () => {
     } else {
       showToast('Failed to publish topology', 'error')
     }
+    return false
   } finally {
     publishing.value = false
   }
@@ -809,7 +811,7 @@ onMounted(async () => {
     <div v-show="activeTopologyTab === 'topology'" class="flex-1 min-h-0 mt-4">
       <div class="h-full dark:bg-gray-800 dark:shadow-sm dark:rounded-lg">
         <div class="h-full bg-gray-50 dark:bg-gray-900 dark:rounded-lg overflow-hidden">
-          <TopologyEditor ref="topologyEditorRef" :topology-id="topology._id" :topology-name="topology.name" :topology-enabled="topology.enabled" :refresh-key="refreshKey" @process-run="handleProcessRun" />
+          <TopologyEditor ref="topologyEditorRef" :topology-id="topology._id" :topology-name="topology.name" :topology-enabled="topology.enabled" :is-published="topology.visibility === 'public'" :can-publish="canWrite && hasFlow" :publish-fn="handlePublish" :refresh-key="refreshKey" @process-run="handleProcessRun" />
         </div>
       </div>
     </div>

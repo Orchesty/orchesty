@@ -9,10 +9,14 @@ interface Props {
   nodeName?: string
   nodeId?: string
   hasBreakpointMessages?: boolean
+  isPublished?: boolean
+  canPublish?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   hasBreakpointMessages: false,
+  isPublished: true,
+  canPublish: true,
 })
 
 const emit = defineEmits<{
@@ -57,16 +61,22 @@ const isValid = computed(() => {
   return validationError.value === null
 })
 
+const needsPublish = computed(() => !props.isPublished)
+
+const isBlocked = computed(() => needsPublish.value && !props.canPublish)
+
+const runButtonLabel = computed(() => (needsPublish.value ? 'Publish and Run Process' : 'Run Process'))
+
 const modalTitle = computed(() => {
   return props.nodeName ? `Run Process - ${props.nodeName}` : 'Run Process'
 })
 
 const handleRun = () => {
-  if (!isValid.value) return
+  if (!isValid.value || isBlocked.value) return
 
   isRunning.value = true
   emit('run', jsonInput.value)
-  
+
   // Close modal after a short delay
   setTimeout(() => {
     emit('update:modelValue', false)
@@ -89,7 +99,35 @@ const handleClose = () => {
   >
     <div class="space-y-4">
       <div
-        v-if="showBreakpointAlert"
+        v-if="needsPublish"
+        class="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-900/20"
+      >
+        <svg
+          class="mt-0.5 h-5 w-5 shrink-0 text-red-500"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        <p class="text-sm text-red-800 dark:text-red-200">
+          <template v-if="canPublish">
+            This topology is not published. The button below will publish it first, then run the process.
+          </template>
+          <template v-else>
+            This topology is not published and cannot run. You don't have permission to publish it.
+          </template>
+        </p>
+      </div>
+
+      <div
+        v-else-if="showBreakpointAlert"
         class="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-800 dark:bg-amber-900/20"
       >
         <svg
@@ -140,7 +178,7 @@ const handleClose = () => {
       </Button>
       <Button
         :loading="isRunning"
-        :disabled="!isValid"
+        :disabled="!isValid || isBlocked"
         @click="handleRun"
       >
         <template #prepend>
@@ -148,7 +186,7 @@ const handleClose = () => {
             <path d="M8 5v14l11-7z"/>
           </svg>
         </template>
-        Run Process
+        {{ runButtonLabel }}
       </Button>
     </template>
   </Modal>

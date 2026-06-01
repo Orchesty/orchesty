@@ -46,11 +46,17 @@ interface Props {
   topologyId: string
   topologyName: string
   topologyEnabled?: boolean
+  isPublished?: boolean
+  canPublish?: boolean
+  publishFn?: () => Promise<boolean>
   refreshKey?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
   topologyEnabled: true,
+  isPublished: true,
+  canPublish: true,
+  publishFn: undefined,
   refreshKey: 0,
 })
 
@@ -1015,10 +1021,27 @@ const dismissProcessPanel = () => {
   hasBreakpoints.value = false
 }
 
+const refreshBackendNodeMap = async () => {
+  const backendNodes = await fetchBackendNodes()
+  if (editorCore.value) {
+    initNodesData(editorCore.value, backendNodes)
+  }
+}
+
 const handleRunProcess = async (jsonData: string) => {
   if (!selectedNode.value) return
 
   try {
+    if (!props.isPublished) {
+      if (!props.canPublish || !props.publishFn) {
+        showToast('Topology must be published before it can run', 'error')
+        return
+      }
+      const published = await props.publishFn()
+      if (!published) return
+      await refreshBackendNodeMap()
+    }
+
     if (hasBreakpoints.value) {
       await rejectAllBreakpoints(props.topologyId)
       breakpointCounts.value = {}
@@ -1309,6 +1332,8 @@ watch(() => props.refreshKey, () => {
       :node-name="selectedNode?.name || selectedNode?.label"
       :node-id="selectedNode?.id"
       :has-breakpoint-messages="hasBreakpoints"
+      :is-published="isPublished"
+      :can-publish="canPublish"
       @run="handleRunProcess"
     />
 
