@@ -19,13 +19,15 @@ type (
 	}
 
 	app struct {
-		Debug               bool `env:"APP_DEBUG" default:"false"`
-		RunCallbackTopology bool `env:"APP_RUN_CALLBACK_TOPOLOGY" default:"true"`
+		Debug                    bool `env:"APP_DEBUG" default:"false"`
+		RunCallbackTopology      bool `env:"APP_RUN_CALLBACK_TOPOLOGY" default:"true"`
+		CommitDelayMs            int  `env:"APP_COMMIT_DELAY_MS" default:"10"`
+		EnableSubProcessCounters bool `env:"APP_ENABLE_SUBPROCESS_COUNTERS" default:"false"`
 	}
 
 	rabbitMq struct {
 		Dsn      string `env:"RABBITMQ_DSN" required:"true"`
-		Prefetch int    `env:"RABBITMQ_PREFETCH" default:"50"`
+		Prefetch int    `env:"RABBITMQ_PREFETCH" default:"100"`
 	}
 
 	mongoDb struct {

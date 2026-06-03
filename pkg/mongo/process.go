@@ -2,12 +2,13 @@ package mongo
 
 import (
 	"context"
+	"time"
+
 	"github.com/hanaboso/pipes/counter/pkg/config"
 	"github.com/hanaboso/pipes/counter/pkg/model"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
-	"time"
 )
 
 func (m *MongoDb) GetApiToken(user string, scopes []string) (*model.ApiToken, error) {
@@ -88,10 +89,12 @@ func (m *MongoDb) UpdateProcesses(processes, subProcesses, finishes []mongo.Writ
 			_ = sess.AbortTransaction(ctx)
 			return err
 		}
-		_, err = m.connection.Database.Collection(config.MongoDb.CounterSubCollection).BulkWrite(ctx, subProcesses)
-		if err != nil {
-			_ = sess.AbortTransaction(ctx)
-			return err
+		if len(subProcesses) > 0 {
+			_, err = m.connection.Database.Collection(config.MongoDb.CounterSubCollection).BulkWrite(ctx, subProcesses)
+			if err != nil {
+				_ = sess.AbortTransaction(ctx)
+				return err
+			}
 		}
 
 		_, err = m.connection.Database.Collection(config.MongoDb.CounterCollection).BulkWrite(ctx, finishes)
