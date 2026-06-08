@@ -4,6 +4,7 @@ import { mongoOptions } from '../config/Config';
 import Mongo from '../database/Mongo';
 import ResultCode from '../enum/ResultCode';
 import { logger } from '../logger/Logger';
+import Loki from '../logger/Loki';
 
 const inputSchema = Joi.object<ILogInput>({
     message: Joi.string().required(),
@@ -31,7 +32,11 @@ const inputSchema = Joi.object<ILogInput>({
 
 export default class LoggerRouter {
 
-    public constructor(private readonly app: Application, private readonly mongo: Mongo) {
+    public constructor(
+        private readonly app: Application,
+        private readonly mongo: Mongo,
+        private readonly loki: Loki,
+    ) {
     }
 
     public initRoutes(): void {
@@ -76,7 +81,19 @@ export default class LoggerRouter {
                 return;
             }
 
-            logger.info(req.body);
+            if (this.loki.enabled()) {
+                this.loki.sendLog(
+                    {
+                        correlationId: req.body.correlationId ?? '',
+                        levelName: req.body.level ?? req.body.levelName ?? '',
+                        topologyId: req.body.topologyId ?? '',
+                    },
+                    JSON.stringify(req.body),
+                );
+            } else {
+                logger.info(req.body);
+            }
+
             res.json({ message: { status: 'OK' } });
         });
     }

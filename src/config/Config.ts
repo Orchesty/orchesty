@@ -18,3 +18,7 @@ export const mongoOptions = {
     logsCollection: getEnv('LOGS_COLLECTION', 'Logs'),
     metricsDb: getEnv('METRICS_DB'),
 };
+
+export const lokiOptions = {
+    dsn: process.env.LOKI_DSN ?? '',
+};
