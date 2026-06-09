@@ -105,7 +105,14 @@ final readonly class UserTaskManager
      */
     public function removeAllUserTasks(string $topologyId): void
     {
-        $this->deleteMany($this->getAllUserTasks($topologyId));
+        $this
+            ->userTaskRepository
+            ->createQueryBuilder()
+            ->remove()
+            ->field('topologyId')
+            ->equals($topologyId)
+            ->getQuery()
+            ->execute();
     }
 
     /**
@@ -249,19 +256,6 @@ final readonly class UserTaskManager
     {
         $this->dm->remove($userTask);
         $this->dm->flush();
-    }
-
-    /**
-     * @param UserTask[] $userTasks
-     *
-     * @return void
-     * @throws MongoDBException
-     */
-    private function deleteMany(array $userTasks): void
-    {
-        foreach ($userTasks as $userTask) {
-            $this->delete($userTask);
-        }
     }
 
 }
