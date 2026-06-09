@@ -100,4 +100,5 @@ parameters:
 			- Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent
 			- Hanaboso\PipesFramework\Configurator\Document\ApiToken
 			- Hanaboso\PipesFramework\Configurator\Model\TopologyManager
+			- Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\CreateMetricsExpireIndexCommand
 			- Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler

@@ -12,11 +12,6 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  */
 #[ODM\Document(collection: 'connectors')]
 #[ODM\Index(
-    keys: ['fields.created' => 'asc'],
-    name: 'IK_connector_fieldsCreated',
-    expireAfterSeconds: 2_628_000,
-)]
-#[ODM\Index(
     keys: ['fields.created' => 'asc', 'tags.node_id' => 'asc', 'fields.response_code' => 'asc', 'tags.application_id' => 'asc'],
     name: 'IK_connector_fieldsCreated_tagsNodeId_fieldsResponseCode_tagsApplicationId',
 )]

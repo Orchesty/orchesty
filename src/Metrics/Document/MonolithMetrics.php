@@ -13,7 +13,6 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
 #[ODM\Document(collection: 'monolith')]
 #[ODM\Index(keys: ['tags.node_id' => 'text', 'tags.topology_id' => 'text'], name: 'SearchIndex')]
 #[ODM\Index(keys: ['fields.created' => 'desc'], name: 'createdIndex')]
-#[ODM\Index(keys: ['fields.created' => 'asc'], name: 'expireIndex', expireAfterSeconds: 2_628_000)]
 class MonolithMetrics
 {
 

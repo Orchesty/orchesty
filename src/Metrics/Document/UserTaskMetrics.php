@@ -12,11 +12,6 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  */
 #[ODM\Document(collection: 'userTask')]
 #[ODM\Index(
-    keys: ['fields.created' => 'asc'],
-    name: 'IK_userTask_fieldsCreated',
-    expireAfterSeconds: 2_628_000,
-)]
-#[ODM\Index(
     keys: ['fields.created' => 'asc', 'fields.messages' => 'asc'],
     name: 'IK_userTask_fieldsCreated_fieldsMessages',
 )]
