@@ -48,18 +48,19 @@ final class UserTaskFilter extends GridFilterAbstract
     protected function filterCols(): array
     {
         return [
-            'resultMessage'          => 'message.headers.result-message',
-            UserTask::CORRELATION_ID => UserTask::CORRELATION_ID,
-            UserTask::CREATED        => UserTask::CREATED,
-            UserTask::ID             => UserTask::ID,
-            UserTask::MESSAGE        => 'message.body',
-            UserTask::NODE_ID        => UserTask::NODE_ID,
-            UserTask::NODE_NAME      => UserTask::NODE_NAME,
-            UserTask::TOPOLOGY_ID    => UserTask::TOPOLOGY_ID,
-            UserTask::TOPOLOGY_NAME  => UserTask::TOPOLOGY_NAME,
-            UserTask::TYPE           => UserTask::TYPE,
-            UserTask::UPDATED        => UserTask::UPDATED,
-            UserTask::USER           => UserTask::USER,
+            'message.headers.result-message' => 'message.headers.result-message',
+            'resultMessage'                  => 'message.headers.result-message',
+            UserTask::CORRELATION_ID         => UserTask::CORRELATION_ID,
+            UserTask::CREATED                => UserTask::CREATED,
+            UserTask::ID                     => UserTask::ID,
+            UserTask::MESSAGE                => 'message.body',
+            UserTask::NODE_ID                => UserTask::NODE_ID,
+            UserTask::NODE_NAME              => UserTask::NODE_NAME,
+            UserTask::TOPOLOGY_ID            => UserTask::TOPOLOGY_ID,
+            UserTask::TOPOLOGY_NAME          => UserTask::TOPOLOGY_NAME,
+            UserTask::TYPE                   => UserTask::TYPE,
+            UserTask::UPDATED                => UserTask::UPDATED,
+            UserTask::USER                   => UserTask::USER,
         ];
     }
 
@@ -82,7 +83,7 @@ final class UserTaskFilter extends GridFilterAbstract
     protected function searchableCols(): array
     {
         return [
-            UserTask::MESSAGE,
+            'message.headers.result-message',
         ];
     }
 
@@ -102,7 +103,7 @@ final class UserTaskFilter extends GridFilterAbstract
      */
     protected function useTextSearch(): bool
     {
-        return TRUE;
+        return FALSE;
     }
 
 }

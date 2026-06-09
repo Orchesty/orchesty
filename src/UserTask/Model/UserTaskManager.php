@@ -151,6 +151,26 @@ final readonly class UserTaskManager
     }
 
     /**
+     * @param mixed[] $ids
+     *
+     * @throws MongoDBException
+     */
+    public function acceptMany(array $ids): void
+    {
+        $this->processMany($ids, TRUE);
+    }
+
+    /**
+     * @param mixed[] $ids
+     *
+     * @throws MongoDBException
+     */
+    public function rejectMany(array $ids): void
+    {
+        $this->processMany($ids, FALSE);
+    }
+
+    /**
      * @param UserTask $userTask
      * @param bool     $deletedTopology
      *
@@ -166,13 +186,18 @@ final readonly class UserTaskManager
 
     /**
      * @param GridRequestDtoInterface $dto
+     * @param bool                    $enrich
      *
      * @return mixed[]
      * @throws MongoDBException
      */
-    public function filter(GridRequestDtoInterface $dto): array
+    public function filter(GridRequestDtoInterface $dto, bool $enrich = TRUE): array
     {
         $res = $this->filter->getData($dto)->toArray();
+
+        if (!$enrich) {
+            return $res;
+        }
 
         return array_map(function (array $doc) {
             $topo = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $doc[UserTask::TOPOLOGY_ID]]);
@@ -256,6 +281,46 @@ final readonly class UserTaskManager
     {
         $this->dm->remove($userTask);
         $this->dm->flush();
+    }
+
+    /**
+     * @param mixed[] $ids
+     * @param bool    $accept
+     *
+     * @throws MongoDBException
+     */
+    private function processMany(array $ids, bool $accept): void
+    {
+        /** @var UserTask[] $tasks */
+        $tasks = $this
+            ->userTaskRepository
+            ->createQueryBuilder()
+            ->field('id')
+            ->in($ids)
+            ->getQuery()
+            ->toArray();
+
+        /** @var array<string, Topology|null> $topologies */
+        $topologies = [];
+
+        foreach ($tasks as $task) {
+            $topologyId = $task->getTopologyId();
+
+            if (!array_key_exists($topologyId, $topologies)) {
+                $topologies[$topologyId] = $this->topologyRepository->find($topologyId);
+            }
+
+            $topology = $topologies[$topologyId];
+
+            if ($topology !== NULL && !$topology->isDeleted()) {
+                $this->publish($task, $accept);
+            }
+
+            $this->dm->remove($task);
+        }
+
+        $this->dm->flush();
+        $this->dm->clear();
     }
 
 }
