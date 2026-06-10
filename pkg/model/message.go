@@ -115,6 +115,8 @@ func (pm ParsedMessage) ProcessInitQuery() mongo.WriteModel {
 			"topologyId":     pm.ProcessMessage.GetHeaderOrDefault(enum.Header_TopologyId, ""),
 			"user":           user,
 			"finished":       nil,
+			"status":         "RUNNING",
+			"duration":       0,
 			"systemEvent":    pm.ProcessMessage.GetBoolHeaderOrDefault(enum.Header_SystemEvent, false),
 			"source":         pm.ProcessMessage.GetHeaderOrDefault(enum.Header_Source, "auto"),
 		},
@@ -226,6 +228,35 @@ func (pm ParsedMessage) FinishProcessQuery() mongo.WriteModel {
 								},
 								pm.GetPublishedTimestamp(),
 								nil,
+							},
+						},
+					},
+				},
+			},
+		},
+		bson.M{
+			"$set": bson.M{
+				"duration": bson.M{
+					"$subtract": bson.A{
+						bson.M{"$ifNull": bson.A{"$finished", "$$NOW"}},
+						"$created",
+					},
+				},
+				"status": bson.M{
+					"$cond": bson.A{
+						bson.M{"$eq": bson.A{"$terminated", true}},
+						"TERMINATED",
+						bson.M{
+							"$cond": bson.A{
+								bson.M{"$eq": bson.A{"$finished", nil}},
+								"RUNNING",
+								bson.M{
+									"$cond": bson.A{
+										bson.M{"$gt": bson.A{"$nok", 0}},
+										"FAILED",
+										"COMPLETED",
+									},
+								},
 							},
 						},
 					},
