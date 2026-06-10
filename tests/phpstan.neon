@@ -101,4 +101,5 @@ parameters:
 			- Hanaboso\PipesFramework\Configurator\Document\ApiToken
 			- Hanaboso\PipesFramework\Configurator\Model\TopologyManager
 			- Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\CreateMetricsExpireIndexCommand
+			- Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\MigrationsMigrateCommand
 			- Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler
