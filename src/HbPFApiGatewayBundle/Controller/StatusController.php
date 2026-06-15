@@ -54,13 +54,21 @@ final class StatusController extends AbstractController
     {
         $isCloud = $this->orchestyCloudUrl !== '';
 
+        // Feature flags are honoured exactly as injected, in BOTH cloud and
+        // on-prem. The two on-prem editions resolve them differently:
+        //   - Community (core) registers this controller with no arguments, so
+        //     the constructor defaults (FALSE) apply — it has none of these
+        //     features.
+        //   - Enterprise binds them to %feature_*% (env, default TRUE) so an
+        //     Enterprise instance has every feature unless an operator explicitly
+        //     switches one off via ORCHESTY_FEATURE_* (e.g. PULSE=false).
         $data = [
             'cloudMode' => $isCloud,
             'features'  => [
-                'auditLogs'            => $isCloud ? $this->featureAuditLogs : TRUE,
-                'enterpriseDashboards' => $isCloud ? $this->featureEnterpriseDashboards : TRUE,
-                'pulse'                => $isCloud ? $this->featurePulse : TRUE,
-                'traceAuditing'        => $isCloud ? $this->featureTraceAuditing : TRUE,
+                'auditLogs'            => $this->featureAuditLogs,
+                'enterpriseDashboards' => $this->featureEnterpriseDashboards,
+                'pulse'                => $this->featurePulse,
+                'traceAuditing'        => $this->featureTraceAuditing,
             ],
             'status'    => 'ok',
         ];
