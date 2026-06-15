@@ -70,6 +70,22 @@ func (this RabbitSvc) SendMessage(
 		h[string(enum.Source_Header)] = string(enum.Source_Auto)
 	}
 
+	// Propagate reply headers (callback URL + request id) so a response node at
+	// the end of the topology can return the final payload to the caller.
+	if replyTo := request.Header.Get(utils.ReplyTo); replyTo != "" {
+		h[utils.ReplyTo] = replyTo
+	}
+	if replyID := request.Header.Get(utils.ReplyID); replyID != "" {
+		h[utils.ReplyID] = replyID
+	}
+
+	// Identity of the real caller (e.g. the authenticated user behind a Pulse
+	// run). Kept separate from `user` (which stays the system identity) and
+	// propagated through the topology as a bridge identity header.
+	if identity := request.Header.Get(utils.Identity); identity != "" {
+		h[utils.Identity] = identity
+	}
+
 	limitHeader, err := GetApplicationLimits(user, topology)
 	if err != nil {
 		config.Logger.Error(fmt.Errorf("cannot fetch sdk's limits: %+v, %v", err, limitHeader))
