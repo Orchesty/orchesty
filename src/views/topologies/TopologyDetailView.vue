@@ -20,7 +20,7 @@ import MoreActions from '@/components/ui/MoreActions.vue'
 import type { MoreActionsSection } from '@/components/ui/MoreActions.vue'
 import Card from '@/components/ui/Card.vue'
 import TabCard from '@/components/ui/TabCard.vue'
-import Textarea from '@/components/ui/datagrid/Textarea.vue'
+import McpManifestBuilder from '@/components/topologies/McpManifestBuilder.vue'
 import { fetchTopologyDetail, fetchTopologySchema, fetchTopologyVersions, publishTopology, toggleTopologyEnabled, updateTopology, fetchCategoryBreadcrumb } from '@/services/topologiesService'
 import { validateMcpManifest } from '@/utils/mcpManifestValidator'
 import { fetchTopologyMetrics } from '@/services/topologyMetricsService'
@@ -149,50 +149,12 @@ const activeTopologyTab = ref<string>(
     : 'topology'
 )
 
-// Context tab state
-const contextPlaceholder = `{
-  "kind": "query",
-  "input_schema": {
-    "type": "object",
-    "properties": {
-      "location": {
-        "type": "string"
-      },
-      "date": {
-        "type": "string",
-        "format": "date"
-      }
-    },
-    "required": [
-      "location"
-    ]
-  },
-  "output_schema": {
-    "type": "object",
-    "properties": {
-      "temperature": {
-        "type": "number"
-      },
-      "humidity": {
-        "type": "number"
-      },
-      "text": {
-        "type": "string"
-      }
-    },
-    "required": [
-      "temperature",
-      "humidity",
-      "text"
-    ]
-  }
-}`
-const contextManifest = ref('')
-const manifestError = ref('')
-
-const isManifestValid = computed(() => {
-  return contextManifest.value.trim() !== '' && manifestError.value === ''
-})
+// Context tab state — the MCP manifest is edited through the structured builder
+// (McpManifestBuilder), which owns both the form and the advanced raw editor and
+// emits the resulting manifest object plus a validity flag.
+const manifestObject = ref<Record<string, unknown>>({})
+const manifestValid = ref(true)
+const contextSchemaNodes = ref<unknown[]>([])
 
 // Tabs configuration
 const coreTopologyTabs: TopologyTab[] = [
@@ -380,10 +342,11 @@ const loadTopologyDetail = async () => {
       })
     }
     const mcpDesc = topology.value?.mcp_description
-    contextManifest.value =
-      mcpDesc && !Array.isArray(mcpDesc) && Object.keys(mcpDesc).length > 0
-        ? JSON.stringify(mcpDesc, null, 2)
-        : ''
+    manifestObject.value =
+      mcpDesc && !Array.isArray(mcpDesc) && typeof mcpDesc === 'object'
+        ? (mcpDesc as Record<string, unknown>)
+        : {}
+    manifestValid.value = true
 
     checkDescriptionTruncation()
 
@@ -391,9 +354,11 @@ const loadTopologyDetail = async () => {
       try {
         const schema = await fetchTopologySchema(topology.value._id)
         const nodes = schema?.nodes ?? []
+        contextSchemaNodes.value = Array.isArray(nodes) ? nodes : []
         hasFlow.value = Array.isArray(nodes) && nodes.some((n: { type?: string }) => n.type === 'flow')
       } catch {
         hasFlow.value = false
+        contextSchemaNodes.value = []
       }
 
       if (topology.value.category) {
@@ -563,43 +528,19 @@ const handleSaveDesign = async (data: { _id: string }) => {
 // Context tab handlers
 const savingContext = ref(false)
 
-watch(contextManifest, (text) => {
-  const trimmed = text.trim()
-  if (!trimmed) {
-    manifestError.value = ''
-    return
-  }
-  let parsed
-  try {
-    parsed = JSON.parse(trimmed)
-  } catch {
-    manifestError.value = 'Invalid JSON syntax'
-    return
-  }
-  const result = validateMcpManifest(parsed)
-  manifestError.value = result.valid ? '' : (result.error || 'Validation failed')
-})
-
 const handleSaveContext = async () => {
   if (!topology.value) return
 
-  let parsed: Record<string, unknown>
-  try {
-    parsed = JSON.parse(contextManifest.value)
-  } catch {
-    manifestError.value = 'Invalid JSON syntax'
-    return
-  }
-
-  const validation = validateMcpManifest(parsed)
+  const validation = validateMcpManifest(manifestObject.value)
   if (!validation.valid) {
-    manifestError.value = validation.error || 'Validation failed'
+    manifestValid.value = false
+    showToast(validation.error || 'Validation failed', 'error')
     return
   }
 
   savingContext.value = true
   try {
-    await updateTopology(topology.value._id, { mcp_description: parsed })
+    await updateTopology(topology.value._id, { mcp_description: manifestObject.value })
     showToast('MCP Manifest saved successfully', 'success')
   } catch (error) {
     console.error('Failed to save MCP Manifest:', error)
@@ -822,18 +763,21 @@ onMounted(async () => {
     <!-- Context -->
     <div v-show="activeTopologyTab === 'context'">
       <TabCard>
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">MCP Manifest</h3>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">MCP Manifest</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-5">
+          Expose this topology to the Trace assistant / Pulse as a callable MCP tool. The
+          <strong>kind</strong> is detected automatically from the topology (a Response node means it
+          returns data).
+        </p>
         <form @submit.prevent="handleSaveContext" class="space-y-6">
-          <div>
-            <Textarea
-              v-model="contextManifest"
-              :placeholder="contextPlaceholder"
-              :rows="16"
-              :error="manifestError"
-            />
-          </div>
-          <div class="pt-4">
-            <Button type="submit" :disabled="!isManifestValid || savingContext">
+          <McpManifestBuilder
+            v-model="manifestObject"
+            :topology-nodes="contextSchemaNodes"
+            :topology-name="topology.name"
+            @update:valid="manifestValid = $event"
+          />
+          <div class="pt-2">
+            <Button type="submit" :disabled="!manifestValid || savingContext">
               {{ savingContext ? 'Saving...' : 'Save' }}
             </Button>
           </div>
