@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command;
 use Closure;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
+use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
 use MongoDB\BSON\UTCDateTime;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,8 +27,9 @@ class MigrationsMigrateCommand extends Command
      * MigrationsMigrateCommand constructor.
      *
      * @param DocumentManager $dm
+     * @param DocumentManager $metricsDm
      */
-    public function __construct(protected readonly DocumentManager $dm)
+    public function __construct(protected readonly DocumentManager $dm, protected readonly DocumentManager $metricsDm)
     {
         parent::__construct();
     }
@@ -83,12 +85,19 @@ class MigrationsMigrateCommand extends Command
      */
     protected function getMigrations(): array
     {
+        // phpcs:ignore SlevomatCodingStandard.Arrays.AlphabeticallySortedByKeys.IncorrectKeyOrder
         return [
             'create_multi_counter_status_and_duration' => function (): void {
                 $this->createMultiCounterStatusAndDuration();
             },
             'update_multi_counter_indexes' => function (): void {
                 $this->updateMultiCounterIndexes();
+            },
+            'update_multi_counter_indexes2' => function (): void {
+                $this->updateMultiCounterIndexes2();
+            },
+            'update_connector_indexes' => function (): void {
+                $this->updateConnectorIndexes();
             },
         ];
     }
@@ -162,6 +171,65 @@ class MigrationsMigrateCommand extends Command
             'IK_multiCounter_nok_finished_created',
             'IK_multiCounter_topologyId_finished_created',
             'IK_multiCounter_topologyId_nok_finished_created',
+        ];
+
+        foreach ($oldIndexes as $index) {
+            if (in_array($index, $indexes, TRUE)) {
+                $collection->dropIndex($index);
+            }
+        }
+    }
+
+    /**
+     * @return void
+     */
+    private function updateMultiCounterIndexes2(): void
+    {
+        $collection = $this->dm->getDocumentCollection(TopologyProgress::class);
+
+        $collection->createIndex(
+            ['created' => 1, 'topologyId' => 1, 'status' => 1],
+            ['name' => 'IK_multiCounter_created_topologyId_status'],
+        );
+
+        $indexes = [];
+
+        foreach ($collection->listIndexes() as $index) {
+            $indexes[] = $index->getName();
+        }
+
+        if (in_array('IK_multiCounter_created_topologyId_nok_finished', $indexes, TRUE)) {
+            $collection->dropIndex('IK_multiCounter_created_topologyId_nok_finished');
+        }
+    }
+
+    /**
+     * @return void
+     */
+    private function updateConnectorIndexes(): void
+    {
+        $collection = $this->metricsDm->getDocumentCollection(ConnectorsMetrics::class);
+
+        $collection->createIndex(
+            ['tags.correlation_id' => 1, 'fields.created' => 1],
+            ['name' => 'IK_connector_tagsCorrelationId_fieldsCreated'],
+        );
+
+        $indexes = [];
+
+        foreach ($collection->listIndexes() as $index) {
+            $indexes[] = $index->getName();
+        }
+
+        $oldIndexes = [
+            'IK_connector_tagsCorrelationId_tagsNodeId_fieldsCreated',
+            'IK_connector_tagsTopologyId_fieldsCreated',
+            'IK_connector_fieldsCreated_tagsNodeId_fieldsResponseCode_tagsApplicationId',
+            'IK_connector_fieldsResponseCode_tagsNodeId_fieldsCreated',
+            'IK_connector_tagsApplicationId_tagsNodeId_fieldsCreated',
+            'IK_connector_fieldsResponseCode_tagsApplicationId_tagsNodeId_fieldsCreated',
+            'IK_connector_tagsApplicationId_tagsTopologyId_tagsNodeId_fieldsCreated',
+            'IK_connector_fieldsResponseCode_tagsApplicationId_tagsTopologyId_tagsNodeId_fieldsCreated',
         ];
 
         foreach ($oldIndexes as $index) {

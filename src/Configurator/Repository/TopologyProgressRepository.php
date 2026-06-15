@@ -95,12 +95,12 @@ final class TopologyProgressRepository extends DocumentRepository
      * Aggregates per-topology activity in a time window.
      *
      * Each result row carries the topologyId (in `_id`), the run count and
-     * the number of runs that finished successfully, finished with at least
-     * one failed step (`nok > 0`) or are still in flight (no `finished`
-     * timestamp yet). The youngest and oldest run timestamps are also
-     * surfaced so the renderer can show "last seen at …".
+     * the number of runs that completed (`status` COMPLETED), failed or were
+     * terminated (`status` FAILED/TERMINATED) or are still running (`status`
+     * RUNNING). The youngest and oldest run timestamps are also surfaced so
+     * the renderer can show "last seen at …".
      *
-     * Backed by `IK_multiCounter_created_topologyId_nok_finished`, so the
+     * Backed by `IK_multiCounter_created_topologyId_status`, so the
      * Mongo planner can satisfy this entirely from the index without a
      * collection scan.
      *
@@ -127,24 +127,24 @@ final class TopologyProgressRepository extends DocumentRepository
                 ->field('runs')->sum(1)
                 ->field('success')->sum(
                     $ab->expr()->cond(
-                        $ab->expr()->and(
-                            $ab->expr()->ne('$finished', NULL),
-                            $ab->expr()->eq('$nok', 0),
-                        ),
+                        $ab->expr()->eq('$status', 'COMPLETED'),
                         1,
                         0,
                     ),
                 )
                 ->field('failed')->sum(
                     $ab->expr()->cond(
-                        $ab->expr()->gt('$nok', 0),
+                        $ab->expr()->or(
+                            $ab->expr()->eq('$status', 'FAILED'),
+                            $ab->expr()->eq('$status', 'TERMINATED'),
+                        ),
                         1,
                         0,
                     ),
                 )
                 ->field('running')->sum(
                     $ab->expr()->cond(
-                        $ab->expr()->eq('$finished', NULL),
+                        $ab->expr()->eq('$status', 'RUNNING'),
                         1,
                         0,
                     ),

@@ -57,6 +57,7 @@ services:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\MigrationsMigrateCommand
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
+            - '@doctrine_mongodb.odm.metrics_document_manager'
         tags:
             - { name: console.command }
 

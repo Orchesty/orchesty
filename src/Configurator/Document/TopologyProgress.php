@@ -31,8 +31,8 @@ use Hanaboso\Utils\Exception\DateTimeException;
     name: 'IK_multiCounter_topologyId_created',
 )]
 #[ODM\Index(
-    keys: ['created' => 'asc', 'topologyId' => 'asc', 'nok' => 'asc', 'finished' => 'asc'],
-    name: 'IK_multiCounter_created_topologyId_nok_finished',
+    keys: ['created' => 'asc', 'topologyId' => 'asc', 'status' => 'asc'],
+    name: 'IK_multiCounter_created_topologyId_status',
 )]
 #[ODM\Index(
     keys: ['status' => 'asc', 'duration' => 'desc'],

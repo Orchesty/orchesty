@@ -79,7 +79,7 @@ final class MigrateCommandTest extends DatabaseTestCaseAbstract
 
         self::assertSame(0, $tester->getStatusCode());
         self::assertStringContainsString('SKIP', $tester->getDisplay());
-        self::assertSame(2, $migration->countDocuments());
+        self::assertSame(4, $migration->countDocuments());
     }
 
     /**
