@@ -13,6 +13,7 @@ type workerContainer struct {
 	http     Http
 	batch    Batch
 	userTask UserTask
+	response Response
 }
 
 var workers workerContainer
@@ -27,6 +28,8 @@ func Get(name enum.WorkerType) (types.Worker, error) {
 		return workers.batch, nil
 	case enum.WorkerType_UserTask:
 		return workers.userTask, nil
+	case enum.WorkerType_Response:
+		return workers.response, nil
 	}
 
 	return Null{}, fmt.Errorf("unknown worker type [%s]", name)
@@ -49,6 +52,9 @@ func InitializeWorkers(mongodb *mongo.MongoDb) {
 		},
 		userTask: UserTask{
 			mongodb: mongodb,
+		},
+		response: Response{
+			client: client,
 		},
 	}
 }
