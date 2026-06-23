@@ -7,6 +7,7 @@ import type {
   ApplicationStatus,
   ApplicationSetting,
   ApplicationInstallApiResponse,
+  ChoiceOption,
 } from '@/types/applications';
 import mockData from '@/assets/mock-data/applications-data.json';
 
@@ -115,24 +116,43 @@ export async function fetchApplications(params?: ApplicationQueryParams): Promis
 // Helper functions for API response transformation
 
 /**
- * Normalize choices format (API returns objects, component expects strings)
+ * Normalize choices into `{ value, label }` options.
+ *
+ * The worker (Node SDK) emits choices in two shapes:
+ *  - primitive ids: `["a", "b"]` -> value == label (`{ value: 'a', label: 'a' }`)
+ *  - id->name maps: `[{ "<id>": "<name>" }]` -> id saved, name shown
+ *    (`{ value: '<id>', label: '<name>' }`)
+ *
+ * Keeping both fields lets a selectbox/multiselect save the id while displaying
+ * the human-readable name (the v2 behaviour). See ChoiceOption.
  */
-function normalizeChoices(choices: Array<Record<string, string>> | string[]): string[] {
+export function normalizeChoices(choices: Array<Record<string, string>> | string[]): ChoiceOption[] {
   if (!choices || choices.length === 0) return []
 
-  // If already string array, return as-is
-  if (typeof choices[0] === 'string') return choices as string[]
+  // Primitive id form: value and label are the same string.
+  if (typeof choices[0] === 'string') {
+    return (choices as string[]).map((value) => ({ value, label: value }))
+  }
 
-  // Convert object array to string array (use keys)
+  // Object form `{ "<id>": "<name>" }`: first entry's key is saved, value is shown.
   return (choices as Array<Record<string, string>>)
-    .map((choice) => Object.keys(choice)[0])
-    .filter((key): key is string => Boolean(key))
+    .map((choice) => Object.entries(choice)[0])
+    .filter((entry): entry is [string, string] => Boolean(entry))
+    .map(([value, label]) => ({ value, label }))
 }
+
+/**
+ * The form a setting belongs to. Single source of truth for value grouping and the save payload —
+ * the value model is scoped per form (`{ [formKey]: { [fieldKey]: value } }`) so forms that share
+ * field keys (e.g. productsForm / productQuantitiesForm) do not collide.
+ */
+export const groupKeyOf = (setting: ApplicationSetting): string =>
+  setting.formKey || setting.tab || 'general'
 
 /**
  * Transform API response to component format
  */
-function mapApiInstallToComponent(
+export function mapApiInstallToComponent(
   apiResponse: ApplicationInstallApiResponse,
   workerName: string
 ): ApplicationInstall {
@@ -148,7 +168,12 @@ function mapApiInstallToComponent(
             key: field.key,
             type: field.type,
             label: field.label,
-            value: field.value?.toString() || '',
+            // multiselect keeps an array of ids; everything else is a plain string.
+            value: field.type === 'multiselect'
+              ? (Array.isArray(field.value)
+                  ? field.value
+                  : (field.value != null && field.value !== '' ? [String(field.value)] : []))
+              : (field.value?.toString() || ''),
             description: field.description,
             required: field.required,
             readOnly: field.readOnly,
@@ -231,26 +256,17 @@ export async function changeApplicationState(key: string, worker: string, enable
 }
 
 /**
- * Update application settings
+ * Update application settings.
+ *
+ * `groupedValues` must already be scoped per form (`{ formKey: { fieldKey: value } }`) — the
+ * worker only persists values found at `settings[formKey][fieldKey]` and merges them into the
+ * stored settings, so only the forms present in the payload are touched (others are retained).
  */
 export async function updateApplicationSettings(
   key: string,
   worker: string,
-  formValues: Record<string, unknown>,
-  applicationSettings: ApplicationSetting[]
+  groupedValues: Record<string, Record<string, unknown>>,
 ): Promise<ApplicationInstall> {
-  // Transform flat formValues into grouped structure by formKey
-  const groupedValues: Record<string, Record<string, unknown>> = {}
-
-  applicationSettings.forEach(setting => {
-    const groupKey = setting.formKey || setting.tab || 'general'
-    if (!groupedValues[groupKey]) {
-      groupedValues[groupKey] = {}
-    }
-    groupedValues[groupKey][setting.key] = formValues[setting.key]
-  })
-
-  // Make PUT request with grouped data
   const response = await api.put<ApplicationInstallApiResponse>(
     `/api/applications/${key}`,
     groupedValues,
