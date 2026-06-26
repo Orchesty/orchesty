@@ -71,4 +71,4 @@ services:
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\HelpController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\HelpController
         arguments:
-            $helpDir: '%kernel.project_dir%/../Help/.dist'
+            $helpDir: '%kernel.project_dir%/../help/.dist'
