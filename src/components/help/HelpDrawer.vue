@@ -156,6 +156,28 @@ function handleNavigate(helpId: string) {
   loadPage(helpId)
 }
 
+// Intercept clicks on links inside the rendered help markdown. Internal
+// cross-links are authored as helpIds (e.g. `failed-messages/overview`), which
+// are not app routes -- letting the browser follow them would 404. Resolve
+// them against the manifest and open the target page inside the drawer instead.
+// External links (http/https) and in-page anchors keep their default behaviour.
+function handleContentClick(event: MouseEvent) {
+  const anchor = (event.target as HTMLElement | null)?.closest('a')
+  if (!anchor) return
+
+  const href = anchor.getAttribute('href')
+  if (!href) return
+
+  // Leave external links, mailto:, and in-page anchors alone.
+  if (/^(https?:)?\/\//.test(href) || /^(mailto:|tel:|#)/.test(href)) return
+
+  const helpId = href.replace(/^[./]+/, '').replace(/[?#].*$/, '')
+  if (manifest.value.some((entry) => entry.helpId === helpId)) {
+    event.preventDefault()
+    handleNavigate(helpId)
+  }
+}
+
 function handleBack() {
   currentPage.value = null
 }
@@ -346,6 +368,7 @@ onBeforeUnmount(() => {
             v-else
             class="prose prose-sm max-w-none dark:prose-invert prose-headings:scroll-mt-4 prose-a:text-primary-600 dark:prose-a:text-primary-400"
             v-html="renderedHtml"
+            @click="handleContentClick"
           />
         </div>
 
