@@ -66,6 +66,7 @@ parameters:
 			- Hanaboso\PipesFramework\Configurator\Document\NodeProgress
 			- Hanaboso\PipesFramework\Configurator\Document\Sdk
 			- Hanaboso\PipesFramework\Configurator\Document\TopologyProgress
+			- Hanaboso\PipesFramework\Configurator\Document\HourlyMultiCounterAggregate
 			- Hanaboso\PipesFramework\Configurator\Document\Limiter
 			- Hanaboso\PipesFramework\Configurator\Document\LimiterMessage
 			- Hanaboso\PipesFramework\Logs\Document\Logs
@@ -75,6 +76,8 @@ parameters:
 			- Hanaboso\PipesFramework\Metrics\Document\BridgesMetricsFields
 			- Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics
 			- Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields
+			- Hanaboso\PipesFramework\Metrics\Document\HourlyConnectorsAggregate
+			- Hanaboso\PipesFramework\Metrics\Document\HourlyPipesNodeAggregate
 			- Hanaboso\PipesFramework\Metrics\Document\ContainerMetrics
 			- Hanaboso\PipesFramework\Metrics\Document\ContainerMetricsFields
 			- Hanaboso\PipesFramework\Metrics\Document\ContainerMetricsFieldsPods

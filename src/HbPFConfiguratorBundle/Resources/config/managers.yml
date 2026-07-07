@@ -58,3 +58,4 @@ services:
             - '@hbpf.process-total.aggregation-filter'
             - '@hbpf.process-graph.aggregation-filter'
             - '@hbpf.topology.aggregation-filter'
+            - '@hbpf.hourly-topology.aggregation-filter'

@@ -6,7 +6,9 @@ use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Exception;
+use Hanaboso\MongoDataGrid\GridAggregationFilterAbstract;
 use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
+use Hanaboso\PipesFramework\Configurator\Model\Filters\AggregationFilterUtils;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Document\BridgesMetrics;
@@ -28,6 +30,9 @@ use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorAggregationFilt
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorGraphAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorHeatmapAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorOverviewAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricHourlyConnectorGraphAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricHourlyConnectorHeatmapAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricHourlyConnectorOverviewAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitApplicationAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitGraphAggregationFilter;
@@ -51,30 +56,37 @@ use MongoDB\BSON\Regex;
 final class MongoMetricsManager extends MetricsManagerAbstract
 {
 
+    private const int AGGREGATES_MIN_BIN_SECONDS = 1_800;
+
     /**
      * MongoMetricsManager constructor.
      *
-     * @param DocumentManager                          $dm
-     * @param string                                   $nodeTable
-     * @param string                                   $fpmTable
-     * @param string                                   $rabbitTable
-     * @param string                                   $counterTable
-     * @param string                                   $connectorTable
-     * @param DocumentManager                          $metricsDm
-     * @param string                                   $consumerTable
-     * @param MetricConnectorOverviewAggregationFilter $metricConnectorOverviewAggregationFilter
-     * @param MetricConnectorAggregationFilter         $metricConnectorAggregationFilter
-     * @param MetricConnectorGraphAggregationFilter    $metricConnectorGraphAggregationFilter
-     * @param MetricRequestAggregationFilter           $metricRequestAggregationFilter
-     * @param MetricProcessAggregationFilter           $metricProcessAggregationFilter
-     * @param MetricLimitAggregationFilter             $metricLimitAggregationFilter
-     * @param MetricLimitApplicationAggregationFilter  $metricLimitApplicationAggregationFilter
-     * @param MetricLimitTotalAggregationFilter        $metricLimitTotalAggregationFilter
-     * @param MetricLimitGraphAggregationFilter        $metricLimitGraphAggregationFilter
-     * @param MetricUserTaskAggregationFilter          $metricUserTaskAggregationFilter
-     * @param MetricUserTaskTotalAggregationFilter     $metricUserTaskTotalAggregationFilter
-     * @param MetricUserTaskGraphAggregationFilter     $metricUserTaskGraphAggregationFilter
-     * @param MetricConnectorHeatmapAggregationFilter  $metricConnectorHeatmapAggregationFilter
+     * @param DocumentManager                                $dm
+     * @param string                                         $nodeTable
+     * @param string                                         $fpmTable
+     * @param string                                         $rabbitTable
+     * @param string                                         $counterTable
+     * @param string                                         $connectorTable
+     * @param DocumentManager                                $metricsDm
+     * @param string                                         $consumerTable
+     * @param MetricConnectorOverviewAggregationFilter       $metricConnectorOverviewAggregationFilter
+     * @param MetricHourlyConnectorOverviewAggregationFilter $metricHourlyConnectorOverviewAggregationFilter
+     * @param MetricConnectorAggregationFilter               $metricConnectorAggregationFilter
+     * @param MetricConnectorGraphAggregationFilter          $metricConnectorGraphAggregationFilter
+     * @param MetricHourlyConnectorGraphAggregationFilter    $metricHourlyConnectorGraphAggregationFilter
+     * @param MetricRequestAggregationFilter                 $metricRequestAggregationFilter
+     * @param GridAggregationFilterAbstract                  $metricRequestAverageAggregationFilter
+     * @param MetricProcessAggregationFilter                 $metricProcessAggregationFilter
+     * @param GridAggregationFilterAbstract                  $metricProcessAverageAggregationFilter
+     * @param MetricLimitAggregationFilter                   $metricLimitAggregationFilter
+     * @param MetricLimitApplicationAggregationFilter        $metricLimitApplicationAggregationFilter
+     * @param MetricLimitTotalAggregationFilter              $metricLimitTotalAggregationFilter
+     * @param MetricLimitGraphAggregationFilter              $metricLimitGraphAggregationFilter
+     * @param MetricUserTaskAggregationFilter                $metricUserTaskAggregationFilter
+     * @param MetricUserTaskTotalAggregationFilter           $metricUserTaskTotalAggregationFilter
+     * @param MetricUserTaskGraphAggregationFilter           $metricUserTaskGraphAggregationFilter
+     * @param MetricConnectorHeatmapAggregationFilter        $metricConnectorHeatmapAggregationFilter
+     * @param MetricHourlyConnectorHeatmapAggregationFilter  $metricHourlyConnectorHeatmapAggregationFilter
      */
     public function __construct(
         private DocumentManager $dm,
@@ -86,10 +98,14 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         private DocumentManager $metricsDm,
         string $consumerTable,
         private readonly MetricConnectorOverviewAggregationFilter $metricConnectorOverviewAggregationFilter,
+        private readonly MetricHourlyConnectorOverviewAggregationFilter $metricHourlyConnectorOverviewAggregationFilter,
         private readonly MetricConnectorAggregationFilter $metricConnectorAggregationFilter,
         private readonly MetricConnectorGraphAggregationFilter $metricConnectorGraphAggregationFilter,
+        private readonly MetricHourlyConnectorGraphAggregationFilter $metricHourlyConnectorGraphAggregationFilter,
         private readonly MetricRequestAggregationFilter $metricRequestAggregationFilter,
+        private readonly GridAggregationFilterAbstract $metricRequestAverageAggregationFilter,
         private readonly MetricProcessAggregationFilter $metricProcessAggregationFilter,
+        private readonly GridAggregationFilterAbstract $metricProcessAverageAggregationFilter,
         private readonly MetricLimitAggregationFilter $metricLimitAggregationFilter,
         private readonly MetricLimitApplicationAggregationFilter $metricLimitApplicationAggregationFilter,
         private readonly MetricLimitTotalAggregationFilter $metricLimitTotalAggregationFilter,
@@ -98,6 +114,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         private readonly MetricUserTaskTotalAggregationFilter $metricUserTaskTotalAggregationFilter,
         private readonly MetricUserTaskGraphAggregationFilter $metricUserTaskGraphAggregationFilter,
         private readonly MetricConnectorHeatmapAggregationFilter $metricConnectorHeatmapAggregationFilter,
+        private readonly MetricHourlyConnectorHeatmapAggregationFilter $metricHourlyConnectorHeatmapAggregationFilter,
     )
     {
         parent::__construct($dm, $nodeTable, $fpmTable, $rabbitTable, $counterTable, $connectorTable, $consumerTable);
@@ -359,13 +376,20 @@ final class MongoMetricsManager extends MetricsManagerAbstract
 
     /**
      * @param GridRequestDtoInterface $dto
+     * @param bool                    $aggregated
      *
      * @return array<mixed>
      * @throws Exception
      */
-    public function getMetricsConnectorsOverview(GridRequestDtoInterface $dto): array
+    public function getMetricsConnectorsOverview(GridRequestDtoInterface $dto, bool $aggregated = FALSE): array
     {
-        return $this->metricConnectorOverviewAggregationFilter->getData($dto)->toArray();
+        $seconds = AggregationFilterUtils::requestedSeconds($dto);
+
+        $filter = $aggregated && $seconds !== NULL && $seconds > AggregationFilterUtils::AGGREGATES_MIN_SPAN_SECONDS
+            ? $this->metricHourlyConnectorOverviewAggregationFilter
+            : $this->metricConnectorOverviewAggregationFilter;
+
+        return $filter->getData($dto)->toArray();
     }
 
     /**
@@ -382,29 +406,45 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     /**
      * @param GridRequestDtoInterface $dto
      * @param int                     $buckets
+     * @param bool                    $aggregated
      *
      * @return array<mixed>
      * @throws Exception
      */
-    public function getMetricsConnectorsGraph(GridRequestDtoInterface $dto, int $buckets): array
+    public function getMetricsConnectorsGraph(
+        GridRequestDtoInterface $dto,
+        int $buckets,
+        bool $aggregated = FALSE,
+    ): array
     {
-        $this->metricConnectorGraphAggregationFilter->setBucketCount($buckets);
+        $filter = $this->useAggregatesForBins($dto, $buckets, $aggregated)
+            ? $this->metricHourlyConnectorGraphAggregationFilter
+            : $this->metricConnectorGraphAggregationFilter;
+        $filter->setBucketCount($buckets);
 
-        return $this->metricConnectorGraphAggregationFilter->getData($dto)->toArray();
+        return $filter->getData($dto)->toArray();
     }
 
     /**
      * @param GridRequestDtoInterface $dto
      * @param int                     $buckets
+     * @param bool                    $aggregated
      *
      * @return array<mixed>
      * @throws Exception
      */
-    public function getMetricsConnectorsHeatmap(GridRequestDtoInterface $dto, int $buckets): array
+    public function getMetricsConnectorsHeatmap(
+        GridRequestDtoInterface $dto,
+        int $buckets,
+        bool $aggregated = FALSE,
+    ): array
     {
-        $this->metricConnectorHeatmapAggregationFilter->setBucketCount($buckets);
+        $filter = $this->useAggregatesForBins($dto, $buckets, $aggregated)
+            ? $this->metricHourlyConnectorHeatmapAggregationFilter
+            : $this->metricConnectorHeatmapAggregationFilter;
+        $filter->setBucketCount($buckets);
 
-        return $this->metricConnectorHeatmapAggregationFilter->getData($dto)->toArray();
+        return $filter->getData($dto)->toArray();
     }
 
     /**
@@ -416,7 +456,9 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      */
     public function getMetricsRequests(GridRequestDtoInterface $dto, bool $lastRun): array
     {
-        $this->metricRequestAggregationFilter->setLastRunMode($lastRun);
+        if (!$lastRun) {
+            return $this->metricRequestAverageAggregationFilter->getData($dto)->toArray();
+        }
 
         return $this->metricRequestAggregationFilter->getData($dto)->toArray();
     }
@@ -430,7 +472,9 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      */
     public function getMetricsProcesses(GridRequestDtoInterface $dto, bool $lastRun): array
     {
-        $this->metricProcessAggregationFilter->setLastRunMode($lastRun);
+        if (!$lastRun) {
+            return $this->metricProcessAverageAggregationFilter->getData($dto)->toArray();
+        }
 
         return $this->metricProcessAggregationFilter->getData($dto)->toArray();
     }
@@ -513,6 +557,24 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     public function getMetricsUserTasksGraph(GridRequestDtoInterface $dto): array
     {
         return $this->metricUserTaskGraphAggregationFilter->getData($dto)->toArray();
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     * @param int                     $buckets
+     * @param bool                    $aggregated
+     *
+     * @return bool
+     */
+    private function useAggregatesForBins(GridRequestDtoInterface $dto, int $buckets, bool $aggregated): bool
+    {
+        if (!$aggregated || $buckets <= 0) {
+            return FALSE;
+        }
+
+        $seconds = AggregationFilterUtils::requestedSeconds($dto);
+
+        return $seconds !== NULL && intdiv($seconds, $buckets) >= self::AGGREGATES_MIN_BIN_SECONDS;
     }
 
     /*

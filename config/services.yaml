@@ -11,5 +11,6 @@ parameters:
   startingPointHost: "%env(string:STARTING_POINT_URL)%"
   tunnelProxyHost: "%env(string:TUNNEL_PROXY_HOST)%"
   env(TUNNEL_PROXY_HOST): ""
+  env(MONGODB_TIMEOUT): '60000'
   activateLink: '%backendHost%/user/%s/activate'
   passwordLink: 'reset-password/%s'

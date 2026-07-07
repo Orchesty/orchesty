@@ -7,6 +7,8 @@ use Exception;
 use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
 use Hanaboso\PipesFramework\Configurator\Document\Limiter;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
+use Hanaboso\PipesFramework\Configurator\Model\Filters\AggregationFilterUtils;
+use Hanaboso\PipesFramework\Configurator\Model\Filters\HourlyTopologyAggregationFilter;
 use Hanaboso\PipesFramework\Configurator\Model\Filters\ProcessAggregationFilter;
 use Hanaboso\PipesFramework\Configurator\Model\Filters\ProcessGraphAggregationFilter;
 use Hanaboso\PipesFramework\Configurator\Model\Filters\ProcessTotalAggregationFilter;
@@ -29,12 +31,13 @@ final readonly class ProcessManager
     /**
      * ProcessManager constructor.
      *
-     * @param DocumentManager               $dm
-     * @param DocumentManager               $metricsDm
-     * @param ProcessAggregationFilter      $processAggregationFilter
-     * @param ProcessTotalAggregationFilter $processTotalAggregationFilter
-     * @param ProcessGraphAggregationFilter $processGraphAggregationFilter
-     * @param TopologyAggregationFilter     $topologyAggregationFilter
+     * @param DocumentManager                 $dm
+     * @param DocumentManager                 $metricsDm
+     * @param ProcessAggregationFilter        $processAggregationFilter
+     * @param ProcessTotalAggregationFilter   $processTotalAggregationFilter
+     * @param ProcessGraphAggregationFilter   $processGraphAggregationFilter
+     * @param TopologyAggregationFilter       $topologyAggregationFilter
+     * @param HourlyTopologyAggregationFilter $hourlyTopologyAggregationFilter
      */
     public function __construct(
         private DocumentManager $dm,
@@ -43,6 +46,7 @@ final readonly class ProcessManager
         private ProcessTotalAggregationFilter $processTotalAggregationFilter,
         private ProcessGraphAggregationFilter $processGraphAggregationFilter,
         private TopologyAggregationFilter $topologyAggregationFilter,
+        private HourlyTopologyAggregationFilter $hourlyTopologyAggregationFilter,
     )
     {
     }
@@ -85,13 +89,20 @@ final readonly class ProcessManager
 
     /**
      * @param GridRequestDtoInterface $dto
+     * @param bool                    $aggregated
      *
      * @return array<mixed>
      * @throws Exception
      */
-    public function getProcessesTopologies(GridRequestDtoInterface $dto): array
+    public function getProcessesTopologies(GridRequestDtoInterface $dto, bool $aggregated = FALSE): array
     {
-        return $this->topologyAggregationFilter->getData($dto)->toArray();
+        $seconds = AggregationFilterUtils::requestedSeconds($dto);
+
+        $filter = $aggregated && $seconds !== NULL && $seconds > AggregationFilterUtils::AGGREGATES_MIN_SPAN_SECONDS
+            ? $this->hourlyTopologyAggregationFilter
+            : $this->topologyAggregationFilter;
+
+        return $filter->getData($dto)->toArray();
     }
 
     /**

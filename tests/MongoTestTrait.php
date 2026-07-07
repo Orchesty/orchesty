@@ -11,6 +11,9 @@ use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorAggregationFilt
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorGraphAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorHeatmapAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorOverviewAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricHourlyConnectorGraphAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricHourlyConnectorHeatmapAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricHourlyConnectorOverviewAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitApplicationAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitGraphAggregationFilter;
@@ -90,6 +93,10 @@ trait MongoTestTrait
         $metricConnectorOverviewAggregationFilter = self::getContainer()->get(
             'hbpf.metric-connector-overview.aggregation-filter',
         );
+        /** @var MetricHourlyConnectorOverviewAggregationFilter $metricHourlyConnectorOverviewAggregationFilter */
+        $metricHourlyConnectorOverviewAggregationFilter = self::getContainer()->get(
+            'hbpf.metric-hourly-connector-overview.aggregation-filter',
+        );
         /** @var MetricConnectorAggregationFilter $metricConnectorAggregationFilter */
         $metricConnectorAggregationFilter = self::getContainer()->get('hbpf.metric-connector.aggregation-filter');
         /** @var MetricConnectorGraphAggregationFilter $metricConnectorGraphAggregationFilter */
@@ -124,6 +131,20 @@ trait MongoTestTrait
         $metricConnectorHeatmapAggregationFilter = self::getContainer()->get(
             'hbpf.metric-connector-heatmap.aggregation-filter',
         );
+        /** @var MetricHourlyConnectorHeatmapAggregationFilter $metricHourlyConnectorHeatmapAggregationFilter */
+        $metricHourlyConnectorHeatmapAggregationFilter = self::getContainer()->get(
+            'hbpf.metric-hourly-connector-heatmap.aggregation-filter',
+        );
+        /** @var MetricHourlyConnectorGraphAggregationFilter $metricHourlyConnectorGraphAggregationFilter */
+        $metricHourlyConnectorGraphAggregationFilter = self::getContainer()->get(
+            'hbpf.metric-hourly-connector-graph.aggregation-filter',
+        );
+        $metricRequestAverageAggregationFilter       = self::getContainer()->get(
+            'hbpf.metric-request-average.aggregation-filter',
+        );
+        $metricProcessAverageAggregationFilter       = self::getContainer()->get(
+            'hbpf.metric-process-average.aggregation-filter',
+        );
 
         return new MongoMetricsManager(
             $this->dm,
@@ -135,10 +156,14 @@ trait MongoTestTrait
             $metricsDm,
             $consumerTable,
             $metricConnectorOverviewAggregationFilter,
+            $metricHourlyConnectorOverviewAggregationFilter,
             $metricConnectorAggregationFilter,
             $metricConnectorGraphAggregationFilter,
+            $metricHourlyConnectorGraphAggregationFilter,
             $metricRequestAggregationFilter,
+            $metricRequestAverageAggregationFilter,
             $metricProcessAggregationFilter,
+            $metricProcessAverageAggregationFilter,
             $metricLimitAggregationFilter,
             $metricLimitApplicationAggregationFilter,
             $metricLimitTotalAggregationFilter,
@@ -147,6 +172,7 @@ trait MongoTestTrait
             $metricUserTaskTotalAggregationFilter,
             $metricUserTaskGraphAggregationFilter,
             $metricConnectorHeatmapAggregationFilter,
+            $metricHourlyConnectorHeatmapAggregationFilter,
         );
     }
 

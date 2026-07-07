@@ -16,7 +16,7 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
     name: 'IK_connector_tagsNodeId_fieldsCreated',
 )]
 #[ODM\Index(
-    keys: ['tags.topology_id' => 'asc', 'tags.node_id' => 'asc', 'fields.created' => 'asc'],
+    keys: ['tags.topology_id' => 'asc', 'tags.node_id' => 'asc', 'fields.created' => 'desc'],
     name: 'IK_connector_tagsTopologyId_tagsNodeId_fieldsCreated',
 )]
 #[ODM\Index(

@@ -3,6 +3,10 @@
 namespace Hanaboso\PipesFramework\Configurator\Model\Filters;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
+use Exception;
+use Hanaboso\MongoDataGrid\GridAggregationFilterAbstract;
+use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
+use Hanaboso\Utils\Date\DateTimeUtils;
 use MongoDB\BSON\UTCDateTime;
 use OutOfRangeException;
 
@@ -14,10 +18,13 @@ use OutOfRangeException;
 final readonly class AggregationFilterUtils
 {
 
-    public const string BUCKETS          = 'buckets';
-    public const int    DEFAULT_BUCKETS  = 10;
-    public const bool   DEFAULT_LAST_RUN = FALSE;
-    public const string LAST_RUN         = 'lastRun';
+    public const string BUCKETS                     = 'buckets';
+    public const int    DEFAULT_BUCKETS             = 10;
+    public const bool   DEFAULT_AGGREGATED          = FALSE;
+    public const bool   DEFAULT_LAST_RUN            = FALSE;
+    public const string AGGREGATED                  = 'aggregated';
+    public const string LAST_RUN                    = 'lastRun';
+    public const int    AGGREGATES_MIN_SPAN_SECONDS = 5_400;
 
     /**
      * @param Builder $builder
@@ -70,6 +77,51 @@ final readonly class AggregationFilterUtils
     }
 
     /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return int|null
+     */
+    public static function requestedSeconds(GridRequestDtoInterface $dto): ?int
+    {
+        foreach ($dto->getFilter() as $andGroup) {
+            foreach ($andGroup as $condition) {
+                if (($condition[GridAggregationFilterAbstract::COLUMN] ?? NULL) !== 'created') {
+                    continue;
+                }
+
+                $values = (array) ($condition[GridAggregationFilterAbstract::VALUE] ?? []);
+
+                if (!isset($values[0])) {
+                    return NULL;
+                }
+
+                try {
+                    $from = DateTimeUtils::getUtcDateTime((string) $values[0])->getTimestamp();
+                } catch (Exception) {
+                    return NULL;
+                }
+
+                $isBetween = ($condition[GridAggregationFilterAbstract::OPERATOR] ?? NULL)
+                    === GridAggregationFilterAbstract::BETWEEN;
+
+                if ($isBetween && isset($values[1])) {
+                    try {
+                        $to = DateTimeUtils::getUtcDateTime((string) $values[1])->getTimestamp();
+                    } catch (Exception) {
+                        return NULL;
+                    }
+
+                    return $to - $from;
+                }
+
+                return time() - $from;
+            }
+        }
+
+        return NULL;
+    }
+
+    /**
      * @param Builder $builder
      * @return array{UTCDateTime|NULL, UTCDateTime|NULL}
      */
@@ -80,9 +132,9 @@ final readonly class AggregationFilterUtils
         /** @var mixed[]|null $or */
         $or = $pipeline[0]['$match']['$and'][0]['$or'] ?? NULL;
         /** @var UTCDateTime|NULL $gte */
-        $gte = $or[0]['fields.created']['$gte'] ?? $or[0]['created']['$gte'] ?? NULL;
+        $gte = $or[0]['fields.created']['$gte'] ?? $or[0]['created']['$gte'] ?? $or[0]['bucket']['$gte'] ?? NULL;
         /** @var UTCDateTime|NULL $lte */
-        $lte = $or[0]['fields.created']['$lte'] ?? $or[0]['created']['$lte'] ?? NULL;
+        $lte = $or[0]['fields.created']['$lte'] ?? $or[0]['created']['$lte'] ?? $or[0]['bucket']['$lte'] ?? NULL;
 
         return [$gte, $lte];
     }

@@ -21,18 +21,22 @@ class CreateMetricsExpireIndexCommand extends Command
 
     private const int EXPIRE_INDEX_DEFAULT = 2_592_000;
 
-    private const array EXPIRE_INDEX_KEY = ['fields.created' => 1];
+    private const string FIELDS_CREATED = 'fields.created';
+
+    private const string BUCKET = 'bucket';
 
     private const array EXPIRE_INDEX_COLLECTIONS = [
-        'connectors',
-        'limiter',
-        'monolith',
-        'pipes_counter',
-        'pipes_node',
-        'rabbitmq',
-        'rabbitmq_consumer',
-        'repeater',
-        'userTask',
+        'connectors'                   => self::FIELDS_CREATED,
+        'hourly_connectors_aggregates' => self::BUCKET,
+        'hourly_pipes_node_aggregates' => self::BUCKET,
+        'limiter'                      => self::FIELDS_CREATED,
+        'monolith'                     => self::FIELDS_CREATED,
+        'pipes_counter'                => self::FIELDS_CREATED,
+        'pipes_node'                   => self::FIELDS_CREATED,
+        'rabbitmq'                     => self::FIELDS_CREATED,
+        'rabbitmq_consumer'            => self::FIELDS_CREATED,
+        'repeater'                     => self::FIELDS_CREATED,
+        'userTask'                     => self::FIELDS_CREATED,
     ];
 
     /**
@@ -69,14 +73,14 @@ class CreateMetricsExpireIndexCommand extends Command
 
         $database = $this->metricsDm->getDocumentDatabase(ProcessesMetrics::class);
 
-        foreach (self::EXPIRE_INDEX_COLLECTIONS as $collection) {
-            $indexName = sprintf('IK_%s_fieldsCreated', $collection);
+        foreach (self::EXPIRE_INDEX_COLLECTIONS as $collection => $field) {
+            $indexName = sprintf('IK_%s_%s', $collection, lcfirst(str_replace('.', '', ucwords($field, '.'))));
 
             try {
                 $database
                     ->selectCollection($collection)
                     ->createIndex(
-                        self::EXPIRE_INDEX_KEY,
+                        [$field => 1],
                         [
                             'expireAfterSeconds' => $expireAfterSeconds,
                             'name'               => $indexName,

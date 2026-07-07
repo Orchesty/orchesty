@@ -2,10 +2,12 @@
 
 namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController;
+use Hanaboso\PipesFramework\Metrics\Document\ProcessesMetrics;
 use Hanaboso\PipesFramework\Metrics\Enum\ServiceNameByQueueEnum;
 use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract;
 use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
@@ -57,6 +59,10 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
      */
     public function testTopologyRequestsCountMetricsAction(): void
     {
+        /** @var DocumentManager $metricsDm */
+        $metricsDm = self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager');
+        $metricsDm->getDocumentCollection(ProcessesMetrics::class)->deleteMany([]);
+
         $this->assertResponseLogged(
             $this->jwt,
             __DIR__ . '/data/MetricsController/topologyRequestsCountMetricsRequest.json',

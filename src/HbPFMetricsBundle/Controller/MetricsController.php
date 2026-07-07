@@ -112,6 +112,10 @@ final class MetricsController
         return $this->getResponse(
             $this->handler->getMetricsConnectorsOverview(
                 new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+                $request->query->getBoolean(
+                    AggregationFilterUtils::AGGREGATED,
+                    AggregationFilterUtils::DEFAULT_AGGREGATED,
+                ),
             ),
         );
     }
@@ -145,6 +149,10 @@ final class MetricsController
             $this->handler->getMetricsConnectorsGraph(
                 new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
                 $request->query->getInt(AggregationFilterUtils::BUCKETS, AggregationFilterUtils::DEFAULT_BUCKETS),
+                $request->query->getBoolean(
+                    AggregationFilterUtils::AGGREGATED,
+                    AggregationFilterUtils::DEFAULT_AGGREGATED,
+                ),
             ),
         );
     }
@@ -162,6 +170,10 @@ final class MetricsController
             $this->handler->getMetricsConnectorsHeatmap(
                 new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
                 $request->query->getInt(AggregationFilterUtils::BUCKETS, AggregationFilterUtils::DEFAULT_BUCKETS),
+                $request->query->getBoolean(
+                    AggregationFilterUtils::AGGREGATED,
+                    AggregationFilterUtils::DEFAULT_AGGREGATED,
+                ),
             ),
         );
     }

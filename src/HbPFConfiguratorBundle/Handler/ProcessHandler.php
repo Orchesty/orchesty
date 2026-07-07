@@ -62,13 +62,14 @@ final readonly class ProcessHandler
 
     /**
      * @param GridRequestDtoInterface $dto
+     * @param bool                    $aggregated
      *
      * @return mixed[]
      * @throws Exception
      */
-    public function getProcessesTopologies(GridRequestDtoInterface $dto): array
+    public function getProcessesTopologies(GridRequestDtoInterface $dto, bool $aggregated = FALSE): array
     {
-        return $this->getGridResponse($dto, $this->manager->getProcessesTopologies($dto));
+        return $this->getGridResponse($dto, $this->manager->getProcessesTopologies($dto, $aggregated));
     }
 
     /**

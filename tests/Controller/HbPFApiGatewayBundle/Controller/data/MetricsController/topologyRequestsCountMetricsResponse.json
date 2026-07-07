@@ -4,13 +4,13 @@
         "items": {
             "topology": {
                 "process_time": {
-                    "min": "2",
-                    "avg": "2.00",
-                    "max": "2"
+                    "min": "0",
+                    "avg": "0.00",
+                    "max": "0"
                 },
                 "process": {
-                    "total": "2",
-                    "errors": "2"
+                    "total": "0",
+                    "errors": "0"
                 }
             }
         },

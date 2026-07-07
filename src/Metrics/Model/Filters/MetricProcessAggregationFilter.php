@@ -15,18 +15,6 @@ use Hanaboso\PipesFramework\Metrics\Document\BridgesMetrics;
 final class MetricProcessAggregationFilter extends GridAggregationFilterAbstract
 {
 
-    private bool $lastRunMode = FALSE;
-
-    /**
-     * @param bool $lastRunMode
-     *
-     * @return void
-     */
-    public function setLastRunMode(bool $lastRunMode): void
-    {
-        $this->lastRunMode = $lastRunMode;
-    }
-
     /**
      * @return class-string
      */
@@ -80,42 +68,39 @@ final class MetricProcessAggregationFilter extends GridAggregationFilterAbstract
     ): void {
         $addConditionsCallback();
 
-        if ($this->lastRunMode) {
-            $builder
-                ->group()
-                ->field('_id')
-                ->expression(
-                    $builder
-                        ->expr()
-                        ->field('correlationId')
-                        ->expression('$tags.correlation_id')
-                        ->field('nodeId')
-                        ->expression('$tags.node_id'),
-                )
-                ->field('topologyId')
-                ->first('$tags.topology_id')
-                ->field('duration')
-                ->avg('$fields.worker_duration')
-                ->field('created')
-                ->max('$fields.created')
-                ->sort(['created' => 'desc'])
-                ->group()
-                ->field('_id')
-                ->expression('$_id.nodeId')
-                ->field('topologyId')
-                ->first('$topologyId')
-                ->field('duration')
-                ->first('$duration');
-        } else {
-            $builder
-                ->group()
-                ->field('_id')
-                ->expression('$tags.node_id')
-                ->field('topologyId')
-                ->first('$tags.topology_id')
-                ->field('duration')
-                ->avg('$fields.worker_duration');
-        }
+        $builder
+            ->sort(['tags.node_id' => 1, 'fields.created' => -1])
+            ->group()
+            ->field('_id')
+            ->expression('$tags.node_id')
+            ->field('topologyId')
+            ->first('$tags.topology_id')
+            ->field('lastCorrelationId')
+            ->first('$tags.correlation_id')
+            ->lookup(BridgesMetrics::class)
+            ->let(['nodeId' => '$_id', 'correlationId' => '$lastCorrelationId'])
+            ->pipeline([
+                [
+                    '$match' => [
+                        '$expr' => [
+                            '$and' => [
+                                ['$eq' => ['$tags.node_id', '$$nodeId']],
+                                ['$eq' => ['$tags.correlation_id', '$$correlationId']],
+                            ],
+                        ],
+                    ],
+                ],
+                [
+                    '$group' => [
+                        'duration' => ['$avg' => '$fields.worker_duration'],
+                        '_id' => NULL,
+                    ],
+                ],
+            ])
+            ->alias('lastRun')
+            ->addFields()
+            ->field('duration')
+            ->expression($builder->expr()->arrayElemAt('$lastRun.duration', 0));
 
         $addSortationsCallback();
         $addPaginationCallback();

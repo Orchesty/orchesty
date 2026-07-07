@@ -93,13 +93,14 @@ final readonly class MetricsHandler
 
     /**
      * @param GridRequestDtoInterface $dto
+     * @param bool                    $aggregated
      *
      * @return mixed[]
      * @throws Exception
      */
-    public function getMetricsConnectorsOverview(GridRequestDtoInterface $dto): array
+    public function getMetricsConnectorsOverview(GridRequestDtoInterface $dto, bool $aggregated = FALSE): array
     {
-        return $this->getGridResponse($dto, $this->manager->getMetricsConnectorsOverview($dto));
+        return $this->getGridResponse($dto, $this->manager->getMetricsConnectorsOverview($dto, $aggregated));
     }
 
     /**
@@ -116,25 +117,35 @@ final readonly class MetricsHandler
     /**
      * @param GridRequestDtoInterface $dto
      * @param int                     $buckets
+     * @param bool                    $aggregated
      *
      * @return mixed[]
      * @throws Exception
      */
-    public function getMetricsConnectorsGraph(GridRequestDtoInterface $dto, int $buckets): array
+    public function getMetricsConnectorsGraph(
+        GridRequestDtoInterface $dto,
+        int $buckets,
+        bool $aggregated = FALSE,
+    ): array
     {
-        return $this->getGridResponse($dto, $this->manager->getMetricsConnectorsGraph($dto, $buckets));
+        return $this->getGridResponse($dto, $this->manager->getMetricsConnectorsGraph($dto, $buckets, $aggregated));
     }
 
     /**
      * @param GridRequestDtoInterface $dto
      * @param int                     $buckets
+     * @param bool                    $aggregated
      *
      * @return mixed[]
      * @throws Exception
      */
-    public function getMetricsConnectorsHeatmap(GridRequestDtoInterface $dto, int $buckets): array
+    public function getMetricsConnectorsHeatmap(
+        GridRequestDtoInterface $dto,
+        int $buckets,
+        bool $aggregated = FALSE,
+    ): array
     {
-        return $this->getGridResponse($dto, $this->manager->getMetricsConnectorsHeatmap($dto, $buckets));
+        return $this->getGridResponse($dto, $this->manager->getMetricsConnectorsHeatmap($dto, $buckets, $aggregated));
     }
 
     /**

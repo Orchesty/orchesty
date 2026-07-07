@@ -76,18 +76,42 @@ final class MigrateCommandTest extends DatabaseTestCaseAbstract
         self::assertNotContains('IK_multiCounter_topologyId_nok_finished_created', $indexNames);
 
         $userTaskIndexNames = [];
+
         foreach ($this->dm->getDocumentCollection(UserTask::class)->listIndexes() as $userTaskIndex) {
             $userTaskIndexNames[] = $userTaskIndex->getName();
         }
 
         self::assertContains('IK_userTask_correlationId', $userTaskIndexNames);
 
+        $aggregates = $this
+            ->dm
+            ->getDocumentDatabase(TopologyProgress::class)
+            ->selectCollection('hourly_multi_counter_aggregates');
+
+        $aggregateIndexNames = [];
+
+        foreach ($aggregates->listIndexes() as $aggregateIndex) {
+            $aggregateIndexNames[] = $aggregateIndex->getName();
+        }
+
+        self::assertContains('UK_hourlyMultiCounterAggregate_topologyId_bucket', $aggregateIndexNames);
+        self::assertContains('IK_hourlyMultiCounterAggregate_bucket', $aggregateIndexNames);
+
+        $rows = $aggregates
+            ->find([], ['typeMap' => ['root' => 'array', 'document' => 'array', 'array' => 'array']])
+            ->toArray();
+
+        self::assertCount(1, $rows);
+        self::assertSame('topo', $rows[0]['topology_id']);
+        self::assertSame(4, $rows[0]['count']);
+        self::assertSame(2, $rows[0]['failed']);
+
         $tester = $this->createCommandTester();
         $tester->execute(['command' => 'migrations:migrate']);
 
         self::assertSame(0, $tester->getStatusCode());
         self::assertStringContainsString('SKIP', $tester->getDisplay());
-        self::assertSame(5, $migration->countDocuments());
+        self::assertSame(6, $migration->countDocuments());
     }
 
     /**

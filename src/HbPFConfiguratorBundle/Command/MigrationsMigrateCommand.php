@@ -4,8 +4,12 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command;
 
 use Closure;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\PipesFramework\Configurator\Document\HourlyMultiCounterAggregate;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
+use Hanaboso\PipesFramework\Metrics\Document\BridgesMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\HourlyConnectorsAggregate;
+use Hanaboso\PipesFramework\Metrics\Document\HourlyPipesNodeAggregate;
 use Hanaboso\PipesFramework\UserTask\Document\UserTask;
 use MongoDB\BSON\UTCDateTime;
 use Symfony\Component\Console\Command\Command;
@@ -102,6 +106,9 @@ class MigrationsMigrateCommand extends Command
             },
             'update_user_task_indexes' => function (): void {
                 $this->updateUserTaskIndexes();
+            },
+            'create_hourly_connectors_and_pipes_node_and_multi_counter_aggregates' => function (): void {
+                $this->createHourlyConnectorsAndPipesNodeAndMultiCounterAggregates();
             },
         ];
     }
@@ -251,6 +258,207 @@ class MigrationsMigrateCommand extends Command
         $collection = $this->dm->getDocumentCollection(UserTask::class);
 
         $collection->createIndex(['correlationId' => 1], ['name' => 'IK_userTask_correlationId']);
+    }
+
+    /**
+     * @return void
+     */
+    private function createHourlyConnectorsAndPipesNodeAndMultiCounterAggregates(): void
+    {
+        $this->metricsDm->getDocumentCollection(HourlyConnectorsAggregate::class)->createIndex(
+            ['node_id' => 1, 'bucket' => 1],
+            ['name' => 'UK_hourlyConnectorAggregate_nodeId_bucket', 'unique' => TRUE],
+        );
+
+        $this->metricsDm->getDocumentCollection(ConnectorsMetrics::class)->aggregate(
+            [
+                [
+                    '$group' => [
+                        'application_id'     => ['$first' => '$tags.application_id'],
+                        'count'              => ['$sum' => 1],
+                        'duration_sum'       => ['$sum' => '$fields.sent_request_total_duration'],
+                        'last_created'       => ['$max' => '$fields.created'],
+                        'last_response_code' => [
+                            '$top' => ['output' => '$fields.response_code', 'sortBy' => ['fields.created' => -1]],
+                        ],
+                        'node_name'          => ['$first' => '$tags.node_name'],
+                        'status200'          => [
+                            '$sum' => [
+                                '$cond' => [
+                                    [
+                                        '$and' => [
+                                            ['$gte' => ['$fields.response_code', 200]],
+                                            ['$lte' => ['$fields.response_code', 399]],
+                                        ],
+                                    ],
+                                    1,
+                                    0,
+                                ],
+                            ],
+                        ],
+                        'status400'          => [
+                            '$sum' => [
+                                '$cond' => [
+                                    [
+                                        '$and' => [
+                                            ['$gte' => ['$fields.response_code', 400]],
+                                            ['$lte' => ['$fields.response_code', 499]],
+                                        ],
+                                    ],
+                                    1,
+                                    0,
+                                ],
+                            ],
+                        ],
+                        'status500'          => [
+                            '$sum' => [
+                                '$cond' => [
+                                    [
+                                        '$and' => [
+                                            ['$gte' => ['$fields.response_code', 500]],
+                                            ['$lte' => ['$fields.response_code', 599]],
+                                        ],
+                                    ],
+                                    1,
+                                    0,
+                                ],
+                            ],
+                        ],
+                        'topology_id'        => ['$first' => '$tags.topology_id'],
+                        '_id' => [
+                            'bucket'  => [
+                                '$dateTrunc' => ['binSize' => 15, 'date' => '$fields.created', 'unit' => 'minute'],
+                            ],
+                            'node_id' => '$tags.node_id',
+                        ],
+                    ],
+                ],
+                ['$set' => ['bucket' => '$_id.bucket', 'node_id' => '$_id.node_id']],
+                ['$unset' => '_id'],
+                [
+                    '$merge' => [
+                        'into'           => 'hourly_connectors_aggregates',
+                        'on'             => ['node_id', 'bucket'],
+                        'whenMatched'    => 'replace',
+                        'whenNotMatched' => 'insert',
+                    ],
+                ],
+            ],
+            ['allowDiskUse' => TRUE],
+        );
+
+        $this->metricsDm->getDocumentCollection(HourlyPipesNodeAggregate::class)->createIndex(
+            ['node_id' => 1, 'bucket' => 1],
+            ['name' => 'UK_hourlyPipesNodeAggregate_nodeId_bucket', 'unique' => TRUE],
+        );
+
+        $this->metricsDm->getDocumentCollection(BridgesMetrics::class)->aggregate(
+            [
+                [
+                    '$group' => [
+                        'count'        => ['$sum' => 1],
+                        'duration_sum' => ['$sum' => '$fields.worker_duration'],
+                        'topology_id'  => ['$first' => '$tags.topology_id'],
+                        '_id'          => [
+                            'bucket'  => [
+                                '$dateTrunc' => ['binSize' => 15, 'date' => '$fields.created', 'unit' => 'minute'],
+                            ],
+                            'node_id' => '$tags.node_id',
+                        ],
+                    ],
+                ],
+                ['$set' => ['bucket' => '$_id.bucket', 'node_id' => '$_id.node_id']],
+                ['$unset' => '_id'],
+                [
+                    '$merge' => [
+                        'into'           => 'hourly_pipes_node_aggregates',
+                        'on'             => ['node_id', 'bucket'],
+                        'whenMatched'    => 'replace',
+                        'whenNotMatched' => 'insert',
+                    ],
+                ],
+            ],
+            ['allowDiskUse' => TRUE],
+        );
+
+        $this->dm->getDocumentCollection(HourlyMultiCounterAggregate::class)->createIndex(
+            ['topology_id' => 1, 'bucket' => 1],
+            ['name' => 'UK_hourlyMultiCounterAggregate_topologyId_bucket', 'unique' => TRUE],
+        );
+
+        $this->dm->getDocumentCollection(HourlyMultiCounterAggregate::class)->createIndex(
+            ['bucket' => 1],
+            ['expireAfterSeconds' => 2_628_000, 'name' => 'IK_hourlyMultiCounterAggregate_bucket'],
+        );
+
+        $this->dm->getDocumentCollection(TopologyProgress::class)->aggregate(
+            [
+                [
+                    '$group' => [
+                        'count'        => ['$sum' => 1],
+                        'failed'       => [
+                            '$sum' => [
+                                '$cond' => [
+                                    ['$in' => ['$status', ['FAILED', 'TERMINATED']]],
+                                    1,
+                                    0,
+                                ],
+                            ],
+                        ],
+                        'last_created' => ['$max' => '$created'],
+                        'last_status'  => [
+                            '$top' => ['output' => '$status', 'sortBy' => ['created' => -1]],
+                        ],
+                        '_id'          => [
+                            'bucket'      => [
+                                '$dateTrunc' => ['binSize' => 15, 'date' => '$created', 'unit' => 'minute'],
+                            ],
+                            'topology_id' => '$topologyId',
+                        ],
+                    ],
+                ],
+                ['$set' => ['bucket' => '$_id.bucket', 'topology_id' => '$_id.topology_id']],
+                ['$unset' => '_id'],
+                [
+                    '$merge' => [
+                        'into'           => 'hourly_multi_counter_aggregates',
+                        'on'             => ['topology_id', 'bucket'],
+                        'whenMatched'    => 'replace',
+                        'whenNotMatched' => 'insert',
+                    ],
+                ],
+            ],
+            ['allowDiskUse' => TRUE],
+        );
+
+        $targets = [
+            [ConnectorsMetrics::class, 'IK_connector_tagsTopologyId_tagsNodeId_fieldsCreated'],
+            [BridgesMetrics::class, 'IK_pipesNode_tagsTopologyId_tagsNodeId_fieldsCreated'],
+        ];
+
+        $collections = iterator_to_array(
+            $this->metricsDm->getDocumentDatabase(ConnectorsMetrics::class)->listCollectionNames(),
+        );
+
+        foreach ($targets as [$documentClass, $name]) {
+            $collection = $this->metricsDm->getDocumentCollection($documentClass);
+            $indexes    = [];
+
+            if (in_array($collection->getCollectionName(), $collections, TRUE)) {
+                foreach ($collection->listIndexes() as $index) {
+                    $indexes[] = $index->getName();
+                }
+            }
+
+            if (in_array($name, $indexes, TRUE)) {
+                $collection->dropIndex($name);
+            }
+
+            $collection->createIndex(
+                ['tags.topology_id' => 1, 'tags.node_id' => 1, 'fields.created' => -1],
+                ['name' => $name],
+            );
+        }
     }
 
 }
