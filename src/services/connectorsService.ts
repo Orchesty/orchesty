@@ -77,7 +77,7 @@ export async function fetchConnectors(
   const [groupsResponse, metricsResponse] = await Promise.all([
     api.get<ConnectorGroupsApiResponse>('/api/nodes/connectors'),
     api.get<ConnectorApiResponse>('/api/metrics/connectors/overview', {
-      params: { filter: JSON.stringify(metricsFilter) },
+      params: { filter: JSON.stringify(metricsFilter), aggregated: 1 },
     }),
   ])
 
@@ -184,7 +184,7 @@ export async function fetchConnectorDetail(
 
   const [overviewRes, lastRecordRes] = await Promise.all([
     api.get<ConnectorApiResponse>('/api/metrics/connectors/overview', {
-      params: { filter: JSON.stringify(overviewFilter) }
+      params: { filter: JSON.stringify(overviewFilter), aggregated: 1 }
     }),
     api.get<ConnectorErrorApiResponse>('/api/metrics/connectors', {
       params: { filter: JSON.stringify(lastRecordFilter) }
@@ -359,7 +359,8 @@ export async function fetchConnectorChartData(
   const response = await api.get<ConnectorGraphApiResponse>('/api/metrics/connectors/graph', {
     params: {
       filter: JSON.stringify(filterObj),
-      buckets
+      buckets,
+      aggregated: 1
     }
   })
 

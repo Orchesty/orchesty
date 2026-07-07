@@ -1,5 +1,6 @@
-import { ref, watch, onMounted, onActivated, onDeactivated } from 'vue'
+import { ref, watch, onActivated, onDeactivated } from 'vue'
 import { convertTimeFilterToDateTimeRange } from '@/utils/timeRangeConverter'
+import { createCoalescedLoader } from '@/composables/useCoalescedLoad'
 import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 import type { TimeFilter } from '@/types/dashboard'
 
@@ -32,37 +33,41 @@ export function useDashboardTimeSync(options: UseDashboardTimeSyncOptions) {
 
   /**
    * Call after defining loadData to register all watches and lifecycle hooks.
+   *
+   * Returns a coalesced trigger that collapses same-flush calls into one load —
+   * pass it as `onDataLoad` to useDataGrid so the grid's filter watch (the sole
+   * immediate trigger for time changes, via the shared dateTimeRange ref) and
+   * the activation staleness check cannot double-fire the same request.
    */
-  const connectLoadData = (loadData: () => Promise<void> | void) => {
+  const connectLoadData = (loadData: () => Promise<void> | void): (() => void) => {
+    const requestLoad = createCoalescedLoader(loadData)
+
     watch(
       timeFilter,
       (newFilter) => {
         const range = convertTimeFilterToDateTimeRange(newFilter)
         dateTimeRange.value = { from: range.from, to: null }
         invalidate()
-        if (isActive.value) loadData()
       },
     )
 
     if (refreshKey) {
       watch(refreshKey, () => {
         invalidate()
-        loadData()
+        requestLoad()
       })
     }
 
-    onMounted(() => {
-      loadData()
-    })
-
     onActivated(() => {
       isActive.value = true
-      if (isStale()) loadData()
+      if (isStale()) requestLoad()
     })
 
     onDeactivated(() => {
       isActive.value = false
     })
+
+    return requestLoad
   }
 
   return { dateTimeRange, isActive, isStale, markFresh, invalidate, connectLoadData }

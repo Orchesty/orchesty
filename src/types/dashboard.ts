@@ -92,12 +92,6 @@ export interface TrashData {
   totalMessages: number
   chartData: Array<{ x: string; y: number }>
   tableData: TrashTableRow[]
-  meta: {
-    currentPage: number
-    totalPages: number
-    totalItems: number
-    itemsPerPage: number
-  }
 }
 
 export interface ProcessesChartData {

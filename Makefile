@@ -19,7 +19,9 @@ rebuild:
 	docker buildx build -f Dockerfile --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) ../. || rm ../.dockerignore
 	rm ../.dockerignore || true
 
-test:
+test: init fasttest
+
+fasttest:
 	$(DC) pnpm run type-check
 
-ci-test: init test
+ci-test: test

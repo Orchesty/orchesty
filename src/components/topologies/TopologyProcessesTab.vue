@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onActivated, onDeactivated, watch } from 'vue'
+import { ref, onActivated, onDeactivated, watch } from 'vue'
 import ProcessAuditDrawer from '@/components/dashboard/ProcessAuditDrawer.vue'
 import Card from '@/components/ui/Card.vue'
 import StatusBadge from '@/components/ui/StatusBadge.vue'
@@ -160,10 +160,7 @@ const onConnectorDrawerHidden = () => {
   }
 }
 
-onMounted(() => {
-  loadData()
-})
-
+// Initial load happens here — this component must be rendered inside <KeepAlive> (onActivated never fires otherwise).
 onActivated(() => {
   isActive.value = true
   if (isStale()) loadData()
