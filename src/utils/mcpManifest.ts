@@ -77,15 +77,6 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
-function manifestHasContent(obj: Record<string, unknown>): boolean {
-  return (
-    (typeof obj.description === 'string' && obj.description.trim() !== '') ||
-    isPlainObject(obj.input_schema) ||
-    isPlainObject(obj.output_schema) ||
-    'kind' in obj
-  )
-}
-
 function coerceDefault(type: McpParamType, raw: string): unknown {
   const value = raw.trim()
   if (value === '') return undefined
@@ -232,8 +223,11 @@ export function formFromManifest(value: unknown): McpManifestForm {
   const form = emptyForm()
   if (!isPlainObject(value)) return form
 
-  form.exposed =
-    typeof value.exposed === 'boolean' ? value.exposed : manifestHasContent(value)
+  // Exposure is governed STRICTLY by the `exposed` boolean, mirroring the
+  // backend. A missing or non-true flag means NOT exposed — a filled
+  // description (or any other content) must never cause a topology to be
+  // offered as an MCP tool.
+  form.exposed = value.exposed === true
   form.description = typeof value.description === 'string' ? value.description : ''
   form.inputParams = paramsFromSchema(value.input_schema)
   form.outputParams = paramsFromSchema(value.output_schema)
