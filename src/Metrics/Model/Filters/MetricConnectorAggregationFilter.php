@@ -36,6 +36,7 @@ final class MetricConnectorAggregationFilter extends GridAggregationFilterAbstra
             'created' => 'fields.created',
             'nodeId' => 'tags.node_id',
             'status' => 'status',
+            'topologyId' => 'tags.topology_id',
         ];
     }
 

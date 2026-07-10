@@ -155,4 +155,55 @@ final class TopologyProgressRepository extends DocumentRepository
             ->getAggregation()->getIterator()->toArray();
     }
 
+    /**
+     * Lists the most recent process runs that ended in an error state
+     * (`FAILED` or `TERMINATED`) inside the time window. A "failed process"
+     * here means the whole topology run finished with at least one node
+     * failure — distinct from a single connector HTTP error. Each returned
+     * row is one run: the document `_id` doubles as the run correlation id.
+     *
+     * Sorted newest-first and hard-capped by `$limit`. Backed by
+     * `IK_multiCounter_status_created` (or the `status`+`topologyId`+`created`
+     * index when `$topologyIds` narrows the scan), so the query is served from
+     * the index without a collection scan.
+     *
+     * A topology name maps to one document per published version, so the
+     * caller passes the full set of version ids (resolved from the name) and
+     * we match any of them.
+     *
+     * @param DateTimeInterface      $from        start of the window (inclusive)
+     * @param DateTimeInterface|null $to          end of the window (exclusive); null leaves it open-ended
+     * @param int                    $limit       maximum number of runs to return
+     * @param string[]               $topologyIds optional set of topology ids (all versions) to narrow the scan
+     *
+     * @return array<int, array<string, mixed>>
+     * @throws Exception
+     */
+    public function getFailedProcesses(
+        DateTimeInterface $from,
+        ?DateTimeInterface $to,
+        int $limit,
+        array $topologyIds = [],
+    ): array
+    {
+        $ab = $this->createAggregationBuilder();
+
+        $match = $ab->match()
+            ->field('status')->in(['FAILED', 'TERMINATED'])
+            ->field('created')->gte(
+                DateTimeUtils::getUtcDateTime($from->format(DateTimeUtils::DATE_TIME_UTC)),
+            );
+        if ($to !== NULL) {
+            $match->field('created')->lt(DateTimeUtils::getUtcDateTime($to->format(DateTimeUtils::DATE_TIME_UTC)));
+        }
+        if ($topologyIds !== []) {
+            $match->field('topologyId')->in(array_values($topologyIds));
+        }
+
+        return $ab
+            ->sort(['created' => -1])
+            ->limit(max(1, $limit))
+            ->getAggregation()->getIterator()->toArray();
+    }
+
 }
