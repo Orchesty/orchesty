@@ -13,8 +13,10 @@
 //  5. Role whitelist on Parse.
 //  6. Header denylist: SanitizeHeaders strips/masks known-sensitive headers and
 //     anything matching the secret regex.
-//  7. `auditEntityIds` is NEVER included in the log line; cross-attribute lookup
-//     happens upstream in Mongo (audit_entity / audit_data).
+//  7. `auditEntityIds` is NEVER included in the log line body; cross-attribute
+//     lookup happens upstream in Mongo (audit_entity / audit_data). The line's
+//     Loki STRUCTURED METADATA carries only `entitykey:pkValue` identity tokens
+//     (see collectAuditCheckpointIdTokens) — never Mongo ids or alias maps.
 package audit
 
 import (
@@ -22,9 +24,12 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"hash/fnv"
 	"net/http"
 	"reflect"
 	"regexp"
+	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
@@ -276,7 +281,15 @@ func Emit(
 
 	if loki.Enabled() {
 		labels, line := buildAuditLine(dto, cp, topologyName)
-		loki.SendLog(labels, line)
+
+		var metadata map[string]string
+
+		if tokens := collectAuditCheckpointIdTokens(dto); len(tokens) > 0 {
+			metadata = map[string]string{enum.Meta_AuditCheckpointId: strings.Join(tokens, enum.Meta_ValueSeparator)}
+			labels[enum.LogHeader_AuditCheckpointShard] = computeAuditCheckpointShard(tokens)
+		}
+
+		loki.SendLog(labels, line, metadata)
 	} else {
 		writeAuditEvent(log.Info(), dto, cp, topologyName)
 	}
@@ -295,6 +308,7 @@ func Emit(
 func writeAuditEvent(ev *zerolog.Event, dto *model.ProcessMessage, cp map[string]any, topologyName string) {
 	ev = ev.EmbedObject(dto).
 		Str(enum.LogHeader_LevelName, "info").
+		Str(enum.LogHeader_LogType, enum.LogType_AuditCheckpoint).
 		Interface(enum.LogHeader_AuditCheckpoint, cp)
 
 	if topologyName != "" {
@@ -302,6 +316,86 @@ func writeAuditEvent(ev *zerolog.Event, dto *model.ProcessMessage, cp map[string
 	}
 
 	ev.Msg("Audit checkpoint")
+}
+
+type innerAuditEntity struct {
+	Key    string              `json:"key"`
+	Fields []map[string]string `json:"fields"`
+}
+
+func collectAuditCheckpointIdTokens(dto *model.ProcessMessage) []string {
+	tokens := make(map[string]struct{})
+
+	if rawAuditEntities := dto.GetHeaderOrDefault(enum.Header_AuditEntityHeader, ""); rawAuditEntities != "" {
+		var auditEntities map[string]innerAuditEntity
+
+		if err := json.Unmarshal([]byte(rawAuditEntities), &auditEntities); err == nil {
+			for entityKey, innerAuditEntity := range auditEntities {
+				for _, instance := range innerAuditEntity.Fields {
+					if key := instance[innerAuditEntity.Key]; key != "" {
+						addAuditCheckpointIdToken(tokens, strings.ToLower(entityKey)+":"+key, dto)
+					}
+				}
+			}
+		}
+	}
+
+	if rawAuditEntityIds := dto.GetHeaderOrDefault(enum.Header_AuditEntityIdsHeader, ""); rawAuditEntityIds != "" {
+		var auditEntityIds map[string]string
+
+		if err := json.Unmarshal([]byte(rawAuditEntityIds), &auditEntityIds); err == nil {
+			for auditEntityId := range auditEntityIds {
+				if i := strings.Index(auditEntityId, ":"); i > 0 {
+					auditEntityId = strings.ToLower(auditEntityId[:i]) + auditEntityId[i:]
+				}
+
+				addAuditCheckpointIdToken(tokens, auditEntityId, dto)
+			}
+		}
+	}
+
+	if len(tokens) == 0 {
+		return nil
+	}
+
+	list := make([]string, 0, len(tokens))
+
+	for token := range tokens {
+		list = append(list, token)
+	}
+
+	sort.Strings(list)
+
+	return list
+}
+
+func computeAuditCheckpointShard(tokens []string) string {
+	if len(tokens) > 1 {
+		return enum.AuditCheckpointShard_Multi
+	}
+
+	hash := fnv.New32a()
+	_, _ = hash.Write([]byte(strings.ToLower(tokens[0])))
+
+	return strconv.Itoa(int(hash.Sum32() % enum.AuditCheckpointShard_Count))
+}
+
+func addAuditCheckpointIdToken(tokens map[string]struct{}, token string, dto *model.ProcessMessage) {
+	if token == "" {
+		return
+	}
+
+	if strings.Contains(token, enum.Meta_ValueSeparator) || strings.ContainsFunc(token, func(r rune) bool {
+		return r < 0x20 || r == 0x7f
+	}) {
+		log.Warn().
+			EmbedObject(dto).
+			Msgf("audit checkpoint id token %q skipped: contains the %q separator or control characters", token, enum.Meta_ValueSeparator)
+
+		return
+	}
+
+	tokens[token] = struct{}{}
 }
 
 func buildAuditLine(dto *model.ProcessMessage, cp map[string]any, topologyName string) (map[string]string, []byte) {
@@ -312,6 +406,7 @@ func buildAuditLine(dto *model.ProcessMessage, cp map[string]any, topologyName s
 	labels := map[string]string{
 		enum.LogHeader_CorrelationId: dto.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
 		enum.LogHeader_LevelName:     "info",
+		enum.LogHeader_LogType:       enum.LogType_AuditCheckpoint,
 		enum.LogHeader_TopologyId:    dto.GetHeaderOrDefault(enum.Header_TopologyId, ""),
 	}
 

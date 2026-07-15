@@ -254,6 +254,7 @@ func TestBuildAuditLine(t *testing.T) {
 	assert.Equal(t, map[string]string{
 		"correlationId": "corr-1",
 		"levelName":     "info",
+		"logType":       "auditCheckpoint",
 		"topologyId":    "topo-1",
 	}, labels)
 
@@ -263,6 +264,7 @@ func TestBuildAuditLine(t *testing.T) {
 	assert.Equal(t, "corr-1", parsed["correlationId"])
 	assert.Equal(t, "topo-1", parsed["topologyId"])
 	assert.Equal(t, "info", parsed["levelName"])
+	assert.Equal(t, "auditCheckpoint", parsed["logType"])
 	assert.Equal(t, "beeceptor-sync-post-connector", parsed["nodeName"])
 	assert.Equal(t, "json-placeholder-to-beeceptor-posts", parsed["topologyName"])
 	assert.Equal(t, "Audit checkpoint", parsed["message"])
@@ -306,4 +308,71 @@ func TestSanitizeHeaders(t *testing.T) {
 	assert.Equal(t, redactedPlaceholder, out["Cookie"])
 	assert.Equal(t, "t-1", out["X-Trace-Id"])
 	assert.Equal(t, redactedPlaceholder, out["X-Custom-Token"])
+}
+
+func TestCollectAuditCheckpointIdTokensFromDeclarations(t *testing.T) {
+	dto := (&model.ProcessMessage{}).SetHeader(
+		enum.Header_AuditEntityHeader,
+		`{"Product":{"key":"id","fields":[{"id":"1234","sku":"S1234"}]}}`,
+	)
+
+	assert.Equal(t, []string{"product:1234"}, collectAuditCheckpointIdTokens(dto))
+}
+
+func TestCollectAuditCheckpointIdTokensMultiInstanceSortedDeduped(t *testing.T) {
+	dto := (&model.ProcessMessage{}).SetHeader(
+		enum.Header_AuditEntityHeader,
+		`{"comment":{"key":"id","fields":[{"id":"2"},{"id":"1"},{"id":"2"}]}}`,
+	)
+
+	assert.Equal(t, []string{"comment:1", "comment:2"}, collectAuditCheckpointIdTokens(dto))
+}
+
+func TestCollectAuditCheckpointIdTokensUnionWithIdsHeader(t *testing.T) {
+	dto := (&model.ProcessMessage{}).
+		SetHeader(enum.Header_AuditEntityHeader, `{"comment":{"key":"id","fields":[{"id":"7"}]}}`).
+		SetHeader(enum.Header_AuditEntityIdsHeader, `{"Product:1234":"6a4e7c3084ea2f7e0d0ff234"}`)
+
+	assert.Equal(t, []string{"comment:7", "product:1234"}, collectAuditCheckpointIdTokens(dto))
+}
+
+func TestCollectAuditCheckpointIdTokensGuardsSeparatorAndControlChars(t *testing.T) {
+	dto := (&model.ProcessMessage{}).SetHeader(
+		enum.Header_AuditEntityHeader,
+		`{"product":{"key":"id","fields":[{"id":"bad;value"},{"id":"bad\u0007value"},{"id":"ok"}]}}`,
+	)
+
+	assert.Equal(t, []string{"product:ok"}, collectAuditCheckpointIdTokens(dto))
+}
+
+func TestCollectAuditCheckpointIdTokensEmptyWithoutHeaders(t *testing.T) {
+	assert.Empty(t, collectAuditCheckpointIdTokens(&model.ProcessMessage{}))
+}
+
+func TestCollectAuditCheckpointIdTokensSkipsInstanceMissingPk(t *testing.T) {
+	dto := (&model.ProcessMessage{}).SetHeader(
+		enum.Header_AuditEntityHeader,
+		`{"product":{"key":"id","fields":[{"sku":"S1"},{"id":"1"}]}}`,
+	)
+
+	assert.Equal(t, []string{"product:1"}, collectAuditCheckpointIdTokens(dto))
+}
+
+func TestComputeAuditCheckpointShardFixtures(t *testing.T) {
+	assert.Equal(t, "230", computeAuditCheckpointShard([]string{"product:1234"}))
+	assert.Equal(t, "205", computeAuditCheckpointShard([]string{"product:123456"}))
+	assert.Equal(t, "103", computeAuditCheckpointShard([]string{"comment:1"}))
+}
+
+func TestComputeAuditCheckpointShardLowercasesToken(t *testing.T) {
+	assert.Equal(t, "2", computeAuditCheckpointShard([]string{"product:s5"}))
+	assert.Equal(t, "2", computeAuditCheckpointShard([]string{"product:S5"}))
+}
+
+func TestComputeAuditCheckpointShardMultiSentinel(t *testing.T) {
+	assert.Equal(
+		t,
+		enum.AuditCheckpointShard_Multi,
+		computeAuditCheckpointShard([]string{"comment:1", "product:1234"}),
+	)
 }

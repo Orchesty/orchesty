@@ -14,6 +14,10 @@ func (t testPublisher) Publish(amqp.Publishing) error {
 	return nil
 }
 
+func (t testPublisher) PublishBatch([]amqp.Publishing) error {
+	return nil
+}
+
 func resetTrashDedup() {
 	globalTrashDedup = &trashDedupTracker{
 		entries: make(map[string]*trashDedupEntry),

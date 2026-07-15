@@ -21,6 +21,25 @@ func TestBatch_AfterProcess(t *testing.T) {
 	assert.Equal(t, 3, p)
 }
 
+func TestBatch_AfterProcess_UsesBatchPublish(t *testing.T) {
+	worker := Batch{}
+	node := newBatchCapturingNode()
+
+	dto := prepDto()
+	dto.Body = []byte(`[{"body":"a","headers":null},{"body":"b","headers":null}]`)
+	_, p := worker.AfterProcess(node, dto)
+
+	assert.Equal(t, 2, p)
+	assert.Equal(t, []int{2}, node.batch.batchSizes, "page must go through a single PublishBatch call")
+	assert.Len(t, node.batch.headers, 2)
+	assert.NotEqual(
+		t,
+		node.batch.headers[0][enum.Header_ProcessId],
+		node.batch.headers[1][enum.Header_ProcessId],
+		"each item must get a fresh process id",
+	)
+}
+
 func TestBatch_AfterProcessCursor(t *testing.T) {
 	worker := Batch{}
 	dto := prepDto()

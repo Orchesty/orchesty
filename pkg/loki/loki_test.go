@@ -26,9 +26,10 @@ func resetForTest() {
 func TestBuildBatchBody(t *testing.T) {
 	entries := []entry{
 		{
-			labels: map[string]string{"correlationId": "corr-1", "levelName": "info", "topologyId": "topo-1", "empty": ""},
-			line:   []byte(`{"message":"a"}`),
-			ts:     time.Unix(0, 1780308580130000000),
+			labels:   map[string]string{"correlationId": "corr-1", "levelName": "info", "topologyId": "topo-1", "empty": ""},
+			line:     []byte(`{"message":"a"}`),
+			metadata: map[string]string{"auditCheckpointId": "product:1234", "empty": ""},
+			ts:       time.Unix(0, 1780308580130000000),
 		},
 		{
 			labels: map[string]string{"correlationId": "corr-1", "levelName": "info", "topologyId": "topo-1"},
@@ -64,13 +65,17 @@ func TestBuildBatchBody(t *testing.T) {
 	}, s1.Stream)
 	assert.NotContains(t, s1.Stream, "empty")
 	require.Len(t, s1.Values, 2)
+	require.Len(t, s1.Values[0], 3)
 	assert.Equal(t, "1780308580130000000", s1.Values[0][0])
 	assert.Equal(t, `{"message":"a"}`, s1.Values[0][1])
+	assert.Equal(t, map[string]any{"auditCheckpointId": "product:1234"}, s1.Values[0][2])
+	require.Len(t, s1.Values[1], 2)
 	assert.Equal(t, "1780308580140000000", s1.Values[1][0])
 	assert.Equal(t, `{"message":"b"}`, s1.Values[1][1])
 
 	s2 := byCorr["corr-2"]
 	require.Len(t, s2.Values, 1)
+	require.Len(t, s2.Values[0], 2)
 	assert.Equal(t, `{"message":"c"}`, s2.Values[0][1])
 }
 
@@ -90,7 +95,7 @@ func TestBuildBatchBodySortsStreamByTimestamp(t *testing.T) {
 
 	values := parsed.Streams[0].Values
 	require.Len(t, values, 3)
-	assert.Equal(t, []string{"100", "150", "200"}, []string{values[0][0], values[1][0], values[2][0]})
+	assert.Equal(t, []any{"100", "150", "200"}, []any{values[0][0], values[1][0], values[2][0]})
 	assert.Equal(t, `{"message":"earlier"}`, values[0][1])
 	assert.Equal(t, `{"message":"middle"}`, values[1][1])
 	assert.Equal(t, `{"message":"later"}`, values[2][1])
@@ -151,7 +156,9 @@ func TestFlushOrdersAcrossChunks(t *testing.T) {
 		ts := make([]string, 0)
 		for _, s := range parsed.Streams {
 			for _, v := range s.Values {
-				ts = append(ts, v[0])
+				tsValue, ok := v[0].(string)
+				require.True(t, ok)
+				ts = append(ts, tsValue)
 			}
 		}
 
@@ -203,7 +210,7 @@ func TestSendLogRejectedAfterClose(t *testing.T) {
 	Init(srv.URL)
 	Close()
 
-	SendLog(map[string]string{"correlationId": "x"}, []byte(`{"x":1}`))
+	SendLog(map[string]string{"correlationId": "x"}, []byte(`{"x":1}`), nil)
 
 	select {
 	case <-got:
@@ -227,7 +234,7 @@ func TestSendLogPostsToLoki(t *testing.T) {
 	defer srv.Close()
 
 	Init(srv.URL)
-	SendLog(map[string]string{"correlationId": "corr-1"}, []byte(`{"x":1}`))
+	SendLog(map[string]string{"correlationId": "corr-1"}, []byte(`{"x":1}`), map[string]string{"auditCheckpointId": "product:1"})
 
 	select {
 	case b := <-got:
@@ -235,7 +242,9 @@ func TestSendLogPostsToLoki(t *testing.T) {
 		require.NoError(t, json.Unmarshal(b, &parsed))
 		require.Len(t, parsed.Streams, 1)
 		assert.Equal(t, "corr-1", parsed.Streams[0].Stream["correlationId"])
+		require.Len(t, parsed.Streams[0].Values[0], 3)
 		assert.Equal(t, `{"x":1}`, parsed.Streams[0].Values[0][1])
+		assert.Equal(t, map[string]any{"auditCheckpointId": "product:1"}, parsed.Streams[0].Values[0][2])
 	case <-time.After(2 * time.Second):
 		t.Fatal("Loki push was not received")
 	}
@@ -245,5 +254,5 @@ func TestSendLogNoopWhenDisabled(t *testing.T) {
 	dsn = ""
 	assert.False(t, Enabled())
 
-	SendLog(map[string]string{"correlationId": "x"}, []byte(`{}`))
+	SendLog(map[string]string{"correlationId": "x"}, []byte(`{}`), nil)
 }

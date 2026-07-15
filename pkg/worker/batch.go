@@ -7,6 +7,7 @@ import (
 	"github.com/hanaboso/pipes/bridge/pkg/bridge/types"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/rs/zerolog/log"
 )
 
@@ -37,8 +38,12 @@ func (Batch) AfterProcess(node types.Node, dto *model.ProcessMessage) (model.Pro
 	if resultCode != enum.ResultCode_CursorOnly {
 		for _, content := range contents {
 			emitBatchItemAudit(dto, node, content, auditSpec, parentProcessId, resultCode)
+		}
 
-			for _, publisher := range node.Followers() {
+		for _, publisher := range node.Followers() {
+			messages := make([]amqp.Publishing, 0, len(contents))
+
+			for _, content := range contents {
 				published++
 				partial := dto.
 					CopyBatchItem(content).
@@ -47,9 +52,11 @@ func (Batch) AfterProcess(node types.Node, dto *model.ProcessMessage) (model.Pro
 					SetHeader(enum.Header_PreviousNodeId, node.Id()).
 					DeleteHeader(enum.Header_Cursor).
 					DeleteHeader(enum.Header_AuditCheckpoint)
-				if err := publisher.Publish(partial.IntoAmqp()); err != nil {
-					return dto.Error(err), 0
-				}
+				messages = append(messages, partial.IntoAmqp())
+			}
+
+			if err := publisher.PublishBatch(messages); err != nil {
+				return dto.Error(err), 0
 			}
 		}
 	}

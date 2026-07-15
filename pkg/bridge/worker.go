@@ -510,10 +510,16 @@ func (n *node) processAuditEntitiesFields(dto *model.ProcessMessage, auditEntiti
 	}
 
 	if auditEntities, err := n.mongodb.FindAuditEntitiesByKeys(keys); err == nil {
-		for k, auditEntity := range auditEntities {
-			auditEntitiesFields[k] = AuditEntityFields{
-				Entity: auditEntity.ID.Hex(),
-				Fields: auditEntity.FieldKeys(),
+		for _, requestedKey := range keys {
+			for _, auditEntity := range auditEntities {
+				if strings.EqualFold(auditEntity.Key, requestedKey) {
+					auditEntitiesFields[requestedKey] = AuditEntityFields{
+						Entity: auditEntity.ID.Hex(),
+						Fields: auditEntity.FieldKeys(),
+					}
+
+					break
+				}
 			}
 		}
 	}

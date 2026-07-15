@@ -102,6 +102,10 @@ func (t testPublisher) Publish(amqp.Publishing) error {
 	return nil
 }
 
+func (t testPublisher) PublishBatch([]amqp.Publishing) error {
+	return nil
+}
+
 // capturingPublisher decodes each Publishing into the inner MessageDto and
 // stores the per-message header map. Used by tests that assert on what the
 // bridge actually puts on the wire (vs. what stays on the local dto).
@@ -117,6 +121,15 @@ func (c *capturingPublisher) Publish(p amqp.Publishing) error {
 	}
 	c.headers = append(c.headers, msg.Headers)
 	c.bodies = append(c.bodies, msg.Body)
+	return nil
+}
+
+func (c *capturingPublisher) PublishBatch(messages []amqp.Publishing) error {
+	for _, message := range messages {
+		if err := c.Publish(message); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -164,4 +177,32 @@ func (n *capturingNode) TopologyName() string {
 
 func (n *capturingNode) CursorPublisher() types.Publisher {
 	return testPublisher{}
+}
+
+type batchCapturingPublisher struct {
+	capturingPublisher
+	batchSizes []int
+}
+
+func (b *batchCapturingPublisher) PublishBatch(messages []amqp.Publishing) error {
+	b.batchSizes = append(b.batchSizes, len(messages))
+	for _, message := range messages {
+		if err := b.capturingPublisher.Publish(message); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+type batchCapturingNode struct {
+	*capturingNode
+	batch *batchCapturingPublisher
+}
+
+func newBatchCapturingNode() *batchCapturingNode {
+	return &batchCapturingNode{capturingNode: newCapturingNode(), batch: &batchCapturingPublisher{}}
+}
+
+func (n *batchCapturingNode) Followers() types.Publishers {
+	return map[string]types.Publisher{"node1": n.batch}
 }

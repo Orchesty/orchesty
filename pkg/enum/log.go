@@ -42,4 +42,11 @@ const (
 	LogHeader_SequenceId            = "sequenceId"
 	LogHeader_LevelName             = "levelName"
 	LogHeader_AuditCheckpoint       = "auditCheckpoint"
+	LogHeader_LogType               = "logType"
+	LogType_AuditCheckpoint         = "auditCheckpoint"
+	Meta_AuditCheckpointId          = "auditCheckpointId"
+	Meta_ValueSeparator             = ";"
+	LogHeader_AuditCheckpointShard  = "auditCheckpointShard"
+	AuditCheckpointShard_Multi      = "multi"
+	AuditCheckpointShard_Count      = 256
 )

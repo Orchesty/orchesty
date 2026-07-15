@@ -32,9 +32,10 @@ var (
 )
 
 type entry struct {
-	labels map[string]string
-	line   []byte
-	ts     time.Time
+	labels   map[string]string
+	line     []byte
+	metadata map[string]string
+	ts       time.Time
 }
 
 func Init(lokiDsn string) {
@@ -52,7 +53,7 @@ func Enabled() bool {
 	return dsn != ""
 }
 
-func SendLog(labels map[string]string, line []byte) {
+func SendLog(labels map[string]string, line []byte, metadata map[string]string) {
 	if !Enabled() || queue == nil {
 		return
 	}
@@ -64,7 +65,7 @@ func SendLog(labels map[string]string, line []byte) {
 	}
 
 	select {
-	case queue <- entry{labels: labels, line: line, ts: time.Now()}:
+	case queue <- entry{labels: labels, line: line, metadata: metadata, ts: time.Now()}:
 	default:
 	}
 }
@@ -165,8 +166,9 @@ func post(body []byte) {
 
 func buildBatchBody(entries []entry) ([]byte, error) {
 	type value struct {
-		ts   int64
-		line string
+		ts       int64
+		line     string
+		metadata map[string]string
 	}
 
 	type group struct {
@@ -196,7 +198,16 @@ func buildBatchBody(entries []entry) ([]byte, error) {
 			order = append(order, key)
 		}
 
-		g.values = append(g.values, value{ts: e.ts.UnixNano(), line: string(e.line)})
+		metadata := make(map[string]string, len(e.metadata))
+
+		for k, v := range e.metadata {
+			if k == "" || v == "" {
+				continue
+			}
+			metadata[k] = v
+		}
+
+		g.values = append(g.values, value{ts: e.ts.UnixNano(), line: string(e.line), metadata: metadata})
 	}
 
 	streams := make([]pushStream, 0, len(order))
@@ -208,10 +219,14 @@ func buildBatchBody(entries []entry) ([]byte, error) {
 			return g.values[i].ts < g.values[j].ts
 		})
 
-		values := make([][2]string, len(g.values))
+		values := make([][]any, len(g.values))
 
 		for i, v := range g.values {
-			values[i] = [2]string{strconv.FormatInt(v.ts, 10), v.line}
+			if len(v.metadata) > 0 {
+				values[i] = []any{strconv.FormatInt(v.ts, 10), v.line, v.metadata}
+			} else {
+				values[i] = []any{strconv.FormatInt(v.ts, 10), v.line}
+			}
 		}
 
 		streams = append(streams, pushStream{Stream: g.stream, Values: values})
@@ -247,5 +262,5 @@ type pushPayload struct {
 
 type pushStream struct {
 	Stream map[string]string `json:"stream"`
-	Values [][2]string       `json:"values"`
+	Values [][]any           `json:"values"`
 }
