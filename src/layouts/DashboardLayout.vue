@@ -21,7 +21,7 @@ const {
 </script>
 
 <template>
-  <div class="flex h-screen flex-col overflow-hidden bg-gray-50 dark:bg-gray-900">
+  <div class="relative flex h-screen flex-col overflow-hidden bg-gray-50 dark:bg-gray-900">
     <AppNavbar />
     <div class="flex flex-1 overflow-hidden">
       <AppSidebar />
