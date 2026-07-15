@@ -9,6 +9,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 func (m *MongoDb) GetApiToken(user string, scopes []string) (*model.ApiToken, error) {
@@ -66,7 +67,7 @@ func (m *MongoDb) GetFinishedProcesses(ids []string) ([]model.Process, error) {
 	return processes, err
 }
 
-func (m *MongoDb) UpdateProcesses(processes, subProcesses, finishes []mongo.WriteModel, errors []bson.M, finishesProcesses []string) (finished []model.Process) {
+func (m *MongoDb) UpdateProcesses(processes, subProcesses, finishes []mongo.WriteModel, errors []bson.M, finishesProcesses []string, auditDataLinks []interface{}) (finished []model.Process) {
 	sess, err := m.connection.StartSession()
 	if err != nil {
 		log.Fatal().Err(err).Send()
@@ -103,6 +104,16 @@ func (m *MongoDb) UpdateProcesses(processes, subProcesses, finishes []mongo.Writ
 			return err
 		}
 
+		if len(auditDataLinks) > 0 {
+			_, err = m.connection.Database.
+				Collection(config.MongoDb.CounterAuditDataCollection).
+				InsertMany(ctx, auditDataLinks, options.InsertMany().SetOrdered(false))
+			if err != nil && !mongo.IsDuplicateKeyError(err) {
+				_ = sess.AbortTransaction(ctx)
+				return err
+			}
+		}
+
 		if len(finishesProcesses) != 0 {
 			if config.App.RunCallbackTopology {
 				finished, err = m.GetFinishedProcesses(finishesProcesses)
@@ -113,8 +124,10 @@ func (m *MongoDb) UpdateProcesses(processes, subProcesses, finishes []mongo.Writ
 			}
 		}
 
-		for _, errMsg := range errors {
-			_, err = m.connection.Database.Collection(config.MongoDb.CounterErrCollection).InsertOne(ctx, errMsg)
+		if len(errors) > 0 {
+			_, err = m.connection.Database.
+				Collection(config.MongoDb.CounterErrCollection).
+				InsertMany(ctx, errors, options.InsertMany().SetOrdered(false))
 			if err != nil {
 				_ = sess.AbortTransaction(ctx)
 				return err

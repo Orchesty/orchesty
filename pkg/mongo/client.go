@@ -80,6 +80,30 @@ func NewMongo() MongoDb {
 		log.Err(err).Send()
 	}
 
+	indexExpires = mongo.IndexModel{
+		Keys: bson.M{
+			"created": 1,
+		},
+		Options: options.Index().SetExpireAfterSeconds(month).SetName("IK_multiCounterAuditData_created"),
+	}
+	indexCorr = mongo.IndexModel{
+		Keys: bson.M{
+			"correlationId": 1,
+		},
+		Options: options.Index().SetName("IK_multiCounterAuditData_correlationId"),
+	}
+	indexAuditDataId := mongo.IndexModel{
+		Keys: bson.M{
+			"auditDataId": 1,
+		},
+		Options: options.Index().SetName("IK_multiCounterAuditData_auditDataId"),
+	}
+
+	coll = mongoDbCon.Database.Collection(config.MongoDb.CounterAuditDataCollection)
+	if _, err := coll.Indexes().CreateMany(ctx, []mongo.IndexModel{indexAuditDataId, indexCorr, indexExpires}); err != nil {
+		log.Err(err).Send()
+	}
+
 	cancel()
 
 	return MongoDb{

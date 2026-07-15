@@ -180,6 +180,8 @@ func (c *MultiCounter) commit(msg amqp.Delivery) {
 		processes := make([]md.WriteModel, 0, len(c.agg)*2)
 		finishes := make([]md.WriteModel, 0, len(c.agg))
 		finishesProcesses := make([]string, 0, len(c.agg))
+		var auditDataLinks []interface{}
+		now := time.Now()
 		for corr, a := range c.agg {
 			audit := make([]string, 0, len(a.audit))
 
@@ -187,10 +189,11 @@ func (c *MultiCounter) commit(msg amqp.Delivery) {
 				audit = append(audit, id)
 			}
 
+			auditDataLinks = append(auditDataLinks, model.AuditDataLinks(now, corr, audit)...)
 			processes = append(
 				processes,
 				a.sample.ProcessInitQuery(),
-				model.MergedProcessQuery(corr, a.ok, a.nok, a.processed, a.total, audit),
+				model.MergedProcessQuery(corr, a.ok, a.nok, a.processed, a.total),
 			)
 			finishes = append(finishes, a.sample.FinishProcessQuery())
 			finishesProcesses = append(finishesProcesses, corr)
@@ -209,7 +212,7 @@ func (c *MultiCounter) commit(msg amqp.Delivery) {
 			}
 		}
 
-		finished := c.mongo.UpdateProcesses(processes, subProcesses, finishes, c.errors, finishesProcesses)
+		finished := c.mongo.UpdateProcesses(processes, subProcesses, finishes, c.errors, finishesProcesses, auditDataLinks)
 		for _, process := range finished {
 			go c.finishProcess(process, msg.Headers)
 		}

@@ -139,7 +139,7 @@ func (pm ParsedMessage) AuditIds() []string {
 	return auditData
 }
 
-func MergedProcessQuery(correlationId string, ok, nok, processed, total int, audit []string) mongo.WriteModel {
+func MergedProcessQuery(correlationId string, ok, nok, processed, total int) mongo.WriteModel {
 	doc := mongo.NewUpdateOneModel()
 	doc.Filter = bson.M{
 		"_id": correlationId,
@@ -151,14 +151,24 @@ func MergedProcessQuery(correlationId string, ok, nok, processed, total int, aud
 			"processedCount": processed,
 			"total":          total,
 		},
-		"$addToSet": bson.M{
-			"auditData": bson.M{
-				"$each": audit,
-			},
-		},
 	}
 
 	return doc
+}
+
+func AuditDataLinks(created time.Time, correlationId string, auditDataIds []string) []interface{} {
+	docs := make([]interface{}, 0, len(auditDataIds))
+
+	for _, auditDataId := range auditDataIds {
+		docs = append(docs, bson.M{
+			"_id":           fmt.Sprintf("%s:%s", correlationId, auditDataId),
+			"created":       created,
+			"correlationId": correlationId,
+			"auditDataId":   auditDataId,
+		})
+	}
+
+	return docs
 }
 
 func (pm ParsedMessage) SubProcessInitQuery() mongo.WriteModel {
