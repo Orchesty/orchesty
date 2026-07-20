@@ -10,8 +10,11 @@ use Hanaboso\PipesFramework\Metrics\Document\BridgesMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\HourlyConnectorsAggregate;
 use Hanaboso\PipesFramework\Metrics\Document\HourlyPipesNodeAggregate;
+use Hanaboso\PipesFramework\Metrics\Document\MonolithMetrics;
 use Hanaboso\PipesFramework\UserTask\Document\UserTask;
 use MongoDB\BSON\UTCDateTime;
+use MongoDB\Collection;
+use MongoDB\Driver\Exception\CommandException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,6 +30,12 @@ class MigrationsMigrateCommand extends Command
 
     private const string NAME       = 'migrations:migrate';
     private const string COLLECTION = 'migrations';
+
+    private const int NAMESPACE_NOT_FOUND    = 26;
+    private const int INDEX_NOT_FOUND        = 27;
+    private const int INDEX_OPTIONS_CONFLICT = 85;
+
+    private const array NAMESPACE_OR_INDEX_NOT_FOUND = [self::NAMESPACE_NOT_FOUND, self::INDEX_NOT_FOUND];
 
     /**
      * MigrationsMigrateCommand constructor.
@@ -110,7 +119,52 @@ class MigrationsMigrateCommand extends Command
             'create_hourly_connectors_and_pipes_node_and_multi_counter_aggregates' => function (): void {
                 $this->createHourlyConnectorsAndPipesNodeAndMultiCounterAggregates();
             },
+            'update_pipes_node_and_connectors_and_monolith_indexes' => function (): void {
+                $this->updatePipesNodeAndConnectorsAndMonolithIndexes();
+            },
         ];
+    }
+
+    /**
+     * @param Collection $collection
+     * @param string     $index
+     *
+     * @return void
+     */
+    protected function dropIndexIfExists(Collection $collection, string $index): void
+    {
+        try {
+            $collection->dropIndex($index);
+        } catch (CommandException $e) {
+            if (!in_array($e->getCode(), self::NAMESPACE_OR_INDEX_NOT_FOUND, TRUE)) {
+                throw $e;
+            }
+        }
+    }
+
+    /**
+     * @param Collection $collection
+     *
+     * @return void
+     */
+    private function createBucketExpireIndex(Collection $collection): void
+    {
+        try {
+            $collection->createIndex(
+                [CreateMetricsExpireIndexCommand::BUCKET => 1],
+                [
+                    'expireAfterSeconds' => CreateMetricsExpireIndexCommand::EXPIRE_INDEX_DEFAULT,
+                    'name'               => CreateMetricsExpireIndexCommand::expireIndexName(
+                        $collection->getCollectionName(),
+                        CreateMetricsExpireIndexCommand::BUCKET,
+                    ),
+                ],
+            );
+        } catch (CommandException $e) {
+            if ($e->getCode() !== self::INDEX_OPTIONS_CONFLICT) {
+                throw $e;
+            }
+        }
     }
 
     /**
@@ -171,12 +225,6 @@ class MigrationsMigrateCommand extends Command
             ['name' => 'IK_multiCounter_status_topologyId_duration'],
         );
 
-        $indexes = [];
-
-        foreach ($collection->listIndexes() as $index) {
-            $indexes[] = $index->getName();
-        }
-
         $oldIndexes = [
             'IK_multiCounter_finished_created',
             'IK_multiCounter_nok_finished_created',
@@ -185,9 +233,7 @@ class MigrationsMigrateCommand extends Command
         ];
 
         foreach ($oldIndexes as $index) {
-            if (in_array($index, $indexes, TRUE)) {
-                $collection->dropIndex($index);
-            }
+            $this->dropIndexIfExists($collection, $index);
         }
     }
 
@@ -203,15 +249,7 @@ class MigrationsMigrateCommand extends Command
             ['name' => 'IK_multiCounter_created_topologyId_status'],
         );
 
-        $indexes = [];
-
-        foreach ($collection->listIndexes() as $index) {
-            $indexes[] = $index->getName();
-        }
-
-        if (in_array('IK_multiCounter_created_topologyId_nok_finished', $indexes, TRUE)) {
-            $collection->dropIndex('IK_multiCounter_created_topologyId_nok_finished');
-        }
+        $this->dropIndexIfExists($collection, 'IK_multiCounter_created_topologyId_nok_finished');
     }
 
     /**
@@ -226,12 +264,6 @@ class MigrationsMigrateCommand extends Command
             ['name' => 'IK_connector_tagsCorrelationId_fieldsCreated'],
         );
 
-        $indexes = [];
-
-        foreach ($collection->listIndexes() as $index) {
-            $indexes[] = $index->getName();
-        }
-
         $oldIndexes = [
             'IK_connector_tagsCorrelationId_tagsNodeId_fieldsCreated',
             'IK_connector_tagsTopologyId_fieldsCreated',
@@ -244,9 +276,7 @@ class MigrationsMigrateCommand extends Command
         ];
 
         foreach ($oldIndexes as $index) {
-            if (in_array($index, $indexes, TRUE)) {
-                $collection->dropIndex($index);
-            }
+            $this->dropIndexIfExists($collection, $index);
         }
     }
 
@@ -265,10 +295,14 @@ class MigrationsMigrateCommand extends Command
      */
     private function createHourlyConnectorsAndPipesNodeAndMultiCounterAggregates(): void
     {
-        $this->metricsDm->getDocumentCollection(HourlyConnectorsAggregate::class)->createIndex(
+        $hourlyConnectors = $this->metricsDm->getDocumentCollection(HourlyConnectorsAggregate::class);
+
+        $hourlyConnectors->createIndex(
             ['node_id' => 1, 'bucket' => 1],
             ['name' => 'UK_hourlyConnectorAggregate_nodeId_bucket', 'unique' => TRUE],
         );
+
+        $this->createBucketExpireIndex($hourlyConnectors);
 
         $this->metricsDm->getDocumentCollection(ConnectorsMetrics::class)->aggregate(
             [
@@ -347,10 +381,14 @@ class MigrationsMigrateCommand extends Command
             ['allowDiskUse' => TRUE],
         );
 
-        $this->metricsDm->getDocumentCollection(HourlyPipesNodeAggregate::class)->createIndex(
+        $hourlyPipesNode = $this->metricsDm->getDocumentCollection(HourlyPipesNodeAggregate::class);
+
+        $hourlyPipesNode->createIndex(
             ['node_id' => 1, 'bucket' => 1],
             ['name' => 'UK_hourlyPipesNodeAggregate_nodeId_bucket', 'unique' => TRUE],
         );
+
+        $this->createBucketExpireIndex($hourlyPipesNode);
 
         $this->metricsDm->getDocumentCollection(BridgesMetrics::class)->aggregate(
             [
@@ -436,28 +474,27 @@ class MigrationsMigrateCommand extends Command
             [BridgesMetrics::class, 'IK_pipesNode_tagsTopologyId_tagsNodeId_fieldsCreated'],
         ];
 
-        $collections = iterator_to_array(
-            $this->metricsDm->getDocumentDatabase(ConnectorsMetrics::class)->listCollectionNames(),
-        );
-
         foreach ($targets as [$documentClass, $name]) {
             $collection = $this->metricsDm->getDocumentCollection($documentClass);
-            $indexes    = [];
 
-            if (in_array($collection->getCollectionName(), $collections, TRUE)) {
-                foreach ($collection->listIndexes() as $index) {
-                    $indexes[] = $index->getName();
-                }
-            }
-
-            if (in_array($name, $indexes, TRUE)) {
-                $collection->dropIndex($name);
-            }
+            $this->dropIndexIfExists($collection, $name);
 
             $collection->createIndex(
                 ['tags.topology_id' => 1, 'tags.node_id' => 1, 'fields.created' => -1],
                 ['name' => $name],
             );
+        }
+    }
+
+    /**
+     * @return void
+     */
+    private function updatePipesNodeAndConnectorsAndMonolithIndexes(): void
+    {
+        foreach ([BridgesMetrics::class, ConnectorsMetrics::class, MonolithMetrics::class] as $documentClass) {
+            $collection = $this->metricsDm->getDocumentCollection($documentClass);
+
+            $this->dropIndexIfExists($collection, 'tags_correlation_id_1');
         }
     }
 

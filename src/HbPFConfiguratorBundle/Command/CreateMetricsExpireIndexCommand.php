@@ -17,13 +17,13 @@ use Throwable;
 class CreateMetricsExpireIndexCommand extends Command
 {
 
+    public const int EXPIRE_INDEX_DEFAULT = 2_592_000;
+
+    public const string BUCKET = 'bucket';
+
     private const string NAME = 'metrics:expire:create';
 
-    private const int EXPIRE_INDEX_DEFAULT = 2_592_000;
-
     private const string FIELDS_CREATED = 'fields.created';
-
-    private const string BUCKET = 'bucket';
 
     private const array EXPIRE_INDEX_COLLECTIONS = [
         'connectors'                   => self::FIELDS_CREATED,
@@ -47,6 +47,17 @@ class CreateMetricsExpireIndexCommand extends Command
     public function __construct(private readonly DocumentManager $metricsDm)
     {
         parent::__construct();
+    }
+
+    /**
+     * @param string $collection
+     * @param string $field
+     *
+     * @return string
+     */
+    public static function expireIndexName(string $collection, string $field): string
+    {
+        return sprintf('IK_%s_%s', $collection, lcfirst(str_replace('.', '', ucwords($field, '.'))));
     }
 
     /**
@@ -74,7 +85,7 @@ class CreateMetricsExpireIndexCommand extends Command
         $database = $this->metricsDm->getDocumentDatabase(ProcessesMetrics::class);
 
         foreach (self::EXPIRE_INDEX_COLLECTIONS as $collection => $field) {
-            $indexName = sprintf('IK_%s_%s', $collection, lcfirst(str_replace('.', '', ucwords($field, '.'))));
+            $indexName = self::expireIndexName($collection, $field);
 
             try {
                 $database
