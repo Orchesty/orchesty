@@ -6,6 +6,8 @@ import ResultCode from '../enum/ResultCode';
 import { logger } from '../logger/Logger';
 import Loki from '../logger/Loki';
 
+const LOG_TYPE_WORKER_LOG = 'workerLog';
+
 const inputSchema = Joi.object<ILogInput>({
     message: Joi.string().required(),
     service: Joi.string().required(),
@@ -86,6 +88,7 @@ export default class LoggerRouter {
                     {
                         correlationId: req.body.correlationId ?? '',
                         levelName: req.body.level ?? req.body.levelName ?? '',
+                        logType: LOG_TYPE_WORKER_LOG,
                         topologyId: req.body.topologyId ?? '',
                     },
                     JSON.stringify(req.body),
