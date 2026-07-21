@@ -6,6 +6,7 @@ use Closure;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
+use Hanaboso\PipesFramework\UserTask\Document\UserTask;
 use MongoDB\BSON\UTCDateTime;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -98,6 +99,9 @@ class MigrationsMigrateCommand extends Command
             },
             'update_connector_indexes' => function (): void {
                 $this->updateConnectorIndexes();
+            },
+            'update_user_task_indexes' => function (): void {
+                $this->updateUserTaskIndexes();
             },
         ];
     }
@@ -237,6 +241,16 @@ class MigrationsMigrateCommand extends Command
                 $collection->dropIndex($index);
             }
         }
+    }
+
+    /**
+     * @return void
+     */
+    private function updateUserTaskIndexes(): void
+    {
+        $collection = $this->dm->getDocumentCollection(UserTask::class);
+
+        $collection->createIndex(['correlationId' => 1], ['name' => 'IK_userTask_correlationId']);
     }
 
 }

@@ -43,6 +43,10 @@ use Hanaboso\Utils\String\Json;
     keys: ['type' => 'asc', 'nodeId' => 'asc', 'topologyId' => 'asc', 'created' => 'desc'],
     name: 'IK_userTask_type_nodeId_topologyId_created',
 )]
+#[ODM\Index( // Used by \Hanaboso\PipesFramework\Configurator\Model\ProcessManager::getProcessDetail
+    keys: ['correlationId' => 'asc'],
+    name: 'IK_userTask_correlationId',
+)]
 #[ODM\Index( // Used by \Hanaboso\PipesFramework\Metrics\Model\Filters\MetricUserTaskAggregationFilter
     keys: ['created' => 'desc', 'message.headers.node-id' => 'asc', 'message.headers.topology-id' => 'asc', 'message.headers.result-message' => 'asc'],
     name: 'IK_userTask_created_messageHeadersNodeId_messageHeadersTopologyId_messageHeadersResultMessage',

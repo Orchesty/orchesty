@@ -4,6 +4,7 @@ namespace PipesFrameworkTests\Integration\Command;
 
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\MigrationsMigrateCommand;
+use Hanaboso\PipesFramework\UserTask\Document\UserTask;
 use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
@@ -74,12 +75,19 @@ final class MigrateCommandTest extends DatabaseTestCaseAbstract
         self::assertNotContains('IK_multiCounter_topologyId_finished_created', $indexNames);
         self::assertNotContains('IK_multiCounter_topologyId_nok_finished_created', $indexNames);
 
+        $userTaskIndexNames = [];
+        foreach ($this->dm->getDocumentCollection(UserTask::class)->listIndexes() as $userTaskIndex) {
+            $userTaskIndexNames[] = $userTaskIndex->getName();
+        }
+
+        self::assertContains('IK_userTask_correlationId', $userTaskIndexNames);
+
         $tester = $this->createCommandTester();
         $tester->execute(['command' => 'migrations:migrate']);
 
         self::assertSame(0, $tester->getStatusCode());
         self::assertStringContainsString('SKIP', $tester->getDisplay());
-        self::assertSame(4, $migration->countDocuments());
+        self::assertSame(5, $migration->countDocuments());
     }
 
     /**

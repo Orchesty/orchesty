@@ -119,22 +119,44 @@ final readonly class ProcessManager
             $topologyName = sprintf('%s v%s', $topology->getName(), $topology->getVersion());
         }
 
-        /** @var UserTask[] $userTasks */
-        $userTasks = $this
-            ->dm
-            ->createQueryBuilder(UserTask::class)
+        // Count per node + type on the DB side. The former approach hydrated
+        // every matching UserTask / Limiter document (message body included)
+        // into PHP on each call — with the process detail polled every ~2s and
+        // nodes able to hold thousands of breakpoint messages, that meant
+        // repeatedly transferring and hydrating thousands of documents. A
+        // grouped aggregation returns just the counts.
+        $userTaskBuilder = $this->dm->createAggregationBuilder(UserTask::class);
+        $userTaskRows    = $userTaskBuilder
+            ->match()
             ->field('correlationId')
             ->equals($id)
-            ->getQuery()
+            ->group()
+            ->field('_id')
+            ->expression('$nodeId')
+            ->field('nodeName')
+            ->first('$nodeName')
+            ->field('breakpointCount')
+            ->sum($userTaskBuilder->expr()->cond($userTaskBuilder->expr()->eq('$type', 'userTask'), 1, 0))
+            ->field('trashCount')
+            ->sum($userTaskBuilder->expr()->cond($userTaskBuilder->expr()->eq('$type', 'userTask'), 0, 1))
+            ->execute()
             ->toArray();
 
-        /** @var Limiter[] $limiters */
-        $limiters = $this
-            ->dm
-            ->createQueryBuilder(Limiter::class)
+        $limiterBuilder = $this->dm->createAggregationBuilder(Limiter::class);
+        $limiterRows    = $limiterBuilder
+            ->match()
             ->field('message.headers.correlation-id')
             ->equals($id)
-            ->getQuery()
+            ->group()
+            ->field('_id')
+            ->expression('$message.headers.node-id')
+            ->field('nodeName')
+            ->first('$message.headers.node-name')
+            ->field('repeaterCount')
+            ->sum($limiterBuilder->expr()->cond($limiterBuilder->expr()->eq('$prioritize', TRUE), 1, 0))
+            ->field('limiterCount')
+            ->sum($limiterBuilder->expr()->cond($limiterBuilder->expr()->eq('$prioritize', TRUE), 0, 1))
+            ->execute()
             ->toArray();
 
         $nodes                = [];
@@ -143,42 +165,40 @@ final readonly class ProcessManager
         $totalCountRepeater   = 0;
         $totalCountBreakpoint = 0;
 
-        foreach ($userTasks as $userTask) {
-            $nodeId = $userTask->getNodeId();
+        foreach ($userTaskRows as $row) {
+            $nodeId = (string) ($row['_id'] ?? '');
 
             if (!isset($nodes[$nodeId])) {
-                $nodes[$nodeId] = self::emptyNode($userTask->getNodeName());
+                $nodes[$nodeId] = self::emptyNode((string) ($row['nodeName'] ?? ''));
             }
 
-            if ($userTask->getType() === 'userTask') {
-                $totalCountBreakpoint++;
-                $nodes[$nodeId]['breakpointCount']++;
-            } else {
-                $totalCountTrash++;
-                $nodes[$nodeId]['trashCount']++;
-            }
+            $breakpoint = (int) ($row['breakpointCount'] ?? 0);
+            $trash      = (int) ($row['trashCount'] ?? 0);
+
+            $nodes[$nodeId]['breakpointCount'] += $breakpoint;
+            $nodes[$nodeId]['trashCount']      += $trash;
+            $totalCountBreakpoint              += $breakpoint;
+            $totalCountTrash                   += $trash;
         }
 
-        foreach ($limiters as $limiter) {
-            $headers  = $limiter->getMessage()->getHeaders();
-            $nodeId   = $headers['node-id'] ?? '';
-            $nodeName = $headers['node-name'] ?? '';
+        foreach ($limiterRows as $row) {
+            $nodeId = (string) ($row['_id'] ?? '');
 
-            if (!$nodeId) {
+            if ($nodeId === '') {
                 continue;
             }
 
             if (!isset($nodes[$nodeId])) {
-                $nodes[$nodeId] = self::emptyNode($nodeName);
+                $nodes[$nodeId] = self::emptyNode((string) ($row['nodeName'] ?? ''));
             }
 
-            if ($limiter->isPrioritize()) {
-                $totalCountRepeater++;
-                $nodes[$nodeId]['repeaterCount']++;
-            } else {
-                $totalCountLimiter++;
-                $nodes[$nodeId]['limiterCount']++;
-            }
+            $repeater = (int) ($row['repeaterCount'] ?? 0);
+            $limiter  = (int) ($row['limiterCount'] ?? 0);
+
+            $nodes[$nodeId]['repeaterCount'] += $repeater;
+            $nodes[$nodeId]['limiterCount']  += $limiter;
+            $totalCountRepeater              += $repeater;
+            $totalCountLimiter               += $limiter;
         }
 
         $processTimes = $this->aggregateMetrics(BridgesMetrics::class, $id, '$fields.worker_duration');
