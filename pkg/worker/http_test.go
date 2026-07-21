@@ -76,6 +76,37 @@ func TestHttpBeforeProcess_MalformedResponseRetriesThenPoisons(t *testing.T) {
 	assert.Equal(t, "node-1", result.Message().GetHeaderOrDefault(enum.Header_NodeId, ""))
 }
 
+func TestHttpBeforeProcess_ServiceUnavailableRetriesThenPoisons(t *testing.T) {
+	ResetForTest()
+	setMaxFailures(3)
+	defer ResetForTest()
+
+	// Mimics the tunnel proxy reporting a momentarily disconnected worker:
+	// 503 with a plain-text body and no SDK result-message header.
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		_, _ = w.Write([]byte(`worker "instance-superzoo" not connected`))
+	}))
+	defer server.Close()
+
+	worker := httpBeforeProcess{client: http.Client{}}
+	node := httpTestNode{url: server.URL}
+
+	var result model.ProcessResult
+	for i := 0; i < 3; i++ {
+		result = worker.BeforeProcess(node, httpIdentityDto())
+
+		if i < 2 {
+			assert.Equal(t, enum.ProcessStatus_Error, result.Status(), "503 should retry (repeat) like an unreachable worker")
+		}
+		expireLock(server.URL, node.Id())
+	}
+
+	assert.Equal(t, enum.ProcessStatus_Trash, result.Status(), "should trash once poisoned")
+	assert.ErrorContains(t, result.Error(), `worker "instance-superzoo" not connected`, "poison message should surface the upstream reason")
+	assert.ErrorContains(t, result.Error(), "poisoned after 3 attempts")
+}
+
 func TestHttpBeforeProcess_ErrorStatusNonEnvelopeTrashesDeterministically(t *testing.T) {
 	cases := []struct {
 		name   string

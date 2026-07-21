@@ -5,7 +5,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/hanaboso/pipes/bridge/pkg/audit"
@@ -91,6 +93,13 @@ func (h httpBeforeProcess) BeforeProcess(node types.Node, dto *model.ProcessMess
 	defer response.Body.Close()
 	duration := time.Since(startTime)
 
+	// Capture the raw body once: FromHttpResponse consumes it, but we still
+	// need it to build a meaningful message for non-2xx responses that don't
+	// carry the SDK envelope (e.g. the tunnel proxy's plain-text
+	// `worker "x" not connected`, where the result-message header is absent).
+	rawBody, _ := io.ReadAll(response.Body)
+	response.Body = io.NopCloser(bytes.NewReader(rawBody))
+
 	log.Debug().EmbedObject(dto).
 		Str(enum.LogHeader_LevelName, "debug").
 		Msgf("Total request duration: %dms for endpoint POST[/%s]", duration.Milliseconds(), node.Settings().ActionPath)
@@ -161,15 +170,21 @@ func (h httpBeforeProcess) BeforeProcess(node types.Node, dto *model.ProcessMess
 		}
 	}
 
+	// 5xx = worker/transport level failure (worker crashed, or the tunnel proxy
+	// reporting the worker as unavailable with 503). Treat it exactly like an
+	// unreachable worker: retry (repeat via Nack+redelivery) and poison the
+	// correlationId after WorkerMaxFailures rounds, then trash with a message
+	// that surfaces the upstream reason.
 	if response.StatusCode > 500 {
 		RecordFailure(host, nodeId, correlationId)
+		reason := upstreamReason(dto, rawBody)
 		if IsPoisoned(host, nodeId, correlationId) {
 			log.Warn().EmbedObject(dto).
 				Bool(enum.LogHeader_IsForUi, true).
-				Msgf("Worker %s returned %d, poisoning correlationId %s after %d failures", host, response.StatusCode, correlationId, config.App.WorkerMaxFailures)
-			return dto.Trash(fmt.Errorf("result status [%d], correlationId poisoned after %d failures", response.StatusCode, config.App.WorkerMaxFailures))
+				Msgf("Worker %s unavailable [%d]: %s, poisoning correlationId %s after %d failures", host, response.StatusCode, reason, correlationId, config.App.WorkerMaxFailures)
+			return dto.Trash(fmt.Errorf("worker unavailable [%d]: %s, correlationId poisoned after %d attempts", response.StatusCode, reason, config.App.WorkerMaxFailures))
 		}
-		return dto.Error(fmt.Errorf("result status [%d]", response.StatusCode))
+		return dto.Error(fmt.Errorf("worker unavailable [%d]: %s", response.StatusCode, reason))
 	} else if response.StatusCode >= 300 {
 		return dto.Trash(
 			fmt.Errorf(
@@ -220,6 +235,24 @@ func auditBodyForRole(role string, dto *model.ProcessMessage) []byte {
 		return []byte(dto.GetOriginalBody())
 	}
 	return dto.GetBody()
+}
+
+// upstreamReason builds a human-readable reason for a failed worker call.
+// It prefers the SDK-provided result-message header; when that is absent
+// (e.g. a bare error from the tunnel proxy), it falls back to the raw
+// response body, trimmed and truncated to keep trash messages readable.
+func upstreamReason(dto *model.ProcessMessage, rawBody []byte) string {
+	if msg := dto.GetHeaderOrDefault(enum.Header_ResultMessage, ""); msg != "" {
+		return msg
+	}
+	if b := strings.TrimSpace(string(rawBody)); b != "" {
+		const maxLen = 256
+		if len(b) > maxLen {
+			return b[:maxLen] + "…"
+		}
+		return b
+	}
+	return "no response body"
 }
 
 func isSuccessResultCode(code int) bool {
