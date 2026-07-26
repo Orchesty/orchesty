@@ -1,11 +1,19 @@
 import axios from 'axios';
+import { promisify } from 'node:util';
+import { gzip } from 'node:zlib';
+
+const gzipAsync = promisify(gzip);
 
 const PUSH_PATH = '/loki/api/v1/push';
 const MAX_BATCH = 500;
+const GZIP_LEVEL = 6;
+const MAX_BATCH_BYTES = 3 * 1_024 * 1_024;
+const ENTRY_ENVELOPE_BYTES = 32;
 const QUEUE_SIZE = 16_384;
 const FLUSH_INTERVAL_MS = 2_000;
 
 interface IEntry {
+    bytes: number;
     labels: Record<string, string>;
     line: string;
     tsNs: string;
@@ -46,7 +54,12 @@ export default class Loki {
             return;
         }
 
-        this.queue.push({ labels, line, tsNs: `${Date.now()}000000` });
+        this.queue.push({
+            bytes: Buffer.byteLength(JSON.stringify(line)) + ENTRY_ENVELOPE_BYTES,
+            labels,
+            line,
+            tsNs: `${Date.now()}000000`,
+        });
 
         if (this.queue.length >= MAX_BATCH) {
             this.triggerFlush();
@@ -68,6 +81,29 @@ export default class Loki {
             .sort()
             .map((key) => `${key}=${stream[key]}`)
             .join('\0');
+    }
+
+    private static buildBatches(entries: IEntry[]): IEntry[][] {
+        const batches: IEntry[][] = [];
+        let batch: IEntry[] = [];
+        let bytes = 0;
+
+        for (const entry of entries) {
+            if (batch.length > 0 && (batch.length >= MAX_BATCH || bytes + entry.bytes > MAX_BATCH_BYTES)) {
+                batches.push(batch);
+                batch = [];
+                bytes = 0;
+            }
+
+            batch.push(entry);
+            bytes += entry.bytes;
+        }
+
+        if (batch.length > 0) {
+            batches.push(batch);
+        }
+
+        return batches;
     }
 
     private static buildBatchBody(entries: IEntry[]): { streams: IStream[] } {
@@ -114,17 +150,21 @@ export default class Loki {
         const entries = this.queue;
         this.queue = [];
 
-        for (let start = 0; start < entries.length; start += MAX_BATCH) {
+        for (const batch of Loki.buildBatches(entries)) {
             // eslint-disable-next-line no-await-in-loop
-            await this.post(Loki.buildBatchBody(entries.slice(start, start + MAX_BATCH)));
+            await this.post(Loki.buildBatchBody(batch));
         }
     }
 
     private async post(body: { streams: IStream[] }): Promise<void> {
         try {
-            await axios.post(`${this.dsn}${PUSH_PATH}`, body, {
+            const payload = await gzipAsync(JSON.stringify(body), { level: GZIP_LEVEL });
+
+            await axios.post(`${this.dsn}${PUSH_PATH}`, payload, {
                 headers: {
                     'Content-Type': 'application/json',
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    'Content-Encoding': 'gzip',
                 },
                 timeout: 5_000,
             });

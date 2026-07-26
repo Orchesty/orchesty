@@ -17,6 +17,7 @@ describe('Tests for logs router', () => {
     });
 
     afterAll(async () => {
+        await services.loki.close();
         await services.mongo.disconnect();
     });
 
@@ -89,5 +90,62 @@ describe('Tests for logs router', () => {
 
         const logs2 = await services.mongo.getCollection(mongoOptions.logsCollection).find().toArray();
         assert.equal(logs2.length, 0);
+    });
+
+    it('loki - big payload is accepted', async () => {
+        const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJzY29wZXMiOlsibWV0cmljOndyaXRlIl19.Er9Nioiq77-sahV5XOoZuFBfIbBEgXV45BfdRsbXWdQ';
+
+        const apiKeyCollection = services.mongo.getApiKeyCollection();
+        await apiKeyCollection.insertOne({ key, scopes: [ScopeEnum.LOG_WRITE] });
+
+        const resp = await supertest(services.app).post('/logger/loki').set(ORCHESTY_API_KEY, key).send({
+            timestamp: 1681225378307,
+            service: 'sdk',
+            message: 'Incoming request',
+            data: 'x'.repeat(1_500 * 1_024),
+        });
+
+        assert.equal(resp.statusCode, 200);
+        assert.deepEqual(resp.body, { message: { status: 'OK' } });
+    });
+
+    it('loki - big payload is not read when unauthorized', async () => {
+        const resp = await supertest(services.app).post('/logger/loki').send({
+            timestamp: 1681225378307,
+            service: 'sdk',
+            message: 'Incoming request',
+            data: 'x'.repeat(2_500 * 1_024),
+        });
+
+        assert.equal(resp.statusCode, 401);
+    });
+
+    it('loki - payload over the limit is rejected', async () => {
+        const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJzY29wZXMiOlsibWV0cmljOndyaXRlIl19.Er9Nioiq77-sahV5XOoZuFBfIbBEgXV45BfdRsbXWdQ';
+
+        const apiKeyCollection = services.mongo.getApiKeyCollection();
+        await apiKeyCollection.insertOne({ key, scopes: [ScopeEnum.LOG_WRITE] });
+
+        const resp = await supertest(services.app).post('/logger/loki').set(ORCHESTY_API_KEY, key).send({
+            timestamp: 1681225378307,
+            service: 'sdk',
+            message: 'Incoming request',
+            data: 'x'.repeat(2_500 * 1_024),
+        });
+
+        assert.equal(resp.statusCode, 413);
+    });
+
+    it('document - big payload is rejected by the stricter default limit', async () => {
+        const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJzY29wZXMiOlsid29ya2VyOmFsbCJdfQ.L0I7Yf92rj1uXOikdzl2SN1sXJdfbHpRE8aT_q6I99A';
+
+        const apiKeyCollection = services.mongo.getApiKeyCollection();
+        await apiKeyCollection.insertOne({ key, scopes: [ScopeEnum.WORKER_ALL] });
+
+        const resp = await supertest(services.app).post('/document/ApplicationInstall').set(ORCHESTY_API_KEY, key).send({
+            name: 'x'.repeat(1_500 * 1_024),
+        });
+
+        assert.equal(resp.statusCode, 413);
     });
 });

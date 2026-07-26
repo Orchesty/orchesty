@@ -26,7 +26,6 @@ export async function init(): Promise<IServices> {
     const authorizator = new AuthorizationMiddleware(mongoClient);
 
     const expressApp: Application = express();
-    expressApp.use(express.json());
 
     expressApp.use(
 
@@ -38,6 +37,19 @@ export async function init(): Promise<IServices> {
     );
 
     expressApp.use(authorizator.isAuthorized());
+
+    const loggerBodyParser = express.json({ limit: appOptions.maxLoggerRequestBodyBytes });
+    const defaultBodyParser = express.json({ limit: appOptions.maxRequestBodyBytes });
+
+    expressApp.use((req, res, next) => {
+        if (req.path.split('/')[1] === 'logger') {
+            loggerBodyParser(req, res, next);
+
+            return;
+        }
+
+        defaultBodyParser(req, res, next);
+    });
 
     new DefaultRouter(expressApp, mongoClient).initRoutes();
     new LoggerRouter(expressApp, mongoClient, loki).initRoutes();
