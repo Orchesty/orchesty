@@ -35,7 +35,7 @@ func NewContainer(client *rabbitmq.Client, topology model.Topology) Container {
 
 func (this *Container) initServiceQueues(client *rabbitmq.Client) {
 	for _, queue := range []string{enum.Queue_Counter, enum.Queue_Repeater, enum.Queue_Limiter} {
-		client.AddQueue(rabbitmq.Queue{
+		if err := client.DeclareQueue(rabbitmq.Queue{
 			Name: queue,
 			Options: rabbitmq.QueueOptions{
 				Durable: true,
@@ -43,7 +43,9 @@ func (this *Container) initServiceQueues(client *rabbitmq.Client) {
 					"x-queue-type": "quorum",
 				},
 			},
-		})
+		}); err != nil {
+			log.Fatal().Err(err).Msgf("failed to declare shared queue %s", queue)
+		}
 	}
 
 	this.Limiter = client.NewPublisher("", enum.Queue_Limiter)
