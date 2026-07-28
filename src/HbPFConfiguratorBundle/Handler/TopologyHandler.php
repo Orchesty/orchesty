@@ -505,10 +505,16 @@ class TopologyHandler
 
         $this->generatorBridge->invalidateTopologyCache($topology->getName());
         $this->topologyManager->deleteTopology($topology);
-        if ($removeWithTasks) {
-            $this->userTaskHandler->removeAllUserTasks($topology->getId());
+
+        try {
             $headers = $this->topologyManager->getHeadersForTopologyRunRequest();
             $this->generatorBridge->removeAllLimiterAndRepeaterMessages($topology->getId(), $headers);
+        } catch (Throwable) {
+            // Intentionally
+        }
+
+        if ($removeWithTasks) {
+            $this->userTaskHandler->removeAllUserTasks($topology->getId());
         }
 
         return $res;
