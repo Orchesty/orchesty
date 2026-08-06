@@ -29,6 +29,7 @@ import type { TopologyDetail, TopologyVersion, TopologyLayoutContext } from '@/t
 import type { TopologyMetrics, MetricsMode } from '@/types/topology-metrics'
 import { useLastTopology } from '@/composables/useLastTopology'
 import { useAuthorization } from '@/composables/useAuthorization'
+import { useBridgeProgress } from '@/composables/useBridgeProgress'
 import FailedMessageModal from '@/components/topologies/FailedMessageModal.vue'
 import type { TrashItem } from '@/types/trash'
 
@@ -379,7 +380,15 @@ const loadTopologyDetail = async () => {
   }
 }
 
-const publishing = ref(false)
+// Publish holds for a fixed warm-up window so the toast (and any queued process
+// run) lands after the bridge is actually usable, not when k8s accepts the
+// Deployment. See useBridgeProgress.
+const {
+  progress: publishProgress,
+  progressLabel: publishProgressLabel,
+  isRunning: publishing,
+  runWithProgress: runPublishWithProgress,
+} = useBridgeProgress()
 const hasFlow = ref(false)
 
 // Topology slot limit alert state. Backend returns HTTP 409 with a message
@@ -419,11 +428,26 @@ const isSlotLimitError = (error: unknown): { used: number | null; limit: number 
   return parsed ?? { used: null, limit: null }
 }
 
+// Publish has two triggers - the header button and `publishFn` in the Run
+// Process flow - and the second stays reachable while the first is still
+// warming up. Re-entrant calls join the in-flight publish instead of firing a
+// second POST (plus a duplicate toast, refetch and progress run).
+let publishInFlight: Promise<boolean> | null = null
+
 const handlePublish = async (): Promise<boolean> => {
-  if (!topology.value) return false
-  publishing.value = true
+  if (publishInFlight) return publishInFlight
+  publishInFlight = doPublish()
   try {
-    await publishTopology(topology.value._id)
+    return await publishInFlight
+  } finally {
+    publishInFlight = null
+  }
+}
+
+const doPublish = async (): Promise<boolean> => {
+  if (!topology.value) return false
+  try {
+    await runPublishWithProgress(publishTopology(topology.value._id))
     showToast('Topology published successfully', 'success')
     topology.value = await fetchTopologyDetail(props.id, versionId.value)
     await layout.refreshSidebar()
@@ -439,8 +463,6 @@ const handlePublish = async (): Promise<boolean> => {
       showToast('Failed to publish topology', 'error')
     }
     return false
-  } finally {
-    publishing.value = false
   }
 }
 
@@ -690,13 +712,13 @@ onMounted(async () => {
         </div>
 
         <div class="flex items-center gap-2">
-          <Button v-if="topology.visibility === 'draft' && canWrite" :loading="publishing" :disabled="!hasFlow" @click="handlePublish">
+          <Button v-if="topology.visibility === 'draft' && canWrite" :loading="publishing" :progress="publishing ? publishProgress : null" :disabled="!hasFlow" @click="handlePublish">
             <template #prepend>
               <svg class="-ms-1 me-2 h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                 <path fill-rule="evenodd" d="M5 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11.5c.07 0 .14-.007.207-.021.095.014.193.021.293.021h2a2 2 0 0 0 2-2V7a1 1 0 0 0-1-1h-1a1 1 0 1 0 0 2v11h-2V5a2 2 0 0 0-2-2H5Zm7 4a1 1 0 0 1 1-1h.5a1 1 0 1 1 0 2H13a1 1 0 0 1-1-1Zm0 3a1 1 0 0 1 1-1h.5a1 1 0 1 1 0 2H13a1 1 0 0 1-1-1Zm-6 4a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2H7a1 1 0 0 1-1-1Zm0 3a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2H7a1 1 0 0 1-1-1ZM7 6a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H7Zm1 3V8h1v1H8Z" clip-rule="evenodd"/>
               </svg>
             </template>
-            {{ publishing ? 'Publishing...' : 'Publish' }}
+            {{ publishing ? `Publishing... ${publishProgressLabel}` : 'Publish' }}
           </Button>
           <Button
             v-if="topology.visibility !== 'draft' && canRun"
@@ -752,7 +774,7 @@ onMounted(async () => {
     <div v-show="activeTopologyTab === 'topology'" class="flex-1 min-h-0 mt-4">
       <div class="h-full dark:bg-gray-800 dark:shadow-sm dark:rounded-lg">
         <div class="h-full bg-gray-50 dark:bg-gray-900 dark:rounded-lg overflow-hidden">
-          <TopologyEditor ref="topologyEditorRef" :topology-id="topology._id" :topology-name="topology.name" :topology-enabled="topology.enabled" :is-published="topology.visibility === 'public'" :can-publish="canWrite && hasFlow" :publish-fn="handlePublish" :refresh-key="refreshKey" @process-run="handleProcessRun" />
+          <TopologyEditor ref="topologyEditorRef" :topology-id="topology._id" :topology-name="topology.name" :topology-enabled="topology.enabled" :is-published="topology.visibility === 'public'" :can-publish="canWrite && hasFlow" :publish-fn="handlePublish" :is-publishing="publishing" :publish-progress="publishProgress" :refresh-key="refreshKey" @process-run="handleProcessRun" />
         </div>
       </div>
     </div>

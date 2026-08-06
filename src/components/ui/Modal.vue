@@ -6,11 +6,17 @@ interface Props {
   modelValue: boolean
   id: string
   title: string
-  size?: 'sm' | 'md' | 'lg' | 'xl' | '4xl'
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '4xl'
+  /**
+   * When false, ESC / backdrop click / the X button cannot close the modal.
+   * Used to hold the modal open across an in-flight operation.
+   */
+  dismissible?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   size: 'md',
+  dismissible: true,
 })
 
 const emit = defineEmits<{
@@ -22,6 +28,7 @@ const emit = defineEmits<{
 const modalInstance = ref<any>(null)
 
 const handleClose = () => {
+  if (!props.dismissible) return
   emit('update:modelValue', false)
 }
 
@@ -64,13 +71,38 @@ watch(
   () => props.modelValue,
   async (newValue) => {
     await nextTick()
-    
+
     if (modalInstance.value) {
       if (newValue) {
+        // show() attaches the ESC/backdrop listeners only when closable is set,
+        // so this has to be applied before opening.
+        modalInstance.value._options.closable = props.dismissible
         modalInstance.value.show()
       } else {
         modalInstance.value.hide()
       }
+    }
+  },
+)
+
+// Flowbite binds its ESC/backdrop listeners inside show(), so flipping the
+// option alone has no effect on an already-open modal - the listeners have to be
+// added/removed explicitly. Both methods are part of flowbite's published type
+// definitions despite the underscore prefix. Keep `closable` in sync with them,
+// otherwise hide() skips its own cleanup and the listeners leak.
+watch(
+  () => props.dismissible,
+  (dismissible) => {
+    // Only touch an already-open modal. While it is hidden, show() applies
+    // `closable` itself - attaching here too would leave a second listener
+    // closure behind that _removeModalCloseEventListeners can never reach.
+    if (!modalInstance.value || modalInstance.value.isHidden()) return
+
+    modalInstance.value._options.closable = dismissible
+    if (dismissible) {
+      modalInstance.value._setupModalCloseEventListeners()
+    } else {
+      modalInstance.value._removeModalCloseEventListeners()
     }
   },
 )
@@ -88,6 +120,7 @@ const sizeClass = {
   md: 'max-w-md',
   lg: 'max-w-lg',
   xl: 'max-w-xl',
+  '2xl': 'max-w-2xl',
   '4xl': 'max-w-4xl',
 }
 </script>
@@ -111,6 +144,7 @@ const sizeClass = {
               {{ title }}
             </h3>
             <button
+              v-if="dismissible"
               type="button"
               class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
               :data-modal-hide="id"

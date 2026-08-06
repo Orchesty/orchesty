@@ -26,6 +26,7 @@ import { getNextCronRun } from '@/utils/cronParser'
 import { useToast } from '@/composables/useToast'
 import { useDateFormat } from '@/composables/useDateFormat'
 import { useProcessPolling } from '@/composables/useProcessPolling'
+import { useBridgeProgress } from '@/composables/useBridgeProgress'
 import {
   fetchTopologySchema,
   saveTopologySchema,
@@ -49,6 +50,9 @@ interface Props {
   isPublished?: boolean
   canPublish?: boolean
   publishFn?: () => Promise<boolean>
+  /** Parent's publish warm-up state, forwarded to RunProcessModal. */
+  isPublishing?: boolean
+  publishProgress?: number
   refreshKey?: number
 }
 
@@ -57,6 +61,8 @@ const props = withDefaults(defineProps<Props>(), {
   isPublished: true,
   canPublish: true,
   publishFn: undefined,
+  isPublishing: false,
+  publishProgress: 0,
   refreshKey: 0,
 })
 
@@ -118,7 +124,12 @@ const nodePrefetch = ref<Record<string, number>>({})
 // persisted to Mongo haven't yet been propagated to the running consumer.
 // Cleared by republishing the topology.
 const bridgeOutOfSync = ref(false)
-const republishing = ref(false)
+const {
+  progress: republishProgress,
+  progressLabel: republishProgressLabel,
+  isRunning: republishing,
+  runWithProgress: runRepublishWithProgress,
+} = useBridgeProgress()
 
 const refreshTopologyMeta = async () => {
   try {
@@ -666,17 +677,14 @@ const handlePrefetchSaved = async (republished: boolean) => {
 
 const handleRepublishNow = async () => {
   if (republishing.value) return
-  republishing.value = true
   try {
-    await republishTopology(props.topologyId)
+    await runRepublishWithProgress(republishTopology(props.topologyId))
     showToast('Bridge republished', 'success')
     bridgeOutOfSync.value = false
     await refreshTopologyMeta()
   } catch (error) {
     console.error('Republish failed:', error)
     showToast(`Republish failed: ${(error as Error).message}`, 'error')
-  } finally {
-    republishing.value = false
   }
 }
 
@@ -1029,9 +1037,12 @@ const refreshBackendNodeMap = async () => {
 }
 
 const handleRunProcess = async (jsonData: string) => {
-  if (!selectedNode.value) return
-
+  // RunProcessModal no longer self-closes, so every exit below must go through
+  // the finally. The failed-publish path matters most: the modal has to get out
+  // of the way so SlotLimitReachedModal is not stacked behind it.
   try {
+    if (!selectedNode.value) return
+
     if (!props.isPublished) {
       if (!props.canPublish || !props.publishFn) {
         showToast('Topology must be published before it can run', 'error')
@@ -1070,6 +1081,8 @@ const handleRunProcess = async (jsonData: string) => {
     emit('process-run')
   } catch (error) {
     console.error('Failed to run process:', error)
+  } finally {
+    runProcessModalOpen.value = false
   }
 }
 
@@ -1239,8 +1252,19 @@ watch(() => props.refreshKey, () => {
     >
       <div
         v-if="bridgeOutOfSync"
-        class="absolute top-3 right-3 z-50 max-w-md rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-3 text-sm shadow-lg dark:border-yellow-600 dark:bg-yellow-900/40 dark:text-yellow-100"
+        class="absolute top-3 right-3 z-50 max-w-md overflow-hidden rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-3 text-sm shadow-lg dark:border-yellow-600 dark:bg-yellow-900/40 dark:text-yellow-100"
       >
+        <!-- Warm-up track. Absolutely positioned so the banner keeps its height:
+             the toast below is offset with a hardcoded `top-32`. -->
+        <span
+          v-if="republishing"
+          class="absolute bottom-0 left-0 h-0.5 bg-yellow-500 transition-[width] duration-100 ease-linear motion-reduce:transition-none dark:bg-yellow-400"
+          :style="{ width: `${republishProgress}%` }"
+          role="progressbar"
+          :aria-valuenow="republishProgress"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        ></span>
         <div class="flex items-start gap-3">
           <div class="flex-1 space-y-1.5">
             <div class="font-semibold text-yellow-800 dark:text-yellow-200">
@@ -1255,7 +1279,7 @@ watch(() => props.refreshKey, () => {
               :disabled="republishing"
               @click="handleRepublishNow"
             >
-              {{ republishing ? 'Republishing…' : 'Republish now' }}
+              {{ republishing ? `Republishing… ${republishProgressLabel}` : 'Republish now' }}
             </button>
           </div>
         </div>
@@ -1334,6 +1358,8 @@ watch(() => props.refreshKey, () => {
       :has-breakpoint-messages="hasBreakpoints"
       :is-published="isPublished"
       :can-publish="canPublish"
+      :is-publishing="isPublishing"
+      :publish-progress="publishProgress"
       @run="handleRunProcess"
     />
 

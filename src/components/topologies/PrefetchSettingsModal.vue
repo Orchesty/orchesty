@@ -3,6 +3,7 @@ import { ref, watch, computed } from 'vue'
 import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
 import { useToast } from '@/composables/useToast'
+import { useBridgeProgress } from '@/composables/useBridgeProgress'
 import { updateNodePrefetch } from '@/services/nodeService'
 import { republishTopology } from '@/services/topologiesService'
 
@@ -28,6 +29,15 @@ const { showToast } = useToast()
 
 const prefetchValue = ref<number>(1)
 const submitting = ref(false)
+
+// Only the republish gets the warm-up window - the prefetch PATCH is fast and
+// unrelated to the bridge starting up.
+const {
+  progress: republishProgress,
+  progressLabel: republishProgressLabel,
+  isRunning: republishing,
+  runWithProgress: runRepublishWithProgress,
+} = useBridgeProgress()
 
 const PREFETCH_MIN = 1
 const PREFETCH_MAX = 20
@@ -85,7 +95,7 @@ const handleSaveAndRepublish = async () => {
     const ok = await persistPrefetch()
     if (!ok) return
     try {
-      await republishTopology(props.topologyId)
+      await runRepublishWithProgress(republishTopology(props.topologyId))
       showToast('Prefetch saved and bridge republished', 'success')
       emit('saved', true)
       close()
@@ -109,7 +119,8 @@ const handleSaveAndRepublish = async () => {
     :model-value="modelValue"
     id="prefetch-settings-modal"
     title="Prefetch settings"
-    size="xl"
+    size="2xl"
+    :dismissible="!submitting"
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <form id="prefetch-settings-form" class="space-y-4" @submit.prevent="handleSaveAndRepublish">
@@ -160,7 +171,7 @@ const handleSaveAndRepublish = async () => {
     </form>
 
     <template #footer-actions>
-      <Button variant="outline" @click="close">Cancel</Button>
+      <Button variant="outline" :disabled="submitting" @click="close">Cancel</Button>
       <Button
         variant="outline"
         type="button"
@@ -173,9 +184,11 @@ const handleSaveAndRepublish = async () => {
         variant="primary"
         type="submit"
         form="prefetch-settings-form"
+        :loading="republishing"
+        :progress="republishing ? republishProgress : null"
         :disabled="!isValid || submitting"
       >
-        {{ submitting ? 'Saving…' : 'Save & Republish' }}
+        {{ republishing ? `Republishing… ${republishProgressLabel}` : (submitting ? 'Saving…' : 'Save & Republish') }}
       </Button>
     </template>
   </Modal>

@@ -3,6 +3,7 @@ import { ref, watch, computed } from 'vue'
 import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
 import Textarea from '@/components/ui/datagrid/Textarea.vue'
+import { formatProgressLabel } from '@/composables/useBridgeProgress'
 
 interface Props {
   modelValue: boolean
@@ -11,12 +12,18 @@ interface Props {
   hasBreakpointMessages?: boolean
   isPublished?: boolean
   canPublish?: boolean
+  /** Parent is publishing on our behalf before the run can start. */
+  isPublishing?: boolean
+  /** 0-100 warm-up progress of that publish. */
+  publishProgress?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
   hasBreakpointMessages: false,
   isPublished: true,
   canPublish: true,
+  isPublishing: false,
+  publishProgress: 0,
 })
 
 const emit = defineEmits<{
@@ -63,9 +70,17 @@ const isValid = computed(() => {
 
 const needsPublish = computed(() => !props.isPublished)
 
-const isBlocked = computed(() => needsPublish.value && !props.canPublish)
+// `isPublishing` means the parent already has a publish in flight (e.g. the
+// header Publish button was clicked first). Without this the button stays
+// enabled and a click starts a second, overlapping publish.
+const isBlocked = computed(
+  () => (needsPublish.value && !props.canPublish) || props.isPublishing,
+)
 
-const runButtonLabel = computed(() => (needsPublish.value ? 'Publish and Run Process' : 'Run Process'))
+const runButtonLabel = computed(() => {
+  if (props.isPublishing) return `Publishing... ${formatProgressLabel(props.publishProgress)}`
+  return needsPublish.value ? 'Publish and Run Process' : 'Run Process'
+})
 
 const modalTitle = computed(() => {
   return props.nodeName ? `Run Process - ${props.nodeName}` : 'Run Process'
@@ -75,16 +90,13 @@ const handleRun = () => {
   if (!isValid.value || isBlocked.value) return
 
   isRunning.value = true
+  // The parent owns closing: an unpublished topology publishes first, and that
+  // warm-up has to stay visible here until it settles (or fails).
   emit('run', jsonInput.value)
-
-  // Close modal after a short delay
-  setTimeout(() => {
-    emit('update:modelValue', false)
-    isRunning.value = false
-  }, 500)
 }
 
 const handleClose = () => {
+  if (isRunning.value) return
   emit('update:modelValue', false)
 }
 </script>
@@ -95,6 +107,7 @@ const handleClose = () => {
     :model-value="modelValue"
     :title="modalTitle"
     size="lg"
+    :dismissible="!isRunning"
     @update:model-value="handleClose"
   >
     <div class="space-y-4">
@@ -178,6 +191,7 @@ const handleClose = () => {
       </Button>
       <Button
         :loading="isRunning"
+        :progress="isPublishing ? publishProgress : null"
         :disabled="!isValid || isBlocked"
         @click="handleRun"
       >
