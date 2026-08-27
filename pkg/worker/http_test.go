@@ -1,8 +1,11 @@
 package worker
 
 import (
+	"context"
+	"errors"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 
 	"github.com/hanaboso/pipes/bridge/pkg/bridge/types"
@@ -105,6 +108,29 @@ func TestHttpBeforeProcess_ServiceUnavailableRetriesThenPoisons(t *testing.T) {
 	assert.Equal(t, enum.ProcessStatus_Trash, result.Status(), "should trash once poisoned")
 	assert.ErrorContains(t, result.Error(), `worker "instance-superzoo" not connected`, "poison message should surface the upstream reason")
 	assert.ErrorContains(t, result.Error(), "poisoned after 3 attempts")
+}
+
+func TestTransportFailureReason(t *testing.T) {
+	cases := []struct {
+		name     string
+		err      error
+		expected string
+	}{
+		{"deadline exceeded", context.DeadlineExceeded, "request timed out after 60s"},
+		{
+			// What client.Do actually returns when the request context expires.
+			"deadline wrapped by client.Do",
+			&url.Error{Op: "Post", URL: "http://worker:8080/process", Err: context.DeadlineExceeded},
+			"request timed out after 60s",
+		},
+		{"connection error", errors.New("connect: connection refused"), "unreachable"},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			assert.Equal(t, tc.expected, transportFailureReason(tc.err))
+		})
+	}
 }
 
 func TestHttpBeforeProcess_ErrorStatusNonEnvelopeTrashesDeterministically(t *testing.T) {

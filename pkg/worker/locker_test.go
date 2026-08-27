@@ -29,6 +29,35 @@ func simulateDistinctRounds(host, nodeId, correlationId string, n int) {
 	}
 }
 
+// ageLastFailure backdates the failure bookkeeping for a host+node pair by ms
+// milliseconds and expires the lock window, so the next RecordFailure counts as
+// a fresh round.
+func ageLastFailure(host, nodeId string, ms int64) {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+	if state, ok := l.hosts[lockerKey(host, nodeId)]; ok {
+		state.lastFailureAt -= ms
+		state.lockUntil = 0
+	}
+}
+
+func consecutiveErrors(host, nodeId string) int {
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
+	state, ok := l.hosts[lockerKey(host, nodeId)]
+	if !ok {
+		return 0
+	}
+	return state.consecutiveErrors
+}
+
+func hostTracked(host, nodeId string) bool {
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
+	_, ok := l.hosts[lockerKey(host, nodeId)]
+	return ok
+}
+
 func TestRecordFailure_PoisonsAfterMax(t *testing.T) {
 	ResetForTest()
 	setMaxFailures(10)
@@ -146,6 +175,72 @@ func TestDisabled_ZeroMaxFailures(t *testing.T) {
 
 	simulateDistinctRounds(host, nodeId, corrId, 100)
 	assert.False(t, IsPoisoned(host, nodeId, corrId), "poisoning should be disabled when max=0")
+}
+
+// A node whose only traffic is one nightly batch used to accumulate one failure
+// round per night — with no success in between to reset the counter — until a
+// single transient blip poisoned the whole run.
+func TestRecordFailure_CounterDecaysAfterTTL(t *testing.T) {
+	ResetForTest()
+	setMaxFailures(10)
+
+	host, nodeId, corrId := "http://worker:8080", "node-1", "batch-nightly"
+
+	simulateDistinctRounds(host, nodeId, corrId, 9)
+	assert.False(t, IsPoisoned(host, nodeId, corrId), "should not be poisoned after 9 rounds")
+
+	// Nothing failed for longer than the TTL: the next failure starts a new incident.
+	ageLastFailure(host, nodeId, failureTTLMs+1)
+	RecordFailure(host, nodeId, corrId)
+
+	assert.False(t, IsPoisoned(host, nodeId, corrId), "a failure after the TTL must not poison")
+	assert.Equal(t, 1, consecutiveErrors(host, nodeId), "counter should restart at 1")
+}
+
+func TestRecordFailure_CounterPersistsWithinTTL(t *testing.T) {
+	ResetForTest()
+	setMaxFailures(10)
+
+	host, nodeId, corrId := "http://worker:8080", "node-1", "batch-incident"
+
+	simulateDistinctRounds(host, nodeId, corrId, 9)
+	assert.False(t, IsPoisoned(host, nodeId, corrId))
+
+	// Still the same incident — rounds inside the TTL keep accumulating.
+	ageLastFailure(host, nodeId, failureTTLMs/2)
+	RecordFailure(host, nodeId, corrId)
+
+	assert.True(t, IsPoisoned(host, nodeId, corrId), "rounds within the TTL must still poison at the threshold")
+	assert.Equal(t, 10, consecutiveErrors(host, nodeId))
+}
+
+func TestCleanup_ClearsStaleCounter(t *testing.T) {
+	ResetForTest()
+	setMaxFailures(10)
+
+	host, nodeId, corrId := "http://worker:8080", "node-1", "batch-stale"
+
+	simulateDistinctRounds(host, nodeId, corrId, 5)
+	assert.Equal(t, 5, consecutiveErrors(host, nodeId))
+
+	ageLastFailure(host, nodeId, failureTTLMs+1)
+	cleanupExpiredPoisons()
+
+	assert.Equal(t, 0, consecutiveErrors(host, nodeId), "stale counter should be reset")
+	assert.False(t, hostTracked(host, nodeId), "idle host entry should be dropped")
+}
+
+func TestCleanup_KeepsRecentCounter(t *testing.T) {
+	ResetForTest()
+	setMaxFailures(10)
+
+	host, nodeId, corrId := "http://worker:8080", "node-1", "batch-recent"
+
+	simulateDistinctRounds(host, nodeId, corrId, 5)
+	cleanupExpiredPoisons()
+
+	assert.Equal(t, 5, consecutiveErrors(host, nodeId), "a counter within the TTL must survive cleanup")
+	assert.True(t, hostTracked(host, nodeId), "host entry with an active counter must be kept")
 }
 
 func TestStartCleanup_StopsOnCancel(t *testing.T) {

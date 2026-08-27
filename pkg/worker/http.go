@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -17,6 +18,8 @@ import (
 	"github.com/hanaboso/pipes/bridge/pkg/model"
 	"github.com/rs/zerolog/log"
 )
+
+const requestTimeoutSec = 60
 
 type httpBeforeProcess struct {
 	client http.Client
@@ -63,7 +66,7 @@ func (h httpBeforeProcess) BeforeProcess(node types.Node, dto *model.ProcessMess
 		return dto.Error(err)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeoutSec*time.Second)
 	defer cancel()
 	req = req.WithContext(ctx)
 
@@ -82,11 +85,12 @@ func (h httpBeforeProcess) BeforeProcess(node types.Node, dto *model.ProcessMess
 	response, err := h.client.Do(req)
 	if err != nil {
 		RecordFailure(host, nodeId, correlationId)
+		reason := transportFailureReason(err)
 		if IsPoisoned(host, nodeId, correlationId) {
 			log.Warn().EmbedObject(dto).
 				Bool(enum.LogHeader_IsForUi, true).
-				Msgf("Worker %s unreachable, poisoning correlationId %s after %d failures", host, correlationId, config.App.WorkerMaxFailures)
-			return dto.Trash(fmt.Errorf("worker unreachable, correlationId poisoned after %d failures", config.App.WorkerMaxFailures))
+				Msgf("Worker %s %s, poisoning correlationId %s after %d failures", host, reason, correlationId, config.App.WorkerMaxFailures)
+			return dto.Trash(fmt.Errorf("worker %s, correlationId poisoned after %d failures", reason, config.App.WorkerMaxFailures))
 		}
 		return dto.Error(err)
 	}
@@ -235,6 +239,17 @@ func auditBodyForRole(role string, dto *model.ProcessMessage) []byte {
 		return []byte(dto.GetOriginalBody())
 	}
 	return dto.GetBody()
+}
+
+// transportFailureReason classifies a client.Do error for operator-facing
+// messages. The request context expiring means the worker accepted the call and
+// something upstream is slow — it is usually alive — so saying "unreachable"
+// there sends operators chasing a dead worker that isn't dead.
+func transportFailureReason(err error) string {
+	if errors.Is(err, context.DeadlineExceeded) {
+		return fmt.Sprintf("request timed out after %ds", requestTimeoutSec)
+	}
+	return "unreachable"
 }
 
 // upstreamReason builds a human-readable reason for a failed worker call.
