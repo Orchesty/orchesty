@@ -115,6 +115,8 @@ func (pm ParsedMessage) ProcessInitQuery() mongo.WriteModel {
 			"topologyId":     pm.ProcessMessage.GetHeaderOrDefault(enum.Header_TopologyId, ""),
 			"user":           user,
 			"finished":       nil,
+			"status":         "RUNNING",
+			"duration":       0,
 			"systemEvent":    pm.ProcessMessage.GetBoolHeaderOrDefault(enum.Header_SystemEvent, false),
 			"source":         pm.ProcessMessage.GetHeaderOrDefault(enum.Header_Source, "auto"),
 		},
@@ -125,7 +127,7 @@ func (pm ParsedMessage) ProcessInitQuery() mongo.WriteModel {
 	return doc
 }
 
-func (pm ParsedMessage) ProcessQuery() mongo.WriteModel {
+func (pm ParsedMessage) AuditIds() []string {
 	var rawAuditData map[string]string
 	_ = json.Unmarshal([]byte(pm.ProcessMessage.GetHeaderOrDefault(enum.Header_AuditEntityIds, "{}")), &rawAuditData)
 	auditData := make([]string, 0, len(rawAuditData))
@@ -134,25 +136,39 @@ func (pm ParsedMessage) ProcessQuery() mongo.WriteModel {
 		auditData = append(auditData, rawAuditItem)
 	}
 
+	return auditData
+}
+
+func MergedProcessQuery(correlationId string, ok, nok, processed, total int) mongo.WriteModel {
 	doc := mongo.NewUpdateOneModel()
 	doc.Filter = bson.M{
-		"_id": pm.ProcessMessage.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
+		"_id": correlationId,
 	}
 	doc.Update = bson.M{
 		"$inc": bson.M{
-			"ok":             pm.ProcessMessage.ProcessBody.successes(),
-			"nok":            pm.ProcessMessage.ProcessBody.fails(),
-			"processedCount": pm.ProcessMessage.ProcessBody.successes() + pm.ProcessMessage.ProcessBody.fails(),
-			"total":          pm.ProcessMessage.ProcessBody.Following,
-		},
-		"$addToSet": bson.M{
-			"auditData": bson.M{
-				"$each": auditData,
-			},
+			"ok":             ok,
+			"nok":            nok,
+			"processedCount": processed,
+			"total":          total,
 		},
 	}
 
 	return doc
+}
+
+func AuditDataLinks(created time.Time, correlationId string, auditDataIds []string) []interface{} {
+	docs := make([]interface{}, 0, len(auditDataIds))
+
+	for _, auditDataId := range auditDataIds {
+		docs = append(docs, bson.M{
+			"_id":           fmt.Sprintf("%s:%s", correlationId, auditDataId),
+			"created":       created,
+			"correlationId": correlationId,
+			"auditDataId":   auditDataId,
+		})
+	}
+
+	return docs
 }
 
 func (pm ParsedMessage) SubProcessInitQuery() mongo.WriteModel {
@@ -183,17 +199,17 @@ func (pm ParsedMessage) SubProcessInitQuery() mongo.WriteModel {
 	return doc
 }
 
-func (pm ParsedMessage) SubProcessQuery() mongo.WriteModel {
+func MergedSubProcessQuery(processId string, ok, nok, processed, total int) mongo.WriteModel {
 	doc := mongo.NewUpdateOneModel()
 	doc.Filter = bson.M{
-		"_id": pm.ProcessMessage.GetHeaderOrDefault(enum.Header_ProcessId, ""),
+		"_id": processId,
 	}
 	doc.Update = bson.M{
 		"$inc": bson.M{
-			"ok":             pm.ProcessMessage.ProcessBody.successes(),
-			"nok":            pm.ProcessMessage.ProcessBody.fails(),
-			"processedCount": pm.ProcessMessage.ProcessBody.successes() + pm.ProcessMessage.ProcessBody.fails(),
-			"total":          pm.ProcessMessage.ProcessBody.Following,
+			"ok":             ok,
+			"nok":            nok,
+			"processedCount": processed,
+			"total":          total,
 		},
 	}
 
@@ -222,6 +238,35 @@ func (pm ParsedMessage) FinishProcessQuery() mongo.WriteModel {
 								},
 								pm.GetPublishedTimestamp(),
 								nil,
+							},
+						},
+					},
+				},
+			},
+		},
+		bson.M{
+			"$set": bson.M{
+				"duration": bson.M{
+					"$subtract": bson.A{
+						bson.M{"$ifNull": bson.A{"$finished", "$$NOW"}},
+						"$created",
+					},
+				},
+				"status": bson.M{
+					"$cond": bson.A{
+						bson.M{"$eq": bson.A{"$terminated", true}},
+						"TERMINATED",
+						bson.M{
+							"$cond": bson.A{
+								bson.M{"$eq": bson.A{"$finished", nil}},
+								"RUNNING",
+								bson.M{
+									"$cond": bson.A{
+										bson.M{"$gt": bson.A{"$nok", 0}},
+										"FAILED",
+										"COMPLETED",
+									},
+								},
 							},
 						},
 					},
@@ -276,20 +321,4 @@ func (pm ParsedMessage) ErrorDoc() bson.M {
 		"headers":       pm.ProcessMessage.ProcessBody.Headers,
 		"created":       time.Now(),
 	}
-}
-
-func (pb ProcessBody) successes() int {
-	if pb.Success {
-		return 1
-	}
-
-	return 0
-}
-
-func (pb ProcessBody) fails() int {
-	if pb.Success {
-		return 0
-	}
-
-	return 1
 }

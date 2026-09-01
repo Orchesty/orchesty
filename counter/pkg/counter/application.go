@@ -2,6 +2,9 @@ package counter
 
 import (
 	"context"
+	"sync"
+	"time"
+
 	metrics "github.com/hanaboso/go-metrics/pkg"
 	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
 	"github.com/hanaboso/go-utils/pkg/intx"
@@ -14,39 +17,43 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	md "go.mongodb.org/mongo-driver/v2/mongo"
-	"sync"
-	"time"
 )
 
 type MultiCounter struct {
-	rabbitmq          *rabbitmq.Client
-	events            *rabbitmq.Publisher
-	mongo             mongo.MongoDb
-	metrics           metrics.Interface
-	toCommit          bool
-	wg                *sync.WaitGroup
-	processes         []md.WriteModel
-	subProcesses      []md.WriteModel
-	finishes          []md.WriteModel
-	finishesProcesses []string
-	errors            []bson.M
+	rabbitmq   *rabbitmq.Client
+	events     *rabbitmq.Publisher
+	mongo      mongo.MongoDb
+	metrics    metrics.Interface
+	toCommit   bool
+	wg         *sync.WaitGroup
+	agg        map[string]*procAggregate
+	subAgg     map[string]*procAggregate
+	errors     []bson.M
+	batchCount int
+}
+
+type procAggregate struct {
+	sample    *model.ParsedMessage
+	ok        int
+	nok       int
+	processed int
+	total     int
+	audit     map[string]struct{}
 }
 
 var relieve = 10
 
 func NewMultiCounter(rabbitmq *rabbitmq.Client, events *rabbitmq.Publisher, mongo mongo.MongoDb) MultiCounter {
 	return MultiCounter{
-		rabbitmq:          rabbitmq,
-		events:            events,
-		mongo:             mongo,
-		metrics:           metrics.Connect(config.Metrics.Dsn),
-		toCommit:          false,
-		processes:         nil,
-		subProcesses:      nil,
-		finishes:          nil,
-		finishesProcesses: nil,
-		errors:            nil,
-		wg:                &sync.WaitGroup{},
+		rabbitmq: rabbitmq,
+		events:   events,
+		mongo:    mongo,
+		metrics:  metrics.Connect(config.Metrics.Dsn),
+		toCommit: false,
+		agg:      map[string]*procAggregate{},
+		subAgg:   map[string]*procAggregate{},
+		errors:   nil,
+		wg:       &sync.WaitGroup{},
 	}
 }
 
@@ -56,25 +63,57 @@ func (c *MultiCounter) Start(ctx context.Context) {
 	config.Log.Info("Consumer started")
 	var lastMessage amqp.Delivery
 
+	linger := time.Duration(config.App.CommitDelayMs) * time.Millisecond
+	maxBatch := config.RabbitMq.Prefetch
+	handle := func(msg amqp.Delivery) {
+		lastMessage = msg
+		parsed := rabbit.ParseMessage(msg)
+
+		if parsed.Ok {
+			c.wg.Add(1)
+			c.processMessage(parsed)
+		}
+	}
+
 	for {
 		select {
 		case <-ctx.Done():
 			c.commit(lastMessage)
 			return
 		case msg, ok := <-msgs:
-			if ok {
-				lastMessage = msg
-				parsed := rabbit.ParseMessage(msg)
-				if parsed.Ok {
-					c.wg.Add(1)
-					c.processMessage(parsed) // Just DO NOT make it as a new goroutine! Would create data race.
-				}
-			} else {
+			if !ok {
 				c.commit(lastMessage)
 				return
 			}
+			handle(msg)
+
+			if maxBatch > 0 && c.batchCount >= maxBatch {
+				c.commit(lastMessage)
+			}
 		default:
-			c.commit(lastMessage)
+			if linger <= 0 {
+				c.commit(lastMessage)
+				continue
+			}
+
+			select {
+			case <-ctx.Done():
+				c.commit(lastMessage)
+				return
+			case msg, ok := <-msgs:
+				if !ok {
+					c.commit(lastMessage)
+					return
+				}
+
+				handle(msg)
+
+				if maxBatch > 0 && c.batchCount >= maxBatch {
+					c.commit(lastMessage)
+				}
+			case <-time.After(linger):
+				c.commit(lastMessage)
+			}
 		}
 	}
 }
@@ -82,33 +121,98 @@ func (c *MultiCounter) Start(ctx context.Context) {
 func (c *MultiCounter) processMessage(message *model.ParsedMessage) {
 	defer c.wg.Done()
 	c.toCommit = true
+	c.batchCount++
 
-	c.processes = append(
-		c.processes,
-		message.ProcessInitQuery(),
-		message.ProcessQuery(),
-	)
-	c.subProcesses = append(
-		c.processes,
-		message.SubProcessInitQuery(),
-		message.SubProcessQuery(),
-	)
+	corr := message.ProcessMessage.GetHeaderOrDefault(enum.Header_CorrelationId, "")
+	a := c.agg[corr]
 
-	c.finishes = append(c.finishes, message.FinishProcessQuery())
-	if !message.ProcessMessage.ProcessBody.Success {
-		c.errors = append(c.errors, message.ErrorDoc())
+	if a == nil {
+		a = &procAggregate{audit: map[string]struct{}{}}
+		c.agg[corr] = a
 	}
 
-	c.finishesProcesses = append(
-		c.finishesProcesses,
-		message.ProcessMessage.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
-	)
+	a.sample = message
+	body := message.ProcessMessage.ProcessBody
+
+	if body.Success {
+		a.ok++
+	} else {
+		a.nok++
+	}
+
+	a.processed++
+	a.total += body.Following
+
+	for _, id := range message.AuditIds() {
+		a.audit[id] = struct{}{}
+	}
+
+	if config.App.EnableSubProcessCounters {
+		pid := message.ProcessMessage.GetHeaderOrDefault(enum.Header_ProcessId, "")
+		s := c.subAgg[pid]
+
+		if s == nil {
+			s = &procAggregate{}
+			c.subAgg[pid] = s
+		}
+
+		s.sample = message
+
+		if body.Success {
+			s.ok++
+		} else {
+			s.nok++
+		}
+
+		s.processed++
+		s.total += body.Following
+	}
+
+	if !body.Success {
+		c.errors = append(c.errors, message.ErrorDoc())
+	}
 }
 
 func (c *MultiCounter) commit(msg amqp.Delivery) {
 	if msg.DeliveryTag > 0 && c.toCommit {
 		c.wg.Wait()
-		finished := c.mongo.UpdateProcesses(c.processes, c.subProcesses, c.finishes, c.errors, c.finishesProcesses)
+
+		processes := make([]md.WriteModel, 0, len(c.agg)*2)
+		finishes := make([]md.WriteModel, 0, len(c.agg))
+		finishesProcesses := make([]string, 0, len(c.agg))
+		var auditDataLinks []interface{}
+		now := time.Now()
+		for corr, a := range c.agg {
+			audit := make([]string, 0, len(a.audit))
+
+			for id := range a.audit {
+				audit = append(audit, id)
+			}
+
+			auditDataLinks = append(auditDataLinks, model.AuditDataLinks(now, corr, audit)...)
+			processes = append(
+				processes,
+				a.sample.ProcessInitQuery(),
+				model.MergedProcessQuery(corr, a.ok, a.nok, a.processed, a.total),
+			)
+			finishes = append(finishes, a.sample.FinishProcessQuery())
+			finishesProcesses = append(finishesProcesses, corr)
+		}
+
+		var subProcesses []md.WriteModel
+		if config.App.EnableSubProcessCounters && len(c.subAgg) > 0 {
+			subProcesses = make([]md.WriteModel, 0, len(c.subAgg)*2)
+
+			for pid, s := range c.subAgg {
+				subProcesses = append(
+					subProcesses,
+					s.sample.SubProcessInitQuery(),
+					model.MergedSubProcessQuery(pid, s.ok, s.nok, s.processed, s.total),
+				)
+			}
+		}
+
+		finished := c.mongo.UpdateProcesses(processes, subProcesses, finishes, c.errors, finishesProcesses, auditDataLinks)
 		for _, process := range finished {
 			go c.finishProcess(process, msg.Headers)
 		}
@@ -161,9 +265,8 @@ func (c *MultiCounter) sendMetrics(process model.Process) {
 
 func (c *MultiCounter) clear() {
 	c.toCommit = false
-	c.processes = nil
-	c.subProcesses = nil
-	c.finishes = nil
+	c.agg = map[string]*procAggregate{}
+	c.subAgg = map[string]*procAggregate{}
 	c.errors = nil
-	c.finishesProcesses = nil
+	c.batchCount = 0
 }

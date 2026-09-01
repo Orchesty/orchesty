@@ -19,22 +19,25 @@ type (
 	}
 
 	app struct {
-		Debug               bool `env:"APP_DEBUG" default:"false"`
-		RunCallbackTopology bool `env:"APP_RUN_CALLBACK_TOPOLOGY" default:"true"`
+		Debug                    bool `env:"APP_DEBUG" default:"false"`
+		RunCallbackTopology      bool `env:"APP_RUN_CALLBACK_TOPOLOGY" default:"true"`
+		CommitDelayMs            int  `env:"APP_COMMIT_DELAY_MS" default:"10"`
+		EnableSubProcessCounters bool `env:"APP_ENABLE_SUBPROCESS_COUNTERS" default:"false"`
 	}
 
 	rabbitMq struct {
 		Dsn      string `env:"RABBITMQ_DSN" required:"true"`
-		Prefetch int    `env:"RABBITMQ_PREFETCH" default:"50"`
+		Prefetch int    `env:"RABBITMQ_PREFETCH" default:"100"`
 	}
 
 	mongoDb struct {
-		Dsn                  string `env:"MONGODB_DSN" required:"true"`
-		CounterCollection    string `env:"MONGODB_COUNTER_COLLECTION" default:"MultiCounter"`
-		CounterSubCollection string `env:"MONGODB_COUNTER_SUB_COLLECTION" default:"MultiCounterSubProcess"`
-		CounterErrCollection string `env:"MONGODB_COUNTER_ERR_COLLECTION" default:"MultiCounterError"`
-		ApiTokenCollection   string `env:"MONGODB_API_TOKEN_COLLECTION" default:"ApiToken"`
-		TopologyCollection   string `env:"MONGODB_TOPOLOGY_COLLECTION" default:"Topology"`
+		Dsn                        string `env:"MONGODB_DSN" required:"true"`
+		CounterCollection          string `env:"MONGODB_COUNTER_COLLECTION" default:"MultiCounter"`
+		CounterSubCollection       string `env:"MONGODB_COUNTER_SUB_COLLECTION" default:"MultiCounterSubProcess"`
+		CounterErrCollection       string `env:"MONGODB_COUNTER_ERR_COLLECTION" default:"MultiCounterError"`
+		CounterAuditDataCollection string `env:"MONGODB_COUNTER_AUDIT_DATA_COLLECTION" default:"MultiCounterAuditData"`
+		ApiTokenCollection         string `env:"MONGODB_API_TOKEN_COLLECTION" default:"ApiToken"`
+		TopologyCollection         string `env:"MONGODB_TOPOLOGY_COLLECTION" default:"Topology"`
 	}
 
 	metrics struct {
