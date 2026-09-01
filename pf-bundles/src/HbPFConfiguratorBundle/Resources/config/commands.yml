@@ -39,10 +39,25 @@ services:
         tags:
             - { name: console.command }
 
+    hbpf.command.metrics_expire:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\CreateMetricsExpireIndexCommand
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+        tags:
+            - { name: console.command }
+
     hbpf.command.topology_migrate:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\MigrateTopologyCommand
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
+        tags:
+            - { name: console.command }
+
+    hbpf.command.migrations_migrate:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\MigrationsMigrateCommand
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@doctrine_mongodb.odm.metrics_document_manager'
         tags:
             - { name: console.command }
 

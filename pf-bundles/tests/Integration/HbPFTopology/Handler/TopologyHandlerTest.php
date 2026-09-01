@@ -214,6 +214,7 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
                 'deleteTopology',
                 'stopTopology',
                 'invalidateTopologyCache',
+                'removeAllLimiterAndRepeaterMessages',
             ],
         );
 
@@ -229,6 +230,7 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
             $generator->method('stopTopology')->willReturn($return);
         }
         $generator->method('invalidateTopologyCache')->willReturn([]);
+        $generator->method('removeAllLimiterAndRepeaterMessages')->willReturn([]);
 
         return $generator;
     }

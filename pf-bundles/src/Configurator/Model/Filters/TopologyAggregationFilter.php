@@ -4,11 +4,8 @@ namespace Hanaboso\PipesFramework\Configurator\Model\Filters;
 
 use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
-use Doctrine\ODM\MongoDB\Query\Expr;
 use Hanaboso\MongoDataGrid\GridAggregationFilterAbstract;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
-use LogicException;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class TopologyAggregationFilter
@@ -58,42 +55,6 @@ final class TopologyAggregationFilter extends GridAggregationFilterAbstract
     }
 
     /**
-     * @return array<string, Closure(Builder, mixed[], string, Expr, ?string): void>
-     */
-    protected function getConditionsCallbacks(): array
-    {
-        return [
-            'status' => static function (
-                Builder $builder,
-                array $values,
-                string $name,
-                Expr $expr,
-                ?string $operator,
-            ): void {
-                $builder;
-                $operator;
-                $name;
-
-                match ($values[0]) {
-                    'RUNNING' => $expr->addAnd($builder->matchExpr()->field('finished')->equals(NULL)),
-                    'COMPLETED' => $expr->addAnd(
-                        $builder->matchExpr()->field('finished')->notEqual(NULL),
-                        $builder->matchExpr()->field('nok')->equals(0),
-                    ),
-                    'FAILED' => $expr->addAnd(
-                        $builder->matchExpr()->field('finished')->notEqual(NULL),
-                        $builder->matchExpr()->field('nok')->notEqual(0),
-                    ),
-                    default => throw new LogicException(
-                        sprintf('Unknown status value `%s`.', $values[0]),
-                        Response::HTTP_BAD_REQUEST,
-                    ),
-                };
-            },
-        ];
-    }
-
-    /**
      * @param Builder         $builder
      * @param Closure(): void $addConditionsCallback
      * @param Closure(): void $addSortationsCallback
@@ -123,15 +84,16 @@ final class TopologyAggregationFilter extends GridAggregationFilterAbstract
             ->field('failedCount')
             ->sum(
                 $builder->expr()->cond(
-                    $builder->expr()->gt('$nok', 0),
+                    $builder->expr()->or(
+                        $builder->expr()->eq('$status', 'FAILED'),
+                        $builder->expr()->eq('$status', 'TERMINATED'),
+                    ),
                     1,
                     0,
                 ),
             )
-            ->field('finished')
-            ->first('$finished')
-            ->field('nok')
-            ->first('$nok');
+            ->field('status')
+            ->first('$status');
 
         $addSortationsCallback();
         $addPaginationCallback();
@@ -147,11 +109,7 @@ final class TopologyAggregationFilter extends GridAggregationFilterAbstract
             ->field('failedCount')
             ->expression('$failedCount')
             ->field('status')
-            ->cond(
-                $builder->expr()->eq('$finished', NULL),
-                'RUNNING',
-                $builder->expr()->cond($builder->expr()->gt('$nok', 0), 'FAILED', 'COMPLETED'),
-            );
+            ->expression('$status');
     }
 
     /**

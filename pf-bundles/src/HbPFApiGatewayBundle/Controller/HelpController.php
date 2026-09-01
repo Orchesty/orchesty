@@ -24,7 +24,7 @@ final class HelpController extends AbstractController
      *
      * @param string $helpDir
      */
-    public function __construct(private readonly string $helpDir = '/srv/app/help')
+    public function __construct(private readonly string $helpDir)
     {
     }
 

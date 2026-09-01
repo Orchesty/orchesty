@@ -1,4 +1,12 @@
-FROM hanabosocom/php-base:php-8.4-alpine
+FROM node:24-alpine AS node-build
+
+COPY ./help /tmp/help
+
+RUN cd /tmp/help && \
+    npm install --no-save gray-matter minisearch && \
+    node scripts/build-help.mjs . .dist
+
+FROM hanabosocom/php-base:php-8.4-alpine AS php-build
 
 COPY . .
 RUN cd pf-bundles && \
@@ -19,7 +27,8 @@ FROM hanabosocom/php-base:php-8.4-alpine
 ENV APP_DEBUG=0 APP_ENV=prod PHP_FPM_MAX_CHILDREN=10 PHP_FPM_MAX_REQUESTS=500
 ENV INSTALLER_DIRS='["/var/www/topology"]'
 COPY pf-bundles/php-local.ini /usr/local/etc/php/conf.d/zz_local.ini
-COPY --from=0 /var/www/pf-bundles .
+COPY --from=php-build /var/www/pf-bundles .
+COPY --from=node-build /tmp/help/.dist ../help/.dist
 RUN rm -rf html localhost
 RUN mkdir -p /var/lib/nginx/tmp/client_body && \
     chmod -R 774 /var/www/var /var/lib/nginx && \

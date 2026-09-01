@@ -42,6 +42,7 @@ final class ProcessGraphAggregationFilter extends GridAggregationFilterAbstract
     {
         return [
             'created' => 'startedAt',
+            'topologyId' => 'topologyId',
         ];
     }
 

@@ -4,6 +4,7 @@ namespace PipesFrameworkTests\Integration\Metrics\Manager;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
+use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
@@ -477,6 +478,218 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
+    public function testGetMetricsConnectorsOverviewAggregatedSumsHourlyBuckets(): void
+    {
+        $this->seedHourlyConnectorAggregate('-3 hours', 100, 2_000, status400: 5, status500: 3);
+        $this->seedHourlyConnectorAggregate('-2 hours', 100, 4_000, status400: 1, status500: 2, lastResponseCode: 500);
+
+        $manager = $this->getManager();
+        $manager->setLogger(new Logger('logger'));
+
+        $result = $manager->getMetricsConnectorsOverview($this->createdGteDto('-1 days'), TRUE);
+
+        self::assertCount(1, $result);
+        self::assertEquals('node-1', $result[0]['nodeId']);
+        self::assertEquals('topo-1', $result[0]['topologyId']);
+        self::assertEquals('app-1', $result[0]['applicationId']);
+        self::assertEquals(200, $result[0]['count']);
+        self::assertEquals(6, $result[0]['status400']);
+        self::assertEquals(5, $result[0]['status500']);
+        self::assertEquals(30, $result[0]['duration']);
+        self::assertEquals(500, $result[0]['lastStatus']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetMetricsConnectorsOverviewAggregatedFallsBackToRawForShortWindow(): void
+    {
+        $this->seedHourlyConnectorAggregate('-10 minutes', 50, 1_000);
+
+        $manager = $this->getManager();
+        $manager->setLogger(new Logger('logger'));
+
+        $result = $manager->getMetricsConnectorsOverview($this->createdGteDto('-30 minutes'), TRUE);
+
+        self::assertSame([], $result);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetMetricsConnectorsOverviewAggregatedUsesInclusiveUpperBucketBound(): void
+    {
+        $this->seedHourlyConnectorAggregate('2026-06-17T10:00:00Z', 100, 1_000);
+        $this->seedHourlyConnectorAggregate('2026-06-17T11:00:00Z', 100, 1_000);
+        $this->seedHourlyConnectorAggregate('2026-06-17T12:00:00Z', 100, 1_000);
+
+        $manager = $this->getManager();
+        $manager->setLogger(new Logger('logger'));
+
+        $result = $manager->getMetricsConnectorsOverview(
+            $this->createdBetweenDto('2026-06-17T10:00:00Z', '2026-06-17T12:00:00Z'),
+            TRUE,
+        );
+
+        self::assertCount(1, $result);
+        self::assertEquals(300, $result[0]['count']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetMetricsRequestsAveragesFromRollup(): void
+    {
+        $this->seedHourlyConnectorAggregate('2026-06-17T10:00:00Z', 10, 1_000, nodeId: 'node-1', topologyId: 'topo-1');
+        $this->seedHourlyConnectorAggregate('2026-06-17T11:00:00Z', 30, 6_000, nodeId: 'node-1', topologyId: 'topo-1');
+        $this->seedHourlyConnectorAggregate('2026-06-17T10:00:00Z', 10, 500, nodeId: 'node-2', topologyId: 'topo-1');
+        $this->seedHourlyConnectorAggregate('2026-06-17T10:00:00Z', 10, 9_999, nodeId: 'node-3', topologyId: 'topo-2');
+
+        $filter = self::getContainer()->get('hbpf.metric-hourly-request.aggregation-filter');
+        $result = $filter->getData($this->topologyIdDto('topo-1'))->toArray();
+
+        self::assertCount(2, $result);
+        self::assertSame('node-1', $result[0]['nodeId']);
+        self::assertSame('topo-1', $result[0]['topologyId']);
+        self::assertEquals(175, $result[0]['duration']);
+        self::assertSame('node-2', $result[1]['nodeId']);
+        self::assertEquals(50, $result[1]['duration']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetMetricsProcessesAveragesFromRollup(): void
+    {
+        $this->seedHourlyPipesNodeAggregate('2026-06-17T10:00:00Z', 10, 1_000, 'node-1', 'topo-1');
+        $this->seedHourlyPipesNodeAggregate('2026-06-17T11:00:00Z', 30, 6_000, 'node-1', 'topo-1');
+        $this->seedHourlyPipesNodeAggregate('2026-06-17T10:00:00Z', 10, 500, 'node-2', 'topo-1');
+        $this->seedHourlyPipesNodeAggregate('2026-06-17T10:00:00Z', 10, 9_999, 'node-3', 'topo-2');
+
+        $filter = self::getContainer()->get('hbpf.metric-hourly-process.aggregation-filter');
+        $result = $filter->getData($this->topologyIdDto('topo-1'))->toArray();
+
+        self::assertCount(2, $result);
+        self::assertSame('node-1', $result[0]['nodeId']);
+        self::assertSame('topo-1', $result[0]['topologyId']);
+        self::assertEquals(175, $result[0]['duration']);
+        self::assertSame('node-2', $result[1]['nodeId']);
+        self::assertEquals(50, $result[1]['duration']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetMetricsRequestsAveragesFromRaw(): void
+    {
+        $this->seedConnectorMetric('-10 minutes', 100, 'node-1', 'topo-1');
+        $this->seedConnectorMetric('-20 minutes', 300, 'node-1', 'topo-1');
+        $this->seedConnectorMetric('-10 minutes', 50, 'node-2', 'topo-1');
+        $this->seedConnectorMetric('-10 minutes', 9_999, 'node-3', 'topo-2');
+
+        $manager = $this->getManager();
+        $manager->setLogger(new Logger('logger'));
+
+        $result = $manager->getMetricsRequests($this->topologyIdDto('topo-1'), FALSE);
+
+        self::assertCount(2, $result);
+        self::assertSame('node-1', $result[0]['nodeId']);
+        self::assertSame('topo-1', $result[0]['topologyId']);
+        self::assertEquals(200, $result[0]['duration']);
+        self::assertSame('node-2', $result[1]['nodeId']);
+        self::assertEquals(50, $result[1]['duration']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetMetricsProcessesAveragesFromRaw(): void
+    {
+        $this->seedPipesNodeMetric('-10 minutes', 100, 'node-1', 'topo-1');
+        $this->seedPipesNodeMetric('-20 minutes', 300, 'node-1', 'topo-1');
+        $this->seedPipesNodeMetric('-10 minutes', 50, 'node-2', 'topo-1');
+        $this->seedPipesNodeMetric('-10 minutes', 9_999, 'node-3', 'topo-2');
+
+        $manager = $this->getManager();
+        $manager->setLogger(new Logger('logger'));
+
+        $result = $manager->getMetricsProcesses($this->topologyIdDto('topo-1'), FALSE);
+
+        self::assertCount(2, $result);
+        self::assertSame('node-1', $result[0]['nodeId']);
+        self::assertSame('topo-1', $result[0]['topologyId']);
+        self::assertEquals(200, $result[0]['duration']);
+        self::assertSame('node-2', $result[1]['nodeId']);
+        self::assertEquals(50, $result[1]['duration']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetMetricsConnectorsHeatmapAggregatedSumsBuckets(): void
+    {
+        $this->seedHourlyConnectorAggregate('2026-06-17T10:00:00Z', 11, 0, status200: 10, status400: 1);
+        $this->seedHourlyConnectorAggregate('2026-06-17T10:15:00Z', 22, 0, status200: 20, status500: 2);
+        $this->seedHourlyConnectorAggregate('2026-06-17T10:30:00Z', 33, 0, status200: 30, status400: 3);
+
+        $manager = $this->getManager();
+        $manager->setLogger(new Logger('logger'));
+
+        $result = $manager->getMetricsConnectorsHeatmap(
+            $this->createdBetweenDto('2026-06-17T00:00:00Z', '2026-06-18T00:00:00Z'),
+            40,
+            TRUE,
+        );
+
+        self::assertEquals(60, array_sum(array_column($result, 'success')));
+        self::assertEquals(6, array_sum(array_column($result, 'failed')));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetMetricsConnectorsGraphAggregatedSumsBuckets(): void
+    {
+        $this->seedHourlyConnectorAggregate('2026-06-17T10:00:00Z', 11, 0, status200: 10, status400: 1);
+        $this->seedHourlyConnectorAggregate('2026-06-17T10:15:00Z', 22, 0, status200: 20, status500: 2);
+        $this->seedHourlyConnectorAggregate('2026-06-17T10:30:00Z', 33, 0, status200: 30, status400: 3);
+
+        $manager = $this->getManager();
+        $manager->setLogger(new Logger('logger'));
+
+        $result = $manager->getMetricsConnectorsGraph(
+            $this->createdBetweenDto('2026-06-17T00:00:00Z', '2026-06-18T00:00:00Z'),
+            40,
+            TRUE,
+        );
+
+        self::assertEquals(60, array_sum(array_column($result, 'status200')));
+        self::assertEquals(4, array_sum(array_column($result, 'status400')));
+        self::assertEquals(2, array_sum(array_column($result, 'status500')));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetMetricsConnectorsHeatmapAggregatedFallsBackToRawForNarrowBins(): void
+    {
+        $this->seedHourlyConnectorAggregate('2026-06-17T10:00:00Z', 11, 0, status200: 10, status400: 1);
+
+        $manager = $this->getManager();
+        $manager->setLogger(new Logger('logger'));
+
+        $result = $manager->getMetricsConnectorsHeatmap(
+            $this->createdBetweenDto('2026-06-17T10:00:00Z', '2026-06-17T11:00:00Z'),
+            40,
+            TRUE,
+        );
+
+        self::assertSame([], $result);
+    }
+
+    /**
+     * @throws Exception
+     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -879,6 +1092,238 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         $dm = $this->getMdm();
         $dm->getSchemaManager()->dropCollections();
         $dm->getSchemaManager()->createCollections();
+    }
+
+    /**
+     * @param string $bucketOffset
+     * @param int    $count
+     * @param int    $durationSum
+     * @param string $nodeId
+     * @param string $topologyId
+     * @param int    $status200
+     * @param int    $status400
+     * @param int    $status500
+     * @param int    $lastResponseCode
+     *
+     * @throws Exception
+     */
+    private function seedHourlyConnectorAggregate(
+        string $bucketOffset,
+        int $count,
+        int $durationSum,
+        string $nodeId = 'node-1',
+        string $topologyId = 'topo-1',
+        int $status200 = 0,
+        int $status400 = 0,
+        int $status500 = 0,
+        int $lastResponseCode = 200,
+    ): void
+    {
+        $bucket = new UTCDateTime(DateTimeUtils::getUtcDateTime($bucketOffset));
+
+        $this->getMdm()->getClient()->selectCollection('metrics', 'hourly_connectors_aggregates')->insertOne(
+            [
+                'application_id'     => 'app-1',
+                'bucket'             => $bucket,
+                'count'              => $count,
+                'duration_sum'       => $durationSum,
+                'last_created'       => $bucket,
+                'last_response_code' => $lastResponseCode,
+                'node_id'            => $nodeId,
+                'node_name'          => $nodeId,
+                'status200'          => $status200,
+                'status400'          => $status400,
+                'status500'          => $status500,
+                'topology_id'        => $topologyId,
+            ],
+        );
+    }
+
+    /**
+     * @param string $bucketOffset
+     * @param int    $count
+     * @param int    $durationSum
+     * @param string $nodeId
+     * @param string $topologyId
+     *
+     * @throws Exception
+     */
+    private function seedHourlyPipesNodeAggregate(
+        string $bucketOffset,
+        int $count,
+        int $durationSum,
+        string $nodeId = 'node-1',
+        string $topologyId = 'topo-1',
+    ): void
+    {
+        $bucket = new UTCDateTime(DateTimeUtils::getUtcDateTime($bucketOffset));
+
+        $this->getMdm()->getClient()->selectCollection('metrics', 'hourly_pipes_node_aggregates')->insertOne(
+            [
+                'bucket'       => $bucket,
+                'count'        => $count,
+                'duration_sum' => $durationSum,
+                'node_id'      => $nodeId,
+                'topology_id'  => $topologyId,
+            ],
+        );
+    }
+
+    /**
+     * @param string $createdOffset
+     * @param int    $duration
+     * @param string $nodeId
+     * @param string $topologyId
+     *
+     * @throws Exception
+     */
+    private function seedConnectorMetric(
+        string $createdOffset,
+        int $duration,
+        string $nodeId,
+        string $topologyId,
+    ): void
+    {
+        /** @var string $connectorTable */
+        $connectorTable = self::getContainer()->getParameter('mongodb.connector_table');
+
+        $this->getMdm()->getClient()->selectCollection('metrics', $connectorTable)->insertOne(
+            [
+                'fields' => [
+                    'created'                     => new UTCDateTime(DateTimeUtils::getUtcDateTime($createdOffset)),
+                    'sent_request_total_duration' => $duration,
+                ],
+                'tags'   => [
+                    'node_id'     => $nodeId,
+                    'topology_id' => $topologyId,
+                ],
+            ],
+        );
+    }
+
+    /**
+     * @param string $createdOffset
+     * @param int    $duration
+     * @param string $nodeId
+     * @param string $topologyId
+     *
+     * @throws Exception
+     */
+    private function seedPipesNodeMetric(
+        string $createdOffset,
+        int $duration,
+        string $nodeId,
+        string $topologyId,
+    ): void
+    {
+        /** @var string $nodeTable */
+        $nodeTable = self::getContainer()->getParameter('mongodb.node_table');
+
+        $this->getMdm()->getClient()->selectCollection('metrics', $nodeTable)->insertOne(
+            [
+                'fields' => [
+                    'created'         => new UTCDateTime(DateTimeUtils::getUtcDateTime($createdOffset)),
+                    'worker_duration' => $duration,
+                ],
+                'tags'   => [
+                    'node_id'     => $nodeId,
+                    'topology_id' => $topologyId,
+                ],
+            ],
+        );
+    }
+
+    /**
+     * @param string $topologyId
+     *
+     * @return GridRequestDto
+     * @throws Exception
+     */
+    private function topologyIdDto(string $topologyId): GridRequestDto
+    {
+        return new GridRequestDto(
+            [
+                'filter' => [
+                    [
+                        [
+                            'column'   => 'topologyId',
+                            'operator' => 'EQ',
+                            'value'    => [$topologyId],
+                        ],
+                    ],
+                ],
+                'paging' => [
+                    'itemsPerPage' => 9_999,
+                    'page'         => 1,
+                ],
+                'sorter' => [
+                    [
+                        'column'    => 'duration',
+                        'direction' => 'DESC',
+                    ],
+                ],
+            ],
+        );
+    }
+
+    /**
+     * @param string $createdOffset
+     *
+     * @return GridRequestDto
+     * @throws Exception
+     */
+    private function createdGteDto(string $createdOffset): GridRequestDto
+    {
+        return new GridRequestDto(
+            [
+                'filter' => [
+                    [
+                        [
+                            'column'   => 'created',
+                            'operator' => 'GTE',
+                            'value'    => [
+                                DateTimeUtils::getUtcDateTime($createdOffset)->format(DateTimeUtils::DATE_TIME_UTC),
+                            ],
+                        ],
+                    ],
+                ],
+                'paging' => [
+                    'itemsPerPage' => 100,
+                    'page'         => 1,
+                ],
+            ],
+        );
+    }
+
+    /**
+     * @param string $createdFrom
+     * @param string $createdTo
+     *
+     * @return GridRequestDto
+     * @throws Exception
+     */
+    private function createdBetweenDto(string $createdFrom, string $createdTo): GridRequestDto
+    {
+        return new GridRequestDto(
+            [
+                'filter' => [
+                    [
+                        [
+                            'column'   => 'created',
+                            'operator' => 'BETWEEN',
+                            'value'    => [
+                                DateTimeUtils::getUtcDateTime($createdFrom)->format(DateTimeUtils::DATE_TIME_UTC),
+                                DateTimeUtils::getUtcDateTime($createdTo)->format(DateTimeUtils::DATE_TIME_UTC),
+                            ],
+                        ],
+                    ],
+                ],
+                'paging' => [
+                    'itemsPerPage' => 100,
+                    'page'         => 1,
+                ],
+            ],
+        );
     }
 
 }

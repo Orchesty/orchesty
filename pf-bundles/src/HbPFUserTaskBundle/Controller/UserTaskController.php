@@ -94,10 +94,7 @@ final class UserTaskController
     public function acceptBatchAction(Request $request): Response
     {
         try {
-            $topologyId = $request->request->getString('topologyId');
-            $nodeId     = $request->request->getString('nodeId');
-
-            return $this->getResponse($this->handler->acceptBatch($request->toArray(),$topologyId, $nodeId));
+            return $this->getResponse($this->handler->acceptBatch($request->toArray()));
         } catch (Throwable $t) {
             return $this->getErrorResponse($t);
         }

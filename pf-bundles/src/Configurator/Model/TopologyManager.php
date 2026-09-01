@@ -154,11 +154,12 @@ class TopologyManager
     }
 
     /**
-     * @param string $topologyId
-     * @param string $startingPoint
-     * @param string $data
-     * @param bool   $runTopologyByName
-     * @param string $user
+     * @param string                $topologyId
+     * @param string                $startingPoint
+     * @param string                $data
+     * @param bool                  $runTopologyByName
+     * @param string                $user
+     * @param array<string, string> $extraHeaders
      *
      * @return mixed[]
      * @throws CurlException
@@ -169,6 +170,7 @@ class TopologyManager
         string $data,
         bool $runTopologyByName = FALSE,
         string $user = ApplicationController::SYSTEM_USER,
+        array $extraHeaders = [],
     ): array
     {
         if ($runTopologyByName) {
@@ -177,7 +179,10 @@ class TopologyManager
             $url = new Uri($this->getUrl(self::RUN_ENDPOINT, $topologyId, $startingPoint));
         }
 
-        $headers = $this->getHeadersForTopologyRunRequest();
+        // Extra headers (e.g. Pulse reply-to / reply-id) are forwarded to the
+        // starting-point so they propagate through the topology to a response
+        // node. They never override the system run headers.
+        $headers = array_merge($extraHeaders, $this->getHeadersForTopologyRunRequest());
 
         $request = new RequestDto(
             $url,
@@ -1015,7 +1020,10 @@ class TopologyManager
             );
         }
 
-        if (!TypeEnum::tryFrom($dto->getPipesType())) {
+        // `response` is a terminal node type handled by the bridge response
+        // worker. It is intentionally not part of the vendored TypeEnum, so it
+        // is accepted explicitly here in addition to the enum values.
+        if (!TypeEnum::tryFrom($dto->getPipesType()) && $dto->getPipesType() !== TopologyConfigFactory::TYPE_RESPONSE) {
             throw new TopologyException(
                 sprintf('Node [%s] type [%s] not exist', $dto->getId(), $dto->getPipesType()),
                 TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST,

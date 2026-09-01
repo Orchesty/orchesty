@@ -13,7 +13,6 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
 #[ODM\Document(collection: 'rabbitmq')]
 #[ODM\Index(keys: ['tags.queue' => 'text'], name: 'queueIndex')]
 #[ODM\Index(keys: ['fields.created' => 'desc'], name: 'createdIndex')]
-#[ODM\Index(keys: ['fields.created' => 'asc'], name: 'expireIndex', expireAfterSeconds: 2_628_000)]
 class RabbitMetrics
 {
 

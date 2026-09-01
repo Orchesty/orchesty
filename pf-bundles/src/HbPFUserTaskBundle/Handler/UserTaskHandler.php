@@ -120,29 +120,23 @@ final readonly class UserTaskHandler
     }
 
     /**
-     * @param mixed[]     $filterData
-     * @param string|null $topologyId
-     * @param string|null $nodeId
+     * @param mixed[] $filterData
      *
      * @return mixed[]
      * @throws GridException
      * @throws MappingException
      * @throws MongoDBException
      */
-    public function acceptBatch(array $filterData, ?string $topologyId = NULL, ?string $nodeId = NULL): array
+    public function acceptBatch(array $filterData): array
     {
         while (TRUE) {
-            $tasks = $this->manager->filter($this->filterBody($filterData));
+            $tasks = $this->manager->filter($this->filterBody($filterData), FALSE);
 
             if (!$tasks) {
                 return [];
             }
 
-            foreach ($tasks as $task) {
-                $this->accept($task['id'], $topologyId, $nodeId);
-            }
-
-            $this->dm->flush();
+            $this->manager->acceptMany(array_column($tasks, 'id'));
         }
     }
 
@@ -176,17 +170,13 @@ final readonly class UserTaskHandler
     public function rejectBatch(array $filterData): array
     {
         while (TRUE) {
-            $tasks = $this->manager->filter($this->filterBody($filterData));
+            $tasks = $this->manager->filter($this->filterBody($filterData), FALSE);
 
             if (!$tasks) {
                 return [];
             }
 
-            foreach ($tasks as $task) {
-                $this->reject($task['id']);
-            }
-
-            $this->dm->flush();
+            $this->manager->rejectMany(array_column($tasks, 'id'));
         }
     }
 

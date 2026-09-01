@@ -4,13 +4,8 @@ namespace Hanaboso\PipesFramework\Configurator\Model\Filters;
 
 use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
-use Doctrine\ODM\MongoDB\Query\Expr;
 use Hanaboso\MongoDataGrid\GridAggregationFilterAbstract;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
-use Hanaboso\Utils\Date\DateTimeUtils;
-use LogicException;
-use MongoDB\BSON\UTCDateTime;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ProcessAggregationFilter
@@ -61,65 +56,6 @@ final class ProcessAggregationFilter extends GridAggregationFilterAbstract
     }
 
     /**
-     * @return array<string, Closure(Builder, mixed[], string, Expr, ?string): void>
-     */
-    protected function getConditionsCallbacks(): array
-    {
-        return [
-            'status' => static function (
-                Builder $builder,
-                array $values,
-                string $name,
-                Expr $expr,
-                ?string $operator,
-            ): void {
-                $builder;
-                $operator;
-                $name;
-
-                match ($values[0]) {
-                    'RUNNING' => $expr->addAnd($builder->matchExpr()->field('finished')->equals(NULL)),
-                    'COMPLETED' => $expr->addAnd(
-                        $builder->matchExpr()->field('finished')->notEqual(NULL),
-                        $builder->matchExpr()->field('nok')->equals(0),
-                    ),
-                    'FAILED' => $expr->addAnd(
-                        $builder->matchExpr()->field('finished')->notEqual(NULL),
-                        $builder->matchExpr()->field('nok')->notEqual(0),
-                    ),
-                    'TERMINATED' => $expr->addAnd(
-                        $builder->matchExpr()->field('terminated')->equals(TRUE),
-                    ),
-                    default => throw new LogicException(
-                        sprintf('Unknown status value `%s`.', $values[0]),
-                        Response::HTTP_BAD_REQUEST,
-                    ),
-                };
-            },
-        ];
-    }
-
-    /**
-     * @return array<string, Closure(Builder): string[]>
-     */
-    protected function getSortationsCallbacks(): array
-    {
-        return [
-            'duration' => static function (Builder $builder): array {
-                $builder
-                    ->addFields()
-                    ->field('duration')
-                    ->subtract(
-                        $builder->expr()->ifNull('$finished', new UTCDateTime(DateTimeUtils::getUtcDateTime())),
-                        '$created',
-                    );
-
-                return ['duration'];
-            },
-        ];
-    }
-
-    /**
      * @param Builder         $builder
      * @param Closure(): void $addConditionsCallback
      * @param Closure(): void $addSortationsCallback
@@ -166,20 +102,9 @@ final class ProcessAggregationFilter extends GridAggregationFilterAbstract
             ->field('created')
             ->dateToString('%Y-%m-%dT%H:%M:%SZ', '$created')
             ->field('status')
-            ->cond(
-                $builder->expr()->eq('$terminated', TRUE),
-                'TERMINATED',
-                $builder->expr()->cond(
-                    $builder->expr()->eq('$finished', NULL),
-                    'RUNNING',
-                    $builder->expr()->cond($builder->expr()->gt('$nok', 0), 'FAILED', 'COMPLETED'),
-                ),
-            )
+            ->expression('$status')
             ->field('duration')
-            ->subtract(
-                $builder->expr()->ifNull('$finished', new UTCDateTime(DateTimeUtils::getUtcDateTime())),
-                '$created',
-            )
+            ->expression('$duration')
             ->field('source')
             ->expression('$source')
             ->field('messages')

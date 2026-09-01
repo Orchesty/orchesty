@@ -95,6 +95,10 @@ final class ProcessController
         return $this->getResponse(
             $this->handler->getProcessesTopologies(
                 new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+                $request->query->getBoolean(
+                    AggregationFilterUtils::AGGREGATED,
+                    AggregationFilterUtils::DEFAULT_AGGREGATED,
+                ),
             ),
         );
     }

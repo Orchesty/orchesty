@@ -31,24 +31,32 @@ use Hanaboso\Utils\Exception\DateTimeException;
     name: 'IK_multiCounter_topologyId_created',
 )]
 #[ODM\Index(
-    keys: ['finished' => 'asc', 'created' => 'desc'],
-    name: 'IK_multiCounter_finished_created',
+    keys: ['created' => 'asc', 'topologyId' => 'asc', 'status' => 'asc'],
+    name: 'IK_multiCounter_created_topologyId_status',
 )]
 #[ODM\Index(
-    keys: ['topologyId' => 'asc', 'finished' => 'asc', 'created' => 'desc'],
-    name: 'IK_multiCounter_topologyId_finished_created',
+    keys: ['status' => 'asc', 'duration' => 'desc'],
+    name: 'IK_multiCounter_status_duration',
 )]
 #[ODM\Index(
-    keys: ['nok' => 'asc', 'finished' => 'asc', 'created' => 'desc'],
-    name: 'IK_multiCounter_nok_finished_created',
+    keys: ['status' => 'asc', 'created' => 'desc'],
+    name: 'IK_multiCounter_status_created',
 )]
 #[ODM\Index(
-    keys: ['topologyId' => 'asc', 'nok' => 'asc', 'finished' => 'asc', 'created' => 'desc'],
-    name: 'IK_multiCounter_topologyId_nok_finished_created',
+    keys: ['duration' => 'desc'],
+    name: 'IK_multiCounter_duration',
 )]
 #[ODM\Index(
-    keys: ['created' => 'asc', 'topologyId' => 'asc', 'nok' => 'asc', 'finished' => 'asc'],
-    name: 'IK_multiCounter_created_topologyId_nok_finished',
+    keys: ['status' => 'asc', 'topologyId' => 'asc', 'created' => 'desc'],
+    name: 'IK_multiCounter_status_topologyId_created',
+)]
+#[ODM\Index(
+    keys: ['topologyId' => 'asc', 'duration' => 'desc'],
+    name: 'IK_multiCounter_topologyId_duration',
+)]
+#[ODM\Index(
+    keys: ['status' => 'asc', 'topologyId' => 'asc', 'duration' => 'desc'],
+    name: 'IK_multiCounter_status_topologyId_duration',
 )]
 class TopologyProgress
 {
@@ -120,6 +128,18 @@ class TopologyProgress
      */
     #[ODM\Field(type: 'string')]
     private string $source = 'auto';
+
+    /**
+     * @var string
+     */
+    #[ODM\Field(type: 'string')]
+    private string $status = 'RUNNING';
+
+    /**
+     * @var int
+     */
+    #[ODM\Field(type: 'int')]
+    private int $duration = 0;
 
     /**
      * @return string
@@ -325,6 +345,46 @@ class TopologyProgress
     public function setSource(string $source): self
     {
         $this->source = $source;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param string $status
+     *
+     * @return TopologyProgress
+     */
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDuration(): int
+    {
+        return $this->duration;
+    }
+
+    /**
+     * @param int $duration
+     *
+     * @return TopologyProgress
+     */
+    public function setDuration(int $duration): self
+    {
+        $this->duration = $duration;
 
         return $this;
     }

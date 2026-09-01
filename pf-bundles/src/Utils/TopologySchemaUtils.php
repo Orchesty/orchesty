@@ -31,6 +31,12 @@ final class TopologySchemaUtils
     private const string SOURCE_REF         = '@sourceRef';
     private const string TARGET_REF         = '@targetRef';
 
+    // Terminal response node (editor label) and the node type it maps to. The
+    // bridge response worker reads the reply-to / reply-id headers and POSTs the
+    // payload back to the caller.
+    private const string RESPONSE_LABEL = 'Response';
+    private const string RESPONSE_TYPE  = 'response';
+
     private const string BPMN_INCOMING = 'bpmn:incoming';
     private const string BPMN_OUTGOING = 'bpmn:outgoing';
 
@@ -210,7 +216,15 @@ final class TopologySchemaUtils
             $workerName = '';
             $eventName  = '';
 
-            if ($shape === 'circle') {
+            if ($label === self::RESPONSE_LABEL) {
+                // Terminal response node: no action, no SDK; the bridge response
+                // worker handles delivery using the propagated reply headers.
+                $handler   = self::BPMN_TASK;
+                $pipesType = self::RESPONSE_TYPE;
+                $name      = $node['name'] ?? self::RESPONSE_TYPE;
+                $sdkHost   = '';
+                $app       = '';
+            } else if ($shape === 'circle') {
                 $handler   = self::getJsonCircleHandler($label);
                 $pipesType = self::getJsonEventPipesType($label);
 

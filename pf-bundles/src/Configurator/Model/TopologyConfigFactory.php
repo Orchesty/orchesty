@@ -57,7 +57,10 @@ final class TopologyConfigFactory
     public const string WORKER_HTTP            = 'worker.http';
     public const string WORKER_CUSTOM_NODE     = 'worker.custom_node';
     public const string WORKER_BATCH           = 'worker.batch';
+    public const string WORKER_RESPONSE        = 'worker.response';
     public const string HOST                   = 'host';
+
+    public const string TYPE_RESPONSE = 'response';
 
     public const string PROCESS_PATH = 'process_path';
     public const string STATUS_PATH  = 'status_path';
@@ -123,6 +126,9 @@ final class TopologyConfigFactory
             case TypeEnum::CRON->value:
             case TypeEnum::START->value:
             case TypeEnum::USER->value:
+                // Response (terminal) node has no SDK/host — the bridge response
+                // worker delivers the payload using the propagated reply headers.
+            case self::TYPE_RESPONSE:
                 return [
                     self::TYPE => $this->getWorkerByType($node),
                 ];
@@ -233,6 +239,11 @@ final class TopologyConfigFactory
             TypeEnum::XML_PARSER->value => self::WORKER_HTTP_XML_PARSER,
             TypeEnum::USER->value => self::WORKER_USER,
             TypeEnum::CUSTOM->value => self::WORKER_CUSTOM_NODE,
+            // Terminal response node: returns the payload to the caller's
+            // callback (reply-to / reply-id headers) via the bridge response
+            // worker. `response` is not a vendored TypeEnum value, so it is
+            // matched as a plain string threaded from the editor/schema.
+            self::TYPE_RESPONSE => self::WORKER_RESPONSE,
             default => self::WORKER_HTTP,
         };
     }

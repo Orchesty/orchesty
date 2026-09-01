@@ -7,3 +7,5 @@
 !pf-bundles/composer.json
 !pf-bundles/composer.lock
 !pf-bundles/php-local.ini
+
+!help

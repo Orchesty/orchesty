@@ -13,7 +13,6 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
 #[ODM\Document(collection: 'pipes_counter')]
 #[ODM\Index(keys: ['tags.node_id' => 'text'], name: 'node_idIndex')]
 #[ODM\Index(keys: ['fields.created' => 'desc'], name: 'createdIndex')]
-#[ODM\Index(keys: ['fields.created' => 'asc'], name: 'expireIndex', expireAfterSeconds: 2_628_000)]
 class ProcessesMetrics
 {
 

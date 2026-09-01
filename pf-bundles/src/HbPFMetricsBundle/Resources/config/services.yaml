@@ -20,10 +20,14 @@ services:
             - '@doctrine_mongodb.odm.metrics_document_manager'
             - '%mongodb.rabbit_consumer_table%'
             - '@hbpf.metric-connector-overview.aggregation-filter'
+            - '@hbpf.metric-hourly-connector-overview.aggregation-filter'
             - '@hbpf.metric-connector.aggregation-filter'
             - '@hbpf.metric-connector-graph.aggregation-filter'
+            - '@hbpf.metric-hourly-connector-graph.aggregation-filter'
             - '@hbpf.metric-request.aggregation-filter'
+            - '@hbpf.metric-request-average.aggregation-filter'
             - '@hbpf.metric-process.aggregation-filter'
+            - '@hbpf.metric-process-average.aggregation-filter'
             - '@hbpf.metric-limit.aggregation-filter'
             - '@hbpf.metric-limit-application.aggregation-filter'
             - '@hbpf.metric-limit-total.aggregation-filter'
@@ -32,11 +36,17 @@ services:
             - '@hbpf.metric-user-task-total.aggregation-filter'
             - '@hbpf.metric-user-task-graph.aggregation-filter'
             - '@hbpf.metric-connector-heatmap.aggregation-filter'
+            - '@hbpf.metric-hourly-connector-heatmap.aggregation-filter'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 
     hbpf.metric-connector-overview.aggregation-filter:
         class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorOverviewAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-hourly-connector-overview.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricHourlyConnectorOverviewAggregationFilter
         arguments:
             - '@doctrine_mongodb.odm.metrics_document_manager'
 
@@ -50,13 +60,38 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.metrics_document_manager'
 
+    hbpf.metric-hourly-connector-graph.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricHourlyConnectorGraphAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
     hbpf.metric-request.aggregation-filter:
         class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricRequestAggregationFilter
         arguments:
             - '@doctrine_mongodb.odm.metrics_document_manager'
 
+    hbpf.metric-hourly-request.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricHourlyRequestAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-request-average.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricRequestAverageAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
     hbpf.metric-process.aggregation-filter:
         class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricProcessAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-hourly-process.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricHourlyProcessAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-process-average.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricProcessAverageAggregationFilter
         arguments:
             - '@doctrine_mongodb.odm.metrics_document_manager'
 
@@ -97,5 +132,10 @@ services:
 
     hbpf.metric-connector-heatmap.aggregation-filter:
         class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorHeatmapAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-hourly-connector-heatmap.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricHourlyConnectorHeatmapAggregationFilter
         arguments:
             - '@doctrine_mongodb.odm.metrics_document_manager'
