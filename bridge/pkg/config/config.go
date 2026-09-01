@@ -7,6 +7,7 @@ import (
 	"github.com/hanaboso/go-log/pkg"
 	"github.com/hanaboso/go-log/pkg/zap"
 	"github.com/jinzhu/configor"
+	"github.com/rs/zerolog"
 )
 
 type (
@@ -16,6 +17,11 @@ type (
 		Metrics            *metrics
 		MetricsCollections *metricsCollections
 		StartingPoint      *startingPoint
+		Loki               *loki
+	}
+
+	loki struct {
+		Dsn string `env:"LOKI_DSN" default:""`
 	}
 
 	mongoDb struct {
@@ -58,6 +64,7 @@ var (
 	Metrics            metrics
 	MetricsCollections metricsCollections
 	StartingPoint      startingPoint
+	Loki               loki
 	Logger             pkg.Logger
 
 	c = config{
@@ -66,6 +73,7 @@ var (
 		Metrics:            &Metrics,
 		MetricsCollections: &MetricsCollections,
 		StartingPoint:      &StartingPoint,
+		Loki:               &Loki,
 	}
 )
 
@@ -77,6 +85,9 @@ func init() {
 
 	if App.Debug {
 		Logger.SetLevel(pkg.DEBUG)
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	} else {
+		zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	}
 
 	if !strings.HasPrefix(StartingPoint.Dsn, "http") {
@@ -85,5 +96,9 @@ func init() {
 
 	if App.BackendUrl != "" && !strings.HasPrefix(App.BackendUrl, "http") {
 		App.BackendUrl = fmt.Sprintf("http://%s", App.BackendUrl)
+	}
+
+	if Loki.Dsn != "" && !strings.HasPrefix(Loki.Dsn, "http") {
+		Loki.Dsn = fmt.Sprintf("http://%s", Loki.Dsn)
 	}
 }

@@ -27,7 +27,7 @@ When a worker returns a 5xx status code or is unreachable, the bridge implements
 
 4. **Health Probes:** Messages with a *different* `correlation-id` still pass through normally. They act as natural health probes — if the worker responds successfully, the entire poison state for that `host+nodeId` is cleared and normal processing resumes.
 
-5. **TTL Cleanup:** Poisoned entries expire automatically after 10 minutes if no new messages arrive. A background goroutine runs cleanup every 60 seconds.
+5. **TTL Cleanup:** Poisoned entries expire automatically after 10 minutes if no new messages arrive. The failure counter ages out the same way — more than 10 minutes between two failure rounds starts a new incident at round 1, so blips spread over days never add up to a poisoning. A background goroutine runs cleanup every 60 seconds.
 
 #### Key properties
 
@@ -36,6 +36,7 @@ When a worker returns a 5xx status code or is unreachable, the bridge implements
 | Failure counter scope | Per `host + nodeId` — different nodes on the same worker are tracked independently |
 | Parallel deduplication | Multiple goroutines failing simultaneously within the same 5s lock window count as a single failure round, not N |
 | Poison trigger | `correlation-id` of the message that caused the Nth failure |
+| Counter aging | The failure counter resets when more than 10 minutes pass between two failure rounds — "10 failures" means 10 within one incident, not 10 blips spread over days |
 | Recovery signal | Any successful response on the same `host+nodeId` clears all poisoned IDs |
 | Notifications | Trashed messages flow through the existing trash handling path (stored in MongoDB, notification sent via events queue) |
 | TTL | 10 minutes — poisoned entries are removed if no activity occurs |
@@ -58,7 +59,9 @@ When a worker returns a 5xx status code or is unreachable, the bridge implements
 | Health probe succeeds | Clear all poisoned IDs for host+node, resume |
 | Health probe fails | Start counting for new correlationId |
 | No messages for 10 min | TTL cleanup removes poisoned entries |
+| More than 10 min between two failure rounds | Counter restarts at 1 (new incident) |
 | Parallel goroutines fail simultaneously | Count as 1 round, not N |
+| Worker call hits the 60s request timeout | Logged/trashed as "request timed out after 60s", not "unreachable" (accounting is identical) |
 | `WORKER_MAX_FAILURES=0` | Disabled, original infinite-retry behavior |
 
 ---

@@ -9,6 +9,7 @@ const (
 	WorkerType_Custom   WorkerType  = "custom_node"
 	WorkerType_Batch    WorkerType  = "batch"
 	WorkerType_UserTask WorkerType  = "user"
+	WorkerType_Response WorkerType  = "response"
 	ServiceType_Rabbit  ServiceType = "rabbit"
 	ServiceType_Memory  ServiceType = "memory"
 )

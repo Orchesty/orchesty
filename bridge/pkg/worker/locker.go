@@ -12,12 +12,14 @@ import (
 const (
 	delaySec        = 5
 	poisonTTLMs     = 600_000 // 10 minutes
+	failureTTLMs    = 600_000 // 10 minutes
 	cleanupInterval = 60      // seconds
 )
 
 type hostState struct {
 	lockUntil         int64
 	consecutiveErrors int
+	lastFailureAt     int64            // unix ms of the last recorded failure round
 	poisoned          map[string]int64 // correlationId -> poisoned timestamp (unix ms)
 }
 
@@ -50,6 +52,8 @@ func getOrCreate(key string) *hostState {
 // RecordFailure tracks a 5xx / connection error for a host+node pair.
 // The counter only increments when the previous lock window has expired,
 // so parallel goroutines failing simultaneously count as a single round.
+// Rounds separated by more than failureTTLMs belong to different incidents
+// and start counting from scratch.
 func RecordFailure(host, nodeId, correlationId string) {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
@@ -57,6 +61,11 @@ func RecordFailure(host, nodeId, correlationId string) {
 	key := lockerKey(host, nodeId)
 	state := getOrCreate(key)
 	now := time.Now().UnixMilli()
+
+	if state.lastFailureAt > 0 && now-state.lastFailureAt > failureTTLMs {
+		state.consecutiveErrors = 0
+	}
+	state.lastFailureAt = now
 
 	if now >= state.lockUntil {
 		state.consecutiveErrors++
@@ -83,6 +92,7 @@ func RecordSuccess(host, nodeId string) {
 		return
 	}
 	state.consecutiveErrors = 0
+	state.lastFailureAt = 0
 	state.lockUntil = 0
 	state.poisoned = nil
 }
@@ -135,7 +145,8 @@ func Lock(host, nodeId string) {
 }
 
 // StartCleanup runs a background goroutine that removes poisoned entries
-// older than poisonTTLMs. Stops when ctx is cancelled.
+// older than poisonTTLMs and ages out idle failure counters.
+// Stops when ctx is cancelled.
 func StartCleanup(ctx context.Context) {
 	ticker := time.NewTicker(cleanupInterval * time.Second)
 	defer ticker.Stop()
@@ -150,23 +161,31 @@ func StartCleanup(ctx context.Context) {
 	}
 }
 
+// cleanupExpiredPoisons drops poisoned correlationIds past poisonTTLMs, resets
+// failure counters whose last failure is past failureTTLMs and removes host
+// entries that no longer hold any state.
 func cleanupExpiredPoisons() {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
 
 	now := time.Now().UnixMilli()
 	for key, state := range l.hosts {
-		if state.poisoned == nil {
-			continue
+		if state.consecutiveErrors > 0 && state.lastFailureAt > 0 && now-state.lastFailureAt > failureTTLMs {
+			state.consecutiveErrors = 0
+			state.lastFailureAt = 0
 		}
-		for corrId, ts := range state.poisoned {
-			if now-ts > poisonTTLMs {
-				delete(state.poisoned, corrId)
+
+		if state.poisoned != nil {
+			for corrId, ts := range state.poisoned {
+				if now-ts > poisonTTLMs {
+					delete(state.poisoned, corrId)
+				}
+			}
+			if len(state.poisoned) == 0 {
+				state.poisoned = nil
 			}
 		}
-		if len(state.poisoned) == 0 {
-			state.poisoned = nil
-		}
+
 		if state.poisoned == nil && state.consecutiveErrors == 0 && now >= state.lockUntil {
 			delete(l.hosts, key)
 		}

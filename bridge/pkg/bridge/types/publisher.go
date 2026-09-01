@@ -14,6 +14,7 @@ import (
 // Common interface for RabbitMq & InMemory publishers
 type Publisher interface {
 	Publish(amqp.Publishing) error
+	PublishBatch(messages []amqp.Publishing) error
 }
 
 type Publishers map[string]Publisher

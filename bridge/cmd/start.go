@@ -2,19 +2,21 @@ package cmd
 
 import (
 	"context"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
 	"github.com/hanaboso/pipes/bridge/pkg/bridge"
 	"github.com/hanaboso/pipes/bridge/pkg/config"
+	"github.com/hanaboso/pipes/bridge/pkg/loki"
 	"github.com/hanaboso/pipes/bridge/pkg/mongo"
 	"github.com/hanaboso/pipes/bridge/pkg/router"
 	"github.com/hanaboso/pipes/bridge/pkg/topology"
 	"github.com/hanaboso/pipes/bridge/pkg/worker"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 func init() {
@@ -34,6 +36,11 @@ var startCmd = &cobra.Command{
 
 func startBridge(_ *cobra.Command, _ []string) {
 	log.Info().Msg("Starting...")
+
+	if config.Loki.Dsn != "" {
+		loki.Init(config.Loki.Dsn)
+	}
+
 	// Construct services
 	mongodb := mongo.NewMongoDb()
 	worker.InitializeWorkers(mongodb)
@@ -74,6 +81,8 @@ func startBridge(_ *cobra.Command, _ []string) {
 	go server.ListenAndServe()
 	log.Info().Msg("Listening on port [:8000]")
 	bridgeSvc.Run(ctx)
+
+	loki.Close()
 
 	<-marker
 }

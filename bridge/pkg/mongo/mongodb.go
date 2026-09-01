@@ -9,6 +9,8 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
+var caseInsensitiveCollation = &options.Collation{Locale: "en", Strength: 2}
+
 type Field struct {
 	Key  string `bson:"key" json:"key"`
 	Name string `bson:"name" json:"name"`
@@ -65,15 +67,21 @@ func (m *MongoDb) FindAuditEntitiesByKeys(keys []string) (map[string]AuditEntity
 	auditEntities := make(map[string]AuditEntity, len(keys))
 
 	ctx, cancel := m.connection.Context()
-	cursor, err := m.auditEntityCollection.Find(ctx, bson.M{"key": bson.M{"$in": keys}})
-	defer func() {
-		cancel()
-		_ = cursor.Close(ctx)
-	}()
+	defer cancel()
+
+	cursor, err := m.auditEntityCollection.Find(
+		ctx,
+		bson.M{"key": bson.M{"$in": keys}},
+		options.Find().SetCollation(caseInsensitiveCollation),
+	)
 
 	if err != nil {
 		return nil, err
 	}
+
+	defer func() {
+		_ = cursor.Close(ctx)
+	}()
 
 	for cursor.Next(ctx) {
 		if err = cursor.Decode(&auditEntity); err != nil {
@@ -81,6 +89,10 @@ func (m *MongoDb) FindAuditEntitiesByKeys(keys []string) (map[string]AuditEntity
 		}
 
 		auditEntities[auditEntity.Key] = auditEntity
+	}
+
+	if err = cursor.Err(); err != nil {
+		return nil, err
 	}
 
 	return auditEntities, nil
@@ -92,11 +104,16 @@ func (m *MongoDb) UpsertAuditData(filter, update bson.M) (*AuditData, error) {
 	ctx, cancel := m.connection.Context()
 	defer cancel()
 
-	if _, err := m.auditDataCollection.UpdateOne(ctx, filter, update, options.UpdateOne().SetUpsert(true)); err != nil {
+	update["$currentDate"] = bson.M{"updated": true}
+	updateOptions := options.UpdateOne().SetUpsert(true).SetCollation(caseInsensitiveCollation)
+
+	if _, err := m.auditDataCollection.UpdateOne(ctx, filter, update, updateOptions); err != nil {
 		return nil, err
 	}
 
-	if err := m.auditDataCollection.FindOne(ctx, filter).Decode(&auditData); err != nil {
+	findOptions := options.FindOne().SetCollation(caseInsensitiveCollation)
+
+	if err := m.auditDataCollection.FindOne(ctx, filter, findOptions).Decode(&auditData); err != nil {
 		return nil, err
 	}
 
@@ -113,7 +130,10 @@ func (m *MongoDb) UpdateAuditData(id string, update bson.M) error {
 		return err
 	}
 
-	if _, err = m.auditDataCollection.UpdateOne(ctx, bson.M{"_id": objectId}, update); err != nil {
+	update["$currentDate"] = bson.M{"updated": true}
+	updateOptions := options.UpdateOne().SetCollation(caseInsensitiveCollation)
+
+	if _, err = m.auditDataCollection.UpdateOne(ctx, bson.M{"_id": objectId}, update, updateOptions); err != nil {
 		return err
 	}
 

@@ -5,6 +5,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/hanaboso/pipes/bridge/pkg/enum"
+	"github.com/hanaboso/pipes/bridge/pkg/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -105,6 +107,105 @@ func TestBuildPayload_SupportsArrayTarget(t *testing.T) {
 	assert.Equal(t, map[string]any{"id": "b"}, arr[1])
 }
 
+const postBody = `{
+	"title": "t",
+	"user": {"email": "u@x"},
+	"comments": [
+		{"content": "c1", "user": {"email": "a@x"}},
+		{"content": "c2", "user": {"email": "b@y"}}
+	]
+}`
+
+func TestBuildPayload_ArrayLeafFieldProjectsEachElement(t *testing.T) {
+	spec := &AuditSpec{Role: "process_exit", EntityPath: "$", Fields: fields("comments.content")}
+	payload, _, err := BuildPayload([]byte(postBody), spec)
+	require.NoError(t, err)
+	assert.Equal(t, map[string]any{
+		"comments": []any{
+			map[string]any{"content": "c1"},
+			map[string]any{"content": "c2"},
+		},
+	}, payload)
+}
+
+func TestBuildPayload_ArrayNestedLeafField(t *testing.T) {
+	spec := &AuditSpec{Role: "process_exit", EntityPath: "$", Fields: fields("comments.user.email")}
+	payload, _, err := BuildPayload([]byte(postBody), spec)
+	require.NoError(t, err)
+	assert.Equal(t, map[string]any{
+		"comments": []any{
+			map[string]any{"user": map[string]any{"email": "a@x"}},
+			map[string]any{"user": map[string]any{"email": "b@y"}},
+		},
+	}, payload)
+}
+
+func TestBuildPayload_ArrayWholeSubObjectField(t *testing.T) {
+	spec := &AuditSpec{Role: "process_exit", EntityPath: "$", Fields: fields("comments.user")}
+	payload, _, err := BuildPayload([]byte(postBody), spec)
+	require.NoError(t, err)
+	assert.Equal(t, map[string]any{
+		"comments": []any{
+			map[string]any{"user": map[string]any{"email": "a@x"}},
+			map[string]any{"user": map[string]any{"email": "b@y"}},
+		},
+	}, payload)
+}
+
+func TestBuildPayload_MergesFieldsSharingArrayPrefix(t *testing.T) {
+	spec := &AuditSpec{
+		Role:       "process_exit",
+		EntityPath: "$",
+		Fields:     fields("title", "user.email", "comments.content", "comments.user.email"),
+	}
+	payload, _, err := BuildPayload([]byte(postBody), spec)
+	require.NoError(t, err)
+	assert.Equal(t, map[string]any{
+		"title": "t",
+		"user":  map[string]any{"email": "u@x"},
+		"comments": []any{
+			map[string]any{"content": "c1", "user": map[string]any{"email": "a@x"}},
+			map[string]any{"content": "c2", "user": map[string]any{"email": "b@y"}},
+		},
+	}, payload)
+}
+
+func TestBuildPayload_WholeArrayFieldUnchanged(t *testing.T) {
+	spec := &AuditSpec{Role: "process_exit", EntityPath: "$", Fields: fields("comments")}
+	payload, _, err := BuildPayload([]byte(postBody), spec)
+	require.NoError(t, err)
+	assert.Equal(t, map[string]any{
+		"comments": []any{
+			map[string]any{"content": "c1", "user": map[string]any{"email": "a@x"}},
+			map[string]any{"content": "c2", "user": map[string]any{"email": "b@y"}},
+		},
+	}, payload)
+}
+
+func TestBuildPayload_HeterogeneousArrayKeepsIndexAlignment(t *testing.T) {
+	body := []byte(`{"comments":[{"content":"c1"},{"other":"x"}]}`)
+	spec := &AuditSpec{Role: "process_exit", EntityPath: "$", Fields: fields("comments.content")}
+	payload, _, err := BuildPayload(body, spec)
+	require.NoError(t, err)
+	assert.Equal(t, map[string]any{
+		"comments": []any{
+			map[string]any{"content": "c1"},
+			map[string]any{},
+		},
+	}, payload)
+}
+
+func TestBuildPayload_ArrayCrossingFieldRedacted(t *testing.T) {
+	body := []byte(`{"comments":[{"token":"AKIA","content":"c1"}]}`)
+	spec := &AuditSpec{Role: "process_exit", EntityPath: "$", Fields: fields("comments.token", "comments.content")}
+	payload, _, err := BuildPayload(body, spec)
+	require.NoError(t, err)
+	arr := payload.(map[string]any)["comments"].([]any)
+	require.Len(t, arr, 1)
+	assert.Equal(t, redactedPlaceholder, arr[0].(map[string]any)["token"])
+	assert.Equal(t, "c1", arr[0].(map[string]any)["content"])
+}
+
 func TestBuildPayload_InvalidJsonFallsBackToBase64(t *testing.T) {
 	spec := &AuditSpec{Role: "process_step", EntityPath: "$", Fields: fields("id")}
 	payload, _, err := BuildPayload([]byte("not-json-at-all"), spec)
@@ -133,6 +234,45 @@ func TestBuildPayload_UnresolvedPathReturnsEmptyMap(t *testing.T) {
 	payload, _, err := BuildPayload(body, spec)
 	require.NoError(t, err)
 	assert.Equal(t, map[string]any{}, payload)
+}
+
+func TestBuildAuditLine(t *testing.T) {
+	dto := (&model.ProcessMessage{}).
+		SetHeader(enum.Header_CorrelationId, "corr-1").
+		SetHeader(enum.Header_TopologyId, "topo-1").
+		SetHeader(enum.Header_NodeName, "beeceptor-sync-post-connector")
+
+	cp := map[string]any{
+		"role":         "process_exit",
+		"resultStatus": "success",
+		"httpStatus":   200,
+		"payload":      map[string]any{"title": "t"},
+	}
+
+	labels, line := buildAuditLine(dto, cp, "json-placeholder-to-beeceptor-posts")
+
+	assert.Equal(t, map[string]string{
+		"correlationId": "corr-1",
+		"levelName":     "info",
+		"logType":       "auditCheckpoint",
+		"topologyId":    "topo-1",
+	}, labels)
+
+	assert.NotContains(t, string(line), "\n")
+	var parsed map[string]any
+	require.NoError(t, json.Unmarshal(line, &parsed))
+	assert.Equal(t, "corr-1", parsed["correlationId"])
+	assert.Equal(t, "topo-1", parsed["topologyId"])
+	assert.Equal(t, "info", parsed["levelName"])
+	assert.Equal(t, "auditCheckpoint", parsed["logType"])
+	assert.Equal(t, "beeceptor-sync-post-connector", parsed["nodeName"])
+	assert.Equal(t, "json-placeholder-to-beeceptor-posts", parsed["topologyName"])
+	assert.Equal(t, "Audit checkpoint", parsed["message"])
+
+	ac, ok := parsed["auditCheckpoint"].(map[string]any)
+	require.True(t, ok)
+	assert.Equal(t, "process_exit", ac["role"])
+	assert.Equal(t, "success", ac["resultStatus"])
 }
 
 func TestClassifyStatus(t *testing.T) {
@@ -168,4 +308,71 @@ func TestSanitizeHeaders(t *testing.T) {
 	assert.Equal(t, redactedPlaceholder, out["Cookie"])
 	assert.Equal(t, "t-1", out["X-Trace-Id"])
 	assert.Equal(t, redactedPlaceholder, out["X-Custom-Token"])
+}
+
+func TestCollectAuditCheckpointIdTokensFromDeclarations(t *testing.T) {
+	dto := (&model.ProcessMessage{}).SetHeader(
+		enum.Header_AuditEntityHeader,
+		`{"Product":{"key":"id","fields":[{"id":"1234","sku":"S1234"}]}}`,
+	)
+
+	assert.Equal(t, []string{"product:1234"}, collectAuditCheckpointIdTokens(dto))
+}
+
+func TestCollectAuditCheckpointIdTokensMultiInstanceSortedDeduped(t *testing.T) {
+	dto := (&model.ProcessMessage{}).SetHeader(
+		enum.Header_AuditEntityHeader,
+		`{"comment":{"key":"id","fields":[{"id":"2"},{"id":"1"},{"id":"2"}]}}`,
+	)
+
+	assert.Equal(t, []string{"comment:1", "comment:2"}, collectAuditCheckpointIdTokens(dto))
+}
+
+func TestCollectAuditCheckpointIdTokensUnionWithIdsHeader(t *testing.T) {
+	dto := (&model.ProcessMessage{}).
+		SetHeader(enum.Header_AuditEntityHeader, `{"comment":{"key":"id","fields":[{"id":"7"}]}}`).
+		SetHeader(enum.Header_AuditEntityIdsHeader, `{"Product:1234":"6a4e7c3084ea2f7e0d0ff234"}`)
+
+	assert.Equal(t, []string{"comment:7", "product:1234"}, collectAuditCheckpointIdTokens(dto))
+}
+
+func TestCollectAuditCheckpointIdTokensGuardsSeparatorAndControlChars(t *testing.T) {
+	dto := (&model.ProcessMessage{}).SetHeader(
+		enum.Header_AuditEntityHeader,
+		`{"product":{"key":"id","fields":[{"id":"bad;value"},{"id":"bad\u0007value"},{"id":"ok"}]}}`,
+	)
+
+	assert.Equal(t, []string{"product:ok"}, collectAuditCheckpointIdTokens(dto))
+}
+
+func TestCollectAuditCheckpointIdTokensEmptyWithoutHeaders(t *testing.T) {
+	assert.Empty(t, collectAuditCheckpointIdTokens(&model.ProcessMessage{}))
+}
+
+func TestCollectAuditCheckpointIdTokensSkipsInstanceMissingPk(t *testing.T) {
+	dto := (&model.ProcessMessage{}).SetHeader(
+		enum.Header_AuditEntityHeader,
+		`{"product":{"key":"id","fields":[{"sku":"S1"},{"id":"1"}]}}`,
+	)
+
+	assert.Equal(t, []string{"product:1"}, collectAuditCheckpointIdTokens(dto))
+}
+
+func TestComputeAuditCheckpointShardFixtures(t *testing.T) {
+	assert.Equal(t, "230", computeAuditCheckpointShard([]string{"product:1234"}))
+	assert.Equal(t, "205", computeAuditCheckpointShard([]string{"product:123456"}))
+	assert.Equal(t, "103", computeAuditCheckpointShard([]string{"comment:1"}))
+}
+
+func TestComputeAuditCheckpointShardLowercasesToken(t *testing.T) {
+	assert.Equal(t, "2", computeAuditCheckpointShard([]string{"product:s5"}))
+	assert.Equal(t, "2", computeAuditCheckpointShard([]string{"product:S5"}))
+}
+
+func TestComputeAuditCheckpointShardMultiSentinel(t *testing.T) {
+	assert.Equal(
+		t,
+		enum.AuditCheckpointShard_Multi,
+		computeAuditCheckpointShard([]string{"comment:1", "product:1234"}),
+	)
 }

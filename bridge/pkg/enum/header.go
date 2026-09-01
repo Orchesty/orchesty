@@ -60,4 +60,41 @@ const (
 	Header_AuditEntityIdsHeader    = "audit-entity-ids"
 	Header_AuditEntityFieldsHeader = "audit-entity-fields"
 	Header_AuditCheckpoint         = "audit-checkpoint"
+
+	// Reply headers — injected at the topology start (e.g. by Pulse) and
+	// propagated through the whole topology so a terminal response node can POST
+	// the final payload back to the caller. ReplyTo is the callback URL,
+	// ReplyId correlates the response with the original request.
+	Header_ReplyTo = "reply-to"
+	Header_ReplyId = "reply-id"
+
+	// Identity of the real caller behind a run (e.g. the authenticated user
+	// behind a Pulse run). The `user` header stays the system identity
+	// ('orchesty') for shared ApplicationInstall lookups, so the caller's email
+	// travels here instead. Part of IdentityHeaders so no worker can overwrite
+	// it and it survives every hop.
+	Header_Identity = "identity"
 )
+
+var IdentityHeaders = []string{
+	Header_CorrelationId,
+	Header_ProcessId,
+	Header_ParentProcessId,
+	Header_PreviousNodeId,
+	Header_NodeId,
+	Header_NodeName,
+	Header_TopologyId,
+	Header_SequenceId,
+	Header_User,
+	Header_WorkerFollowers,
+	Header_SystemEvent,
+	// Reply headers belong to the whole process and must survive every worker
+	// hop (FromHttpResponse otherwise drops anything the SDK does not echo back)
+	// so the terminal response node can always reach the caller's callback.
+	Header_ReplyTo,
+	Header_ReplyId,
+	// Caller identity (e.g. the authenticated user behind a Pulse run) must
+	// survive every hop and never be overwritten by a worker, so the topology
+	// can act on the real user's behalf all the way to the response node.
+	Header_Identity,
+}
