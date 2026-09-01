@@ -1,0 +1,19 @@
+.base-bridge:
+  variables:
+    DIR: bridge
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}bridge
+
+bridge:test:
+  stage: test
+  extends:
+    - .base-test
+    - .base-bridge
+
+bridge:build:
+  stage: build
+  needs:
+    - job: bridge:test
+      optional: false
+  extends:
+    - .base-dind-build
+    - .base-bridge
