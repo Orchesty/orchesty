@@ -3,17 +3,19 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"strings"
+
+	"starting-point/pkg/config"
+	"starting-point/pkg/enum"
+	"starting-point/pkg/storage"
+	"starting-point/pkg/utils"
+
 	log "github.com/hanaboso/go-log/pkg"
 	"github.com/hanaboso/go-log/pkg/zap"
 	metrics "github.com/hanaboso/go-metrics/pkg"
 	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"net/http"
-	"starting-point/pkg/config"
-	"starting-point/pkg/enum"
-	"starting-point/pkg/storage"
-	"starting-point/pkg/utils"
-	"strings"
 )
 
 type Rabbit interface {
@@ -70,6 +72,22 @@ func (this RabbitSvc) SendMessage(
 		h[string(enum.Source_Header)] = string(enum.Source_Auto)
 	}
 
+	// Propagate reply headers (callback URL + request id) so a response node at
+	// the end of the topology can return the final payload to the caller.
+	if replyTo := request.Header.Get(utils.ReplyTo); replyTo != "" {
+		h[utils.ReplyTo] = replyTo
+	}
+	if replyID := request.Header.Get(utils.ReplyID); replyID != "" {
+		h[utils.ReplyID] = replyID
+	}
+
+	// Identity of the real caller (e.g. the authenticated user behind a Pulse
+	// run). Kept separate from `user` (which stays the system identity) and
+	// propagated through the topology as a bridge identity header.
+	if identity := request.Header.Get(utils.Identity); identity != "" {
+		h[utils.Identity] = identity
+	}
+
 	limitHeader, err := GetApplicationLimits(user, topology)
 	if err != nil {
 		config.Logger.Error(fmt.Errorf("cannot fetch sdk's limits: %+v, %v", err, limitHeader))
@@ -98,7 +116,7 @@ func (this RabbitSvc) SendMessage(
 
 	err = this.publisher.PublishExchangeRoutingKey(m, topology.Node.Exchange(), "1")
 	if err != nil {
-		this.RefreshExchange(topology.Node.Queue(), topology.Node.Exchange(), "1")
+		this.RefreshQueueExchange(topology.Node.Queue(), topology.Node.Exchange(), "1")
 		err = this.publisher.PublishExchangeRoutingKey(m, topology.Node.Exchange(), "1")
 		if err != nil {
 			this.logger.Error(err)
@@ -123,8 +141,20 @@ func (this RabbitSvc) IsMetricsConnected() bool {
 	return this.metrics.IsConnected()
 }
 
-func (this RabbitSvc) RefreshExchange(queue, exchange, routingKey string) {
-	err := this.client.DeclareExchange(rabbitmq.Exchange{
+func (this RabbitSvc) RefreshQueueExchange(queue, exchange, routingKey string) {
+	if err := this.client.DeclareQueue(rabbitmq.Queue{
+		Name: queue,
+		Options: rabbitmq.QueueOptions{
+			Durable: true,
+			Args: map[string]interface{}{
+				"x-queue-type": "quorum",
+			},
+		},
+	}); err != nil {
+		this.logger.Error(fmt.Errorf("redeclare queue %s: %v", queue, err))
+	}
+
+	if err := this.client.DeclareExchange(rabbitmq.Exchange{
 		Name:    exchange,
 		Kind:    "x-consistent-hash",
 		Options: rabbitmq.DefaultExchangeOptions,
@@ -136,9 +166,7 @@ func (this RabbitSvc) RefreshExchange(queue, exchange, routingKey string) {
 				Args:   nil,
 			},
 		},
-	})
-
-	if err != nil {
-		this.logger.Debug(fmt.Sprintf("redeclare exchange: %v", err))
+	}); err != nil {
+		this.logger.Error(fmt.Errorf("redeclare exchange: %v", err))
 	}
 }
