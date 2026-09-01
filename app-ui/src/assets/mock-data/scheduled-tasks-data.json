@@ -1,0 +1,69 @@
+{
+  "data": [
+    {
+      "id": "task-1",
+      "name": "Daily Lead Sync",
+      "topology": "Lead Sync",
+      "topologyId": "topo-1",
+      "crontab": "0 2 * * *",
+      "status": "enabled"
+    },
+    {
+      "id": "task-2",
+      "name": "Hourly Report Generation",
+      "topology": "Report Generation",
+      "topologyId": "topo-8",
+      "crontab": "0 * * * *",
+      "status": "disabled"
+    },
+    {
+      "id": "task-3",
+      "name": "Weekly Backup",
+      "topology": "Backup Process",
+      "topologyId": "topo-6",
+      "crontab": "0 3 * * 0",
+      "status": "not_set"
+    },
+    {
+      "id": "task-4",
+      "name": "Monthly Invoice Processing",
+      "topology": "Order Processing",
+      "topologyId": "topo-2",
+      "crontab": "0 0 1 * *",
+      "status": "enabled"
+    },
+    {
+      "id": "task-5",
+      "name": "Daily Customer Update",
+      "topology": "Customer Update",
+      "topologyId": "topo-3",
+      "crontab": "30 1 * * *",
+      "status": "enabled"
+    },
+    {
+      "id": "task-6",
+      "name": "Inventory Sync",
+      "topology": "Inventory Sync",
+      "topologyId": "topo-7",
+      "crontab": null,
+      "status": "not_set"
+    },
+    {
+      "id": "task-7",
+      "name": "Email Campaign Scheduler",
+      "topology": "Email Campaign",
+      "topologyId": "topo-8",
+      "crontab": "0 9 * * 1",
+      "status": "disabled"
+    },
+    {
+      "id": "task-8",
+      "name": "Contact Import",
+      "topology": "Contact Import",
+      "topologyId": "topo-4",
+      "crontab": "*/15 * * * *",
+      "status": "enabled"
+    }
+  ]
+}
+
