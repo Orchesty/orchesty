@@ -1,0 +1,46 @@
+services:
+    app:
+        image: hanabosocom/go-base:1.24
+        user: ${DEV_UID}:${DEV_GID}
+        environment:
+            DEV_UID: ${DEV_UID}
+            DEV_GID: ${DEV_GID}
+            APP_DEBUG: 'true'
+            MONGO_DSN: mongodb://mongodb/cron
+            MONGO_COLLECTION: Cron
+            STARTING_POINT_DSN: http://starting-point:8080
+        volumes:
+            - ./:/app
+            - ${GOPATH}/pkg:/go/pkg
+        ports:
+            - ${DEV_IP}:80:8080
+            - ${DEV_IP}:2345:2345
+        command: /run.sh -p cmd/cron.go -c api -l 2345
+        security_opt: ['seccomp:unconfined']
+
+    starting-point:
+      image: dkr.hanaboso.net/pipes/pipes/starting-point:master
+      environment:
+        MONGO_DSN: mongodb://mongodb/cron
+        METRICS_DSN: mongodb://mongodb/cron-metrics
+        RABBITMQ_DSN: amqp://rabbitmq:5672
+        RABBIT_DELIVERY_MODE: 2
+
+    mongodb:
+        image: mongo
+        ports:
+            - ${DEV_IP}:27017:27017
+
+    rabbitmq:
+      image: rabbitmq:management-alpine
+      ports:
+        - ${DEV_IP}:15672:15672
+
+    swagger-ui:
+        image: swaggerapi/swagger-ui
+        ports:
+            - ${DEV_IP}:8080:8080
+        volumes:
+            - ./openapi.yaml:/api.yaml
+        environment:
+            SWAGGER_JSON: /api.yaml
