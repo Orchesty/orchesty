@@ -3,7 +3,13 @@
 export type ApplicationType = 'cron' | 'webhook';
 export type AuthorizationType = 'basic' | 'oauth' | 'oauth2';
 export type ApplicationStatus = 'available' | 'installed' | 'authorized' | 'activated';
-export type ApplicationSettingType = 'text' | 'number' | 'url' | 'password' | 'selectbox' | 'checkbox';
+export type ApplicationSettingType = 'text' | 'number' | 'url' | 'password' | 'selectbox' | 'multiselect' | 'checkbox';
+
+// A single selectbox/multiselect option: `value` is saved, `label` is displayed.
+export interface ChoiceOption {
+  value: string;
+  label: string;
+}
 
 export interface Application {
   key: string;
@@ -18,12 +24,12 @@ export interface ApplicationSetting {
   key: string;
   type: ApplicationSettingType;
   label: string;
-  value?: string;
+  value?: string | string[]; // multiselect holds an array of saved ids
   description?: string;
   required?: boolean;
   readOnly?: boolean;
   disabled?: boolean;
-  choices?: string[]; // For selectbox type
+  choices?: ChoiceOption[]; // For selectbox / multiselect types
   tab?: string; // Display name (publicName) e.g., "Authorization"
   formKey?: string; // API key for grouping e.g., "authorization_form"
 }
@@ -82,7 +88,7 @@ export interface ApplicationInstallResponse {
 export interface ApplicationSettingFieldApi {
   type: ApplicationSettingType;
   key: string;
-  value: string | boolean | null;
+  value: string | string[] | boolean | null;
   label: string;
   description: string;
   required: boolean;

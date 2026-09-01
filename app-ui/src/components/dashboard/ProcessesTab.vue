@@ -197,6 +197,7 @@ watch(
   { deep: true }
 )
 
+// Loads in onMounted — rendered outside KeepAlive. If moved inside KeepAlive, this will double-load (onActivated also fires on first mount).
 onMounted(() => {
   loadData()
 })

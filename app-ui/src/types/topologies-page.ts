@@ -68,6 +68,7 @@ export interface CronNode {
   label: string
   name: string
   crontab: string
+  params: string
   enabled: boolean
   nextRun: string
 }

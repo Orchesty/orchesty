@@ -90,7 +90,7 @@ export async function fetchTopologies(
   const [topologiesResponse, metricsResponse] = await Promise.all([
     api.get<TopologyListApiResponse>('/api/topologies'),
     api.get<TopologyApiResponse>('/api/processes/topologies', {
-      params: { filter: JSON.stringify(metricsFilter) },
+      params: { filter: JSON.stringify(metricsFilter), aggregated: 1 },
     }),
   ])
 

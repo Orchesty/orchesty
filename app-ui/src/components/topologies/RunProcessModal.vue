@@ -3,16 +3,27 @@ import { ref, watch, computed } from 'vue'
 import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
 import Textarea from '@/components/ui/datagrid/Textarea.vue'
+import { formatProgressLabel } from '@/composables/useBridgeProgress'
 
 interface Props {
   modelValue: boolean
   nodeName?: string
   nodeId?: string
   hasBreakpointMessages?: boolean
+  isPublished?: boolean
+  canPublish?: boolean
+  /** Parent is publishing on our behalf before the run can start. */
+  isPublishing?: boolean
+  /** 0-100 warm-up progress of that publish. */
+  publishProgress?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
   hasBreakpointMessages: false,
+  isPublished: true,
+  canPublish: true,
+  isPublishing: false,
+  publishProgress: 0,
 })
 
 const emit = defineEmits<{
@@ -57,24 +68,35 @@ const isValid = computed(() => {
   return validationError.value === null
 })
 
+const needsPublish = computed(() => !props.isPublished)
+
+// `isPublishing` means the parent already has a publish in flight (e.g. the
+// header Publish button was clicked first). Without this the button stays
+// enabled and a click starts a second, overlapping publish.
+const isBlocked = computed(
+  () => (needsPublish.value && !props.canPublish) || props.isPublishing,
+)
+
+const runButtonLabel = computed(() => {
+  if (props.isPublishing) return `Publishing... ${formatProgressLabel(props.publishProgress)}`
+  return needsPublish.value ? 'Publish and Run Process' : 'Run Process'
+})
+
 const modalTitle = computed(() => {
   return props.nodeName ? `Run Process - ${props.nodeName}` : 'Run Process'
 })
 
 const handleRun = () => {
-  if (!isValid.value) return
+  if (!isValid.value || isBlocked.value) return
 
   isRunning.value = true
+  // The parent owns closing: an unpublished topology publishes first, and that
+  // warm-up has to stay visible here until it settles (or fails).
   emit('run', jsonInput.value)
-  
-  // Close modal after a short delay
-  setTimeout(() => {
-    emit('update:modelValue', false)
-    isRunning.value = false
-  }, 500)
 }
 
 const handleClose = () => {
+  if (isRunning.value) return
   emit('update:modelValue', false)
 }
 </script>
@@ -85,11 +107,40 @@ const handleClose = () => {
     :model-value="modelValue"
     :title="modalTitle"
     size="lg"
+    :dismissible="!isRunning"
     @update:model-value="handleClose"
   >
     <div class="space-y-4">
       <div
-        v-if="showBreakpointAlert"
+        v-if="needsPublish"
+        class="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-900/20"
+      >
+        <svg
+          class="mt-0.5 h-5 w-5 shrink-0 text-red-500"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        <p class="text-sm text-red-800 dark:text-red-200">
+          <template v-if="canPublish">
+            This topology is not published. The button below will publish it first, then run the process.
+          </template>
+          <template v-else>
+            This topology is not published and cannot run. You don't have permission to publish it.
+          </template>
+        </p>
+      </div>
+
+      <div
+        v-else-if="showBreakpointAlert"
         class="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-800 dark:bg-amber-900/20"
       >
         <svg
@@ -140,7 +191,8 @@ const handleClose = () => {
       </Button>
       <Button
         :loading="isRunning"
-        :disabled="!isValid"
+        :progress="isPublishing ? publishProgress : null"
+        :disabled="!isValid || isBlocked"
         @click="handleRun"
       >
         <template #prepend>
@@ -148,7 +200,7 @@ const handleClose = () => {
             <path d="M8 5v14l11-7z"/>
           </svg>
         </template>
-        Run Process
+        {{ runButtonLabel }}
       </Button>
     </template>
   </Modal>

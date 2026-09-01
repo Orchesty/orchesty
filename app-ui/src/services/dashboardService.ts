@@ -14,7 +14,6 @@ import type {
   LimiterApplicationApiResponse,
   AppLimiterSetting,
   TrashApiFilter,
-  TrashGraphApiResponse,
   TrashTableApiResponse,
   ConnectorHeatmapApiResponse,
   ConnectorHeatmapData,
@@ -369,20 +368,13 @@ export async function fetchLimiterApplications(
 }
 
 /**
- * Get trash card data with pagination and sorting
- * Uses the real /api/user-tasks endpoint for total count (same as Failed Messages page)
- * and metrics endpoints for per-topology chart & table aggregation.
+ * Get trash data in a single pass.
+ * Fetches the full per-topology/node/message grouping once (the caller sorts & pages it on the
+ * client, so paging never re-hits the backend), plus the authoritative total-message count.
+ * The chart is derived from the same grouped rows, so no separate /graph request is needed.
  */
-export async function fetchTrashData(params: {
-  page?: number
-  limit?: number
-  sortBy?: string
-  sortOrder?: 'asc' | 'desc'
-}): Promise<TrashData> {
-  const page = params.page || 1
-  const itemsPerPage = params.limit || 5
-
-  // 1. Fetch real total count from /api/user-tasks (type=trash), just 1 item to get paging.total
+export async function fetchTrashData(): Promise<TrashData> {
+  // 1. Authoritative total message count (type=trash) — one lightweight item just for paging.total
   const realTotalFilter: TrashItemsApiFilter = {
     search: null,
     filter: [
@@ -398,43 +390,14 @@ export async function fetchTrashData(params: {
 
   const totalMessages = realTotalResponse.data.paging.total
 
-  // 2. Fetch graph data from metrics (per-topology aggregation for chart)
-  const graphFilter: TrashApiFilter = {
-    search: null,
-    filter: [
-      [{ column: 'type', operator: 'EQ', value: ['trash'] }]
-    ],
-    sorter: [{ column: 'count', direction: 'DESC' }],
-    paging: { itemsPerPage: 5, page: 1 }
-  }
-
-  const graphResponse = await api.get<TrashGraphApiResponse>(
-    `/api/metrics/user-tasks/graph?filter=${encodeURIComponent(JSON.stringify(graphFilter))}`
-  )
-
-  const { ensureLoaded, getTopologyName } = useTopologyNodeMappings()
-  await ensureLoaded()
-
-  const chartData: Array<{ x: string; y: number }> = graphResponse.data.items
-    .filter(item => item.topologyId)
-    .map(item => ({
-      x: getTopologyName(item.topologyId) || item.topologyId || 'Unknown',
-      y: item.count
-    }))
-
-  // 3. Fetch table data from metrics (per-topology/node aggregation for table)
-  const sortColumn = 'count'
-
+  // 2. Full per-topology/node/message grouping — all groups at once; client sorts & pages it
   const tableFilter: TrashApiFilter = {
     search: null,
     filter: [
       [{ column: 'type', operator: 'EQ', value: ['trash'] }]
     ],
-    sorter: [{
-      column: sortColumn,
-      direction: (params.sortOrder || 'desc').toUpperCase() as 'ASC' | 'DESC'
-    }],
-    paging: { itemsPerPage, page }
+    sorter: [{ column: 'count', direction: 'DESC' }],
+    paging: { itemsPerPage: 9999, page: 1 }
   }
 
   const tableResponse = await api.get<TrashTableApiResponse>(
@@ -451,16 +414,28 @@ export async function fetchTrashData(params: {
     count: item.count
   }))
 
+  // 3. Chart = top 5 topologies by total count, summed from the same grouped rows
+  const { ensureLoaded, getTopologyName } = useTopologyNodeMappings()
+  await ensureLoaded()
+
+  const countByTopology = new Map<string, number>()
+  for (const row of tableData) {
+    if (!row.topologyId) continue
+    countByTopology.set(row.topologyId, (countByTopology.get(row.topologyId) ?? 0) + row.count)
+  }
+
+  const chartData: Array<{ x: string; y: number }> = [...countByTopology.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([topologyId, count]) => ({
+      x: getTopologyName(topologyId) || topologyId || 'Unknown',
+      y: count
+    }))
+
   return {
     totalMessages,
     chartData,
-    tableData,
-    meta: {
-      currentPage: tableResponse.data.paging.page,
-      totalPages: tableResponse.data.paging.lastPage,
-      totalItems: tableResponse.data.paging.total,
-      itemsPerPage: tableResponse.data.paging.itemsPerPage
-    }
+    tableData
   }
 }
 
@@ -486,7 +461,7 @@ export async function fetchConnectorHeatmapData(
 
   const response = await api.get<ConnectorHeatmapApiResponse>(
     '/api/metrics/connectors/heatmap',
-    { params: { filter: JSON.stringify(filterObj), buckets } }
+    { params: { filter: JSON.stringify(filterObj), buckets, aggregated: 1 } }
   )
 
   // Group by nodeId, track applicationId per node

@@ -1,5 +1,5 @@
 ### Build step
-FROM node:24-slim AS builder
+FROM --platform=$BUILDPLATFORM node:24-slim AS builder
 
 RUN npm i -g pnpm
 

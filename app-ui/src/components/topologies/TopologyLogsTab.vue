@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onActivated, onDeactivated, watch } from 'vue'
+import { ref, computed, onActivated, onDeactivated, watch } from 'vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import TextInput from '@/components/ui/datagrid/TextInput.vue'
@@ -155,10 +155,7 @@ const {
   filters: [searchFilter, correlationIdFilter, severityFilter, nodeFilter, dateTimeRange],
 })
 
-onMounted(() => {
-  loadData()
-})
-
+// Initial load happens here — this component must be rendered inside <KeepAlive> (onActivated never fires otherwise).
 onActivated(() => {
   isActive.value = true
   if (isStale()) loadData()

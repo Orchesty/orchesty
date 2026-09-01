@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, nextTick, onMounted, computed, watch, inject } from 'vue'
+import { ref, nextTick, onMounted, computed, watch, inject, useSlots } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import TopologyProcessesTab from '@/components/topologies/TopologyProcessesTab.vue'
 import TopologyLogsTab from '@/components/topologies/TopologyLogsTab.vue'
@@ -20,7 +20,7 @@ import MoreActions from '@/components/ui/MoreActions.vue'
 import type { MoreActionsSection } from '@/components/ui/MoreActions.vue'
 import Card from '@/components/ui/Card.vue'
 import TabCard from '@/components/ui/TabCard.vue'
-import Textarea from '@/components/ui/datagrid/Textarea.vue'
+import McpManifestBuilder from '@/components/topologies/McpManifestBuilder.vue'
 import { fetchTopologyDetail, fetchTopologySchema, fetchTopologyVersions, publishTopology, toggleTopologyEnabled, updateTopology, fetchCategoryBreadcrumb } from '@/services/topologiesService'
 import { validateMcpManifest } from '@/utils/mcpManifestValidator'
 import { fetchTopologyMetrics } from '@/services/topologyMetricsService'
@@ -29,6 +29,7 @@ import type { TopologyDetail, TopologyVersion, TopologyLayoutContext } from '@/t
 import type { TopologyMetrics, MetricsMode } from '@/types/topology-metrics'
 import { useLastTopology } from '@/composables/useLastTopology'
 import { useAuthorization } from '@/composables/useAuthorization'
+import { useBridgeProgress } from '@/composables/useBridgeProgress'
 import FailedMessageModal from '@/components/topologies/FailedMessageModal.vue'
 import type { TrashItem } from '@/types/trash'
 
@@ -51,6 +52,9 @@ const props = withDefaults(defineProps<Props>(), {
 })
 const route = useRoute()
 const router = useRouter()
+const slots = useSlots()
+
+const connectorDetailEnabled = computed(() => !!slots['topology-connector-detail-drawer'])
 
 const { showToast } = useToast()
 const { setLastTopology, getLastTopology } = useLastTopology()
@@ -146,50 +150,12 @@ const activeTopologyTab = ref<string>(
     : 'topology'
 )
 
-// Context tab state
-const contextPlaceholder = `{
-  "kind": "query",
-  "input_schema": {
-    "type": "object",
-    "properties": {
-      "location": {
-        "type": "string"
-      },
-      "date": {
-        "type": "string",
-        "format": "date"
-      }
-    },
-    "required": [
-      "location"
-    ]
-  },
-  "output_schema": {
-    "type": "object",
-    "properties": {
-      "temperature": {
-        "type": "number"
-      },
-      "humidity": {
-        "type": "number"
-      },
-      "text": {
-        "type": "string"
-      }
-    },
-    "required": [
-      "temperature",
-      "humidity",
-      "text"
-    ]
-  }
-}`
-const contextManifest = ref('')
-const manifestError = ref('')
-
-const isManifestValid = computed(() => {
-  return contextManifest.value.trim() !== '' && manifestError.value === ''
-})
+// Context tab state — the MCP manifest is edited through the structured builder
+// (McpManifestBuilder), which owns both the form and the advanced raw editor and
+// emits the resulting manifest object plus a validity flag.
+const manifestObject = ref<Record<string, unknown>>({})
+const manifestValid = ref(true)
+const contextSchemaNodes = ref<unknown[]>([])
 
 // Tabs configuration
 const coreTopologyTabs: TopologyTab[] = [
@@ -377,10 +343,11 @@ const loadTopologyDetail = async () => {
       })
     }
     const mcpDesc = topology.value?.mcp_description
-    contextManifest.value =
-      mcpDesc && !Array.isArray(mcpDesc) && Object.keys(mcpDesc).length > 0
-        ? JSON.stringify(mcpDesc, null, 2)
-        : ''
+    manifestObject.value =
+      mcpDesc && !Array.isArray(mcpDesc) && typeof mcpDesc === 'object'
+        ? (mcpDesc as Record<string, unknown>)
+        : {}
+    manifestValid.value = true
 
     checkDescriptionTruncation()
 
@@ -388,9 +355,11 @@ const loadTopologyDetail = async () => {
       try {
         const schema = await fetchTopologySchema(topology.value._id)
         const nodes = schema?.nodes ?? []
+        contextSchemaNodes.value = Array.isArray(nodes) ? nodes : []
         hasFlow.value = Array.isArray(nodes) && nodes.some((n: { type?: string }) => n.type === 'flow')
       } catch {
         hasFlow.value = false
+        contextSchemaNodes.value = []
       }
 
       if (topology.value.category) {
@@ -411,7 +380,15 @@ const loadTopologyDetail = async () => {
   }
 }
 
-const publishing = ref(false)
+// Publish holds for a fixed warm-up window so the toast (and any queued process
+// run) lands after the bridge is actually usable, not when k8s accepts the
+// Deployment. See useBridgeProgress.
+const {
+  progress: publishProgress,
+  progressLabel: publishProgressLabel,
+  isRunning: publishing,
+  runWithProgress: runPublishWithProgress,
+} = useBridgeProgress()
 const hasFlow = ref(false)
 
 // Topology slot limit alert state. Backend returns HTTP 409 with a message
@@ -451,14 +428,30 @@ const isSlotLimitError = (error: unknown): { used: number | null; limit: number 
   return parsed ?? { used: null, limit: null }
 }
 
-const handlePublish = async () => {
-  if (!topology.value) return
-  publishing.value = true
+// Publish has two triggers - the header button and `publishFn` in the Run
+// Process flow - and the second stays reachable while the first is still
+// warming up. Re-entrant calls join the in-flight publish instead of firing a
+// second POST (plus a duplicate toast, refetch and progress run).
+let publishInFlight: Promise<boolean> | null = null
+
+const handlePublish = async (): Promise<boolean> => {
+  if (publishInFlight) return publishInFlight
+  publishInFlight = doPublish()
   try {
-    await publishTopology(topology.value._id)
+    return await publishInFlight
+  } finally {
+    publishInFlight = null
+  }
+}
+
+const doPublish = async (): Promise<boolean> => {
+  if (!topology.value) return false
+  try {
+    await runPublishWithProgress(publishTopology(topology.value._id))
     showToast('Topology published successfully', 'success')
     topology.value = await fetchTopologyDetail(props.id, versionId.value)
     await layout.refreshSidebar()
+    return true
   } catch (error) {
     console.error('Failed to publish topology:', error)
     const slotLimit = isSlotLimitError(error)
@@ -469,8 +462,7 @@ const handlePublish = async () => {
     } else {
       showToast('Failed to publish topology', 'error')
     }
-  } finally {
-    publishing.value = false
+    return false
   }
 }
 
@@ -558,43 +550,19 @@ const handleSaveDesign = async (data: { _id: string }) => {
 // Context tab handlers
 const savingContext = ref(false)
 
-watch(contextManifest, (text) => {
-  const trimmed = text.trim()
-  if (!trimmed) {
-    manifestError.value = ''
-    return
-  }
-  let parsed
-  try {
-    parsed = JSON.parse(trimmed)
-  } catch {
-    manifestError.value = 'Invalid JSON syntax'
-    return
-  }
-  const result = validateMcpManifest(parsed)
-  manifestError.value = result.valid ? '' : (result.error || 'Validation failed')
-})
-
 const handleSaveContext = async () => {
   if (!topology.value) return
 
-  let parsed: Record<string, unknown>
-  try {
-    parsed = JSON.parse(contextManifest.value)
-  } catch {
-    manifestError.value = 'Invalid JSON syntax'
-    return
-  }
-
-  const validation = validateMcpManifest(parsed)
+  const validation = validateMcpManifest(manifestObject.value)
   if (!validation.valid) {
-    manifestError.value = validation.error || 'Validation failed'
+    manifestValid.value = false
+    showToast(validation.error || 'Validation failed', 'error')
     return
   }
 
   savingContext.value = true
   try {
-    await updateTopology(topology.value._id, { mcp_description: parsed })
+    await updateTopology(topology.value._id, { mcp_description: manifestObject.value })
     showToast('MCP Manifest saved successfully', 'success')
   } catch (error) {
     console.error('Failed to save MCP Manifest:', error)
@@ -744,13 +712,13 @@ onMounted(async () => {
         </div>
 
         <div class="flex items-center gap-2">
-          <Button v-if="topology.visibility === 'draft' && canWrite" :loading="publishing" :disabled="!hasFlow" @click="handlePublish">
+          <Button v-if="topology.visibility === 'draft' && canWrite" :loading="publishing" :progress="publishing ? publishProgress : null" :disabled="!hasFlow" @click="handlePublish">
             <template #prepend>
               <svg class="-ms-1 me-2 h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                 <path fill-rule="evenodd" d="M5 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11.5c.07 0 .14-.007.207-.021.095.014.193.021.293.021h2a2 2 0 0 0 2-2V7a1 1 0 0 0-1-1h-1a1 1 0 1 0 0 2v11h-2V5a2 2 0 0 0-2-2H5Zm7 4a1 1 0 0 1 1-1h.5a1 1 0 1 1 0 2H13a1 1 0 0 1-1-1Zm0 3a1 1 0 0 1 1-1h.5a1 1 0 1 1 0 2H13a1 1 0 0 1-1-1Zm-6 4a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2H7a1 1 0 0 1-1-1Zm0 3a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2H7a1 1 0 0 1-1-1ZM7 6a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H7Zm1 3V8h1v1H8Z" clip-rule="evenodd"/>
               </svg>
             </template>
-            {{ publishing ? 'Publishing...' : 'Publish' }}
+            {{ publishing ? `Publishing... ${publishProgressLabel}` : 'Publish' }}
           </Button>
           <Button
             v-if="topology.visibility !== 'draft' && canRun"
@@ -806,7 +774,7 @@ onMounted(async () => {
     <div v-show="activeTopologyTab === 'topology'" class="flex-1 min-h-0 mt-4">
       <div class="h-full dark:bg-gray-800 dark:shadow-sm dark:rounded-lg">
         <div class="h-full bg-gray-50 dark:bg-gray-900 dark:rounded-lg overflow-hidden">
-          <TopologyEditor ref="topologyEditorRef" :topology-id="topology._id" :topology-name="topology.name" :topology-enabled="topology.enabled" :refresh-key="refreshKey" @process-run="handleProcessRun" />
+          <TopologyEditor ref="topologyEditorRef" :topology-id="topology._id" :topology-name="topology.name" :topology-enabled="topology.enabled" :is-published="topology.visibility === 'public'" :can-publish="canWrite && hasFlow" :publish-fn="handlePublish" :is-publishing="publishing" :publish-progress="publishProgress" :refresh-key="refreshKey" @process-run="handleProcessRun" />
         </div>
       </div>
     </div>
@@ -817,18 +785,21 @@ onMounted(async () => {
     <!-- Context -->
     <div v-show="activeTopologyTab === 'context'">
       <TabCard>
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">MCP Manifest</h3>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">MCP Manifest</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-5">
+          Expose this topology to the Trace assistant / Pulse as a callable MCP tool. The
+          <strong>kind</strong> is detected automatically from the topology (a Response node means it
+          returns data).
+        </p>
         <form @submit.prevent="handleSaveContext" class="space-y-6">
-          <div>
-            <Textarea
-              v-model="contextManifest"
-              :placeholder="contextPlaceholder"
-              :rows="16"
-              :error="manifestError"
-            />
-          </div>
-          <div class="pt-4">
-            <Button type="submit" :disabled="!isManifestValid || savingContext">
+          <McpManifestBuilder
+            v-model="manifestObject"
+            :topology-nodes="contextSchemaNodes"
+            :topology-name="topology.name"
+            @update:valid="manifestValid = $event"
+          />
+          <div class="pt-2">
+            <Button type="submit" :disabled="!manifestValid || savingContext">
               {{ savingContext ? 'Saving...' : 'Save' }}
             </Button>
           </div>
@@ -846,7 +817,12 @@ onMounted(async () => {
         :topology-id="topology._id"
         :topology-name="topology.name"
         :refresh-key="refreshKey"
-      />
+        :connector-detail-enabled="connectorDetailEnabled"
+      >
+        <template #connector-detail-drawer="slotProps">
+          <slot name="topology-connector-detail-drawer" v-bind="slotProps" />
+        </template>
+      </TopologyProcessesTab>
       <TopologyLogsTab
         v-else-if="activeTopologyTab === 'logs'"
         :topology-id="topology._id"

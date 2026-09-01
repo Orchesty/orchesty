@@ -17,6 +17,7 @@ import {
   updateApplicationSettings,
   changeApplicationState,
   authorizeApplication,
+  groupKeyOf,
 } from '@/services/applicationsService';
 import { useToast } from '@/composables/useToast';
 import Drawer from '@/components/ui/Drawer.vue';
@@ -66,7 +67,9 @@ const showUninstallConfirm = ref(false);
 const showActivationErrorModal = ref(false);
 const activationErrorMessage = ref('');
 const applicationInstall = ref<ApplicationInstall | null>(null);
-const formValues = ref<Record<string, unknown>>({});
+// Value model is scoped per form: { [formKey]: { [fieldKey]: value } }.
+// Two forms that share field keys (e.g. productsForm / productQuantitiesForm) must not collide.
+const formValues = ref<Record<string, Record<string, unknown>>>({});
 const activeTab = ref<string>('');
 const formRefs = ref<Record<string, InstanceType<typeof DynamicFormGenerator>>>({});
 const currentStatus = ref<ApplicationStatus>(props.status);
@@ -81,6 +84,19 @@ const renderedInfo = computed(() => {
 
 const setFormRef = (tabId: string, el: any) => {
   if (el) formRefs.value[tabId] = el;
+};
+
+// Build the per-form value model from a flat settings array, defaulting empties by type.
+const buildFormValues = (
+  settings: ApplicationSetting[],
+): Record<string, Record<string, unknown>> => {
+  const values: Record<string, Record<string, unknown>> = {};
+  settings.forEach((setting) => {
+    const formKey = groupKeyOf(setting);
+    (values[formKey] ??= {})[setting.key] =
+      setting.value ?? (setting.type === 'multiselect' ? [] : '');
+  });
+  return values;
 };
 
 // Group settings by tab
@@ -186,15 +202,9 @@ const loadApplicationData = async () => {
 
     const data = await fetchApplicationInstall(props.applicationKey, props.worker, isInstalled);
 
-    // Initialize form values from settings
-    const initialValues: Record<string, unknown> = {};
-    data.applicationSettings.forEach((setting) => {
-      initialValues[setting.key] = setting.value ?? '';
-    });
-
     // Set all data at once
     applicationInstall.value = data;
-    formValues.value = initialValues;
+    formValues.value = buildFormValues(data.applicationSettings);
 
     // Wait for DOM to be ready
     await nextTick();
@@ -220,13 +230,7 @@ const handleInstall = async () => {
   try {
     const data = await installApplication(props.applicationKey, props.worker);
     applicationInstall.value = data;
-
-    // Initialize form values from settings
-    const initialValues: Record<string, unknown> = {};
-    data.applicationSettings.forEach((setting) => {
-      initialValues[setting.key] = setting.value ?? '';
-    });
-    formValues.value = initialValues;
+    formValues.value = buildFormValues(data.applicationSettings);
 
     currentStatus.value = 'installed';
     showToast('Application installed successfully', 'success');
@@ -267,10 +271,13 @@ const handleTabSave = async (tabId: string) => {
   const formRef = formRefs.value[tabId];
   if (formRef?.validate && !formRef.validate()) return;
 
-  // Collect only settings that belong to this tab
+  // Collect only the forms shown on this tab, scoped per form: { formKey: { fieldKey: value } }.
   const tabSettings = groupedSettings.value[tabId] || [];
-  const tabFormValues: Record<string, unknown> = {};
-  tabSettings.forEach(s => { tabFormValues[s.key] = formValues.value[s.key]; });
+  const groupedValues: Record<string, Record<string, unknown>> = {};
+  tabSettings.forEach((s) => {
+    const formKey = groupKeyOf(s);
+    (groupedValues[formKey] ??= {})[s.key] = formValues.value[formKey]?.[s.key];
+  });
 
   const shouldAuthorize = isAuthTab(tabId) && needsOAuthAuthorization.value;
 
@@ -280,17 +287,12 @@ const handleTabSave = async (tabId: string) => {
     const updatedInstall = await updateApplicationSettings(
       props.applicationKey,
       props.worker,
-      tabFormValues,
-      tabSettings,
+      groupedValues,
     );
 
     applicationInstall.value = mergeInstall(previousData, updatedInstall);
 
-    const initialValues: Record<string, unknown> = {};
-    updatedInstall.applicationSettings.forEach((setting) => {
-      initialValues[setting.key] = setting.value ?? '';
-    });
-    formValues.value = initialValues;
+    formValues.value = buildFormValues(updatedInstall.applicationSettings);
 
     if (shouldAuthorize) {
       authorizeApplication(props.applicationKey, props.worker);

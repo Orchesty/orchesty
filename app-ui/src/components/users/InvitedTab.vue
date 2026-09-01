@@ -107,8 +107,11 @@ function getActionsForRow(user: InvitedUser): MoreActionsSection[] {
 
 async function handleRegenerate(user: InvitedUser) {
   try {
-    const result = await regenerateInvite(user.id)
-    generatedLink.value = getInviteLink(result.hash)
+    // In cloud mode the backend returns a ready-to-use cloud invite link
+    // (/instance-invite?token=...). Fall back to the local /accept-invite
+    // link only when the backend doesn't provide one.
+    const result = (await regenerateInvite(user.id)) as { hash?: string; email: string; inviteLink?: string }
+    generatedLink.value = result.inviteLink || getInviteLink(result.hash ?? '')
     selectedUser.value = user
     linkModalOpen.value = true
   } catch (error) {
@@ -222,16 +225,16 @@ defineExpose({ loadData })
   />
 
   <Confirm
-    v-if="selectedUser"
     v-model="confirmDeleteOpen"
     id="confirm-delete-invite-modal"
     confirm-text="Yes, delete"
     cancel-text="Cancel"
+    confirm-variant="danger"
     @confirm="handleConfirmDelete"
     @cancel="confirmDeleteOpen = false"
   >
     <p class="text-sm text-gray-700 dark:text-gray-300">
-      Are you sure you want to delete the invitation for <strong>{{ selectedUser.email }}</strong>?
+      Are you sure you want to delete the invitation for <strong>{{ selectedUser?.email }}</strong>?
     </p>
   </Confirm>
 
