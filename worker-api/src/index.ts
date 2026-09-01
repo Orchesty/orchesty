@@ -1,9 +1,10 @@
 import cors from 'cors';
 import express, { Application } from 'express';
 import AuthorizationMiddleware from './authorization/AuthorizationMiddleware';
-import { appOptions } from './config/Config';
+import { appOptions, lokiOptions } from './config/Config';
 import Mongo from './database/Mongo';
 import { logger } from './logger/Logger';
+import Loki from './logger/Loki';
 import DocumentManager from './manager/DocumentManager';
 import MetricsManager from './manager/MetricsManager';
 import DefaultRouter from './router/DefaultRouter';
@@ -12,9 +13,11 @@ import LoggerRouter from './router/LoggerRouter';
 import MetricsRouter from './router/MetricsRouter';
 
 export async function init(): Promise<IServices> {
+    const loki = new Loki(lokiOptions.dsn);
+    loki.start();
+
     const mongoClient = new Mongo();
     await mongoClient.connect();
-    await mongoClient.ensureMetricsIndexes();
 
     const metricsManager = new MetricsManager(mongoClient);
     const documentManager = new DocumentManager(mongoClient);
@@ -22,7 +25,6 @@ export async function init(): Promise<IServices> {
     const authorizator = new AuthorizationMiddleware(mongoClient);
 
     const expressApp: Application = express();
-    expressApp.use(express.json());
 
     expressApp.use(
 
@@ -35,12 +37,25 @@ export async function init(): Promise<IServices> {
 
     expressApp.use(authorizator.isAuthorized());
 
+    const loggerBodyParser = express.json({ limit: appOptions.maxLoggerRequestBodyBytes });
+    const defaultBodyParser = express.json({ limit: appOptions.maxRequestBodyBytes });
+
+    expressApp.use((req, res, next) => {
+        if (req.path.split('/')[1] === 'logger') {
+            loggerBodyParser(req, res, next);
+
+            return;
+        }
+
+        defaultBodyParser(req, res, next);
+    });
+
     new DefaultRouter(expressApp, mongoClient).initRoutes();
-    new LoggerRouter(expressApp, mongoClient).initRoutes();
+    new LoggerRouter(expressApp, mongoClient, loki).initRoutes();
     new MetricsRouter(expressApp, metricsManager).initRoutes();
     new DocumentRouter(expressApp, documentManager).initRoutes();
 
-    return { app: expressApp, mongo: mongoClient };
+    return { app: expressApp, mongo: mongoClient, loki };
 }
 
 export function listen(expressApp: Application): void {
@@ -53,4 +68,5 @@ export function listen(expressApp: Application): void {
 export interface IServices {
     app: Application;
     mongo: Mongo;
+    loki: Loki;
 }

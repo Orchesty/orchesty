@@ -3,6 +3,7 @@ const devIp = readFileSync( __dirname + '/../.env')?.toString()?.match("(DEV_IP=
 
 // --- COMMONS ---
 process.env.APP_ENV = 'prod' // 'debug' <= use it if you want to see more logs
+process.env.LOKI_DSN = 'http://127.0.0.1:1';
 
 if (process.env.JEST_DOCKER) {
   // --- DOCKER ---
