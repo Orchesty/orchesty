@@ -1,0 +1,70 @@
+openapi: 3.0.0
+#TODO změnit podle reálných route. Toto je tu nechané pro ukázku
+info:
+    title: Pipes worker-api
+    description: Pipes worker API
+    version: '1.0'
+
+servers:
+    -   url: http://127.0.0.4
+        description: Docker Localhost
+
+paths:
+    /applications:
+        get:
+            tags: [ Applications ]
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+
+components:
+    responses:
+        404:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    example:
+                        type: AppStoreException
+                        status: NOT_FOUND
+                        message: Application with key 'Unknown' not found!
+                        error_code: 404
+
+        500:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    example:
+                        type: AppStoreException
+                        status: INTERNAL_SERVER_ERROR
+                        message: Something gone wrong
+                        error_code: 500
+
+    schemas:
+        Application:
+            type: object
+            properties:
+                key:
+                    type: string
+                name:
+                    type: string
+                description:
+                    type: string
+                application_type:
+                    type: string
+                    enum: [cron, webhook]
+                authorization_type:
+                    type: string
+                    enum: [basic, oauth, oauth2]
+
+    parameters:
+        Id:
+            name: id
+            in: path
+            required: true
+            example: id
+            schema:
+                type: string
