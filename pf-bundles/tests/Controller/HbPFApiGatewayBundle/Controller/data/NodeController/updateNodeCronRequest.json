@@ -1,0 +1,12 @@
+{
+    "http": "PATCH /api/nodes/:id",
+    "body": {
+        "cron": {
+            "time": "* * * * *",
+            "params": "{\"foo\": \"bar\"}"
+        }
+    },
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

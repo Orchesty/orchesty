@@ -1,0 +1,60 @@
+<?php declare(strict_types=1);
+
+namespace PipesFrameworkTests\Integration\Metrics\Document;
+
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Exception;
+use Hanaboso\PipesFramework\Metrics\Document\ProcessesMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\ProcessesMetricsFields;
+use Hanaboso\Utils\Date\DateTimeUtils;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PipesFrameworkTests\DatabaseTestCaseAbstract;
+
+/**
+ * Class ProcessMetricsTest
+ *
+ * @package PipesFrameworkTests\Integration\Metrics\Document
+ */
+#[CoversClass(ProcessesMetrics::class)]
+#[CoversClass(ProcessesMetricsFields::class)]
+final class ProcessMetricsTest extends DatabaseTestCaseAbstract
+{
+
+    /**
+     * @throws Exception
+     */
+    public function testDocument(): void
+    {
+        $dm = self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager');
+        $dm->getSchemaManager()->dropDocumentCollection(ProcessesMetrics::class);
+        $dm->getSchemaManager()->createDocumentCollection(ProcessesMetrics::class);
+        $dm->createQueryBuilder(ProcessesMetrics::class)
+            ->insert()
+            ->setNewObj(
+                [
+                    'fields' => [
+                        'created'  => DateTimeUtils::getUtcDateTime('1.1.2020')->getTimestamp(),
+                        'duration' => 10,
+                        'result'   => TRUE,
+                    ],
+                    'tags'   => [
+                        'node_id'     => '1',
+                        'queue'       => '12',
+                        'topology_id' => '2',
+                    ],
+                ],
+            )
+            ->getQuery()
+            ->execute();
+
+        /** @var DocumentRepository<ProcessesMetrics> $repository */
+        $repository = $dm->getRepository(ProcessesMetrics::class);
+        /** @var ProcessesMetrics $result */
+        $result = $repository->findAll()[0];
+        self::assertTrue($result->getFields()->isSuccess());
+        self::assertSame(10, $result->getFields()->getDuration());
+        self::assertEquals(DateTimeUtils::getUtcDateTime('1.1.2020'), $result->getFields()->getCreated());
+        self::assertSame('1', $result->getTags()->getNodeId());
+    }
+
+}

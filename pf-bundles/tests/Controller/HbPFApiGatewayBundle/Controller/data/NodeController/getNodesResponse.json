@@ -1,0 +1,23 @@
+{
+    "http": 200,
+    "body": {
+        "items": [
+            {
+                "_id": "123456789",
+                "name": "",
+                "topology_id": "123456789",
+                "next": [],
+                "type": "cron",
+                "handler": "event",
+                "enabled": true,
+                "schema_id": "",
+                "sdk": "",
+                "cron_time": null,
+                "cron_params": null,
+                "application": "",
+                "event_name": "",
+                "prefetch": 1
+            }
+        ]
+    }
+}

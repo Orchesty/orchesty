@@ -1,0 +1,12 @@
+{
+    "http": "POST /user-task/accept",
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    },
+    "body": {
+        "ids": [
+            "507f191e810c19729de860ea",
+            "507f191e810c19729de860eb"
+        ]
+    }
+}
