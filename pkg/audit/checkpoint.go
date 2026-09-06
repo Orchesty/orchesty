@@ -95,7 +95,7 @@ func ClassifyStatus(resultCode int, httpStatus int) string {
 // the allowlist + redaction is applied. Anything larger is replaced with a
 // placeholder so we don't bloat Loki and don't risk leaking via half-truncated
 // JSON.
-const MaxAuditPayloadBytes = 64 * 1024
+const MaxAuditPayloadBytes = 2 * 1024 * 1024
 
 // sensitiveHeaderNames are header names whose value must never reach Loki.
 // Lower-case lookup; canonicalize before comparing.
