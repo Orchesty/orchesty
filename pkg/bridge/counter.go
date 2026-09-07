@@ -65,6 +65,7 @@ func (c counter) send(result model.ProcessResult, followers int) {
 		Body:        msgDtoBytes,
 		Headers: map[string]interface{}{
 			enum.Header_PublishedTimestamp: published,
+			enum.Header_ProcessedTimestamp: timex.UnixMs(),
 		},
 	})
 }

@@ -51,6 +51,7 @@ const (
 	// Publish time for metrics
 	// !!! This is single header still inside rabbitMq headers and not in body !!!
 	Header_PublishedTimestamp = "published-timestamp"
+	Header_ProcessedTimestamp = "processed-timestamp"
 
 	// Batch
 	Header_Cursor = "cursor"
