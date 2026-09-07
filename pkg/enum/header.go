@@ -4,6 +4,7 @@ type HeaderType string
 
 const (
 	Header_PublishedTimestamp HeaderType = "published-timestamp"
+	Header_ProcessedTimestamp HeaderType = "processed-timestamp"
 
 	Header_ProcessStarted  HeaderType = "process-started"
 	Header_CorrelationId   HeaderType = "correlation-id"
