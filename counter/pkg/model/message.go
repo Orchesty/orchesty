@@ -81,6 +81,20 @@ func (pm ParsedMessage) GetPublishedTimestamp() time.Time {
 	return time.Unix(0, val*1_000_000)
 }
 
+func (pm ParsedMessage) GetProcessedTimestamp() time.Time {
+	value, err := pm.getHeader(enum.Header_ProcessedTimestamp)
+	if err != nil {
+		return pm.GetPublishedTimestamp()
+	}
+
+	val, err := strconv.ParseInt(value, 10, 64)
+	if err != nil {
+		return pm.GetPublishedTimestamp()
+	}
+
+	return time.Unix(0, val*1_000_000)
+}
+
 func (pm ProcessMessage) GetTimeHeaderOrDefault(header enum.HeaderType) time.Time {
 	value, err := pm.GetHeader(header)
 	if err != nil {
@@ -236,7 +250,7 @@ func (pm ParsedMessage) FinishProcessQuery() mongo.WriteModel {
 										"$total",
 									},
 								},
-								pm.GetPublishedTimestamp(),
+								pm.GetProcessedTimestamp(),
 								nil,
 							},
 						},
@@ -300,7 +314,7 @@ func (pm ParsedMessage) FinishSubProcessQuery() mongo.WriteModel {
 										"$total",
 									},
 								},
-								pm.GetPublishedTimestamp(),
+								pm.GetProcessedTimestamp(),
 								nil,
 							},
 						},
