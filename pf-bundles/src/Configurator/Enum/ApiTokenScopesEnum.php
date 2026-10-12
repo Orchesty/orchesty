@@ -11,6 +11,8 @@ enum ApiTokenScopesEnum: string
 {
 
     case TOPOLOGY_RUN     = 'topology:run';
+    case ENTITY_AUDIT     = 'entity:audit';
+    case TRACE_READ       = 'trace:read';
     case LOG_WRITE        = 'log:write';
     case METRIC_WRITE     = 'metric:write';
     case WORKER_ALL       = 'worker:all';
