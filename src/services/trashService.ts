@@ -4,6 +4,7 @@ import type {
   TrashApiFilter,
   TrashApiResponse,
   TrashItemApi,
+  TrashItemDetailApi,
   TopologyNodeMappings
 } from '@/types/trash'
 import api from './api'
@@ -146,6 +147,29 @@ export async function fetchTrashItems(
       totalPages: response.data.paging.lastPage,
     },
   }
+}
+
+/**
+ * Fetch a single trash item by its user task ID.
+ * Returns null when the ID belongs to a user task that is not a trash item.
+ * Request errors (e.g. missing item, forbidden) are propagated to the caller.
+ */
+export async function fetchTrashItem(id: string): Promise<TrashItem | null> {
+  const response = await api.get<TrashItemDetailApi>(`/api/user-task/${encodeURIComponent(id)}`)
+  const { message, ...item } = response.data
+
+  if (item.type !== 'trash') {
+    return null
+  }
+
+  const headers = message?.headers && !Array.isArray(message.headers) ? message.headers : {}
+
+  return mapApiItemToTrashItem({
+    ...item,
+    body: message?.body ?? '',
+    headers,
+    message: String(headers['result-message'] ?? ''),
+  })
 }
 
 /**

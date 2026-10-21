@@ -31,6 +31,7 @@ import { useDataGrid } from '@/composables/useDataGrid'
 import { useTopologyNodeFilter } from '@/composables/useTopologyNodeFilter'
 import { useToast } from '@/composables/useToast'
 import { useDateFormat } from '@/composables/useDateFormat'
+import { useTrashDeepLink } from '@/composables/useTrashDeepLink'
 
 const route = useRoute()
 const { formatDateTime } = useDateFormat()
@@ -368,11 +369,21 @@ const {
   skipAutoLoad: skipFilterAutoLoad,
 })
 
+// Drawer handlers
+const openDrawer = (item: TrashItem) => {
+  selectedItem.value = item
+  drawerOpen.value = true
+}
+
+/** Deep-link `?trashId=` (e.g. from notification emails) opens the detail drawer */
+const { openFromRoute, isOnlyTrashIdChange } = useTrashDeepLink({ drawerOpen, selectedItem, openDrawer })
+
 function hydrateFromRouteAndLoad() {
   skipFilterAutoLoad.value = true
   applyTrashQueryFromRoute()
   skipFilterAutoLoad.value = false
   void loadData()
+  void openFromRoute()
 }
 
 const mounted = ref(false)
@@ -388,17 +399,16 @@ onActivated(() => {
 
 watch(
   () => route.query,
-  () => {
+  (query, previousQuery) => {
+    // Adding/removing only `trashId` toggles the drawer; the list filters are unchanged
+    if (previousQuery && isOnlyTrashIdChange(query, previousQuery)) {
+      void openFromRoute()
+      return
+    }
     hydrateFromRouteAndLoad()
   },
   { deep: true },
 )
-
-// Drawer handlers
-const openDrawer = (item: TrashItem) => {
-  selectedItem.value = item
-  drawerOpen.value = true
-}
 
 const handleApprove = async () => {
   if (!selectedItem.value) return
