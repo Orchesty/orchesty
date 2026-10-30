@@ -174,7 +174,7 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
                 [
                     'id'     => 'node-id-exception',
                     'name'   => 'node-name-exception',
-                    'reason' => 'cURL error 6: Could not resolve host: unknown (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://unknown',
+                    'reason' => 'cURL error 6: Could not resolve host: unknown (Domain name not found) (see https://curl.se/libcurl/c/libcurl-errors.html) for http://unknown',
                     'status' => 'nok',
                 ],
             ],

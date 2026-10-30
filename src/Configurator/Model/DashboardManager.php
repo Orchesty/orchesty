@@ -13,7 +13,7 @@ use Hanaboso\Utils\Exception\DateTimeException;
  *
  * @package Hanaboso\PipesFramework\Configurator\Model
  */
-final class DashboardManager
+final readonly class DashboardManager
 {
 
     /**
@@ -21,7 +21,7 @@ final class DashboardManager
      *
      * @param DocumentManager $documentManager
      */
-    public function __construct(private readonly DocumentManager $documentManager)
+    public function __construct(private DocumentManager $documentManager)
     {
     }
 

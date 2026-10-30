@@ -10,7 +10,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  *
  * @package Hanaboso\PipesFramework\HbPFUsageStatsBundle\Handler
  */
-final class UsageStatsHandler
+final readonly class UsageStatsHandler
 {
 
     /**
@@ -18,7 +18,7 @@ final class UsageStatsHandler
      *
      * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(private readonly EventDispatcherInterface $eventDispatcher)
+    public function __construct(private EventDispatcherInterface $eventDispatcher)
     {
     }
 

@@ -2,7 +2,7 @@
     "name": "orchesty/backend",
     "description": "Orchesty backend",
     "license": "Elastic-2.0",
-    "version": "3.3.5",
+    "version": "3.3.6",
     "require": {
         "php": "^8.4",
         "ext-ctype": "*",
@@ -22,6 +22,7 @@
         "symfony/serializer": "^8.0"
     },
     "require-dev": {
+        "ergebnis/phpstan-rules": "<2.16",
         "hanaboso/php-check-utils": "^2.0",
         "predis/predis": "^3.3"
     },

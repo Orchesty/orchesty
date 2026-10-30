@@ -9,4 +9,4 @@ services:
             - '%alpha_instance_id%'
             - '@hbpf.transport.curl_manager'
         tags:
-            - { name: console.command }
+            - { name: console.command, command: 'usage_stats:send-events' }

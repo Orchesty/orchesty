@@ -13,6 +13,8 @@ parameters:
 		-
 			identifier: method.internal
 		-
+			identifier: phpunit.assertEmpty
+		-
 			message: '#Calling putenv\(\) is forbidden, might overwrite existing variables#'
 			path: ../tests/KernelTestCaseAbstract.php
 		-
