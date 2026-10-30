@@ -1,5 +1,5 @@
 import { Application, Request, Response } from 'express';
-import DocumentEnum, { isDocumentSupported } from '../enum/DocumentEnum';
+import { isDocumentSupported } from '../enum/DocumentEnum';
 import { logger } from '../logger/Logger';
 import DocumentManager from '../manager/DocumentManager';
 
@@ -18,7 +18,7 @@ export default class DocumentRouter {
             }
 
             try {
-                const result = await this.documentManager.getDocuments(document as DocumentEnum, req.query);
+                const result = await this.documentManager.getDocuments(document, req.query);
                 this.sendResponse(req, res, result, 200);
             } catch (e) {
                 if (e instanceof Error) {
@@ -38,7 +38,7 @@ export default class DocumentRouter {
             }
 
             try {
-                await this.documentManager.saveDocuments(document as DocumentEnum, req.body);
+                await this.documentManager.saveDocuments(document, req.body);
                 this.sendResponse(req, res, { message: { status: 'OK', data: '' } }, 200);
             } catch (e) {
                 if (e instanceof Error) {
@@ -58,7 +58,7 @@ export default class DocumentRouter {
             }
 
             try {
-                const deleted = await this.documentManager.deleteDocuments(document as DocumentEnum, req.query);
+                const deleted = await this.documentManager.deleteDocuments(document, req.query);
                 this.sendResponse(req, res, { message: { status: 'OK', data: { deleted } } }, 200);
             } catch (e) {
                 if (e instanceof Error) {

@@ -6,7 +6,7 @@ enum DocumentEnum {
     LOGS = 'Logs',
 }
 
-export function isDocumentSupported(document: string): boolean {
+export function isDocumentSupported(document: string): document is DocumentEnum {
     return ([
         DocumentEnum.APPLICATION_INSTALL,
         DocumentEnum.WEBHOOK,
