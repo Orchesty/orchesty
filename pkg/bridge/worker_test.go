@@ -36,8 +36,8 @@ func TestNode_ProcessAudit_AuditEntityHeader(t *testing.T) {
 		Entity: auditEntityIdOne.Hex(),
 		User:   "orchesty",
 		Fields: []mongo.AuditDataField{
-			{"id", "1"},
-			{"externalId", "A"},
+			{Key: "id", Value: "1"},
+			{Key: "externalId", Value: "A"},
 		},
 	}
 
@@ -46,8 +46,8 @@ func TestNode_ProcessAudit_AuditEntityHeader(t *testing.T) {
 		Key:  "postOne",
 		Name: "Post One",
 		Fields: []mongo.Field{
-			{"id", "id"},
-			{"externalId", "externalId"},
+			{Key: "id", Name: "id"},
+			{Key: "externalId", Name: "externalId"},
 		},
 	}
 
@@ -56,8 +56,8 @@ func TestNode_ProcessAudit_AuditEntityHeader(t *testing.T) {
 		Key:  "postTwo",
 		Name: "Post Two",
 		Fields: []mongo.Field{
-			{"id", "id"},
-			{"externalId", "externalId"},
+			{Key: "id", Name: "id"},
+			{Key: "externalId", Name: "externalId"},
 		},
 	}
 
@@ -145,7 +145,7 @@ func TestNode_ProcessAudit_CaseInsensitiveUpsert(t *testing.T) {
 		Entity: auditEntityId.Hex(),
 		User:   "orchesty",
 		Fields: []mongo.AuditDataField{
-			{"sku", "S5"},
+			{Key: "sku", Value: "S5"},
 		},
 	}
 
@@ -154,7 +154,7 @@ func TestNode_ProcessAudit_CaseInsensitiveUpsert(t *testing.T) {
 		Key:  "productCi",
 		Name: "Product CI",
 		Fields: []mongo.Field{
-			{"sku", "sku"},
+			{Key: "sku", Name: "sku"},
 		},
 	}
 
@@ -204,7 +204,7 @@ func TestNode_ProcessAudit_CaseInsensitiveEntityKey(t *testing.T) {
 		Key:  "ProductCased",
 		Name: "Product Cased",
 		Fields: []mongo.Field{
-			{"id", "id"},
+			{Key: "id", Name: "id"},
 		},
 	}
 
@@ -246,7 +246,7 @@ func TestNode_ProcessAudit_UpdatedTimestampTouch(t *testing.T) {
 		Key:  "productTtl",
 		Name: "Product TTL",
 		Fields: []mongo.Field{
-			{"id", "id"},
+			{Key: "id", Name: "id"},
 		},
 	}
 
