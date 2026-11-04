@@ -40,9 +40,9 @@ var (
 func (this MongoSvc) GetAllLimitKeys() (map[string]int, error) {
 	ctx, _ := contextx.WithTimeoutSecondsCtx(30)
 	result, err := this.collection.Aggregate(ctx, bson.A{
-		bson.D{{"$group", bson.D{
-			{"_id", "$limitKey"},
-			{"amount", bson.D{{"$sum", 1}}},
+		bson.D{{Key: "$group", Value: bson.D{
+			{Key: "_id", Value: "$limitKey"},
+			{Key: "amount", Value: bson.D{{Key: "$sum", Value: 1}}},
 		}}},
 	})
 	if err != nil {
@@ -78,7 +78,7 @@ func (this MongoSvc) Delete(id string) error {
 	ctx, _ := contextx.WithTimeoutSecondsCtx(30)
 
 	_, err = this.collection.DeleteOne(ctx, bson.D{{
-		"_id", objectId,
+		Key: "_id", Value: objectId,
 	}})
 	if err != nil {
 		return errors.Wrap(err, "deleting message")
@@ -90,7 +90,7 @@ func (this MongoSvc) Delete(id string) error {
 func (this MongoSvc) UnmarkAllMessages() error {
 	ctx, _ := contextx.WithTimeoutSecondsCtx(30)
 	_, err := this.collection.UpdateMany(ctx, bson.D{{}}, bson.D{{
-		"$set", bson.D{{"inProcess", false}},
+		Key: "$set", Value: bson.D{{Key: "inProcess", Value: false}},
 	}})
 	if err != nil {
 		return errors.Wrap(err, "unlocking all messages")
@@ -108,7 +108,7 @@ func (this MongoSvc) RetryByTopologyId(topologyId string, delaySeconds int) erro
 	ctx, _ := contextx.WithTimeoutSecondsCtx(30)
 
 	_, err := this.collection.UpdateMany(ctx, bson.D{{
-		fmt.Sprintf("message.headers.%s", enum.Header_TopologyId), topologyId,
+		Key: fmt.Sprintf("message.headers.%s", enum.Header_TopologyId), Value: topologyId,
 	}}, bson.A{
 		bson.M{
 			"$set": bson.M{
@@ -116,14 +116,14 @@ func (this MongoSvc) RetryByTopologyId(topologyId string, delaySeconds int) erro
 					"$cond": bson.M{
 						"if": bson.M{"$gt": bson.A{"$allowedAt", "$$NOW"}},
 						"then": bson.D{{
-							"$dateAdd", bson.M{
+							Key: "$dateAdd", Value: bson.M{
 								"startDate": "$allowedAt",
 								"unit":      "second",
 								"amount":    delaySeconds,
 							},
 						}},
 						"else": bson.D{{
-							"$dateAdd", bson.M{
+							Key: "$dateAdd", Value: bson.M{
 								"startDate": "$$NOW",
 								"unit":      "second",
 								"amount":    delaySeconds,
@@ -131,7 +131,7 @@ func (this MongoSvc) RetryByTopologyId(topologyId string, delaySeconds int) erro
 						}},
 					},
 				},
-				"retries":   bson.D{{"$add", bson.A{"$retries", 1}}},
+				"retries":   bson.D{{Key: "$add", Value: bson.A{"$retries", 1}}},
 				"inProcess": false,
 			},
 		},
@@ -146,15 +146,15 @@ func (this MongoSvc) FetchMessages(key string, limit int) ([]Message, error) {
 	cursor, err := this.collection.Find(
 		ctx,
 		bson.D{
-			{"limitKey", key},
-			{"allowedAt", bson.D{{"$lte", bson.NewDateTimeFromTime(time.Now())}}},
-			{"$or", bson.A{
-				bson.D{{"inProcess", false}},
+			{Key: "limitKey", Value: key},
+			{Key: "allowedAt", Value: bson.D{{Key: "$lte", Value: bson.NewDateTimeFromTime(time.Now())}}},
+			{Key: "$or", Value: bson.A{
+				bson.D{{Key: "inProcess", Value: false}},
 				// 5 Minutes lock timeout for cases when unlocking of failed messages also failed to make sure it will be processed again
-				bson.D{{"allowedAt", bson.D{{"$lte", bson.NewDateTimeFromTime(time.Now().Add(-5 * time.Minute))}}}},
+				bson.D{{Key: "allowedAt", Value: bson.D{{Key: "$lte", Value: bson.NewDateTimeFromTime(time.Now().Add(-5 * time.Minute))}}}},
 			}},
 		},
-		options.Find().SetSort(bson.D{{"prioritize", -1}, {"allowedAt", 1}}).SetLimit(l),
+		options.Find().SetSort(bson.D{{Key: "prioritize", Value: -1}, {Key: "allowedAt", Value: 1}}).SetLimit(l),
 	)
 	if err != nil {
 		return nil, err
@@ -175,14 +175,14 @@ func (this MongoSvc) FetchMessages(key string, limit int) ([]Message, error) {
 	_, err = this.collection.UpdateMany(
 		updateCtx,
 		bson.D{{
-			"_id",
-			bson.D{{"$in", ids}},
+			Key:   "_id",
+			Value: bson.D{{Key: "$in", Value: ids}},
 		}},
 		bson.D{{
-			"$set",
-			bson.D{
-				{"inProcess", true},
-				{"allowedAt", bson.NewDateTimeFromTime(time.Now())},
+			Key: "$set",
+			Value: bson.D{
+				{Key: "inProcess", Value: true},
+				{Key: "allowedAt", Value: bson.NewDateTimeFromTime(time.Now())},
 			},
 		}},
 	)

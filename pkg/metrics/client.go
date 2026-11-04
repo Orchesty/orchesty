@@ -57,20 +57,20 @@ func (this MetricsSvc) Stop() {
 func buildGroupStage(lastTick time.Time) bson.D {
 	return bson.D{
 		{
-			"$group", bson.D{
-			{"_id", bson.D{
-				{"nodeId", "$message.headers.node-id"},
-				{"nodeName", "$message.headers.node-name"},
-				{"userId", "$message.headers.user"},
-			}},
-			{"messages", bson.D{{"$sum", 1}}},
-			{"incoming", bson.D{{"$sum", bson.D{{"$cond", bson.A{
-				bson.D{{"$gte", bson.A{"$created", lastTick}}},
-				1, 0,
-			}}}}}},
-			{"topologyId", bson.D{{"$first", "$message.headers.topology-id"}}},
-			{"applicationId", bson.D{{"$first", "$message.headers.application"}}},
-		},
+			Key: "$group", Value: bson.D{
+				{Key: "_id", Value: bson.D{
+					{Key: "nodeId", Value: "$message.headers.node-id"},
+					{Key: "nodeName", Value: "$message.headers.node-name"},
+					{Key: "userId", Value: "$message.headers.user"},
+				}},
+				{Key: "messages", Value: bson.D{{Key: "$sum", Value: 1}}},
+				{Key: "incoming", Value: bson.D{{Key: "$sum", Value: bson.D{{Key: "$cond", Value: bson.A{
+					bson.D{{Key: "$gte", Value: bson.A{"$created", lastTick}}},
+					1, 0,
+				}}}}}},
+				{Key: "topologyId", Value: bson.D{{Key: "$first", Value: "$message.headers.topology-id"}}},
+				{Key: "applicationId", Value: bson.D{{Key: "$first", Value: "$message.headers.application"}}},
+			},
 		},
 	}
 }
@@ -79,23 +79,23 @@ func (this MetricsSvc) collectMetrics() {
 	time.Sleep(time.Until(time.Now().Truncate(time.Minute).Add(time.Minute)))
 
 	limiterAndRepeaterHint := bson.D{
-		{"prioritize", 1},
-		{"created", 1},
-		{"message.headers.node-id", 1},
-		{"message.headers.node-name", 1},
-		{"message.headers.user", 1},
-		{"message.headers.topology-id", 1},
-		{"message.headers.application", 1},
+		{Key: "prioritize", Value: 1},
+		{Key: "created", Value: 1},
+		{Key: "message.headers.node-id", Value: 1},
+		{Key: "message.headers.node-name", Value: 1},
+		{Key: "message.headers.user", Value: 1},
+		{Key: "message.headers.topology-id", Value: 1},
+		{Key: "message.headers.application", Value: 1},
 	}
 
 	trashHint := bson.D{
-		{"type", 1},
-		{"created", 1},
-		{"message.headers.node-id", 1},
-		{"message.headers.node-name", 1},
-		{"message.headers.user", 1},
-		{"message.headers.topology-id", 1},
-		{"message.headers.application", 1},
+		{Key: "type", Value: 1},
+		{Key: "created", Value: 1},
+		{Key: "message.headers.node-id", Value: 1},
+		{Key: "message.headers.node-name", Value: 1},
+		{Key: "message.headers.user", Value: 1},
+		{Key: "message.headers.topology-id", Value: 1},
+		{Key: "message.headers.application", Value: 1},
 	}
 
 	lastTick := time.Now()
@@ -110,7 +110,7 @@ func (this MetricsSvc) collectMetrics() {
 		previousLimiterCounts = this.collectWithFlowMetrics(
 			this.mongo.Collection(),
 			bson.A{
-				bson.D{{"$match", bson.D{{"prioritize", false}}}},
+				bson.D{{Key: "$match", Value: bson.D{{Key: "prioritize", Value: false}}}},
 				groupStage,
 			},
 			limiterAndRepeaterHint,
@@ -121,7 +121,7 @@ func (this MetricsSvc) collectMetrics() {
 		previousRepeaterCounts = this.collectWithFlowMetrics(
 			this.mongo.Collection(),
 			bson.A{
-				bson.D{{"$match", bson.D{{"prioritize", true}}}},
+				bson.D{{Key: "$match", Value: bson.D{{Key: "prioritize", Value: true}}}},
 				groupStage,
 			},
 			limiterAndRepeaterHint,
@@ -132,7 +132,7 @@ func (this MetricsSvc) collectMetrics() {
 		previousTrashCounts = this.collectWithFlowMetrics(
 			this.mongo.UserTaskCollection(),
 			bson.A{
-				bson.D{{"$match", bson.D{{"type", "trash"}}}},
+				bson.D{{Key: "$match", Value: bson.D{{Key: "type", Value: "trash"}}}},
 				groupStage,
 			},
 			trashHint,
