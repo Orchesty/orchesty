@@ -2,9 +2,9 @@
     "name": "orchesty/backend",
     "description": "Orchesty backend",
     "license": "Elastic-2.0",
-    "version": "3.3.6",
+    "version": "3.4.0",
     "require": {
-        "php": "^8.4",
+        "php": "^8.5",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-intl": "*",
@@ -12,19 +12,18 @@
         "ext-mbstring": "*",
         "ext-mongodb": "*",
         "doctrine/mongodb-odm-bundle": "^5.6",
-        "doctrine/orm": "^3.6",
-        "hanaboso/email-service-bundle": "^1.7",
-        "hanaboso/mongo-data-grid": "^2.0",
-        "hanaboso/rabbit-mq-bundle": "^1.10",
-        "hanaboso/rest-bundle": "^1.6",
-        "hanaboso/user-bundle": "^1.12",
-        "symfony/security-bundle": "^8.0",
-        "symfony/serializer": "^8.0"
+        "doctrine/orm": "^3.7",
+        "hanaboso/email-service-bundle": "^1.8",
+        "hanaboso/mongo-data-grid": "^2.1",
+        "hanaboso/rabbit-mq-bundle": "^1.11",
+        "hanaboso/rest-bundle": "^1.7",
+        "hanaboso/user-bundle": "^1.14",
+        "symfony/security-bundle": "^8.1",
+        "symfony/serializer": "^8.1"
     },
     "require-dev": {
-        "ergebnis/phpstan-rules": "<2.16",
-        "hanaboso/php-check-utils": "^2.0",
-        "predis/predis": "^3.3"
+        "hanaboso/php-check-utils": "^2.1",
+        "predis/predis": "^3.7"
     },
     "replace": {
         "ralouphie/getallheaders": "*",
@@ -38,7 +37,8 @@
         "symfony/polyfill-php72": "*",
         "symfony/polyfill-php80": "*",
         "symfony/polyfill-php83": "*",
-        "symfony/polyfill-php84": "*"
+        "symfony/polyfill-php84": "*",
+        "symfony/polyfill-php85": "*"
     },
     "autoload": {
         "psr-4": {

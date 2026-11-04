@@ -6,7 +6,7 @@ RUN cd /tmp/help && \
     npm install --no-save gray-matter minisearch && \
     node scripts/build-help.mjs . .dist
 
-FROM hanabosocom/php-base:php-8.4-alpine AS php-build
+FROM hanabosocom/php-base:php-8.5-alpine AS php-build
 
 COPY . .
 RUN cd pf-bundles && \
@@ -22,7 +22,7 @@ RUN cd pf-bundles && \
     ALPHA_INSTANCE_ID=orchesty \
     bin/console cache:warmup
 
-FROM hanabosocom/php-base:php-8.4-alpine
+FROM hanabosocom/php-base:php-8.5-alpine
 
 ENV APP_DEBUG=0 APP_ENV=prod PHP_FPM_MAX_CHILDREN=10 PHP_FPM_MAX_REQUESTS=500
 ENV INSTALLER_DIRS='["/var/www/topology"]'

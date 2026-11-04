@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "689a41638081a131a88217a22933a00e",
+    "content-hash": "efd900ba969a703f45f55ad7be7266b4",
     "packages": [
         {
             "name": "brick/math",
@@ -858,16 +858,16 @@
         },
         {
             "name": "doctrine/orm",
-            "version": "3.7.5",
+            "version": "3.7.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/orm.git",
-                "reference": "00c2fd70da291cca1ec75f4dae5344fe3df588fa"
+                "reference": "4487f850401c0e1f27891cce5897fa90b3055c2a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/orm/zipball/00c2fd70da291cca1ec75f4dae5344fe3df588fa",
-                "reference": "00c2fd70da291cca1ec75f4dae5344fe3df588fa",
+                "url": "https://api.github.com/repos/doctrine/orm/zipball/4487f850401c0e1f27891cce5897fa90b3055c2a",
+                "reference": "4487f850401c0e1f27891cce5897fa90b3055c2a",
                 "shasum": ""
             },
             "require": {
@@ -942,10 +942,10 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/orm/issues",
-                "source": "https://github.com/doctrine/orm/tree/3.7.5"
+                "source": "https://github.com/doctrine/orm/tree/3.7.6"
             },
-            "time": "2026-10-09T05:58:13+00:00",
-            "published-time": "2026-10-09T18:17:02+00:00"
+            "time": "2026-10-30T12:19:09+00:00",
+            "published-time": "2026-10-30T18:12:24+00:00"
         },
         {
             "name": "doctrine/persistence",
@@ -1529,16 +1529,16 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "3.0.6",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/commons-bundle.git",
-                "reference": "276650aaaf49dc5cda9a43027707930501553334"
+                "reference": "35efe456a18c4597b751922be9ddd6ee177dcb0e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/276650aaaf49dc5cda9a43027707930501553334",
-                "reference": "276650aaaf49dc5cda9a43027707930501553334",
+                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/35efe456a18c4597b751922be9ddd6ee177dcb0e",
+                "reference": "35efe456a18c4597b751922be9ddd6ee177dcb0e",
                 "shasum": ""
             },
             "require": {
@@ -1546,22 +1546,22 @@
                 "ext-pdo": "*",
                 "ext-sockets": "*",
                 "ext-sodium": "*",
-                "guzzlehttp/guzzle": "^7.10",
-                "hanaboso/utils": "^2.0",
-                "php": "^8.4",
+                "guzzlehttp/guzzle": "^7.16",
+                "hanaboso/utils": "^2.1",
+                "php": "^8.5",
                 "phpseclib/phpseclib": "^3.0",
                 "windwalker/crypt": "^3.5"
             },
             "require-dev": {
                 "aws/aws-sdk-php-symfony": "^2.9",
-                "doctrine/doctrine-bundle": "^3.2",
+                "doctrine/doctrine-bundle": "^3.3",
                 "doctrine/mongodb-odm-bundle": "^5.6",
-                "doctrine/orm": "^3.6",
-                "hanaboso/php-check-utils": "^2.0",
-                "php-imap/php-imap": "^5.0",
-                "symfony/mailer": "^8.0",
-                "symfony/monolog-bundle": "^4.0",
-                "symfony/yaml": "^8.0"
+                "doctrine/orm": "^3.7",
+                "hanaboso/php-check-utils": "^2.1",
+                "php-imap/php-imap": "^6.0",
+                "symfony/mailer": "^8.1",
+                "symfony/monolog-bundle": "^4.1",
+                "symfony/yaml": "^8.1"
             },
             "suggest": {
                 "aws/aws-sdk-php-symfony": "Install me, if you need to use FileStorage\\Driver\\Impl\\S3\\S3Driver.",
@@ -1581,36 +1581,36 @@
             ],
             "description": "Hanaboso - commons-bundle",
             "support": {
-                "source": "https://github.com/hanaboso/commons-bundle/tree/3.0.6"
+                "source": "https://github.com/hanaboso/commons-bundle/tree/3.1.0"
             },
-            "time": "2026-03-23T12:08:42+00:00",
-            "published-time": "2026-03-23T12:10:18+00:00"
+            "time": "2026-11-02T13:39:05+00:00",
+            "published-time": "2026-11-02T13:40:50+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",
-            "version": "1.7.0",
+            "version": "1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/email-service-bundle.git",
-                "reference": "87ddaeda7d3c5ab7cd2478bdecabb7ee7417437c"
+                "reference": "573ac5102f9c89ff32bfddf710275f11c1736cf7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/email-service-bundle/zipball/87ddaeda7d3c5ab7cd2478bdecabb7ee7417437c",
-                "reference": "87ddaeda7d3c5ab7cd2478bdecabb7ee7417437c",
+                "url": "https://api.github.com/repos/hanaboso/email-service-bundle/zipball/573ac5102f9c89ff32bfddf710275f11c1736cf7",
+                "reference": "573ac5102f9c89ff32bfddf710275f11c1736cf7",
                 "shasum": ""
             },
             "require": {
                 "ext-iconv": "*",
-                "hanaboso/commons-bundle": "^3.0",
-                "php": "^8.4",
-                "symfony/google-mailer": "^8.0",
-                "symfony/mailer": "^8.0",
-                "symfony/monolog-bundle": "^4.0",
-                "twig/twig": "^3.22"
+                "hanaboso/commons-bundle": "^3.1",
+                "php": "^8.5",
+                "symfony/google-mailer": "^8.1",
+                "symfony/mailer": "^8.1",
+                "symfony/monolog-bundle": "^4.1",
+                "twig/twig": "^3.30"
             },
             "require-dev": {
-                "hanaboso/php-check-utils": "^2.0"
+                "hanaboso/php-check-utils": "^2.1"
             },
             "type": "library",
             "autoload": {
@@ -1624,36 +1624,36 @@
             ],
             "description": "Hanaboso - email-service-bundle",
             "support": {
-                "source": "https://github.com/hanaboso/email-service-bundle/tree/1.7.0"
+                "source": "https://github.com/hanaboso/email-service-bundle/tree/1.8.0"
             },
-            "time": "2026-01-06T17:08:59+00:00",
-            "published-time": "2026-01-06T17:10:05+00:00"
+            "time": "2026-11-02T16:56:02+00:00",
+            "published-time": "2026-11-02T16:57:05+00:00"
         },
         {
             "name": "hanaboso/mongo-data-grid",
-            "version": "2.0.1",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/mongo-data-grid.git",
-                "reference": "7d772bf141aa081962b1a2fe76548b3ec6e84876"
+                "reference": "4c54b07f9cf542380958e1e1052e99b7ab0ce8a1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/mongo-data-grid/zipball/7d772bf141aa081962b1a2fe76548b3ec6e84876",
-                "reference": "7d772bf141aa081962b1a2fe76548b3ec6e84876",
+                "url": "https://api.github.com/repos/hanaboso/mongo-data-grid/zipball/4c54b07f9cf542380958e1e1052e99b7ab0ce8a1",
+                "reference": "4c54b07f9cf542380958e1e1052e99b7ab0ce8a1",
                 "shasum": ""
             },
             "require": {
-                "doctrine/mongodb-odm": "^2.16",
+                "doctrine/mongodb-odm": "^2.17",
                 "ext-ctype": "*",
                 "ext-intl": "*",
                 "ext-mbstring": "*",
                 "ext-mongodb": "*",
-                "hanaboso/utils": "^2.0",
-                "php": "^8.4"
+                "hanaboso/utils": "^2.1",
+                "php": "^8.5"
             },
             "require-dev": {
-                "hanaboso/php-check-utils": "^2.0"
+                "hanaboso/php-check-utils": "^2.1"
             },
             "type": "library",
             "autoload": {
@@ -1667,38 +1667,38 @@
             ],
             "description": "MongoDataGrid",
             "support": {
-                "source": "https://github.com/hanaboso/mongo-data-grid/tree/2.0.1"
+                "source": "https://github.com/hanaboso/mongo-data-grid/tree/2.1.0"
             },
-            "time": "2026-02-10T17:55:45+00:00",
-            "published-time": "2026-02-10T18:02:03+00:00"
+            "time": "2026-11-02T15:48:11+00:00",
+            "published-time": "2026-11-02T15:54:06+00:00"
         },
         {
             "name": "hanaboso/rabbit-mq-bundle",
-            "version": "1.10.0",
+            "version": "1.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/rabbit-mq-bundle.git",
-                "reference": "73cb00d106867c630cc9ae4ef6cecd0afb686e5c"
+                "reference": "5481c3c4d7b7a23d3d6bda0a7d0199386ffafc02"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/rabbit-mq-bundle/zipball/73cb00d106867c630cc9ae4ef6cecd0afb686e5c",
-                "reference": "73cb00d106867c630cc9ae4ef6cecd0afb686e5c",
+                "url": "https://api.github.com/repos/hanaboso/rabbit-mq-bundle/zipball/5481c3c4d7b7a23d3d6bda0a7d0199386ffafc02",
+                "reference": "5481c3c4d7b7a23d3d6bda0a7d0199386ffafc02",
                 "shasum": ""
             },
             "require": {
                 "ext-ctype": "*",
                 "ext-intl": "*",
                 "ext-mbstring": "*",
-                "guzzlehttp/promises": "^2.3",
-                "hanaboso/utils": "^2.0",
-                "php": "^8.4",
+                "guzzlehttp/promises": "^2.6",
+                "hanaboso/utils": "^2.1",
+                "php": "^8.5",
                 "php-amqplib/php-amqplib": "^3.7",
-                "symfony/monolog-bundle": "^4.0",
-                "symfony/yaml": "^8.0"
+                "symfony/monolog-bundle": "^4.1",
+                "symfony/yaml": "^8.1"
             },
             "require-dev": {
-                "hanaboso/php-check-utils": "^2.0"
+                "hanaboso/php-check-utils": "^2.1"
             },
             "type": "library",
             "autoload": {
@@ -1712,41 +1712,45 @@
             ],
             "description": "Hanaboso - rabbit-mq-bundle",
             "support": {
-                "source": "https://github.com/hanaboso/rabbit-mq-bundle/tree/1.10.0"
+                "source": "https://github.com/hanaboso/rabbit-mq-bundle/tree/1.11.0"
             },
-            "time": "2026-01-07T11:13:58+00:00",
-            "published-time": "2026-01-07T11:15:31+00:00"
+            "time": "2026-11-02T15:45:36+00:00",
+            "published-time": "2026-11-02T15:47:02+00:00"
         },
         {
             "name": "hanaboso/rest-bundle",
-            "version": "1.6.0",
+            "version": "1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/rest-bundle.git",
-                "reference": "6f6e9783c5e88336cd9c94a42f9e77d04449c008"
+                "reference": "ae84d9722426348443fef4dc078ffe28ba08ff1f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/rest-bundle/zipball/6f6e9783c5e88336cd9c94a42f9e77d04449c008",
-                "reference": "6f6e9783c5e88336cd9c94a42f9e77d04449c008",
+                "url": "https://api.github.com/repos/hanaboso/rest-bundle/zipball/ae84d9722426348443fef4dc078ffe28ba08ff1f",
+                "reference": "ae84d9722426348443fef4dc078ffe28ba08ff1f",
                 "shasum": ""
             },
             "require": {
                 "ext-ctype": "*",
                 "ext-intl": "*",
                 "ext-mbstring": "*",
-                "hanaboso/utils": "^2.0",
-                "php": "^8.4",
-                "symfony/dependency-injection": "^8.0",
-                "symfony/serializer": "^8.0"
+                "hanaboso/utils": "^2.1",
+                "php": "^8.5",
+                "symfony/config": "^8.1",
+                "symfony/dependency-injection": "^8.1",
+                "symfony/event-dispatcher": "^8.1",
+                "symfony/http-foundation": "^8.1",
+                "symfony/http-kernel": "^8.1",
+                "symfony/serializer": "^8.1"
             },
             "conflict": {
                 "friendsofsymfony/rest-bundle": "*",
                 "nelmio/cors-bundle": "*"
             },
             "require-dev": {
-                "hanaboso/php-check-utils": "^2.0",
-                "symfony/yaml": "^8.0"
+                "hanaboso/php-check-utils": "^2.1",
+                "symfony/yaml": "^8.1"
             },
             "type": "library",
             "autoload": {
@@ -1760,41 +1764,41 @@
             ],
             "description": "Hanaboso - rest-bundle",
             "support": {
-                "source": "https://github.com/hanaboso/rest-bundle/tree/1.6.0"
+                "source": "https://github.com/hanaboso/rest-bundle/tree/1.7.0"
             },
-            "time": "2026-01-06T17:27:10+00:00",
-            "published-time": "2026-01-06T17:28:15+00:00"
+            "time": "2026-11-02T16:18:00+00:00",
+            "published-time": "2026-11-02T16:19:06+00:00"
         },
         {
             "name": "hanaboso/user-bundle",
-            "version": "1.13.0",
+            "version": "1.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/user-bundle.git",
-                "reference": "622b141e5d1052b3cee7ded7ccd142d1cabdb30f"
+                "reference": "bae150466677ea7cdd581dccfc56d4e8e6250835"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/622b141e5d1052b3cee7ded7ccd142d1cabdb30f",
-                "reference": "622b141e5d1052b3cee7ded7ccd142d1cabdb30f",
+                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/bae150466677ea7cdd581dccfc56d4e8e6250835",
+                "reference": "bae150466677ea7cdd581dccfc56d4e8e6250835",
                 "shasum": ""
             },
             "require": {
-                "hanaboso/commons-bundle": "^3.0",
-                "hanaboso/email-service-bundle": "^1.7",
-                "hanaboso/rest-bundle": "^1.6",
-                "php": "^8.4",
-                "symfony/yaml": "^8.0",
-                "web-token/jwt-library": "^4.1"
+                "hanaboso/commons-bundle": "^3.1",
+                "hanaboso/email-service-bundle": "^1.8",
+                "hanaboso/rest-bundle": "^1.7",
+                "php": "^8.5",
+                "symfony/yaml": "^8.1",
+                "web-token/jwt-library": "^4.2"
             },
             "require-dev": {
-                "doctrine/doctrine-bundle": "^3.2",
+                "doctrine/doctrine-bundle": "^3.3",
                 "doctrine/mongodb-odm-bundle": "^5.6",
-                "doctrine/orm": "^3.6",
+                "doctrine/orm": "^3.7",
                 "ext-apcu": "*",
-                "hanaboso/php-check-utils": "^2.0",
-                "symfony/monolog-bundle": "^4.0",
-                "symfony/security-bundle": "^8.0"
+                "hanaboso/php-check-utils": "^2.1",
+                "symfony/monolog-bundle": "^4.1",
+                "symfony/security-bundle": "^8.1"
             },
             "suggest": {
                 "doctrine/doctrine-bundle": "Install me, if you using MySQL.",
@@ -1812,36 +1816,36 @@
             ],
             "description": "Hanaboso - user-bundle",
             "support": {
-                "source": "https://github.com/hanaboso/user-bundle/tree/1.13.0"
+                "source": "https://github.com/hanaboso/user-bundle/tree/1.14.0"
             },
-            "time": "2026-03-30T14:16:09+00:00",
-            "published-time": "2026-03-30T14:18:40+00:00"
+            "time": "2026-11-02T17:30:56+00:00",
+            "published-time": "2026-11-02T17:32:57+00:00"
         },
         {
             "name": "hanaboso/utils",
-            "version": "2.0.2",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/utils.git",
-                "reference": "ffda199d79b86e01b1e77ecd48fa9a0042859547"
+                "reference": "0fdb56954d216ade8996608a411a8e8dde5c4168"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/utils/zipball/ffda199d79b86e01b1e77ecd48fa9a0042859547",
-                "reference": "ffda199d79b86e01b1e77ecd48fa9a0042859547",
+                "url": "https://api.github.com/repos/hanaboso/utils/zipball/0fdb56954d216ade8996608a411a8e8dde5c4168",
+                "reference": "0fdb56954d216ade8996608a411a8e8dde5c4168",
                 "shasum": ""
             },
             "require": {
                 "ext-iconv": "*",
                 "ext-intl": "*",
                 "ext-json": "*",
-                "php": "^8.4",
+                "php": "^8.5",
                 "psr/log": "^3",
-                "symfony/http-foundation": "^8.0"
+                "symfony/http-foundation": "^8.1"
             },
             "require-dev": {
-                "hanaboso/php-check-utils": "^2.0",
-                "symfony/yaml": "^8.0"
+                "hanaboso/php-check-utils": "^2.1",
+                "symfony/yaml": "^8.1"
             },
             "type": "library",
             "autoload": {
@@ -1873,10 +1877,10 @@
             "description": "Hanaboso - utils",
             "support": {
                 "issues": "https://github.com/hanaboso/utils/issues",
-                "source": "https://github.com/hanaboso/utils/tree/2.0.2"
+                "source": "https://github.com/hanaboso/utils/tree/2.1.0"
             },
-            "time": "2026-03-23T10:56:56+00:00",
-            "published-time": "2026-03-23T10:58:02+00:00"
+            "time": "2026-11-02T12:33:49+00:00",
+            "published-time": "2026-11-02T12:34:51+00:00"
         },
         {
             "name": "jean85/pretty-package-versions",
@@ -2390,16 +2394,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "3.0.57",
+            "version": "3.0.58",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "d17e0ddaeaf6f22f7e007cbb437d78792fe2a0e4"
+                "reference": "91f3a6436bb84040ac0cf49e761977f17d16a39b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/d17e0ddaeaf6f22f7e007cbb437d78792fe2a0e4",
-                "reference": "d17e0ddaeaf6f22f7e007cbb437d78792fe2a0e4",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/91f3a6436bb84040ac0cf49e761977f17d16a39b",
+                "reference": "91f3a6436bb84040ac0cf49e761977f17d16a39b",
                 "shasum": ""
             },
             "require": {
@@ -2480,7 +2484,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.57"
+                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.58"
             },
             "funding": [
                 {
@@ -2496,8 +2500,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-26T12:13:21+00:00",
-            "published-time": "2026-08-26T12:16:21+00:00"
+            "time": "2026-11-02T10:45:48+00:00",
+            "published-time": "2026-11-02T10:50:21+00:00"
         },
         {
             "name": "psr/cache",
@@ -5087,87 +5091,6 @@
             "published-time": "2026-10-14T09:42:25+00:00"
         },
         {
-            "name": "symfony/polyfill-php85",
-            "version": "v1.43.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/polyfill-php85.git",
-                "reference": "86a42cbcc07adc331481a5ab310a4024bfc227f6"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php85/zipball/86a42cbcc07adc331481a5ab310a4024bfc227f6",
-                "reference": "86a42cbcc07adc331481a5ab310a4024bfc227f6",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.2"
-            },
-            "type": "library",
-            "extra": {
-                "thanks": {
-                    "url": "https://github.com/symfony/polyfill",
-                    "name": "symfony/polyfill"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ],
-                "psr-4": {
-                    "Symfony\\Polyfill\\Php85\\": ""
-                },
-                "classmap": [
-                    "Resources/stubs"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony polyfill backporting some PHP 8.5+ features to lower PHP versions",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "compatibility",
-                "polyfill",
-                "portable",
-                "shim"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-php85/tree/v1.43.0"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://github.com/nicolas-grekas",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2026-09-25T15:46:47+00:00",
-            "published-time": "2026-09-30T10:23:32+00:00"
-        },
-        {
             "name": "symfony/polyfill-php86",
             "version": "v1.43.0",
             "source": {
@@ -6542,16 +6465,16 @@
         },
         {
             "name": "web-token/jwt-library",
-            "version": "4.2.3",
+            "version": "4.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-token/jwt-library.git",
-                "reference": "db962c3ad8bc91c531a49dd373f0a641fc507bfd"
+                "reference": "21631c1db4f534aaf571716c41a2c67278cdbd49"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/web-token/jwt-library/zipball/db962c3ad8bc91c531a49dd373f0a641fc507bfd",
-                "reference": "db962c3ad8bc91c531a49dd373f0a641fc507bfd",
+                "url": "https://api.github.com/repos/web-token/jwt-library/zipball/21631c1db4f534aaf571716c41a2c67278cdbd49",
+                "reference": "21631c1db4f534aaf571716c41a2c67278cdbd49",
                 "shasum": ""
             },
             "require": {
@@ -6615,8 +6538,7 @@
                 "symfony"
             ],
             "support": {
-                "issues": "https://github.com/web-token/jwt-library/issues",
-                "source": "https://github.com/web-token/jwt-library/tree/4.2.3"
+                "source": "https://github.com/web-token/jwt-library/tree/4.2.4"
             },
             "funding": [
                 {
@@ -6628,8 +6550,8 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2026-09-12T18:50:35+00:00",
-            "published-time": "2026-09-12T18:52:32+00:00"
+            "time": "2026-10-30T22:08:19+00:00",
+            "published-time": "2026-10-30T22:17:09+00:00"
         },
         {
             "name": "windwalker/crypt",
@@ -7413,19 +7335,21 @@
         },
         {
             "name": "ergebnis/phpstan-rules",
-            "version": "2.15.0",
+            "version": "2.17.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ergebnis/phpstan-rules.git",
-                "reference": "56db4a413823912214ee1df85912e319bfe5771f"
+                "reference": "5988e8fe66c09558c73824fce64123fdcd5afae2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ergebnis/phpstan-rules/zipball/56db4a413823912214ee1df85912e319bfe5771f",
-                "reference": "56db4a413823912214ee1df85912e319bfe5771f",
+                "url": "https://api.github.com/repos/ergebnis/phpstan-rules/zipball/5988e8fe66c09558c73824fce64123fdcd5afae2",
+                "reference": "5988e8fe66c09558c73824fce64123fdcd5afae2",
                 "shasum": ""
             },
             "require": {
+                "composer-runtime-api": "^2.0.0",
+                "ergebnis/version": "^1.4.0",
                 "ext-mbstring": "*",
                 "php": "~7.4.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0 || ~8.6.0",
                 "phpstan/phpstan": "^2.1.35"
@@ -7457,7 +7381,7 @@
                     ]
                 },
                 "branch-alias": {
-                    "dev-main": "2.15-dev"
+                    "dev-main": "2.17-dev"
                 }
             },
             "autoload": {
@@ -7487,8 +7411,86 @@
                 "security": "https://github.com/ergebnis/phpstan-rules/blob/main/.github/SECURITY.md",
                 "source": "https://github.com/ergebnis/phpstan-rules"
             },
-            "time": "2026-10-28T15:54:25+00:00",
-            "published-time": "2026-10-28T15:55:02+00:00"
+            "time": "2026-10-29T11:16:56+00:00",
+            "published-time": "2026-10-29T11:18:22+00:00"
+        },
+        {
+            "name": "ergebnis/version",
+            "version": "1.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ergebnis/version.git",
+                "reference": "d24af41aa88e24c24e705816e428668de2b7391a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ergebnis/version/zipball/d24af41aa88e24c24e705816e428668de2b7391a",
+                "reference": "d24af41aa88e24c24e705816e428668de2b7391a",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~7.4.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0 || ~8.6.0"
+            },
+            "require-dev": {
+                "ergebnis/composer-normalize": "^2.54.0",
+                "ergebnis/data-provider": "^3.7.0",
+                "ergebnis/license": "^2.8.0",
+                "ergebnis/php-cs-fixer-config": "^6.64.1",
+                "ergebnis/phpunit-slow-test-detector": "^2.27.0",
+                "ergebnis/rector-rules": "^1.18.5",
+                "ext-bcmath": "*",
+                "fakerphp/faker": "^1.24.1",
+                "infection/infection": "~0.26.6",
+                "phpstan/extension-installer": "^1.4.3",
+                "phpstan/phpstan": "^2.2.14",
+                "phpstan/phpstan-deprecation-rules": "^2.0.5",
+                "phpstan/phpstan-phpunit": "^2.1.1",
+                "phpstan/phpstan-strict-rules": "^2.1.0",
+                "phpunit/phpunit": "^9.6.33",
+                "rector/rector": "^2.7.0"
+            },
+            "suggest": {
+                "ext-bcmath": "If you want to bump Major, Minor, or Patch versions greater than PHP_MAX_INT."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.5-dev"
+                },
+                "composer-normalize": {
+                    "indent-size": 2,
+                    "indent-style": "space"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Ergebnis\\Version\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Andreas Möller",
+                    "email": "am@localheinz.com",
+                    "homepage": "https://localheinz.com"
+                }
+            ],
+            "description": "Provides an abstraction of a semantic version.",
+            "homepage": "https://github.com/ergebnis/version",
+            "keywords": [
+                "semantic",
+                "version"
+            ],
+            "support": {
+                "issues": "https://github.com/ergebnis/version/issues",
+                "security": "https://github.com/ergebnis/version/blob/main/.github/SECURITY.md",
+                "source": "https://github.com/ergebnis/version"
+            },
+            "time": "2026-10-31T19:24:09+00:00",
+            "published-time": "2026-10-31T19:24:28+00:00"
         },
         {
             "name": "fidry/cpu-core-counter",
@@ -7555,44 +7557,44 @@
         },
         {
             "name": "hanaboso/php-check-utils",
-            "version": "2.0.1",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/php-check-utils.git",
-                "reference": "2cdc61faf5d77f57fb7ea1a0efe076ac1e17d5f6"
+                "reference": "a3cf2039688761e139ea0750a53e4a0efba7acd6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/2cdc61faf5d77f57fb7ea1a0efe076ac1e17d5f6",
-                "reference": "2cdc61faf5d77f57fb7ea1a0efe076ac1e17d5f6",
+                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/a3cf2039688761e139ea0750a53e4a0efba7acd6",
+                "reference": "a3cf2039688761e139ea0750a53e4a0efba7acd6",
                 "shasum": ""
             },
             "require": {
-                "brianium/paratest": "^7.19",
-                "dg/bypass-finals": "^1.9",
-                "ergebnis/composer-normalize": "^2.50",
-                "ergebnis/phpstan-rules": "^2.13",
+                "brianium/paratest": "^7.27",
+                "dg/bypass-finals": "^1.11",
+                "ergebnis/composer-normalize": "^2.56",
+                "ergebnis/phpstan-rules": "^2.17",
                 "ext-apcu": "*",
                 "ext-json": "*",
                 "ext-pcov": "*",
-                "php": "^8.4",
-                "php-mock/php-mock-phpunit": "^2.15",
-                "phpstan/phpstan": "^2.1",
-                "phpstan/phpstan-doctrine": "^2.0",
-                "phpstan/phpstan-phpunit": "^2.0",
-                "phpstan/phpstan-strict-rules": "^2.0",
-                "phpstan/phpstan-symfony": "^2.0",
-                "phpunit/phpunit": "^13.0",
-                "slevomat/coding-standard": "^8.28",
-                "spaze/phpstan-disallowed-calls": "^4.9",
+                "php": "^8.5",
+                "php-mock/php-mock-phpunit": "^2.16",
+                "phpstan/phpstan": "^2.3",
+                "phpstan/phpstan-doctrine": "^2.1",
+                "phpstan/phpstan-phpunit": "^2.1",
+                "phpstan/phpstan-strict-rules": "^2.1",
+                "phpstan/phpstan-symfony": "^2.1",
+                "phpunit/phpunit": "^13.4",
+                "slevomat/coding-standard": "^8.31",
+                "spaze/phpstan-disallowed-calls": "^4.15",
                 "squizlabs/php_codesniffer": "^4.0",
-                "symfony/browser-kit": "^8.0",
-                "symfony/framework-bundle": "^8.0",
-                "symfony/security-core": "^8.0"
+                "symfony/browser-kit": "^8.1",
+                "symfony/framework-bundle": "^8.1",
+                "symfony/security-core": "^8.1"
             },
             "require-dev": {
-                "doctrine/mongodb-odm": "^2.16",
-                "doctrine/orm": "^3.6",
+                "doctrine/mongodb-odm": "^2.17",
+                "doctrine/orm": "^3.7",
                 "friendsoftwig/twigcs": "^6.6",
                 "phpstan/phpstan-nette": "^2.0"
             },
@@ -7635,10 +7637,10 @@
             "description": "Utils for php development - CodeSniffer, PhpStan, PhpUnit, PhpStorm",
             "support": {
                 "issues": "https://github.com/hanaboso/php-check-utils/issues",
-                "source": "https://github.com/hanaboso/php-check-utils/tree/2.0.1"
+                "source": "https://github.com/hanaboso/php-check-utils/tree/2.1.1"
             },
-            "time": "2026-03-23T10:42:46+00:00",
-            "published-time": "2026-03-23T10:47:02+00:00"
+            "time": "2026-11-02T19:47:53+00:00",
+            "published-time": "2026-11-02T19:48:21+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
@@ -8287,16 +8289,16 @@
         },
         {
             "name": "phpstan/phpdoc-parser",
-            "version": "2.4.0",
+            "version": "2.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "e3647094ed8f0f1f67393d812b793a5143e25af3"
+                "reference": "af8e840551031d254cfdb3a18a62c3470a309c10"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/e3647094ed8f0f1f67393d812b793a5143e25af3",
-                "reference": "e3647094ed8f0f1f67393d812b793a5143e25af3",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/af8e840551031d254cfdb3a18a62c3470a309c10",
+                "reference": "af8e840551031d254cfdb3a18a62c3470a309c10",
                 "shasum": ""
             },
             "require": {
@@ -8328,10 +8330,10 @@
             "description": "PHPDoc parser with support for nullable, intersection and generic types",
             "support": {
                 "issues": "https://github.com/phpstan/phpdoc-parser/issues",
-                "source": "https://github.com/phpstan/phpdoc-parser/tree/2.4.0"
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/2.4.1"
             },
-            "time": "2026-10-28T20:28:58+00:00",
-            "published-time": "2026-10-28T20:29:42+00:00"
+            "time": "2026-10-30T19:36:28+00:00",
+            "published-time": "2026-10-30T19:37:11+00:00"
         },
         {
             "name": "phpstan/phpstan",
@@ -8400,21 +8402,21 @@
         },
         {
             "name": "phpstan/phpstan-doctrine",
-            "version": "2.0.28",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-doctrine.git",
-                "reference": "b4623954d5ffee6311e4ddbaef65c074ae0f781a"
+                "reference": "1c3be34c9f80f79931eb76f21dc98b2e8015f77c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/b4623954d5ffee6311e4ddbaef65c074ae0f781a",
-                "reference": "b4623954d5ffee6311e4ddbaef65c074ae0f781a",
+                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/1c3be34c9f80f79931eb76f21dc98b2e8015f77c",
+                "reference": "1c3be34c9f80f79931eb76f21dc98b2e8015f77c",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4 || ^8.0",
-                "phpstan/phpstan": "^2.2.2"
+                "phpstan/phpstan": "^2.3"
             },
             "conflict": {
                 "doctrine/collections": "<1.0",
@@ -8439,8 +8441,8 @@
                 "nesbot/carbon": "^2.49",
                 "php-parallel-lint/php-parallel-lint": "^1.2",
                 "phpstan/phpstan-deprecation-rules": "^2.0.2",
-                "phpstan/phpstan-phpunit": "^2.0.8",
-                "phpstan/phpstan-strict-rules": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.1",
+                "phpstan/phpstan-strict-rules": "^2.1",
                 "phpunit/phpunit": "^9.6.20",
                 "ramsey/uuid": "^4.2",
                 "shipmonk/name-collision-detector": "^2.1",
@@ -8471,10 +8473,10 @@
             ],
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-doctrine/issues",
-                "source": "https://github.com/phpstan/phpstan-doctrine/tree/2.0.28"
+                "source": "https://github.com/phpstan/phpstan-doctrine/tree/2.1.0"
             },
-            "time": "2026-07-13T08:43:43+00:00",
-            "published-time": "2026-07-13T08:44:42+00:00"
+            "time": "2026-10-30T17:56:27+00:00",
+            "published-time": "2026-10-30T18:00:10+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
@@ -8537,16 +8539,16 @@
         },
         {
             "name": "phpstan/phpstan-strict-rules",
-            "version": "2.1.0",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-strict-rules.git",
-                "reference": "24ec51589f896f048d0d36de373d993b5cf71786"
+                "reference": "fe4a0afae773eedf178fab17ed9361c0061d2804"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/24ec51589f896f048d0d36de373d993b5cf71786",
-                "reference": "24ec51589f896f048d0d36de373d993b5cf71786",
+                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/fe4a0afae773eedf178fab17ed9361c0061d2804",
+                "reference": "fe4a0afae773eedf178fab17ed9361c0061d2804",
                 "shasum": ""
             },
             "require": {
@@ -8583,10 +8585,10 @@
             ],
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-strict-rules/issues",
-                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/2.1.0"
+                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/2.1.1"
             },
-            "time": "2026-10-01T21:30:37+00:00",
-            "published-time": "2026-10-06T07:32:29+00:00"
+            "time": "2026-11-02T08:16:15+00:00",
+            "published-time": "2026-11-02T10:55:07+00:00"
         },
         {
             "name": "phpstan/phpstan-symfony",
@@ -8665,16 +8667,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "14.5.0",
+            "version": "14.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "1db2f40af7a6538742e4a634b71ee556d6219be7"
+                "reference": "4063552c678ce3beb4b7f131a5b7354a19ff3e2a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/1db2f40af7a6538742e4a634b71ee556d6219be7",
-                "reference": "1db2f40af7a6538742e4a634b71ee556d6219be7",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/4063552c678ce3beb4b7f131a5b7354a19ff3e2a",
+                "reference": "4063552c678ce3beb4b7f131a5b7354a19ff3e2a",
                 "shasum": ""
             },
             "require": {
@@ -8730,7 +8732,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
                 "security": "https://github.com/sebastianbergmann/php-code-coverage/security/policy",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/14.5.0"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/14.5.1"
             },
             "funding": [
                 {
@@ -8750,8 +8752,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-30T08:11:15+00:00",
-            "published-time": "2026-10-30T08:11:34+00:00"
+            "time": "2026-11-02T11:47:37+00:00",
+            "published-time": "2026-11-02T11:49:08+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -9052,16 +9054,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "13.4.5",
+            "version": "13.4.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "941457a4f147a60fe2074d40e1fce0d08ea8d930"
+                "reference": "4821376960d0e1e5a7b7b700955ebcab33ecd71b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/941457a4f147a60fe2074d40e1fce0d08ea8d930",
-                "reference": "941457a4f147a60fe2074d40e1fce0d08ea8d930",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/4821376960d0e1e5a7b7b700955ebcab33ecd71b",
+                "reference": "4821376960d0e1e5a7b7b700955ebcab33ecd71b",
                 "shasum": ""
             },
             "require": {
@@ -9075,7 +9077,7 @@
                 "phar-io/manifest": "^2.0.4",
                 "phar-io/version": "^3.2.1",
                 "php": ">=8.4.1",
-                "phpunit/php-code-coverage": "^14.4.1",
+                "phpunit/php-code-coverage": "^14.5.0",
                 "phpunit/php-file-iterator": "^7.0.2",
                 "phpunit/php-invoker": "^7.0.0",
                 "phpunit/php-text-template": "^6.0.1",
@@ -9132,7 +9134,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/13.4.5"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/13.4.6"
             },
             "funding": [
                 {
@@ -9140,8 +9142,8 @@
                     "type": "other"
                 }
             ],
-            "time": "2026-10-27T04:16:22+00:00",
-            "published-time": "2026-10-27T04:18:40+00:00"
+            "time": "2026-11-02T07:12:28+00:00",
+            "published-time": "2026-11-02T07:13:08+00:00"
         },
         {
             "name": "predis/predis",
@@ -10818,7 +10820,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.4",
+        "php": "^8.5",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-intl": "*",

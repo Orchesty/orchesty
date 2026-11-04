@@ -24,6 +24,8 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
      */
     protected function setUp(): void
     {
+        WorkerMetricsDatabase::configure();
+
         parent::setUp();
 
         self::bootKernel();
