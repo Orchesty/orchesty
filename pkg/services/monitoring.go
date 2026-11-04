@@ -53,28 +53,28 @@ func (m *Monitoring) Run() {
 		pipeline := mongo.Pipeline{
 			{
 				{
-					"$match", bson.D{
+					Key: "$match", Value: bson.D{
 						{
-							"finished", bson.D{
-								{"$gt", bson.NewDateTimeFromTime(m.LastT)},
-								{"$lte", bson.NewDateTimeFromTime(now)},
+							Key: "finished", Value: bson.D{
+								{Key: "$gt", Value: bson.NewDateTimeFromTime(m.LastT)},
+								{Key: "$lte", Value: bson.NewDateTimeFromTime(now)},
 							},
 						},
 					},
 				},
 			},
 			{
-				{"$group", bson.D{
-					{"_id", bson.Null{}},
+				{Key: "$group", Value: bson.D{
+					{Key: "_id", Value: bson.Null{}},
 					{
-						"succeeded", bson.D{
+						Key: "succeeded", Value: bson.D{
 							{
-								"$sum", bson.D{
+								Key: "$sum", Value: bson.D{
 									{
-										"$cond", bson.D{
-											{"if", bson.D{{"$eq", bson.A{"$nok", 0}}}},
-											{"then", 1},
-											{"else", 0},
+										Key: "$cond", Value: bson.D{
+											{Key: "if", Value: bson.D{{Key: "$eq", Value: bson.A{"$nok", 0}}}},
+											{Key: "then", Value: 1},
+											{Key: "else", Value: 0},
 										},
 									},
 								},
@@ -82,14 +82,14 @@ func (m *Monitoring) Run() {
 						},
 					},
 					{
-						"failed", bson.D{
+						Key: "failed", Value: bson.D{
 							{
-								"$sum", bson.D{
+								Key: "$sum", Value: bson.D{
 									{
-										"$cond", bson.D{
-											{"if", bson.D{{"$gte", bson.A{"$nok", 1}}}},
-											{"then", 1},
-											{"else", 0},
+										Key: "$cond", Value: bson.D{
+											{Key: "if", Value: bson.D{{Key: "$gte", Value: bson.A{"$nok", 1}}}},
+											{Key: "then", Value: 1},
+											{Key: "else", Value: 0},
 										},
 									},
 								},
@@ -97,9 +97,9 @@ func (m *Monitoring) Run() {
 						},
 					},
 					{
-						"totalAmount", bson.D{
+						Key: "totalAmount", Value: bson.D{
 							{
-								"$sum", "$total",
+								Key: "$sum", Value: "$total",
 							},
 						},
 					},
