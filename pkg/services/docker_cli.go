@@ -138,7 +138,7 @@ func NewDockerCliSvc(cli *client.Client) DockerCliSvc {
 
 // DockerConnect DockerConnect
 func DockerConnect() (*client.Client, error) {
-	cli, err := client.NewEnvClient()
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 
 	if err != nil {
 		return nil, err
