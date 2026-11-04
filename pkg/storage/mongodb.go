@@ -46,7 +46,7 @@ func CreateMongo() {
 		visibilityFilter: bson.E{Key: "visibility", Value: "public"},
 		enabledFilter:    bson.E{Key: "enabled", Value: true},
 		deletedFilter:    bson.E{Key: "deleted", Value: false},
-		versionSort:      bson.D{{"version", -1}},
+		versionSort:      bson.D{{Key: "version", Value: -1}},
 		log:              config.Logger,
 	}
 
@@ -149,9 +149,9 @@ func (m *MongoDefault) FindNodeByID(nodeID, topologyID string, uiRun bool, allow
 	}
 
 	filter := bson.D{
-		{"_id", innerNodeID},
-		{"topology", topologyID},
-		{"type", bson.M{"$in": allowedTypes}},
+		{Key: "_id", Value: innerNodeID},
+		{Key: "topology", Value: topologyID},
+		{Key: "type", Value: bson.M{"$in": allowedTypes}},
 		m.deletedFilter,
 	}
 
@@ -177,9 +177,9 @@ func (m *MongoDefault) FindNodeByName(nodeName, topologyID string) []Node {
 	defer cancel()
 
 	cursor, err := m.connection.Database.Collection(config.MongoDB.NodeColl).Find(innerContext, bson.D{
-		{"name", nodeName},
-		{"topology", topologyID},
-		{"type", bson.M{"$in": enum.NodeType_StartEvents}},
+		{Key: "name", Value: nodeName},
+		{Key: "topology", Value: topologyID},
+		{Key: "type", Value: bson.M{"$in": enum.NodeType_StartEvents}},
 		m.enabledFilter,
 		m.deletedFilter,
 	})
@@ -222,7 +222,7 @@ func (m *MongoDefault) FindTopologyByID(topologyID, nodeID string, uiRun bool, a
 	}
 
 	var filters = bson.D{
-		{"_id", innerTopologyID},
+		{Key: "_id", Value: innerTopologyID},
 		m.visibilityFilter,
 		m.deletedFilter,
 	}
@@ -249,7 +249,7 @@ func (m *MongoDefault) FindTopologyByName(topologyName, nodeName string) *Topolo
 	defer cancel()
 
 	cursor, err := m.connection.Database.Collection(config.MongoDB.TopologyColl).Find(innerContext, bson.D{
-		{"name", topologyName},
+		{Key: "name", Value: topologyName},
 		m.visibilityFilter,
 		m.enabledFilter,
 		m.deletedFilter,
@@ -287,11 +287,10 @@ func (m *MongoDefault) FindTopologyByApplication(topologyName, nodeName, token s
 	defer cancel()
 
 	err := m.connection.Database.Collection(config.MongoDB.WebhookColl).FindOne(innerContext, bson.D{
-		{"topology", topologyName},
-		{"node", nodeName},
-		{"token", token},
-		{"token", token},
-		{"unsubscribeFailed", bson.M{"$ne": true}},
+		{Key: "topology", Value: topologyName},
+		{Key: "node", Value: nodeName},
+		{Key: "token", Value: token},
+		{Key: "unsubscribeFailed", Value: bson.M{"$ne": true}},
 	}).Decode(&webhook)
 
 	if err != nil {
