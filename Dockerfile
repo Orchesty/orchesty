@@ -1,4 +1,4 @@
-FROM node:slim AS precache
+FROM node:lts-slim AS precache
 
 RUN npm i -g pnpm
 
@@ -16,7 +16,7 @@ COPY pnpm-lock.yaml ./
 COPY pnpm-workspace.yaml ./
 RUN pnpm install --production
 
-FROM node:slim AS build
+FROM node:lts-slim AS build
 
 WORKDIR /srv/app
 COPY --from=precache /tmp/_node /srv/app
@@ -24,7 +24,7 @@ COPY ./ /srv/app
 
 RUN npm run build
 
-FROM node:slim AS prod
+FROM node:lts-slim AS prod
 
 RUN apt update && apt upgrade -y && apt install -y tzdata
 

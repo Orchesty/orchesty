@@ -1,11 +1,8 @@
-catalog:
-  eslint: ^10.13.0
-
-overrides:
-  eslint: 'catalog:'
-
 allowBuilds:
   '@parcel/watcher': false
   unrs-resolver: true
+
+minimumReleaseAgeExclude:
+  - '@hanaboso/*'
 
 yes: true
