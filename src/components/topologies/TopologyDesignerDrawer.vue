@@ -64,17 +64,27 @@ const collectWebhookNodeNames = (): Set<string> => {
 // containing any unnamed instance so the user is forced to fix it now,
 // before a half-broken topology is published.
 const NAMED_REQUIRED_LABELS = new Set(['event', 'cron', 'webhook'])
+const ACTION_REQUIRED_LABELS = new Set(['confirm', 'connector', 'custom action', 'batch'])
 
 interface UnnamedNode { id: string; label: string }
 
 const findUnnamedRequiredNodes = (): UnnamedNode[] => {
   if (!editorCore.value) return []
   const offenders: UnnamedNode[] = []
-  const nodes = editorCore.value.getNodes() as Array<{ id: string; name?: string; baseLabel?: string }>
+  const nodes = editorCore.value.getNodes() as Array<{
+    id: string
+    name?: string
+    baseLabel?: string
+    action?: { name?: string } | null
+  }>
   for (const node of nodes) {
     const label = (node.baseLabel || '').trim()
-    if (!NAMED_REQUIRED_LABELS.has(label.toLowerCase())) continue
-    if ((node.name ?? '').trim() === '') {
+    const key = label.toLowerCase()
+    if (NAMED_REQUIRED_LABELS.has(key) && (node.name ?? '').trim() === '') {
+      offenders.push({ id: node.id, label })
+      continue
+    }
+    if (ACTION_REQUIRED_LABELS.has(key) && !(node.action?.name ?? '').trim()) {
       offenders.push({ id: node.id, label })
     }
   }
@@ -94,6 +104,11 @@ const labelInstruction = (label: string): string => {
       return 'Click the node header and type a name (used to identify the schedule).'
     case 'webhook':
       return 'Double-click the node (or right-click → Pick subscription) and choose an event from the picker.'
+    case 'confirm':
+    case 'connector':
+    case 'custom action':
+    case 'batch':
+      return 'Double-click the node (or right-click → Set Action) and choose an action from the catalogue.'
     default:
       return 'Set a name on the node.'
   }

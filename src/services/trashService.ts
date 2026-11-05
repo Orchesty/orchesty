@@ -43,6 +43,9 @@ function mapApiItemToTrashItem(apiItem: TrashItemApi): TrashItem {
     node: apiItem.nodeId,
     headers: apiItem.headers || {},
     body: parsedBody,
+    type: apiItem.type,
+    identity: (apiItem as TrashItemApi & { identity?: string }).identity,
+    question: (apiItem as TrashItemApi & { question?: string }).question,
   }
 }
 
@@ -59,13 +62,19 @@ export async function fetchTrashItems(
   const filterObj: TrashApiFilter = {
     search: params.search || null,
     filter: [
-      [
-        {
-          column: 'type',
-          operator: 'EQ',
-          value: ['trash']
-        }
-      ]
+      (params.types && params.types.length > 0
+        ? params.types.map((type) => ({
+            column: 'type',
+            operator: 'EQ',
+            value: [type],
+          }))
+        : [
+            {
+              column: 'type',
+              operator: 'EQ',
+              value: ['trash'],
+            },
+          ]),
     ],
     sorter: [
       {

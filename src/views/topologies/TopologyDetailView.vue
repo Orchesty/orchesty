@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import TopologyProcessesTab from '@/components/topologies/TopologyProcessesTab.vue'
 import TopologyLogsTab from '@/components/topologies/TopologyLogsTab.vue'
 import TopologyFailedMessagesTab from '@/components/topologies/TopologyFailedMessagesTab.vue'
+import TopologyUserTasksTab from '@/components/topologies/TopologyUserTasksTab.vue'
 import HorizontalBarChart from '@/components/ui/HorizontalBarChart.vue'
 import VersionHistoryDrawer from '@/components/topologies/VersionHistoryDrawer.vue'
 import TopologyDesignerDrawer from '@/components/topologies/TopologyDesignerDrawer.vue'
@@ -163,6 +164,7 @@ const coreTopologyTabs: TopologyTab[] = [
   { id: 'context', label: 'Context' },
   { id: 'processes', label: 'Processes' },
   { id: 'logs', label: 'Logs' },
+  { id: 'user-tasks', label: 'User Tasks' },
   { id: 'trash', label: 'Failed Messages' },
   { id: 'metrics', label: 'Metrics' },
 ]
@@ -835,6 +837,12 @@ onMounted(async () => {
         :topology-name="topology.name"
         :refresh-key="refreshKey"
         @open-drawer="handleOpenFailedMessage"
+      />
+      <TopologyUserTasksTab
+        v-else-if="activeTopologyTab === 'user-tasks'"
+        :topology-id="topology._id"
+        :topology-name="topology.name"
+        :refresh-key="refreshKey"
       />
     </KeepAlive>
 

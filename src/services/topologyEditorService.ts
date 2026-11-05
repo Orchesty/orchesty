@@ -4,7 +4,7 @@ import { fetchApplications } from './applicationsService'
 export type ActionOption = {
   name: string
   worker: string
-  type: 'custom' | 'connector' | 'batch' | 'user' | 'webhook'
+  type: 'custom' | 'connector' | 'batch' | 'user' | 'webhook' | 'confirm'
   app?: string
   icon?: string
   /** Webhook only: bare event name (`order.created`) without the app prefix. */
@@ -33,9 +33,9 @@ type WebhookCatalogApp = {
   events?: WebhookCatalogEvent[]
 }
 
-type ActionType = 'custom' | 'connector' | 'batch' | 'user'
+type ActionType = 'custom' | 'connector' | 'batch' | 'user' | 'confirm'
 
-const VALID_TYPES: ActionType[] = ['custom', 'connector', 'batch', 'user']
+const VALID_TYPES: ActionType[] = ['custom', 'connector', 'batch', 'user', 'confirm']
 
 async function buildAppLogoMap(): Promise<Map<string, string>> {
   try {
