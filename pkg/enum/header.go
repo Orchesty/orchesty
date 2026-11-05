@@ -21,8 +21,13 @@ const (
 	Header_SystemEvent     = "system-event"
 	Header_Source          = "source"
 
-	Source_UI   = "ui"
-	Source_Auto = "auto"
+	Source_UI    = "ui"
+	Source_Auto  = "auto"
+	Source_Pulse = "pulse"
+
+	Header_ConfirmQuestion = "confirm-question"
+	Header_ConfirmDisplay  = "confirm-display"
+	Header_PulseEvent      = "pulse-event"
 
 	// Target queue from repeater
 	Header_RepeatQueue = "repeat-queue"
@@ -98,4 +103,5 @@ var IdentityHeaders = []string{
 	// survive every hop and never be overwritten by a worker, so the topology
 	// can act on the real user's behalf all the way to the response node.
 	Header_Identity,
+	Header_Source,
 }

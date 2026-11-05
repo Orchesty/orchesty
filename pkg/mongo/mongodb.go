@@ -53,8 +53,13 @@ type MongoDb struct {
 	auditDataCollection   *mongo.Collection
 }
 
-func (m *MongoDb) StoreUserTask(dto model.ProcessResult, nodeName, topologyName string) (bson.ObjectID, error) {
+func (m *MongoDb) StoreUserTask(dto model.ProcessResult, nodeName, topologyName string, extras ...bson.M) (bson.ObjectID, error) {
 	document := fromDto(dto, nodeName, topologyName)
+	for _, extra := range extras {
+		for key, value := range extra {
+			document[key] = value
+		}
+	}
 	ctx, cancel := m.connection.Context()
 	inserted, err := m.collection.InsertOne(ctx, document)
 	cancel()

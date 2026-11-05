@@ -99,8 +99,9 @@ func (jsonParserV2) getTopology(path string) (model.Topology, error) {
 
 		for j, f := range nodeV2.Followers {
 			node.Followers[j] = model.Follower{
-				Id:   f.Id,
-				Name: f.Name,
+				Id:     f.Id,
+				Name:   f.Name,
+				Output: f.Output,
 			}
 		}
 

@@ -14,6 +14,7 @@ type workerContainer struct {
 	batch    Batch
 	userTask UserTask
 	response Response
+	confirm  Confirm
 }
 
 var workers workerContainer
@@ -30,6 +31,8 @@ func Get(name enum.WorkerType) (types.Worker, error) {
 		return workers.userTask, nil
 	case enum.WorkerType_Response:
 		return workers.response, nil
+	case enum.WorkerType_Confirm:
+		return workers.confirm, nil
 	}
 
 	return Null{}, fmt.Errorf("unknown worker type [%s]", name)
@@ -55,6 +58,13 @@ func InitializeWorkers(mongodb *mongo.MongoDb) {
 		},
 		response: Response{
 			client: client,
+		},
+		confirm: Confirm{
+			httpBeforeProcess: httpBeforeProcess{
+				client: client,
+			},
+			mongodb: mongodb,
+			client:  client,
 		},
 	}
 }

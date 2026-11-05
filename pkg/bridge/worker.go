@@ -251,7 +251,15 @@ func (n *node) innerProcess(dto *model.ProcessMessage) (model.ProcessResult, int
 	return result, published
 }
 
+func (n *node) FollowerIdsForOutput(output string) string {
+	return worker.FollowerIdsForOutput(n.Node.Followers, output)
+}
+
 func (n *node) checkTrash(dto *model.ProcessMessage) model.ProcessResult {
+	if n.WorkerType() == enum.WorkerType_Confirm {
+		return dto.Ok()
+	}
+
 	state, err := dto.GetHeader(enum.Header_UserTaskState)
 	// If header exists check for reject (accept should never come here)
 	if err == nil && state == enum.UserTask_Reject {

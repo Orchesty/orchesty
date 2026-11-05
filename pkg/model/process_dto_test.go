@@ -101,6 +101,18 @@ func TestProcessDto_FromHttpResponse_IdentityWinsOverWorker(t *testing.T) {
 	assert.Equal(t, "corr-bridge", dto.Headers[enum.Header_CorrelationId])
 }
 
+func TestProcessDto_FromHttpResponse_KeepsPulseSource(t *testing.T) {
+	dto := &ProcessMessage{}
+	dto.SetHeader(enum.Header_Source, enum.Source_Pulse)
+	dto.SetHeader(enum.Header_Identity, "user-1")
+
+	err := dto.FromHttpResponse(httpResponse(`{"headers":{"result-code":"0"},"body":"{}"}`))
+	assert.Nil(t, err)
+
+	assert.Equal(t, enum.Source_Pulse, dto.Headers[enum.Header_Source])
+	assert.Equal(t, "user-1", dto.Headers[enum.Header_Identity])
+}
+
 func TestProcessDto_FromHttpResponse_EmptyBodyErrorsNoMutation(t *testing.T) {
 	dto := &ProcessMessage{Body: []byte("original")}
 	dto.SetHeader(enum.Header_CorrelationId, "corr-1")

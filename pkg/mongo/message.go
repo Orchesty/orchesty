@@ -10,6 +10,7 @@ import (
 const (
 	Type_Trash    = "trash"
 	Type_UserTask = "userTask"
+	Type_Confirm  = "confirm"
 )
 
 func fromDto(dto model.ProcessResult, nodeName, topologyName string) bson.M {
