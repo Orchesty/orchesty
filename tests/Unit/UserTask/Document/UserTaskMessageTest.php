@@ -43,4 +43,44 @@ final class UserTaskMessageTest extends KernelTestCaseAbstract
         );
     }
 
+    /**
+     *
+     */
+    public function testEditKeepsPulseHeaders(): void
+    {
+        $msg = (new UserTaskMessage())->setHeaders(
+            ['identity' => 'user@example.com', 'node-id' => 'n1', 'reply-id' => 'r1', 'reply-to' => 'http://trace'],
+        );
+
+        $msg->fromArray(
+            [
+                UserTaskMessage::HEADERS => [
+                    'node-id'  => 'n2',
+                    'reply-to' => 'http://evil',
+                    'source'   => 'pulse',
+                ],
+            ],
+        );
+
+        self::assertEquals(
+            ['identity' => 'user@example.com', 'node-id' => 'n2', 'reply-id' => 'r1', 'reply-to' => 'http://trace'],
+            $msg->getHeaders(),
+        );
+    }
+
+    /**
+     *
+     */
+    public function testPublicArrayHidesReplyHeaders(): void
+    {
+        $msg = (new UserTaskMessage())->setBody('b')->setHeaders(
+            ['identity' => 'user@example.com', 'reply-id' => 'r1', 'reply-to' => 'http://trace'],
+        );
+
+        self::assertSame(
+            [UserTaskMessage::BODY => 'b', UserTaskMessage::HEADERS => ['identity' => 'user@example.com']],
+            $msg->toPublicArray(),
+        );
+    }
+
 }

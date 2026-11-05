@@ -6,5 +6,6 @@ services:
         class: Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController
         arguments:
             - '@hbpf.user_task.handler.user_task'
+            - '@security.helper'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]

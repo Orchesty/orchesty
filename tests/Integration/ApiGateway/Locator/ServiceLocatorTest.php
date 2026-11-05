@@ -311,9 +311,10 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
                 ],
                 'name'    => [
                     'batch'     => ['key' => 'null'],
+                    'confirm'   => ['key' => 'null'],
                     'connector' => ['key' => 'null'],
                     'custom'    => ['key' => 'null'],
-                    'confirm'   => ['key' => 'null'],
+                    'question'  => ['key' => 'null'],
                     'webhook'   => [],
                 ],
             ],
@@ -336,9 +337,10 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
                 ],
                 'name' => [
                     NodeImplementationEnum::BATCH->value     => [],
+                    NodeImplementationEnum::CONFIRM->value   => [],
                     NodeImplementationEnum::CONNECTOR->value => [],
                     NodeImplementationEnum::CUSTOM->value    => [],
-                    NodeImplementationEnum::CONFIRM->value   => [],
+                    NodeImplementationEnum::QUESTION->value  => [],
                     NodeImplementationEnum::WEBHOOK->value   => [],
                 ],
             ],

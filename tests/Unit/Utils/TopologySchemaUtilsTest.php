@@ -158,6 +158,119 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @throws Exception
+     */
+    public function testGetSchemaObjectFromJsonRefusesTwoOutputsToSameNode(): void
+    {
+        $data                  = $this->loadJson('schema-json-editor.json');
+        $data['connections'][] = ['from' => 'node-cron', 'id' => 'conn-x', 'sourceOutput' => 'no', 'to' => 'node-parser'];
+
+        self::expectException(TopologyException::class);
+        self::expectExceptionCode(TopologyException::DUPLICATE_SEQUENCE);
+
+        TopologySchemaUtils::getSchemaObjectFromJson($data, ['php-sdk' => 'php-sdk:8080']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testSwappedConfirmOutputsChangeTheHashes(): void
+    {
+        $sdkUrlMap = ['php-sdk' => 'php-sdk:8080'];
+        $plain     = $this->loadJson('schema-json-editor.json');
+        $labelled  = static function (string $toConnector, string $toMapper) use ($plain): array {
+            $data                = $plain;
+            $data['connections'] = [
+                ['from' => 'node-cron', 'id' => 'conn-1', 'to' => 'node-parser'],
+                ['from' => 'node-parser', 'id' => 'conn-2', 'sourceOutput' => $toConnector, 'to' => 'node-connector'],
+                ['from' => 'node-parser', 'id' => 'conn-3', 'sourceOutput' => $toMapper, 'to' => 'node-mapper'],
+            ];
+
+            return $data;
+        };
+
+        $yesNo = TopologySchemaUtils::getSchemaObjectFromJson($labelled('yes', 'no'), $sdkUrlMap);
+        $noYes = TopologySchemaUtils::getSchemaObjectFromJson($labelled('no', 'yes'), $sdkUrlMap);
+
+        self::assertNotSame(TopologySchemaUtils::getIndexHash($yesNo), TopologySchemaUtils::getIndexHash($noYes));
+        self::assertNotSame(
+            TopologySchemaUtils::getSchemaFullIndexHash($yesNo),
+            TopologySchemaUtils::getSchemaFullIndexHash($noYes),
+        );
+
+        $unlabelled = TopologySchemaUtils::getSchemaObjectFromJson($plain, $sdkUrlMap);
+        self::assertSame(
+            hash('sha256', Json::encode($unlabelled->buildIndex())),
+            TopologySchemaUtils::getIndexHash($unlabelled),
+        );
+        self::assertCount(3, $unlabelled->buildIndex()[0]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testDefaultOutputKeepsTheHashes(): void
+    {
+        $sdkUrlMap = ['php-sdk' => 'php-sdk:8080'];
+        $plain     = $this->loadJson('schema-json-editor.json');
+        $saved     = $plain;
+
+        $saved['connections'] = array_map(
+            static fn(array $connection): array => [...$connection, 'sourceOutput' => 'output'],
+            $plain['connections'],
+        );
+
+        $before = TopologySchemaUtils::getSchemaObjectFromJson($plain, $sdkUrlMap);
+        $after  = TopologySchemaUtils::getSchemaObjectFromJson($saved, $sdkUrlMap);
+
+        self::assertSame(TopologySchemaUtils::getIndexHash($before), TopologySchemaUtils::getIndexHash($after));
+        self::assertSame(
+            TopologySchemaUtils::getSchemaFullIndexHash($before),
+            TopologySchemaUtils::getSchemaFullIndexHash($after),
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testNumericNodeIdsAreHashed(): void
+    {
+        $sdkUrlMap = ['php-sdk' => 'php-sdk:8080'];
+        $numeric   = static function (string $toConnector, string $toMapper): array {
+            $data                = Json::decode(
+                strtr(
+                    File::getContent(sprintf('%s/data/schema-json-editor.json', __DIR__)),
+                    [
+                        '"node-connector"' => '"12"',
+                        '"node-cron"'      => '"10"',
+                        '"node-mapper"'    => '"13"',
+                        '"node-parser"'    => '"11"',
+                        '"node-splitter"'  => '"14"',
+                        '"node-start"'     => '"15"',
+                        '"node-webhook"'   => '"16"',
+                    ],
+                ),
+            );
+            $data['connections'] = [
+                ['from' => '10', 'id' => 'conn-1', 'to' => '11'],
+                ['from' => '11', 'id' => 'conn-2', 'sourceOutput' => $toConnector, 'to' => '12'],
+                ['from' => '11', 'id' => 'conn-3', 'sourceOutput' => $toMapper, 'to' => '13'],
+            ];
+
+            return $data;
+        };
+
+        $yesNo = TopologySchemaUtils::getSchemaObjectFromJson($numeric('yes', 'no'), $sdkUrlMap);
+        $noYes = TopologySchemaUtils::getSchemaObjectFromJson($numeric('no', 'yes'), $sdkUrlMap);
+
+        self::assertNotSame(TopologySchemaUtils::getIndexHash($yesNo), TopologySchemaUtils::getIndexHash($noYes));
+        self::assertNotSame(
+            TopologySchemaUtils::getSchemaFullIndexHash($yesNo),
+            TopologySchemaUtils::getSchemaFullIndexHash($noYes),
+        );
+    }
+
+    /**
      * @param string $name
      *
      * @return string

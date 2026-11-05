@@ -26,16 +26,15 @@ final class UserTaskFilter extends GridFilterAbstract
         UserTask::CORRELATION_ID => 1,
         UserTask::CREATED        => 1,
         UserTask::ID             => 1,
+        // Shown for Confirm / Question rows (UserTaskManager::filter() drops them for other types)
+        UserTask::IDENTITY       => 1,
         UserTask::NODE_ID        => 1,
         UserTask::NODE_NAME      => 1,
+        UserTask::QUESTION       => 1,
         UserTask::TOPOLOGY_ID    => 1,
         UserTask::TOPOLOGY_NAME  => 1,
         UserTask::TYPE           => 1,
         UserTask::UPDATED        => 1,
-        UserTask::IDENTITY       => 1,
-        UserTask::QUESTION       => 1,
-        UserTask::DISPLAY        => 1,
-        UserTask::REPLY_ID       => 1,
     ];
 
     /**
@@ -57,6 +56,7 @@ final class UserTaskFilter extends GridFilterAbstract
             UserTask::CORRELATION_ID         => UserTask::CORRELATION_ID,
             UserTask::CREATED                => UserTask::CREATED,
             UserTask::ID                     => UserTask::ID,
+            UserTask::IDENTITY               => UserTask::IDENTITY,
             UserTask::MESSAGE                => 'message.body',
             UserTask::NODE_ID                => UserTask::NODE_ID,
             UserTask::NODE_NAME              => UserTask::NODE_NAME,
@@ -65,7 +65,6 @@ final class UserTaskFilter extends GridFilterAbstract
             UserTask::TYPE                   => UserTask::TYPE,
             UserTask::UPDATED                => UserTask::UPDATED,
             UserTask::USER                   => UserTask::USER,
-            UserTask::IDENTITY               => UserTask::IDENTITY,
         ];
     }
 

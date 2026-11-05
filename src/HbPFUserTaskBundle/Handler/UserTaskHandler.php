@@ -13,6 +13,9 @@ use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\UserTask\Document\UserTask;
 use Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage;
+use Hanaboso\PipesFramework\UserTask\Enum\UserTaskEnum;
+use Hanaboso\PipesFramework\UserTask\Exception\UserTaskAnswerException;
+use Hanaboso\PipesFramework\UserTask\Exception\UserTaskConflictException;
 use Hanaboso\PipesFramework\UserTask\Model\UserTaskManager;
 use Hanaboso\Utils\Validations\Validations;
 
@@ -110,11 +113,14 @@ final readonly class UserTaskHandler
      * @throws MappingException
      * @throws MongoDBException
      */
-    public function accept(string $id, ?string $topologyId, ?string $nodeId, ?string $identity = NULL): array
+    public function accept(string $id, ?string $topologyId, ?string $nodeId): array
     {
         $userTask = $this->manager->get($id);
-        $this->manager->retargetUserTask($userTask, $topologyId, $nodeId);
-        $this->manager->accept($userTask, $identity);
+        if ($this->manager->retargetUserTask($userTask, $topologyId, $nodeId)) {
+            // It could not be retargeted and is in trash now; publishing it to the old exchange would lose it
+            return [];
+        }
+        $this->manager->accept($userTask);
 
         return [];
     }
@@ -147,26 +153,87 @@ final readonly class UserTaskHandler
      * @throws MappingException
      * @throws MongoDBException
      */
-    public function reject(string $id, ?string $identity = NULL): array
+    public function reject(string $id): array
     {
         $userTask = $this->manager->get($id);
-
-        /** @var Topology|null $topology */
-        $topology = $this->dm->getRepository(Topology::class)->find($userTask->getTopologyId());
-        $deleted  = $topology == NULL || $topology->isDeleted();
-
-        $this->manager->reject($userTask, $deleted, $identity);
+        $this->manager->reject($userTask, $this->isTopologyDeleted($userTask));
 
         return [];
     }
 
     /**
+     * A reject also cancels an open Question (it stops the run).
+     *
+     * @param string $id
+     * @param string $identity
+     * @param bool   $accept
+     *
+     * @return mixed[]
+     * @throws MappingException
+     * @throws MongoDBException
+     */
+    public function pulseDecide(string $id, string $identity, bool $accept): array
+    {
+        $userTask = $this->manager->get($id);
+        $accept
+            ? $this->manager->assertPulseTask($userTask, $identity, UserTaskEnum::CONFIRM)
+            : $this->manager->assertPulseTask($userTask, $identity, UserTaskEnum::CONFIRM, UserTaskEnum::QUESTION);
+
+        if ($accept) {
+            $this->manager->accept($userTask);
+        } else {
+            $this->manager->reject($userTask, $this->isTopologyDeleted($userTask));
+        }
+
+        return [];
+    }
+
+    /**
+     * @param string  $id
+     * @param mixed[] $answer
+     * @param string  $identity
+     *
+     * @return mixed[]
+     * @throws MappingException
+     * @throws MongoDBException
+     * @throws UserTaskAnswerException
+     * @throws UserTaskConflictException
+     */
+    public function pulseAnswer(string $id, array $answer, string $identity): array
+    {
+        $userTask = $this->manager->get($id);
+        $this->manager->assertPulseTask($userTask, $identity, UserTaskEnum::QUESTION);
+        $this->manager->answer($userTask, $answer);
+
+        return [];
+    }
+
+    /**
+     * @param string       $id
+     * @param string       $identity
+     * @param UserTaskEnum $type
+     *
+     * @return string
+     * @throws MappingException
+     * @throws MongoDBException
+     */
+    public function pulseReplyId(string $id, string $identity, UserTaskEnum $type): string
+    {
+        $userTask = $this->manager->get($id);
+        $this->manager->assertPulseTask($userTask, $identity, $type);
+
+        return $userTask->getReplyId();
+    }
+
+    /**
+     * @param string $identity
+     *
      * @return mixed[]
      */
     public function pendingConfirms(string $identity): array
     {
         return array_map(
-            static fn (UserTask $task): array => $task->toArray(),
+            static fn(UserTask $task): array => $task->toPulseArray(),
             $this->manager->findPendingConfirmsByIdentity($identity),
         );
     }
@@ -213,6 +280,19 @@ final readonly class UserTaskHandler
     public function getUserTasks(GridRequestDtoInterface $dto): array
     {
         return $this->getGridResponse($dto, $this->manager->getUserTasks($dto));
+    }
+
+    /**
+     * @param UserTask $userTask
+     *
+     * @return bool
+     */
+    private function isTopologyDeleted(UserTask $userTask): bool
+    {
+        /** @var Topology|null $topology */
+        $topology = $this->dm->getRepository(Topology::class)->find($userTask->getTopologyId());
+
+        return $topology === NULL || $topology->isDeleted();
     }
 
     /**

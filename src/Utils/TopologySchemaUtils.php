@@ -40,6 +40,9 @@ final class TopologySchemaUtils
     private const string CONFIRM_LABEL = 'Confirm';
     private const string CONFIRM_TYPE  = 'confirm';
 
+    private const string QUESTION_LABEL = 'Question';
+    private const string QUESTION_TYPE  = 'question';
+
     private const string BPMN_INCOMING = 'bpmn:incoming';
     private const string BPMN_OUTGOING = 'bpmn:outgoing';
 
@@ -169,6 +172,11 @@ final class TopologySchemaUtils
         foreach ($schema->getSequences() as $sequenceKey => $sequence) {
             foreach ($sequence as $sequenceValue) {
                 $schemaIndex[] = sprintf('sequence_%s_%s', $sequenceKey, $sequenceValue);
+
+                $output = $schema->getRoutingOutput((string) $sequenceKey, (string) $sequenceValue);
+                if ($output !== '') {
+                    $schemaIndex[] = sprintf('sequence_output_%s_%s_%s', $sequenceKey, $sequenceValue, $output);
+                }
             }
         }
 
@@ -232,6 +240,14 @@ final class TopologySchemaUtils
                 $handler    = self::BPMN_TASK;
                 $pipesType  = self::CONFIRM_TYPE;
                 $name       = $action['name'] ?? ($node['name'] ?? self::CONFIRM_TYPE);
+                $workerName = $action['worker'] ?? '';
+                $sdkHost    = $sdkUrlMap[$workerName] ?? '';
+                $app        = $action['app'] ?? '';
+            } else if ($label === self::QUESTION_LABEL || ($action['type'] ?? '') === self::QUESTION_TYPE) {
+                // Question is a square worker node like Confirm.
+                $handler    = self::BPMN_TASK;
+                $pipesType  = self::QUESTION_TYPE;
+                $name       = $action['name'] ?? ($node['name'] ?? self::QUESTION_TYPE);
                 $workerName = $action['worker'] ?? '';
                 $sdkHost    = $sdkUrlMap[$workerName] ?? '';
                 $app        = $action['app'] ?? '';
@@ -316,12 +332,31 @@ final class TopologySchemaUtils
             }
         }
 
+        // Outputs are kept per source -> target pair: two edges between the same nodes (e.g. Confirm Yes and No to
+        // one node) would collapse into one and leave the other output without a follower, so refuse them
+        $outputs = [];
         foreach ($connections as $connection) {
-            $schema->addSequence(
-                $connection['from'],
-                $connection['to'],
-                (string) ($connection['sourceOutput'] ?? ''),
-            );
+            $output = (string) ($connection['sourceOutput'] ?? '');
+            $pair   = sprintf('%s>%s', $connection['from'], $connection['to']);
+            if (isset($outputs[$pair])) {
+                if ($outputs[$pair] === $output) {
+                    continue;
+                }
+
+                throw new TopologyException(
+                    sprintf(
+                        'Node "%s" has two outputs ("%s", "%s") connected to the same node "%s"; connect each output to a different node.',
+                        $connection['from'],
+                        $outputs[$pair] !== '' ? $outputs[$pair] : 'default',
+                        $output !== '' ? $output : 'default',
+                        $connection['to'],
+                    ),
+                    TopologyException::DUPLICATE_SEQUENCE,
+                );
+            }
+            $outputs[$pair] = $output;
+
+            $schema->addSequence($connection['from'], $connection['to'], $output);
         }
 
         return $schema;

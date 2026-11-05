@@ -14,12 +14,19 @@ use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Database\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\UserTask\Document\UserTask;
 use Hanaboso\PipesFramework\UserTask\Enum\UserTaskEnum;
+use Hanaboso\PipesFramework\UserTask\Exception\UserTaskAnswerException;
+use Hanaboso\PipesFramework\UserTask\Exception\UserTaskConflictException;
 use Hanaboso\PipesFramework\UserTask\Exception\UserTaskException;
 use Hanaboso\PipesFramework\UserTask\Repository\UserTaskRepository;
+use Hanaboso\PipesFramework\Utils\JsonSchemaArgsValidator;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\String\Json;
+use JsonException;
 use LogicException;
+use MongoDB\BSON\UTCDateTime;
 use RabbitMqBundle\Publisher\Publisher;
+use stdClass;
+use Throwable;
 
 /**
  * Class UserTaskManager
@@ -32,6 +39,14 @@ final readonly class UserTaskManager
     private const string STATE_HEADER = 'user-task-state';
     private const string STATE_ACCEPT = 'accept';
     private const string STATE_REJECT = 'reject';
+
+    // Set only when a live Confirm / Question task is decided. The bridge routes Yes / No on it, so a plain
+    // trash retry of a parked Confirm (which carries only `user-task-state`) parks it again instead of saying Yes.
+    private const string DECISION_HEADER = 'pulse-decision';
+
+    // A claim older than this is treated as abandoned (the deciding request died between claim and delete)
+    private const string CLAIMED_AT        = 'claimedAt';
+    private const int    CLAIM_TTL_SECONDS = 60;
 
     /**
      * @var ObjectRepository<UserTask>&UserTaskRepository
@@ -126,7 +141,7 @@ final readonly class UserTaskManager
     public function update(UserTask $userTask, array $data): UserTask
     {
         $message = $userTask->getMessage();
-        $userTask->addAuditLog($message->toArray());
+        $userTask->addAuditLog($message->toPublicArray());
         $message->fromArray($data);
         $this->dm->flush();
 
@@ -138,18 +153,11 @@ final readonly class UserTaskManager
      *
      * @throws MongoDBException
      */
-    public function accept(UserTask $userTask, ?string $identity = NULL): void
+    public function accept(UserTask $userTask): void
     {
-        $this->assertConfirmIdentity($userTask, $identity);
-
-        /** @var Topology|null $topology */
-        $topology = $this->dm->getRepository(Topology::class)->find($userTask->getTopologyId());
-        $deleted  = $topology == NULL || $topology->isDeleted();
-        if ($deleted) {
-            throw new LogicException('Cannot accept userTask of deleted topology');
-        }
-
-        $this->publish($userTask, TRUE);
+        $this->assertTopologyNotDeleted($userTask);
+        $this->claim($userTask);
+        $this->publishOrRelease($userTask, TRUE);
         $this->delete($userTask);
     }
 
@@ -179,29 +187,91 @@ final readonly class UserTaskManager
      *
      * @throws MongoDBException
      */
-    public function reject(UserTask $userTask, bool $deletedTopology, ?string $identity = NULL): void
+    public function reject(UserTask $userTask, bool $deletedTopology): void
     {
-        $this->assertConfirmIdentity($userTask, $identity);
-
+        $this->claim($userTask);
         if (!$deletedTopology) {
-            $this->publish($userTask, FALSE);
+            $this->publishOrRelease($userTask, FALSE);
         }
         $this->delete($userTask);
     }
 
     /**
-     * Pulse-scoped confirm: only the identity that started the run may decide.
-     * Admin / User Tasks tab omit $identity and skip the check.
+     * - With declared `properties` only those keys may be answered.
+     * - Without them (schema-less Question) an answer may only add keys, never overwrite upstream values.
+     * - The parked body must be a JSON object; nested empty objects stay objects.
+     *
+     * @param UserTask $userTask
+     * @param mixed[]  $answer
+     *
+     * @throws MongoDBException
+     * @throws UserTaskAnswerException
+     * @throws UserTaskConflictException
      */
-    public function assertConfirmIdentity(UserTask $userTask, ?string $identity): void
+    public function answer(UserTask $userTask, array $answer): void
     {
-        if ($userTask->getType() !== UserTaskEnum::CONFIRM->value) {
-            return;
+        if ($userTask->getType() !== UserTaskEnum::QUESTION->value) {
+            throw new UserTaskAnswerException(
+                sprintf('UserTask with id [%s] is not a question and cannot be answered.', $userTask->getId()),
+            );
         }
-        if ($identity === NULL) {
-            return;
+
+        if ($answer !== [] && array_is_list($answer)) {
+            throw new UserTaskAnswerException('Answer must be an object of field values.');
         }
-        if ($userTask->getIdentity() === NULL || $userTask->getIdentity() !== $identity) {
+
+        $schema = $userTask->getSchema();
+        $answer = JsonSchemaArgsValidator::coerce($schema, $answer);
+        $errors = JsonSchemaArgsValidator::errors($schema, $answer);
+        if ($errors !== []) {
+            throw new UserTaskAnswerException(sprintf('Invalid answer: %s', implode(' ', $errors)));
+        }
+
+        $body       = $this->decodeObjectBody($userTask);
+        $properties = is_array($schema['properties'] ?? NULL) ? $schema['properties'] : [];
+        $unknown    = $properties === []
+            ? array_values(
+                array_filter(array_keys($answer), static fn($key): bool => property_exists($body, (string) $key)),
+            )
+            : array_values(array_diff(array_keys($answer), array_keys($properties)));
+        if ($unknown !== []) {
+            throw new UserTaskAnswerException(
+                sprintf(
+                    $properties === []
+                        ? 'Answer may not overwrite existing fields: %s.'
+                        : 'Answer contains fields the question does not ask for: %s.',
+                    implode(', ', $unknown),
+                ),
+            );
+        }
+
+        $this->assertTopologyNotDeleted($userTask);
+        $this->claim($userTask);
+
+        foreach ($answer as $key => $value) {
+            $body->{(string) $key} = $value;
+        }
+        $userTask->getMessage()->setBody(Json::encode($body));
+
+        $this->publishOrRelease($userTask, TRUE);
+        $this->delete($userTask);
+    }
+
+    /**
+     * Every failure looks the same, so the error never reveals that a task exists.
+     *
+     * @param UserTask     $userTask
+     * @param string|null  $identity
+     * @param UserTaskEnum ...$types
+     */
+    public function assertPulseTask(UserTask $userTask, ?string $identity, UserTaskEnum ...$types): void
+    {
+        $accepted = array_map(static fn(UserTaskEnum $type): string => $type->value, $types);
+        if ($identity === NULL
+            || $identity === ''
+            || $userTask->getIdentity() !== $identity
+            || !in_array($userTask->getType(), $accepted, TRUE)
+        ) {
             throw new UserTaskException(
                 sprintf('UserTask with id [%s] has been not found', $userTask->getId()),
             );
@@ -209,13 +279,15 @@ final readonly class UserTaskManager
     }
 
     /**
+     * @param string $identity
+     *
      * @return UserTask[]
      */
     public function findPendingConfirmsByIdentity(string $identity): array
     {
         return $this->userTaskRepository->findBy([
-            'type'     => UserTaskEnum::CONFIRM->value,
             'identity' => $identity,
+            'type'     => ['$in' => [UserTaskEnum::CONFIRM->value, UserTaskEnum::QUESTION->value]],
         ]);
     }
 
@@ -228,7 +300,18 @@ final readonly class UserTaskManager
      */
     public function filter(GridRequestDtoInterface $dto, bool $enrich = TRUE): array
     {
-        $res = $this->filter->getData($dto)->toArray();
+        $res = array_map(
+            static function (array $doc): array {
+                // ODM stores the Pulse fields (with defaults) on every task; only Confirm / Question carry them
+                $pulse = [UserTaskEnum::CONFIRM->value, UserTaskEnum::QUESTION->value];
+                if (!in_array($doc[UserTask::TYPE] ?? NULL, $pulse, TRUE)) {
+                    unset($doc[UserTask::IDENTITY], $doc[UserTask::QUESTION]);
+                }
+
+                return $doc;
+            },
+            $this->filter->getData($dto)->toArray(),
+        );
 
         if (!$enrich) {
             return $res;
@@ -297,12 +380,13 @@ final readonly class UserTaskManager
      */
     public function trashWithoutPublish(UserTask $userTask, string $reason): void
     {
-        if (!in_array($userTask->getType(), [UserTaskEnum::USER_TASK->value, UserTaskEnum::CONFIRM->value], TRUE)) {
+        $live = [UserTaskEnum::USER_TASK->value, UserTaskEnum::CONFIRM->value, UserTaskEnum::QUESTION->value];
+        if (!in_array($userTask->getType(), $live, TRUE)) {
             return;
         }
 
         $userTask->setType(UserTaskEnum::TRASH->value);
-        $headers = $userTask->getMessage()->getHeaders();
+        $headers                   = $userTask->getMessage()->getHeaders();
         $headers['result-message'] = $reason;
         $userTask->getMessage()->setHeaders($headers);
         $this->dm->flush();
@@ -321,6 +405,9 @@ final readonly class UserTaskManager
         $headers = $message->getHeaders();
 
         $headers[self::STATE_HEADER] = $accept ? self::STATE_ACCEPT : self::STATE_REJECT;
+        if ($userTask->isPulseTask()) {
+            $headers[self::DECISION_HEADER] = $headers[self::STATE_HEADER];
+        }
         $this->publisher->publish(
             Json::encode(
                 [
@@ -374,8 +461,15 @@ final readonly class UserTaskManager
 
             $topology = $topologies[$topologyId];
 
+            try {
+                $this->claim($task);
+            } catch (UserTaskException) {
+                // Someone else is deciding this task right now
+                continue;
+            }
+
             if ($topology !== NULL && !$topology->isDeleted()) {
-                $this->publish($task, $accept);
+                $this->publishOrRelease($task, $accept);
             }
 
             $this->dm->remove($task);
@@ -383,6 +477,106 @@ final readonly class UserTaskManager
 
         $this->dm->flush();
         $this->dm->clear();
+    }
+
+    /**
+     * @param UserTask $userTask
+     */
+    private function assertTopologyNotDeleted(UserTask $userTask): void
+    {
+        /** @var Topology|null $topology */
+        $topology = $this->topologyRepository->find($userTask->getTopologyId());
+        if ($topology === NULL || $topology->isDeleted()) {
+            throw new LogicException('Cannot accept userTask of deleted topology');
+        }
+    }
+
+    /**
+     * Atomic, so two concurrent decisions can't both resume the run.
+     *
+     * @param UserTask $userTask
+     */
+    private function claim(UserTask $userTask): void
+    {
+        $now     = DateTimeUtils::getUtcDateTime()->getTimestamp();
+        $claimed = $this->dm->getDocumentCollection(UserTask::class)->findOneAndUpdate(
+            [
+                '$or' => [
+                    [self::CLAIMED_AT => NULL],
+                    [self::CLAIMED_AT => ['$lt' => new UTCDateTime(($now - self::CLAIM_TTL_SECONDS) * 1_000)]],
+                ],
+                '_id' => $this->databaseId($userTask),
+            ],
+            ['$set' => [self::CLAIMED_AT => new UTCDateTime($now * 1_000)]],
+        );
+
+        if ($claimed === NULL) {
+            throw new UserTaskException(
+                sprintf('UserTask with id [%s] has been not found', $userTask->getId()),
+            );
+        }
+    }
+
+    /**
+     * @param UserTask $userTask
+     * @param bool     $accept
+     *
+     * @throws Throwable
+     */
+    private function publishOrRelease(UserTask $userTask, bool $accept): void
+    {
+        try {
+            $this->publish($userTask, $accept);
+        } catch (Throwable $t) {
+            $this->dm->getDocumentCollection(UserTask::class)->updateOne(
+                ['_id' => $this->databaseId($userTask)],
+                ['$unset' => [self::CLAIMED_AT => '']],
+            );
+
+            throw $t;
+        }
+    }
+
+    /**
+     * @param UserTask $userTask
+     *
+     * @return mixed
+     */
+    private function databaseId(UserTask $userTask): mixed
+    {
+        return $this->dm->getClassMetadata(UserTask::class)->getDatabaseIdentifierValue($userTask->getId());
+    }
+
+    /**
+     * @param UserTask $userTask
+     *
+     * @return stdClass
+     * @throws UserTaskConflictException
+     */
+    private function decodeObjectBody(UserTask $userTask): stdClass
+    {
+        $raw = trim($userTask->getMessage()->getBody());
+        if ($raw === '' || $raw === '[]') {
+            return new stdClass();
+        }
+
+        try {
+            // Objects, not Json::decode() arrays: a nested `{}` must be written back as `{}`, not `[]`
+            $body = json_decode($raw, FALSE, 512, JSON_THROW_ON_ERROR); // @phpstan-ignore-line
+        } catch (JsonException) {
+            $body = NULL;
+        }
+
+        if (!$body instanceof stdClass) {
+            throw new UserTaskConflictException(
+                sprintf(
+                    'UserTask with id [%s] does not carry a JSON object body, so it cannot take an answer.',
+                    $userTask->getId(),
+                ),
+            );
+        }
+
+        return $body;
     }
 
 }

@@ -47,6 +47,7 @@ final class UserTaskTest extends KernelTestCaseAbstract
             ->setTopologyId('tid')
             ->setNodeId('nid')
             ->addAuditLog(['a']);
+        $userTask->setSchema(['type' => 'object']);
 
         self::assertSame('rrk', $userTask->getReturnRoutingKey());
         self::assertSame('re', $userTask->getReturnExchange());
@@ -57,6 +58,7 @@ final class UserTaskTest extends KernelTestCaseAbstract
         self::assertSame('nid', $userTask->getNodeId());
         self::assertSame('node', $userTask->getNodeName());
         self::assertSame('topo', $userTask->getTopologyName());
+        self::assertSame(['type' => 'object'], $userTask->getSchema());
         self::assertEquals(
             [
                 UserTask::AUDIT_LOGS     => [['a']],

@@ -28,6 +28,7 @@ final class TopologyException extends PipesFrameworkExceptionAbstract
     public const int SDK_HEADERS_NOT_FOUND            = self::OFFSET + 14;
     public const int UNSUPPORTED_SCHEMA               = self::OFFSET + 15;
     public const int SLOT_LIMIT_REACHED               = self::OFFSET + 16;
+    public const int DUPLICATE_SEQUENCE               = self::OFFSET + 17;
 
     protected const int OFFSET = 2_400;
 

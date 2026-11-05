@@ -280,12 +280,13 @@ class Node
      */
     public function setType(string $type): self
     {
-        // 'response' is the terminal (Response) node type. It is Pipes-native and
-        // intentionally lives outside the shared TypeEnum, which comes from the
+        // 'response' (terminal), 'confirm' and 'question' are Pipes-native node types. They
+        // intentionally live outside the shared TypeEnum, which comes from the
         // commons-bundle vendor package and can't carry product-specific types.
-        // The bridge response worker handles it at runtime; here we only need to
-        // accept and persist it. Canonical constant: TopologyConfigFactory::TYPE_RESPONSE.
-        if ($type === 'response' || TypeEnum::tryFrom($type)) {
+        // The bridge workers handle them at runtime; here we only need to accept
+        // and persist them. Canonical constants: TopologyConfigFactory::TYPE_RESPONSE,
+        // TopologyConfigFactory::TYPE_CONFIRM, TopologyConfigFactory::TYPE_QUESTION.
+        if (in_array($type, ['response', 'confirm', 'question'], TRUE) || TypeEnum::tryFrom($type)) {
             $this->type = $type;
 
             return $this;

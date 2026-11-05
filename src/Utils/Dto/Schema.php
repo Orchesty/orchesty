@@ -13,6 +13,8 @@ use Hanaboso\PipesFramework\Database\Document\TopologyApplication;
 final class Schema
 {
 
+    public const array ROUTING_OUTPUTS = ['no', 'yes'];
+
     /**
      * @var NodeSchemaDto[]
      */
@@ -85,6 +87,21 @@ final class Schema
     }
 
     /**
+     * Ordinary edges are saved with "output", which must not change the stored content hashes.
+     *
+     * @param string $source
+     * @param string $target
+     *
+     * @return string
+     */
+    public function getRoutingOutput(string $source, string $target): string
+    {
+        $output = $this->getSequenceOutput($source, $target);
+
+        return in_array($output, self::ROUTING_OUTPUTS, TRUE) ? $output : '';
+    }
+
+    /**
      * @return mixed[]
      */
     public function getSequences(): array
@@ -132,6 +149,7 @@ final class Schema
         foreach ($this->startNode as $start) {
             $index   = [];
             $index[] = $this->getIndexItem($start);
+            $visited = [$start => $start];
             $nextIds = $this->getNextIds($start);
             $tree    = [];
 
@@ -141,9 +159,10 @@ final class Schema
             }
 
             while ($nextIds !== []) {
-                $nextId  = array_shift($nextIds);
-                $index[] = $this->getIndexItem($nextId);
-                $ids     = $this->getNextIds($nextId);
+                $nextId           = array_shift($nextIds);
+                $index[]          = $this->getIndexItem($nextId);
+                $visited[$nextId] = $nextId;
+                $ids              = $this->getNextIds($nextId);
                 if ($ids !== [] && $checkInfiniteLoop) {
                         $clone = $ids;
                         $this->addToTree($tree, $nextId, $clone);
@@ -157,6 +176,20 @@ final class Schema
 
             if ($checkInfiniteLoop) {
                 $this->isInfinity($tree);
+            }
+
+            foreach ($visited as $id) {
+                foreach (array_unique($this->getNextIds($id)) as $target) {
+                    $output = $this->getRoutingOutput($id, $target);
+                    if ($output !== '') {
+                        $index[] = sprintf(
+                            '%s>%s:%s',
+                            $this->getIndexItem($id),
+                            $this->getIndexItem($target),
+                            $output,
+                        );
+                    }
+                }
             }
 
             sort($index);

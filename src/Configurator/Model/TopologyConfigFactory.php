@@ -59,10 +59,12 @@ final class TopologyConfigFactory
     public const string WORKER_BATCH           = 'worker.batch';
     public const string WORKER_RESPONSE        = 'worker.response';
     public const string WORKER_CONFIRM         = 'worker.confirm';
+    public const string WORKER_QUESTION        = 'worker.question';
     public const string HOST                   = 'host';
 
     public const string TYPE_RESPONSE = 'response';
     public const string TYPE_CONFIRM  = 'confirm';
+    public const string TYPE_QUESTION = 'question';
 
     public const string PROCESS_PATH = 'process_path';
     public const string STATUS_PATH  = 'status_path';
@@ -242,6 +244,7 @@ final class TopologyConfigFactory
             TypeEnum::USER->value => self::WORKER_USER,
             TypeEnum::CUSTOM->value => self::WORKER_CUSTOM_NODE,
             self::TYPE_CONFIRM => self::WORKER_CONFIRM,
+            self::TYPE_QUESTION => self::WORKER_QUESTION,
             // Terminal response node: returns the payload to the caller's
             // callback (reply-to / reply-id headers) via the bridge response
             // worker. `response` is not a vendored TypeEnum value, so it is
@@ -284,6 +287,10 @@ final class TopologyConfigFactory
                 self::PROCESS_PATH => sprintf('/confirm/%s/process', $node->getName()),
                 self::STATUS_PATH  => sprintf('/confirm/%s/process/test', $node->getName()),
             ],
+            self::TYPE_QUESTION => [
+                self::PROCESS_PATH => sprintf('/question/%s/process', $node->getName()),
+                self::STATUS_PATH  => sprintf('/question/%s/process/test', $node->getName()),
+            ],
             default => throw new TopologyConfigException(sprintf('Unknown type of routing [%s].', $node->getType())),
         };
     }
@@ -304,7 +311,7 @@ final class TopologyConfigFactory
         return match ($nodeType) {
             TypeEnum::XML_PARSER->value => $this->configs[self::XML_PARSER_API_HOST],
             TypeEnum::USER->value => '',
-            TypeEnum::BATCH->value, TypeEnum::TABLE_PARSER->value, TypeEnum::CONNECTOR->value, TypeEnum::WEBHOOK->value, TypeEnum::CUSTOM->value, self::TYPE_CONFIRM => $this->configs[self::MONOLITH_API_HOST],
+            TypeEnum::BATCH->value, TypeEnum::TABLE_PARSER->value, TypeEnum::CONNECTOR->value, TypeEnum::WEBHOOK->value, TypeEnum::CUSTOM->value, self::TYPE_CONFIRM, self::TYPE_QUESTION => $this->configs[self::MONOLITH_API_HOST],
             default => throw new TopologyConfigException(sprintf('Unknown type of host [%s].', $nodeType)),
         };
     }
@@ -318,7 +325,7 @@ final class TopologyConfigFactory
     private function getPort(string $nodeType): int
     {
         return match ($nodeType) {
-            TypeEnum::BATCH->value, TypeEnum::CONNECTOR->value, TypeEnum::CUSTOM->value, TypeEnum::TABLE_PARSER->value, TypeEnum::USER->value, TypeEnum::WEBHOOK->value, self::TYPE_CONFIRM => 80,
+            TypeEnum::BATCH->value, TypeEnum::CONNECTOR->value, TypeEnum::CUSTOM->value, TypeEnum::TABLE_PARSER->value, TypeEnum::USER->value, TypeEnum::WEBHOOK->value, self::TYPE_CONFIRM, self::TYPE_QUESTION => 80,
             default => throw new TopologyConfigException(sprintf('Unknown type for port [%s].', $nodeType)),
         };
     }

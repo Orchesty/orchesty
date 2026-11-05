@@ -5,9 +5,17 @@ namespace Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller;
 use Exception;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler;
+use Hanaboso\PipesFramework\UserTask\Exception\UserTaskAnswerException;
+use Hanaboso\PipesFramework\UserTask\Exception\UserTaskConflictException;
+use Hanaboso\PipesFramework\UserTask\Exception\UserTaskException;
+use Hanaboso\PipesFramework\UserTask\Exception\UserTaskUnauthorizedException;
+use Hanaboso\UserBundle\Document\UserAbstract;
 use Hanaboso\Utils\String\Json;
+use Hanaboso\Utils\System\ControllerUtils;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\NullLogger;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\Exception\JsonException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -27,8 +35,9 @@ final class UserTaskController
      * UserTaskController constructor.
      *
      * @param UserTaskHandler $handler
+     * @param Security        $security
      */
-    public function __construct(private readonly UserTaskHandler $handler)
+    public function __construct(private readonly UserTaskHandler $handler, private readonly Security $security)
     {
         $this->logger = new NullLogger();
     }
@@ -161,43 +170,109 @@ final class UserTaskController
         }
     }
 
+    /**
+     * @return Response
+     */
     #[Route('/pulse/user-tasks/pending', methods: ['GET'])]
-    public function pulsePendingAction(Request $request): Response
+    public function pulsePendingAction(): Response
     {
         try {
-            $identity = $request->headers->get('identity', '');
-            if ($identity === '') {
-                $identity = $request->query->getString('identity');
+            return $this->getResponse($this->handler->pendingConfirms($this->getIdentity()));
+        } catch (Throwable $t) {
+            return $this->getPulseErrorResponse($t);
+        }
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route('/pulse/user-task/{id}/accept', methods: ['POST'])]
+    public function pulseAcceptAction(string $id): Response
+    {
+        try {
+            return $this->getResponse($this->handler->pulseDecide($id, $this->getIdentity(), TRUE));
+        } catch (Throwable $t) {
+            return $this->getPulseErrorResponse($t);
+        }
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Response
+     */
+    #[Route('/pulse/user-task/{id}/reject', methods: ['POST'])]
+    public function pulseRejectAction(string $id): Response
+    {
+        try {
+            return $this->getResponse($this->handler->pulseDecide($id, $this->getIdentity(), FALSE));
+        } catch (Throwable $t) {
+            return $this->getPulseErrorResponse($t);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param string  $id
+     *
+     * @return Response
+     */
+    #[Route('/pulse/user-task/{id}/answer', methods: ['POST'])]
+    public function pulseAnswerAction(Request $request, string $id): Response
+    {
+        try {
+            $answer = $request->toArray()['answer'] ?? NULL;
+            if (!is_array($answer)) {
+                throw new UserTaskAnswerException('Request body must contain an "answer" object.');
             }
 
-            return $this->getResponse($this->handler->pendingConfirms($identity));
+            return $this->getResponse($this->handler->pulseAnswer($id, $answer, $this->getIdentity()));
+        } catch (JsonException | UserTaskAnswerException $e) {
+            return $this->getErrorResponse($e, 400, ControllerUtils::INVALID_REQUEST);
         } catch (Throwable $t) {
-            return $this->getErrorResponse($t);
+            return $this->getPulseErrorResponse($t);
         }
     }
 
-    #[Route('/pulse/user-task/{id}/accept', methods: ['POST'])]
-    public function pulseAcceptAction(Request $request, string $id): Response
+    /**
+     * A client-supplied identity is never trusted.
+     *
+     * @return string
+     * @throws UserTaskUnauthorizedException
+     */
+    private function getIdentity(): string
     {
-        try {
-            $identity = $request->headers->get('identity', '');
-
-            return $this->getResponse($this->handler->accept($id, NULL, NULL, $identity !== '' ? $identity : NULL));
-        } catch (Throwable $t) {
-            return $this->getErrorResponse($t);
+        $user = $this->security->getUser();
+        if (!$user instanceof UserAbstract || $user->getEmail() === '') {
+            throw new UserTaskUnauthorizedException('Not logged in.');
         }
+
+        return $user->getEmail();
     }
 
-    #[Route('/pulse/user-task/{id}/reject', methods: ['POST'])]
-    public function pulseRejectAction(Request $request, string $id): Response
+    /**
+     * @param Throwable $t
+     *
+     * @return Response
+     */
+    private function getPulseErrorResponse(Throwable $t): Response
     {
-        try {
-            $identity = $request->headers->get('identity', '');
-
-            return $this->getResponse($this->handler->reject($id, $identity !== '' ? $identity : NULL));
-        } catch (Throwable $t) {
-            return $this->getErrorResponse($t);
-        }
+        return match (TRUE) {
+            $t instanceof UserTaskUnauthorizedException => $this->getErrorResponse(
+                $t,
+                401,
+                ControllerUtils::NOT_LOGGED,
+            ),
+            $t instanceof UserTaskException => $this->getErrorResponse($t, 404, ControllerUtils::NOT_FOUND),
+            $t instanceof UserTaskConflictException => $this->getErrorResponse(
+                $t,
+                409,
+                ControllerUtils::INVALID_REQUEST,
+            ),
+            default => $this->getErrorResponse($t),
+        };
     }
 
 }

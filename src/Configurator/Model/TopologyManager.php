@@ -32,10 +32,10 @@ use Hanaboso\PipesFramework\Database\Document\TopologyApplication;
 use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Database\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
-use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
-use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\PipesFramework\UserTask\Document\UserTask;
 use Hanaboso\PipesFramework\UserTask\Enum\UserTaskEnum;
+use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
+use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\Utils\Cron\CronParser;
 use Hanaboso\Utils\Exception\EnumException;
@@ -522,30 +522,6 @@ class TopologyManager
     }
 
     /**
-     * Flip live parked messages (breakpoint / confirm) into trash without
-     * republishing. Active work must not stay parked after the topology is gone.
-     */
-    private function trashLiveUserTasks(Topology $topology, string $reason): void
-    {
-        /** @var UserTask[] $tasks */
-        $tasks = $this->dm->getRepository(UserTask::class)->findBy([
-            'topologyId' => $topology->getId(),
-            'type'       => [UserTaskEnum::USER_TASK->value, UserTaskEnum::CONFIRM->value],
-        ]);
-
-        foreach ($tasks as $task) {
-            try {
-                $task->setType(UserTaskEnum::TRASH->value);
-            } catch (EnumException) {
-                continue;
-            }
-            $headers = $task->getMessage()->getHeaders();
-            $headers['result-message'] = $reason;
-            $task->getMessage()->setHeaders($headers);
-        }
-    }
-
-    /**
      * @return mixed[]
      */
     public function getCronTopologies(): array
@@ -652,10 +628,6 @@ class TopologyManager
         return [];
     }
 
-    /*
-     * ----------------------------------------------- HELPERS -----------------------------------------------
-     */
-
     /**
      * @return string
      * @throws Exception
@@ -734,6 +706,41 @@ class TopologyManager
 
         return $topology;
     }
+
+
+
+
+    /**
+     * Flip live Pulse tasks (confirm / question) into trash without republishing: they would otherwise keep
+     * blocking the user's Pulse after the topology is gone. Breakpoint tasks keep their previous behaviour.
+     * A later Trash retry asks the user again (the bridge tells a retry from a decision by `pulse-decision`).
+     *
+     * @param Topology $topology
+     * @param string   $reason
+     */
+    private function trashLiveUserTasks(Topology $topology, string $reason): void
+    {
+        /** @var UserTask[] $tasks */
+        $tasks = $this->dm->getRepository(UserTask::class)->findBy([
+            'topologyId' => $topology->getId(),
+            'type'       => ['$in' => [UserTaskEnum::CONFIRM->value, UserTaskEnum::QUESTION->value]],
+        ]);
+
+        foreach ($tasks as $task) {
+            try {
+                $task->setType(UserTaskEnum::TRASH->value);
+            } catch (EnumException) {
+                continue;
+            }
+            $headers                   = $task->getMessage()->getHeaders();
+            $headers['result-message'] = $reason;
+            $task->getMessage()->setHeaders($headers);
+        }
+    }
+
+    /*
+     * ----------------------------------------------- HELPERS -----------------------------------------------
+     */
 
     /**
      * @return string
@@ -1083,10 +1090,15 @@ class TopologyManager
             );
         }
 
-        // `response` is a terminal node type handled by the bridge response
-        // worker. It is intentionally not part of the vendored TypeEnum, so it
-        // is accepted explicitly here in addition to the enum values.
-        if (!TypeEnum::tryFrom($dto->getPipesType()) && $dto->getPipesType() !== TopologyConfigFactory::TYPE_RESPONSE) {
+        // `response`, `confirm` and `question` are node types handled by dedicated bridge
+        // workers. They are intentionally not part of the vendored TypeEnum, so
+        // they are accepted explicitly here in addition to the enum values.
+        $nativeTypes = [
+            TopologyConfigFactory::TYPE_RESPONSE,
+            TopologyConfigFactory::TYPE_CONFIRM,
+            TopologyConfigFactory::TYPE_QUESTION,
+        ];
+        if (!TypeEnum::tryFrom($dto->getPipesType()) && !in_array($dto->getPipesType(), $nativeTypes, TRUE)) {
             throw new TopologyException(
                 sprintf('Node [%s] type [%s] not exist', $dto->getId(), $dto->getPipesType()),
                 TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST,
