@@ -28,6 +28,13 @@ const (
 	Header_ConfirmQuestion = "confirm-question"
 	Header_ConfirmDisplay  = "confirm-display"
 	Header_PulseEvent      = "pulse-event"
+	// Set by the backend only when a live Confirm / Question task is decided (accept / reject). A plain
+	// user-task-state without it is a Trash retry / reject, which must not count as the user's decision.
+	Header_PulseDecision = "pulse-decision"
+
+	Header_QuestionText   = "question-text"
+	Header_QuestionSchema = "question-schema"
+	Header_QuestionSkip   = "question-skip"
 
 	// Target queue from repeater
 	Header_RepeatQueue = "repeat-queue"

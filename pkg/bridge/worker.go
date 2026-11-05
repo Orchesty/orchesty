@@ -256,7 +256,7 @@ func (n *node) FollowerIdsForOutput(output string) string {
 }
 
 func (n *node) checkTrash(dto *model.ProcessMessage) model.ProcessResult {
-	if n.WorkerType() == enum.WorkerType_Confirm {
+	if n.WorkerType() == enum.WorkerType_Confirm || n.WorkerType() == enum.WorkerType_Question {
 		return dto.Ok()
 	}
 

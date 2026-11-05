@@ -15,6 +15,7 @@ type workerContainer struct {
 	userTask UserTask
 	response Response
 	confirm  Confirm
+	question Question
 }
 
 var workers workerContainer
@@ -33,6 +34,8 @@ func Get(name enum.WorkerType) (types.Worker, error) {
 		return workers.response, nil
 	case enum.WorkerType_Confirm:
 		return workers.confirm, nil
+	case enum.WorkerType_Question:
+		return workers.question, nil
 	}
 
 	return Null{}, fmt.Errorf("unknown worker type [%s]", name)
@@ -60,6 +63,13 @@ func InitializeWorkers(mongodb *mongo.MongoDb) {
 			client: client,
 		},
 		confirm: Confirm{
+			httpBeforeProcess: httpBeforeProcess{
+				client: client,
+			},
+			mongodb: mongodb,
+			client:  client,
+		},
+		question: Question{
 			httpBeforeProcess: httpBeforeProcess{
 				client: client,
 			},
