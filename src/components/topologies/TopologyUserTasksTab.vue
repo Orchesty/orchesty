@@ -40,6 +40,7 @@ const typeOptions = [
   { value: null, label: 'All types' },
   { value: 'userTask', label: 'Breakpoint' },
   { value: 'confirm', label: 'Confirm' },
+  { value: 'question', label: 'Question' },
 ]
 
 const columns: TableColumn[] = [
@@ -53,6 +54,7 @@ const columns: TableColumn[] = [
 
 const typeLabel = (type?: string) => {
   if (type === 'confirm') return 'Confirm'
+  if (type === 'question') return 'Question'
   if (type === 'userTask') return 'Breakpoint'
   return type || '—'
 }
@@ -66,7 +68,7 @@ const loadData = async () => {
     sortBy: sortField.value,
     sortOrder: sortDirection.value,
     topology: props.topologyId,
-    types: typeFilter.value ? [typeFilter.value] : ['userTask', 'confirm'],
+    types: typeFilter.value ? [typeFilter.value] : ['userTask', 'confirm', 'question'],
   }
 
   try {
@@ -125,6 +127,7 @@ const askReject = (row: TrashItem) => {
 
 const confirmAccept = async () => {
   if (!rowToAct.value) return
+  acceptConfirmOpen.value = false
   try {
     await approveTrashItem(rowToAct.value.id)
     showToast(rowToAct.value.type === 'confirm' ? 'Confirmed Yes' : 'Accepted', 'success')
@@ -139,9 +142,10 @@ const confirmAccept = async () => {
 
 const confirmReject = async () => {
   if (!rowToAct.value) return
+  rejectConfirmOpen.value = false
   try {
     await rejectTrashItem(rowToAct.value.id)
-    showToast(rowToAct.value.type === 'confirm' ? 'Confirmed No' : 'Rejected', 'success')
+    showToast(rowToAct.value.type === 'confirm' ? 'Confirmed No' : rejectedToast(rowToAct.value.type), 'success')
     loadData()
   } catch (error) {
     console.error('Reject failed:', error)
@@ -151,9 +155,24 @@ const confirmReject = async () => {
   }
 }
 
+// Question is answered in Pulse (free-text reply); here it can only be rejected.
+const rejectedToast = (type?: string) => (type === 'question' ? 'Question rejected' : 'Rejected')
+
 const rejectLabel = computed(() =>
   rowToAct.value?.type === 'confirm' ? 'Yes, choose No' : 'Yes, reject',
 )
+
+const rejectQuestion = computed(() => {
+  if (rowToAct.value?.type === 'confirm') return 'Send this confirmation down the No path?'
+  if (rowToAct.value?.type === 'question') return 'Reject this question? The run will not continue.'
+  return 'Reject this parked message?'
+})
+
+const typeBadgeClass = (type?: string) => {
+  if (type === 'confirm') return 'bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300'
+  if (type === 'question') return 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200'
+  return 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200'
+}
 </script>
 
 <template>
@@ -191,9 +210,7 @@ const rejectLabel = computed(() =>
       <template #cell-type="{ row }">
         <span
           class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-          :class="(row as TrashItem).type === 'confirm'
-            ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300'
-            : 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200'"
+          :class="typeBadgeClass((row as TrashItem).type)"
         >
           {{ typeLabel((row as TrashItem).type) }}
         </span>
@@ -220,6 +237,7 @@ const rejectLabel = computed(() =>
       <template #cell-actions="{ row }">
         <div class="flex items-center justify-end gap-1">
           <button
+            v-if="(row as TrashItem).type !== 'question'"
             type="button"
             class="inline-flex items-center rounded-lg px-2 py-1 text-xs font-medium text-primary-700 hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-900/30"
             @click="askAccept(row as TrashItem)"
@@ -258,9 +276,7 @@ const rejectLabel = computed(() =>
       @confirm="confirmReject"
     >
       <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-        {{ rowToAct?.type === 'confirm'
-          ? 'Send this confirmation down the No path?'
-          : 'Reject this parked message?' }}
+        {{ rejectQuestion }}
       </h3>
     </Confirm>
   </Card>

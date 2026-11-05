@@ -197,7 +197,7 @@ const getStartingPointUrlByName = (node: EditorNode): string => {
 }
 
 
-const EXCLUDED_PROCESS_TIME_LABELS = new Set(['event', 'webhook', 'cron', 'breakpoint', 'confirm'])
+const EXCLUDED_PROCESS_TIME_LABELS = new Set(['event', 'webhook', 'cron', 'breakpoint', 'confirm', 'question'])
 
 const isProcessTimeRelevant = (editorId: string): boolean => {
   const label = nodesData.value[editorId]?.label?.toLowerCase()
@@ -721,6 +721,7 @@ const labelCustomization: LabelCustomizationMap = {
     getActions: getBreakpointActions,
   },
   Confirm: {},
+  Question: {},
   Cron: {
     getFields: (node: EditorNode) => {
       const nodeData = nodesData.value[node.id]

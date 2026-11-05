@@ -64,7 +64,7 @@ const collectWebhookNodeNames = (): Set<string> => {
 // containing any unnamed instance so the user is forced to fix it now,
 // before a half-broken topology is published.
 const NAMED_REQUIRED_LABELS = new Set(['event', 'cron', 'webhook'])
-const ACTION_REQUIRED_LABELS = new Set(['confirm', 'connector', 'custom action', 'batch'])
+const ACTION_REQUIRED_LABELS = new Set(['confirm', 'question', 'connector', 'custom action', 'batch'])
 
 interface UnnamedNode { id: string; label: string }
 
@@ -105,6 +105,7 @@ const labelInstruction = (label: string): string => {
     case 'webhook':
       return 'Double-click the node (or right-click → Pick subscription) and choose an event from the picker.'
     case 'confirm':
+    case 'question':
     case 'connector':
     case 'custom action':
     case 'batch':
