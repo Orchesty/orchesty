@@ -13,6 +13,7 @@ use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Database\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\UserTask\Document\UserTask;
+use Hanaboso\PipesFramework\UserTask\Enum\UserTaskEnum;
 use Hanaboso\PipesFramework\UserTask\Exception\UserTaskException;
 use Hanaboso\PipesFramework\UserTask\Repository\UserTaskRepository;
 use Hanaboso\Utils\Date\DateTimeUtils;
@@ -137,8 +138,10 @@ final readonly class UserTaskManager
      *
      * @throws MongoDBException
      */
-    public function accept(UserTask $userTask): void
+    public function accept(UserTask $userTask, ?string $identity = NULL): void
     {
+        $this->assertConfirmIdentity($userTask, $identity);
+
         /** @var Topology|null $topology */
         $topology = $this->dm->getRepository(Topology::class)->find($userTask->getTopologyId());
         $deleted  = $topology == NULL || $topology->isDeleted();
@@ -176,12 +179,44 @@ final readonly class UserTaskManager
      *
      * @throws MongoDBException
      */
-    public function reject(UserTask $userTask, bool $deletedTopology): void
+    public function reject(UserTask $userTask, bool $deletedTopology, ?string $identity = NULL): void
     {
+        $this->assertConfirmIdentity($userTask, $identity);
+
         if (!$deletedTopology) {
             $this->publish($userTask, FALSE);
         }
         $this->delete($userTask);
+    }
+
+    /**
+     * Pulse-scoped confirm: only the identity that started the run may decide.
+     * Admin / User Tasks tab omit $identity and skip the check.
+     */
+    public function assertConfirmIdentity(UserTask $userTask, ?string $identity): void
+    {
+        if ($userTask->getType() !== UserTaskEnum::CONFIRM->value) {
+            return;
+        }
+        if ($identity === NULL) {
+            return;
+        }
+        if ($userTask->getIdentity() === NULL || $userTask->getIdentity() !== $identity) {
+            throw new UserTaskException(
+                sprintf('UserTask with id [%s] has been not found', $userTask->getId()),
+            );
+        }
+    }
+
+    /**
+     * @return UserTask[]
+     */
+    public function findPendingConfirmsByIdentity(string $identity): array
+    {
+        return $this->userTaskRepository->findBy([
+            'type'     => UserTaskEnum::CONFIRM->value,
+            'identity' => $identity,
+        ]);
     }
 
     /**
@@ -229,21 +264,48 @@ final readonly class UserTaskManager
      * @param string|null $newTopologyId
      * @param string|null $newNodeId
      *
-     * @return void
+     * @return bool
      */
-    public function retargetUserTask(UserTask $userTask, ?string $newTopologyId, ?string $newNodeId): void
+    public function retargetUserTask(UserTask $userTask, ?string $newTopologyId, ?string $newNodeId): bool
     {
-        if ($newTopologyId && $newNodeId) {
-            $newTopology = $this->topologyRepository->getTopologyById($newTopologyId);
-            $newNode     = $this->nodeRepository->getNodeById($newNodeId);
-            if ($userTask->getTopologyName() === $newTopology->getName() &&
-                $userTask->getNodeName() === $newNode->getName()) {
-                $userTask->setTopologyId($newTopologyId); // Used for deleted check
-                $userTask->setReturnExchange(
-                    str_replace($userTask->getNodeId(), $newNodeId, $userTask->getReturnExchange()),
-                );
-            }
+        if (!$newTopologyId || !$newNodeId) {
+            return FALSE;
         }
+
+        $newTopology = $this->topologyRepository->getTopologyById($newTopologyId);
+        $newNode     = $this->nodeRepository->getNodeById($newNodeId);
+        if ($userTask->getTopologyName() === $newTopology->getName() &&
+            $userTask->getNodeName() === $newNode->getName()) {
+            $userTask->setTopologyId($newTopologyId); // Used for deleted check
+            $userTask->setReturnExchange(
+                str_replace($userTask->getNodeId(), $newNodeId, $userTask->getReturnExchange()),
+            );
+
+            return FALSE;
+        }
+
+        $this->trashWithoutPublish($userTask, 'Node cannot be retargeted');
+
+        return TRUE;
+    }
+
+    /**
+     * Flip a live parked message into trash without republishing into Rabbit.
+     *
+     * @param UserTask $userTask
+     * @param string   $reason
+     */
+    public function trashWithoutPublish(UserTask $userTask, string $reason): void
+    {
+        if (!in_array($userTask->getType(), [UserTaskEnum::USER_TASK->value, UserTaskEnum::CONFIRM->value], TRUE)) {
+            return;
+        }
+
+        $userTask->setType(UserTaskEnum::TRASH->value);
+        $headers = $userTask->getMessage()->getHeaders();
+        $headers['result-message'] = $reason;
+        $userTask->getMessage()->setHeaders($headers);
+        $this->dm->flush();
     }
 
     /**

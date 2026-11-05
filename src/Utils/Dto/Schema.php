@@ -24,6 +24,13 @@ final class Schema
     private array $sequences = [];
 
     /**
+     * Optional source-output key (yes/no) per source→target edge.
+     *
+     * @var array<string, array<string, string>>
+     */
+    private array $sequenceOutputs = [];
+
+    /**
      * @var string[]
      */
     private array $startNode = [];
@@ -52,14 +59,29 @@ final class Schema
     /**
      * @param string $source
      * @param string $target
+     * @param string $output
      *
      * @return Schema
      */
-    public function addSequence(string $source, string $target): self
+    public function addSequence(string $source, string $target, string $output = ''): self
     {
         $this->sequences[$source][] = $target;
+        if ($output !== '') {
+            $this->sequenceOutputs[$source][$target] = $output;
+        }
 
         return $this;
+    }
+
+    /**
+     * @param string $source
+     * @param string $target
+     *
+     * @return string
+     */
+    public function getSequenceOutput(string $source, string $target): string
+    {
+        return $this->sequenceOutputs[$source][$target] ?? '';
     }
 
     /**

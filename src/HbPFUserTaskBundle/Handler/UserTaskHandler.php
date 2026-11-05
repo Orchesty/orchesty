@@ -110,11 +110,11 @@ final readonly class UserTaskHandler
      * @throws MappingException
      * @throws MongoDBException
      */
-    public function accept(string $id, ?string $topologyId, ?string $nodeId): array
+    public function accept(string $id, ?string $topologyId, ?string $nodeId, ?string $identity = NULL): array
     {
         $userTask = $this->manager->get($id);
         $this->manager->retargetUserTask($userTask, $topologyId, $nodeId);
-        $this->manager->accept($userTask);
+        $this->manager->accept($userTask, $identity);
 
         return [];
     }
@@ -147,7 +147,7 @@ final readonly class UserTaskHandler
      * @throws MappingException
      * @throws MongoDBException
      */
-    public function reject(string $id): array
+    public function reject(string $id, ?string $identity = NULL): array
     {
         $userTask = $this->manager->get($id);
 
@@ -155,9 +155,20 @@ final readonly class UserTaskHandler
         $topology = $this->dm->getRepository(Topology::class)->find($userTask->getTopologyId());
         $deleted  = $topology == NULL || $topology->isDeleted();
 
-        $this->manager->reject($userTask, $deleted);
+        $this->manager->reject($userTask, $deleted, $identity);
 
         return [];
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function pendingConfirms(string $identity): array
+    {
+        return array_map(
+            static fn (UserTask $task): array => $task->toArray(),
+            $this->manager->findPendingConfirmsByIdentity($identity),
+        );
     }
 
     /**

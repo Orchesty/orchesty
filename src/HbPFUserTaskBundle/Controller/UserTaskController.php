@@ -161,4 +161,43 @@ final class UserTaskController
         }
     }
 
+    #[Route('/pulse/user-tasks/pending', methods: ['GET'])]
+    public function pulsePendingAction(Request $request): Response
+    {
+        try {
+            $identity = $request->headers->get('identity', '');
+            if ($identity === '') {
+                $identity = $request->query->getString('identity');
+            }
+
+            return $this->getResponse($this->handler->pendingConfirms($identity));
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t);
+        }
+    }
+
+    #[Route('/pulse/user-task/{id}/accept', methods: ['POST'])]
+    public function pulseAcceptAction(Request $request, string $id): Response
+    {
+        try {
+            $identity = $request->headers->get('identity', '');
+
+            return $this->getResponse($this->handler->accept($id, NULL, NULL, $identity !== '' ? $identity : NULL));
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t);
+        }
+    }
+
+    #[Route('/pulse/user-task/{id}/reject', methods: ['POST'])]
+    public function pulseRejectAction(Request $request, string $id): Response
+    {
+        try {
+            $identity = $request->headers->get('identity', '');
+
+            return $this->getResponse($this->handler->reject($id, $identity !== '' ? $identity : NULL));
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t);
+        }
+    }
+
 }

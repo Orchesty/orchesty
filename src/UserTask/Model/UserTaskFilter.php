@@ -32,6 +32,10 @@ final class UserTaskFilter extends GridFilterAbstract
         UserTask::TOPOLOGY_NAME  => 1,
         UserTask::TYPE           => 1,
         UserTask::UPDATED        => 1,
+        UserTask::IDENTITY       => 1,
+        UserTask::QUESTION       => 1,
+        UserTask::DISPLAY        => 1,
+        UserTask::REPLY_ID       => 1,
     ];
 
     /**
@@ -61,6 +65,7 @@ final class UserTaskFilter extends GridFilterAbstract
             UserTask::TYPE                   => UserTask::TYPE,
             UserTask::UPDATED                => UserTask::UPDATED,
             UserTask::USER                   => UserTask::USER,
+            UserTask::IDENTITY               => UserTask::IDENTITY,
         ];
     }
 

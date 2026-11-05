@@ -37,6 +37,9 @@ final class TopologySchemaUtils
     private const string RESPONSE_LABEL = 'Response';
     private const string RESPONSE_TYPE  = 'response';
 
+    private const string CONFIRM_LABEL = 'Confirm';
+    private const string CONFIRM_TYPE  = 'confirm';
+
     private const string BPMN_INCOMING = 'bpmn:incoming';
     private const string BPMN_OUTGOING = 'bpmn:outgoing';
 
@@ -224,6 +227,14 @@ final class TopologySchemaUtils
                 $name      = $node['name'] ?? self::RESPONSE_TYPE;
                 $sdkHost   = '';
                 $app       = '';
+            } else if ($label === self::CONFIRM_LABEL || ($action['type'] ?? '') === self::CONFIRM_TYPE) {
+                // Confirm is a square worker node (not a hexagon breakpoint).
+                $handler    = self::BPMN_TASK;
+                $pipesType  = self::CONFIRM_TYPE;
+                $name       = $action['name'] ?? ($node['name'] ?? self::CONFIRM_TYPE);
+                $workerName = $action['worker'] ?? '';
+                $sdkHost    = $sdkUrlMap[$workerName] ?? '';
+                $app        = $action['app'] ?? '';
             } else if ($shape === 'circle') {
                 $handler   = self::getJsonCircleHandler($label);
                 $pipesType = self::getJsonEventPipesType($label);
@@ -306,7 +317,11 @@ final class TopologySchemaUtils
         }
 
         foreach ($connections as $connection) {
-            $schema->addSequence($connection['from'], $connection['to']);
+            $schema->addSequence(
+                $connection['from'],
+                $connection['to'],
+                (string) ($connection['sourceOutput'] ?? ''),
+            );
         }
 
         return $schema;

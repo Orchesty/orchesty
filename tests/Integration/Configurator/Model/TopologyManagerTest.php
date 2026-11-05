@@ -8,6 +8,8 @@ use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\MongoDataGrid\GridRequestDto;
+use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
@@ -739,7 +741,11 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      */
     public function testUnPublishTopology(): void
     {
-        $topology = $this->manager->unPublishTopology(new Topology());
+        $topology = new Topology();
+        $this->dm->persist($topology);
+        $this->dm->flush();
+
+        $topology = $this->manager->unPublishTopology($topology);
 
         self::assertSame(TopologyStatusEnum::DRAFT->value, $topology->getVisibility());
     }
@@ -940,6 +946,28 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
         self::assertNotSame($topology->getId(), $result->getId());
         self::assertEquals(7, count($nodes));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testPulseRunKeyIsCreatedOnceAndHidden(): void
+    {
+        $this->pfd((new ApiToken())->setUser('orchesty')->setKey('legacy')->setScopes(['applications:all']));
+
+        $key = $this->manager->getPulseRunKey();
+        self::assertSame($key, $this->manager->getPulseRunKey());
+        self::assertSame(64, strlen($key));
+
+        /** @var ApiToken[] $tokens */
+        $tokens = $this->dm->getRepository(ApiToken::class)->findBy(['key' => $key]);
+        self::assertCount(1, $tokens);
+        self::assertSame([ApiToken::PULSE_INTERNAL_SCOPE], $tokens[0]->getScopes());
+        self::assertSame('orchesty', $tokens[0]->getUser());
+
+        self::assertSame([], $this->manager->getHeadersForTopologyRunRequest());
+        $listed = self::getContainer()->get('hbpf.configurator.manager.api_token')->getAllBy(new GridRequestDto([]));
+        self::assertSame(['legacy'], array_column($listed, 'key'));
     }
 
     /**

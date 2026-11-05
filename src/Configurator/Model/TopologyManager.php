@@ -34,6 +34,8 @@ use Hanaboso\PipesFramework\Database\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
 use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
+use Hanaboso\PipesFramework\UserTask\Document\UserTask;
+use Hanaboso\PipesFramework\UserTask\Enum\UserTaskEnum;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\Utils\Cron\CronParser;
 use Hanaboso\Utils\Exception\EnumException;
@@ -55,6 +57,8 @@ class TopologyManager
     use UrlBuilderTrait;
 
     public const string DEFAULT_SCHEME = '<?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn"><bpmn:process id="%s" isExecutable="false" /><bpmndi:BPMNDiagram id="BPMNDiagram_1"><bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1" /></bpmndi:BPMNDiagram></bpmn:definitions>';
+
+    public const string PULSE_KEY_HEADER = 'pulse-key';
 
     private const string RUN_ENDPOINT                   = 'topologies/%s/nodes/%s/run?uiRun=true';
     private const string RUN_ENDPOINT_BY_NAME_WITH_USER = 'topologies/%s/nodes/%s/user/%s/run-by-name';
@@ -429,6 +433,7 @@ class TopologyManager
      */
     public function unPublishTopology(Topology $topology): Topology
     {
+        $this->trashLiveUserTasks($topology, 'Topology unpublished');
         $topology->setVisibility(TopologyStatusEnum::DRAFT->value);
         $this->dm->flush();
 
@@ -488,7 +493,9 @@ class TopologyManager
             if (!empty($orig->getNext())) {
                 $nexts = $orig->getNext();
                 foreach ($nexts as $next) {
-                    $copy->addNext(EmbedNode::from($nodesMap[$next->getId()]['copy']));
+                    $embed = EmbedNode::from($nodesMap[$next->getId()]['copy']);
+                    $embed->setOutput($next->getOutput());
+                    $copy->addNext($embed);
                 }
             }
         }
@@ -508,9 +515,34 @@ class TopologyManager
      */
     public function deleteTopology(Topology $topology): void
     {
+        $this->trashLiveUserTasks($topology, 'Topology deleted');
         $this->removeNodesByTopology($topology);
         $topology->setDeleted(TRUE);
         $this->dm->flush();
+    }
+
+    /**
+     * Flip live parked messages (breakpoint / confirm) into trash without
+     * republishing. Active work must not stay parked after the topology is gone.
+     */
+    private function trashLiveUserTasks(Topology $topology, string $reason): void
+    {
+        /** @var UserTask[] $tasks */
+        $tasks = $this->dm->getRepository(UserTask::class)->findBy([
+            'topologyId' => $topology->getId(),
+            'type'       => [UserTaskEnum::USER_TASK->value, UserTaskEnum::CONFIRM->value],
+        ]);
+
+        foreach ($tasks as $task) {
+            try {
+                $task->setType(UserTaskEnum::TRASH->value);
+            } catch (EnumException) {
+                continue;
+            }
+            $headers = $task->getMessage()->getHeaders();
+            $headers['result-message'] = $reason;
+            $task->getMessage()->setHeaders($headers);
+        }
     }
 
     /**
@@ -623,6 +655,33 @@ class TopologyManager
     /*
      * ----------------------------------------------- HELPERS -----------------------------------------------
      */
+
+    /**
+     * @return string
+     * @throws Exception
+     * @throws MongoDBException
+     */
+    public function getPulseRunKey(): string
+    {
+        /** @var ApiToken|null $apiToken */
+        $apiToken = $this->dm->getRepository(ApiToken::class)->findOneBy(
+            [
+                ApiToken::SCOPES => ApiToken::PULSE_INTERNAL_SCOPE,
+                ApiToken::USER   => ApplicationController::SYSTEM_USER,
+            ],
+        );
+
+        if (!$apiToken) {
+            $apiToken = (new ApiToken())
+                ->setUser(ApplicationController::SYSTEM_USER)
+                ->setKey(bin2hex(random_bytes(32)))
+                ->setScopes([ApiToken::PULSE_INTERNAL_SCOPE]);
+            $this->dm->persist($apiToken);
+            $this->dm->flush();
+        }
+
+        return $apiToken->getKey();
+    }
 
     /**
      * @param Topology $topology
@@ -805,7 +864,9 @@ class TopologyManager
         foreach ($dto->getSequences() as $source => $targets) {
             foreach ($targets as $target) {
                 if (isset($nodes[$source]) && isset($nodes[$target])) {
-                    $nodes[$source]->addNext(EmbedNode::from($nodes[$target]));
+                    $next = EmbedNode::from($nodes[$target]);
+                    $next->setOutput($dto->getSequenceOutput((string) $source, (string) $target));
+                    $nodes[$source]->addNext($next);
                 }
             }
         }
@@ -838,7 +899,9 @@ class TopologyManager
             $nodes[$source]->setNext([]);
             foreach ($targets as $target) {
                 if (isset($nodes[$source]) && $nodes[$target]) {
-                    $nodes[$source]->addNext(EmbedNode::from($nodes[$target]));
+                    $next = EmbedNode::from($nodes[$target]);
+                    $next->setOutput($dto->getSequenceOutput((string) $source, (string) $target));
+                    $nodes[$source]->addNext($next);
                 }
             }
         }

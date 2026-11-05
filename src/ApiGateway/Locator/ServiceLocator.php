@@ -481,6 +481,7 @@ final class ServiceLocator implements LoggerAwareInterface
             NodeImplementationEnum::BATCH->value     => 'batch/list',
             NodeImplementationEnum::CONNECTOR->value => 'connector/list',
             NodeImplementationEnum::CUSTOM->value    => 'custom-node/list',
+            NodeImplementationEnum::CONFIRM->value   => 'confirm/list',
         ];
 
         $n = [];

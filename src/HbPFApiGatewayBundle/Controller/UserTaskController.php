@@ -130,4 +130,30 @@ final class UserTaskController extends AbstractController
         );
     }
 
+    #[Route('/pulse/user-tasks/pending', methods: ['GET'])]
+    public function pulsePendingAction(): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::pulsePendingAction',
+        );
+    }
+
+    #[Route('/pulse/user-task/{id}/accept', methods: ['POST'])]
+    public function pulseAcceptAction(string $id): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::pulseAcceptAction',
+            ['id' => $id],
+        );
+    }
+
+    #[Route('/pulse/user-task/{id}/reject', methods: ['POST'])]
+    public function pulseRejectAction(string $id): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::pulseRejectAction',
+            ['id' => $id],
+        );
+    }
+
 }

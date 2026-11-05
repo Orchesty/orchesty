@@ -51,9 +51,13 @@ use Hanaboso\Utils\String\Json;
     keys: ['created' => 'desc', 'message.headers.node-id' => 'asc', 'message.headers.topology-id' => 'asc', 'message.headers.result-message' => 'asc'],
     name: 'IK_userTask_created_messageHeadersNodeId_messageHeadersTopologyId_messageHeadersResultMessage',
 )]
-#[ODM\Index( // Used by Limiter (pkg/metrics/client.go)
+    #[ODM\Index( // Used by Limiter (pkg/metrics/client.go)
     keys: ['type' => 'asc', 'created' => 'asc', 'message.headers.node-id' => 'asc', 'message.headers.node-name' => 'asc', 'message.headers.user' => 'asc', 'message.headers.topology-id' => 'asc', 'message.headers.application' => 'asc'],
     name: 'IK_userTask_type_created_messageHeadersNodeId_messageHeadersNodeName_messageHeadersUser_messageHeadersTopologyId_messageHeadersApplication',
+)]
+    #[ODM\Index(
+    keys: ['type' => 'asc', 'identity' => 'asc', 'created' => 'desc'],
+    name: 'IK_userTask_type_identity_created',
 )]
 #[ODM\HasLifecycleCallbacks]
 class UserTask
@@ -80,6 +84,10 @@ class UserTask
     public const string CREATED            = 'created';
     public const string UPDATED            = 'updated';
     public const string USER               = 'user';
+    public const string IDENTITY           = 'identity';
+    public const string QUESTION           = 'question';
+    public const string DISPLAY            = 'display';
+    public const string REPLY_ID           = 'replyId';
 
     /**
      * @var string
@@ -146,6 +154,30 @@ class UserTask
      */
     #[ODM\Field(type: 'string')]
     private ?string $user = NULL;
+
+    /**
+     * @var string|null
+     */
+    #[ODM\Field(type: 'string')]
+    private ?string $identity = NULL;
+
+    /**
+     * @var string
+     */
+    #[ODM\Field(type: 'string')]
+    private string $question = '';
+
+    /**
+     * @var mixed[]
+     */
+    #[ODM\Field(type: 'hash')]
+    private array $display = [];
+
+    /**
+     * @var string
+     */
+    #[ODM\Field(type: 'string')]
+    private string $replyId = '';
 
     /**
      * UserTask constructor.
@@ -418,6 +450,60 @@ class UserTask
         return $this;
     }
 
+    public function getIdentity(): ?string
+    {
+        return $this->identity;
+    }
+
+    public function setIdentity(?string $identity): self
+    {
+        $this->identity = $identity;
+
+        return $this;
+    }
+
+    public function getQuestion(): string
+    {
+        return $this->question;
+    }
+
+    public function setQuestion(string $question): self
+    {
+        $this->question = $question;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getDisplay(): array
+    {
+        return $this->display;
+    }
+
+    /**
+     * @param mixed[] $display
+     */
+    public function setDisplay(array $display): self
+    {
+        $this->display = $display;
+
+        return $this;
+    }
+
+    public function getReplyId(): string
+    {
+        return $this->replyId;
+    }
+
+    public function setReplyId(string $replyId): self
+    {
+        $this->replyId = $replyId;
+
+        return $this;
+    }
+
     /**
      * @return mixed[]
      */
@@ -436,6 +522,10 @@ class UserTask
             self::TYPE           => $this->type,
             self::UPDATED        => $this->updated->format(DateTimeUtils::DATE_TIME_UTC),
             self::USER           => $this->getUser(),
+            self::IDENTITY       => $this->getIdentity(),
+            self::QUESTION       => $this->getQuestion(),
+            self::DISPLAY        => $this->getDisplay(),
+            self::REPLY_ID       => $this->getReplyId(),
         ];
     }
 
