@@ -103,8 +103,9 @@ func (p *NodeConfig) GetTopologyJson(t *Topology, nodes []Node) (TopologyJson, e
 		}
 		for j, follower := range node.Next {
 			nodeJson.Followers[j] = NodeJsonFollower{
-				Id:   follower.ID,
-				Name: follower.Name,
+				Id:     follower.ID,
+				Name:   follower.Name,
+				Output: follower.Output,
 			}
 		}
 

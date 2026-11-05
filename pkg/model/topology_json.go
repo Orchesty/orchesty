@@ -66,8 +66,9 @@ type NodeJson struct {
 }
 
 type NodeJsonFollower struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
+	Id     string `json:"id"`
+	Name   string `json:"name"`
+	Output string `json:"output,omitempty"`
 }
 
 type NodeSettingsJson struct {
@@ -101,8 +102,9 @@ type TopologyBridgeFaucetSettingsJSON struct {
 
 // NodeNext NodeNext
 type NodeNext struct {
-	ID   string `bson:"id"`
-	Name string `bson:"name"`
+	ID     string `bson:"id"`
+	Name   string `bson:"name"`
+	Output string `bson:"output,omitempty"`
 }
 
 // Node Node
