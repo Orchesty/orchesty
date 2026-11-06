@@ -206,6 +206,7 @@ func TestClient_Create(t *testing.T) {
 							},
 						},
 					},
+					TerminationGracePeriodSeconds: 100,
 				},
 			},
 		},
@@ -802,6 +803,30 @@ func TestClient_GenerateFails(t *testing.T) {
 
 		require.NotNil(t, err)
 		require.Equal(t, "failed generating topology. Reason: error creating topology json. Reason: missing nodes", err.Error())
+	})
+
+	t.Run("Check that the deployment gets the bridge drain time as grace period", func(t *testing.T) {
+		ts, err := NewTopologyService(nodeConfig, configGenerator, testDb{
+			mockGetTopology: func(id string) (topology *model.Topology, err error) {
+				return getMockTopology(), nil
+			},
+			mockGetTopologyNodes: func(id string) (nodes []model.Node, err error) {
+				return getTestNodes(), nil
+			},
+		}, topologyID)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		out, err := ts.CreateKubernetesDeployment()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		var depl model.Deployment
+		require.Nil(t, yaml.Unmarshal(out, &depl))
+		require.Equal(t, nodeConfig.StopGracePeriodSec(), depl.Spec.Template.Spec.TerminationGracePeriodSeconds)
+		require.Greater(t, depl.Spec.Template.Spec.TerminationGracePeriodSeconds, 30)
 	})
 
 	t.Run("Check that generate doesnt fails on creating existing config map", func(t *testing.T) {

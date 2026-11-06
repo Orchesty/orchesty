@@ -167,6 +167,7 @@ func (ts *TopologyService) CreateKubernetesDeployment() ([]byte, error) {
 							},
 						},
 					},
+					TerminationGracePeriodSeconds: ts.nodeConfig.StopGracePeriodSec(),
 				},
 			},
 		},
@@ -275,6 +276,7 @@ func (ts *TopologyService) getDockerServices(mode model.Adapter) (map[string]*mo
 	}
 
 	memory := ts.generatorConfig.BridgeLimitMemory
+	stopGracePeriod := fmt.Sprintf("%ds", ts.nodeConfig.StopGracePeriodSec())
 
 	cpus := 0.0
 	if ts.generatorConfig.BridgeLimitCPU != "" {
@@ -296,6 +298,8 @@ func (ts *TopologyService) getDockerServices(mode model.Adapter) (map[string]*mo
 			MemLimit:    memory,
 			Cpus:        cpus,
 			Restart:     "on-failure",
+
+			StopGracePeriod: stopGracePeriod,
 		}
 	} else {
 		var node model.Node
@@ -310,6 +314,8 @@ func (ts *TopologyService) getDockerServices(mode model.Adapter) (map[string]*mo
 				MemLimit:    memory,
 				Cpus:        cpus,
 				Restart:     "on-failure",
+
+				StopGracePeriod: stopGracePeriod,
 			}
 		}
 	}
