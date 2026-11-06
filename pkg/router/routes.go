@@ -44,6 +44,47 @@ func GetDefaultRoutes() Routes {
 			HandlerFunc: HandleClear(HandleRunByApplication),
 		},
 		Route{
+			Name:        "Run topology by ID and wait for result",
+			Method:      "POST",
+			Pattern:     "/topologies/{topology}/nodes/{node}/run-sync",
+			Protected:   true,
+			HandlerFunc: HandleClear(HandleRunSyncByID),
+		},
+		Route{
+			Name:        "Run topology by ID with user and wait for result",
+			Method:      "POST",
+			Pattern:     "/topologies/{topology}/nodes/{node}/user/{user}/run-sync",
+			Protected:   true,
+			HandlerFunc: HandleClear(HandleRunSyncByID),
+		},
+		Route{
+			Name:        "Run topology by name and wait for result",
+			Method:      "POST",
+			Pattern:     "/topologies/{topology}/nodes/{node}/run-sync-by-name",
+			Protected:   true,
+			HandlerFunc: HandleClear(HandleRunSyncByName),
+		},
+		Route{
+			Name:        "Run topology by name with user and wait for result",
+			Method:      "POST",
+			Pattern:     "/topologies/{topology}/nodes/{node}/user/{user}/run-sync-by-name",
+			Protected:   true,
+			HandlerFunc: HandleClear(HandleRunSyncByName),
+		},
+		Route{
+			Name:        "Run topology by application (webhook) and wait for result",
+			Method:      "POST",
+			Pattern:     "/topologies/{topology}/nodes/{node}/token/{token}/run-sync",
+			HandlerFunc: HandleClear(HandleRunSyncByApplication),
+		},
+		Route{
+			// Not protected: the bridge does not send an api key; the random reply id is the capability
+			Name:        "Reply callback of a run-sync request",
+			Method:      "POST",
+			Pattern:     "/sync-reply/{replyId}",
+			HandlerFunc: HandleClear(HandleSyncReply),
+		},
+		Route{
 			Name:        "Invalidate topology cache",
 			Method:      "POST",
 			Pattern:     "/topologies/{topology}/invalidate-cache",
