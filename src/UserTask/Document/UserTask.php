@@ -60,10 +60,6 @@ use stdClass;
         keys: ['type' => 'asc', 'identity' => 'asc', 'created' => 'desc'],
         name: 'IK_userTask_type_identity_created',
     )]
-    #[ODM\Index( // Used by the MCP trash tools: newest first with a stable tie-breaker for paging
-        keys: ['type' => 'asc', 'created' => 'desc', '_id' => 'desc'],
-        name: 'IK_userTask_type_created_id',
-    )]
 #[ODM\HasLifecycleCallbacks]
 class UserTask
 {
