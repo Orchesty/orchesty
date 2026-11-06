@@ -1,26 +1,22 @@
 package worker
 
 import (
-	"bytes"
-	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/hanaboso/pipes/bridge/pkg/bridge/types"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
 	"github.com/hanaboso/pipes/bridge/pkg/mongo"
-	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 const (
-	confirmOutputYes     = "yes"
-	confirmOutputNo      = "no"
-	pulseCallbackTimeout = 15 * time.Second
+	confirmOutputYes = "yes"
+	confirmOutputNo  = "no"
 )
 
 // userTaskStore is the slice of *mongo.MongoDb the pulse user-task workers
@@ -67,6 +63,9 @@ func (c Confirm) BeforeProcess(node types.Node, dto *model.ProcessMessage) model
 	}
 
 	if result := callSdkKeepingBody(c.httpBeforeProcess, node, dto); !result.IsOk() {
+		return result
+	}
+	if result, done := sdkDidNotSucceed(dto); done {
 		return result
 	}
 
@@ -119,7 +118,7 @@ func (c Confirm) notifyConfirm(dto *model.ProcessMessage, taskID, question, disp
 		event.Data = json.RawMessage("{}")
 	}
 
-	postPulseEvent(c.client, dto, "confirm", event)
+	PostReplyEvent(c.client, dto, "confirm", event)
 }
 
 // pulseIdentity reports whether the run was started by Pulse on behalf of a
@@ -146,46 +145,24 @@ func callSdkKeepingBody(h httpBeforeProcess, node types.Node, dto *model.Process
 	return result
 }
 
+// An unknown code is trashed: passing it on would broadcast to every output.
+func sdkDidNotSucceed(dto *model.ProcessMessage) (model.ProcessResult, bool) {
+	code := dto.GetIntHeaderOrDefault(enum.Header_ResultCode, enum.ResultCode_Ok)
+	switch code {
+	case enum.ResultCode_Ok, enum.ResultCode_ForwardToQueue:
+		return dto.Ok(), false
+	case enum.ResultCode_Repeat, enum.ResultCode_LimitExceeded, enum.ResultCode_StopAndFail, enum.ResultCode_DoNotContinue:
+		return dto.Ok(), true
+	default:
+		return dto.Trash(fmt.Errorf("unexpected result code %d before asking the user", code)), true
+	}
+}
+
 // stopRun ends the run successfully without publishing to any follower.
 func stopRun(dto *model.ProcessMessage) model.ProcessResult {
 	dto.SetHeader(enum.Header_ResultCode, strconv.Itoa(enum.ResultCode_DoNotContinue))
 
 	return dto.Ok()
-}
-
-// postPulseEvent POSTs a JSON event to the run's reply-to callback (best effort).
-func postPulseEvent(client http.Client, dto *model.ProcessMessage, kind string, event any) {
-	replyTo := dto.GetHeaderOrDefault(enum.Header_ReplyTo, "")
-	if replyTo == "" {
-		return
-	}
-
-	body, err := json.Marshal(event)
-	if err != nil {
-		log.Error().EmbedObject(dto).Err(err).Msgf("%s: failed to encode callback", kind)
-		return
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), pulseCallbackTimeout)
-	defer cancel()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, replyTo, bytes.NewReader(body))
-	if err != nil {
-		log.Error().EmbedObject(dto).Err(err).Msgf("%s: failed to build callback request", kind)
-		return
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set(enum.Header_PulseEvent, kind)
-	if replyID := dto.GetHeaderOrDefault(enum.Header_ReplyId, ""); replyID != "" {
-		req.Header.Set(enum.Header_ReplyId, replyID)
-	}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Error().EmbedObject(dto).Err(err).Msgf("%s: callback POST to %s failed", kind, replyTo)
-		return
-	}
-	defer resp.Body.Close()
 }
 
 func FollowerIdsForOutput(followers []model.Follower, output string) string {

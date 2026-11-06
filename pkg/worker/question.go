@@ -55,6 +55,9 @@ func (q Question) BeforeProcess(node types.Node, dto *model.ProcessMessage) mode
 	if result := callSdkKeepingBody(q.httpBeforeProcess, node, dto); !result.IsOk() {
 		return result
 	}
+	if result, done := sdkDidNotSucceed(dto); done {
+		return result
+	}
 
 	question := dto.GetHeaderOrDefault(enum.Header_QuestionText, "")
 	schemaRaw := dto.GetHeaderOrDefault(enum.Header_QuestionSchema, "")
@@ -84,7 +87,7 @@ func (q Question) BeforeProcess(node types.Node, dto *model.ProcessMessage) mode
 		return dto.Error(storeErr)
 	}
 
-	postPulseEvent(q.client, dto, "question", pulseQuestionEvent{
+	PostReplyEvent(q.client, dto, "question", pulseQuestionEvent{
 		Kind:     "question",
 		TaskID:   taskID.Hex(),
 		Question: question,

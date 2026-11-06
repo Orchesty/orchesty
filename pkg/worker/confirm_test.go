@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
+	"github.com/hanaboso/pipes/bridge/pkg/model"
 	"github.com/hanaboso/pipes/bridge/pkg/mongo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -84,6 +85,43 @@ func TestConfirm_TrashRetry_ParksAgain(t *testing.T) {
 	assert.Equal(t, 1, store.calls)
 	assert.Equal(t, "", dto.GetHeaderOrDefault(enum.Header_ForceTargetQueue, ""))
 	assert.Len(t, *captured, 1)
+}
+
+func TestConfirm_SdkDidNotSucceed_DoesNotPark(t *testing.T) {
+	for _, code := range []int{
+		enum.ResultCode_Repeat,
+		enum.ResultCode_LimitExceeded,
+		enum.ResultCode_StopAndFail,
+		enum.ResultCode_DoNotContinue,
+	} {
+		t.Run(strconv.Itoa(code), func(t *testing.T) {
+			store := &fakeUserTaskStore{id: bson.NewObjectID()}
+			callback, captured := newCallbackServer(t)
+			sdk := newSdkServer(t, map[string]interface{}{enum.Header_ResultCode: strconv.Itoa(code)})
+			dto := pulseDto(callback.URL)
+			node := confirmNode{questionNode{settings: model.NodeSettings{Url: sdk.URL, ActionPath: "confirm/action"}}}
+
+			result := Confirm{mongodb: store}.BeforeProcess(node, dto)
+
+			assert.True(t, result.IsOk())
+			assert.Equal(t, strconv.Itoa(code), dto.GetHeaderOrDefault(enum.Header_ResultCode, ""))
+			assert.Equal(t, "", dto.GetHeaderOrDefault(enum.Header_ForceTargetQueue, ""))
+			assert.Equal(t, 0, store.calls)
+			assert.Empty(t, *captured)
+		})
+	}
+}
+
+func TestConfirm_SdkUnknownCode_Trashes(t *testing.T) {
+	store := &fakeUserTaskStore{}
+	sdk := newSdkServer(t, map[string]interface{}{enum.Header_ResultCode: "1999"})
+	dto := pulseDto("")
+	node := confirmNode{questionNode{settings: model.NodeSettings{Url: sdk.URL, ActionPath: "confirm/action"}}}
+
+	result := Confirm{mongodb: store}.BeforeProcess(node, dto)
+
+	assert.Equal(t, enum.ProcessStatus_Trash, result.Status())
+	assert.Equal(t, 0, store.calls)
 }
 
 // A Trash reject discards the run instead of taking the No branch.

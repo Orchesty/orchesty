@@ -191,6 +191,24 @@ func TestQuestion_Park_InvalidSchemaFallsBackToEmptyObject(t *testing.T) {
 	assert.Equal(t, map[string]any{}, store.extras["schema"])
 }
 
+func TestQuestion_SdkStopAndFail_DoesNotPark(t *testing.T) {
+	store := &fakeUserTaskStore{id: bson.NewObjectID()}
+	callback, captured := newCallbackServer(t)
+	sdk := newSdkServer(t, map[string]interface{}{
+		enum.Header_ResultCode:   strconv.Itoa(enum.ResultCode_StopAndFail),
+		enum.Header_QuestionText: "Which warehouse?",
+	})
+	dto := pulseDto(callback.URL)
+	node := questionNode{settings: model.NodeSettings{Url: sdk.URL, ActionPath: "question/action"}}
+
+	result := Question{mongodb: store}.BeforeProcess(node, dto)
+
+	assert.True(t, result.IsOk())
+	assert.Equal(t, strconv.Itoa(enum.ResultCode_StopAndFail), dto.GetHeaderOrDefault(enum.Header_ResultCode, ""))
+	assert.Equal(t, 0, store.calls)
+	assert.Empty(t, *captured)
+}
+
 func TestQuestion_Park_StoreError(t *testing.T) {
 	store := &fakeUserTaskStore{err: errors.New("mongo down")}
 	callback, captured := newCallbackServer(t)

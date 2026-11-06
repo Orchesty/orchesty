@@ -13,6 +13,7 @@ import (
 	"github.com/hanaboso/pipes/bridge/pkg/model"
 	"github.com/hanaboso/pipes/bridge/pkg/mongo"
 	"github.com/hanaboso/pipes/bridge/pkg/rabbit"
+	"github.com/hanaboso/pipes/bridge/pkg/topology"
 	"github.com/hanaboso/pipes/bridge/pkg/worker"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -76,6 +77,8 @@ func (b *Bridge) start(ctx context.Context) {
 	initTrashDedup(b.events)
 	go StartTrashDedupCleanup(ctx)
 
+	replyPath := topology.ReplyPath(b.topology)
+
 	workerWg := &sync.WaitGroup{}
 	for _, node := range b.topology.Shards {
 		// Starts only one worker per node
@@ -86,6 +89,7 @@ func (b *Bridge) start(ctx context.Context) {
 		workerWg.Add(1)
 		go func(shard model.NodeShard, wg *sync.WaitGroup) {
 			worker := newNode(*shard.Node, b.topology.ID, b.topology.Name, b.rabbitContainer, wg, b.limiter, b.repeater, b.mongodb, b.metrics, b.counter, b.events)
+			worker.setReplyPath(replyPath)
 			b.nodes[shard.Node.ID] = worker
 			worker.start()
 		}(node, workerWg)

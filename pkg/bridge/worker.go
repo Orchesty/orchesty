@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"sort"
 	"strings"
 	"sync"
@@ -25,6 +26,8 @@ import (
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
+
+var replyClient = http.Client{}
 
 type AuditEntity struct {
 	Key    string              `json:"key"`
@@ -52,6 +55,10 @@ type node struct {
 	metrics       metrics.Interface
 	counter       counter
 	events        events
+	// onReplyPath - the node lies on the main branch (a response node is reachable from it)
+	onReplyPath bool
+	// replyFollowers - followers lying on the main branch
+	replyFollowers map[string]bool
 }
 
 func (n *node) Followers() types.Publishers {
@@ -128,7 +135,7 @@ func (n *node) process(dto *model.ProcessMessage) bool {
 	}
 
 	for {
-		result, followers := n.innerProcess(dto)
+		result, followers, targets := n.innerProcess(dto)
 		result.Message().Status = enum.MessageStatus_InnerProcessDone
 
 		// OK      -> Metrics, Counter ok,  Ack
@@ -141,6 +148,7 @@ func (n *node) process(dto *model.ProcessMessage) bool {
 		status := result.Status()
 
 		if status == enum.ProcessStatus_Discard {
+			n.notifyReply(result, 0, nil, "")
 			IncrementDiscardCount()
 			if err := result.Message().Ack(); err != nil {
 				log.Error().Err(err).EmbedObject(result.Message()).Msg("failed to ack discarded message")
@@ -188,8 +196,11 @@ func (n *node) process(dto *model.ProcessMessage) bool {
 					trashId := trashId.Hex()
 					sendFinishedProcess(result.Message(), enum.StatusType_TrashMessage, &trashId, n.topologyName)
 					n.events.send(result.Message(), trashId, n.topologyName)
+					n.notifyReply(result, followers, targets, trashId)
 				}
 			}
+		} else {
+			n.notifyReply(result, followers, targets, "")
 		}
 
 		// Ack/Nack message -> continue in case of error force another process
@@ -211,26 +222,28 @@ func (n *node) process(dto *model.ProcessMessage) bool {
 	}
 }
 
-func (n *node) innerProcess(dto *model.ProcessMessage) (model.ProcessResult, int) {
+// The targets are read before AfterProcess, which clears the result-code / force-target-queue headers in
+// place when it publishes to a single follower.
+func (n *node) innerProcess(dto *model.ProcessMessage) (model.ProcessResult, int, []string) {
 	if !topology.IsSystemTopology(n.topologyName) && IsOverLimit() {
-		return dto.Discard(fmt.Errorf("storage or message limit exceeded")), 0
+		return dto.Discard(fmt.Errorf("storage or message limit exceeded")), 0, nil
 	}
 
 	result := n.checkTrash(dto)
 	if !result.IsOk() {
-		return result, 0
+		return result, 0, nil
 	}
 
 	dto.Status = enum.MessageStatus_LimiterCheck
 	result = n.limiter.process(n, dto)
 	if !result.IsOk() {
-		return result, 0
+		return result, 0, nil
 	}
 
 	result.Message().Status = enum.MessageStatus_BeforeProcess
 	result = n.worker.BeforeProcess(n, result.Message())
 	if !result.IsOk() {
-		return result, 0
+		return result, 0, nil
 	}
 
 	result.Message().Status = enum.MessageStatus_CheckResultCode
@@ -239,16 +252,126 @@ func (n *node) innerProcess(dto *model.ProcessMessage) (model.ProcessResult, int
 	n.processAudit(result.Message())
 
 	if !result.IsOk() {
-		return result, 0
+		return result, 0, nil
 	}
+
+	targets := types.TargetIds(result.Message())
 
 	result.Message().Status = enum.MessageStatus_AfterProcess
 	result, published := n.worker.AfterProcess(n, result.Message())
 	if !result.IsOk() {
-		return result, 0
+		return result, 0, targets
 	}
 
-	return result, published
+	return result, published, targets
+}
+
+// setReplyPath marks whether the node and its followers lie on the topology's main branch
+func (n *node) setReplyPath(replyPath map[string]bool) {
+	n.onReplyPath = replyPath[n.ID]
+	n.replyFollowers = map[string]bool{}
+	for _, follower := range n.Node.Followers {
+		if replyPath[follower.Id] {
+			n.replyFollowers[follower.Id] = true
+		}
+	}
+}
+
+// notifyReply tells a synchronous caller (reply-to) what happened to a message on the main branch:
+// error (trash / discard), pending (repeat, limit, user task) or stopped (left the main branch
+// without reaching a response node). Side branches never notify the caller.
+func (n *node) notifyReply(result model.ProcessResult, published int, targets []string, trashId string) {
+	dto := result.Message()
+	if !n.onReplyPath || dto.GetHeaderOrDefault(enum.Header_ReplyTo, "") == "" || topology.IsSystemTopology(n.topologyName) {
+		return
+	}
+
+	kind, reason := n.replyEventKind(result, published, targets, trashId)
+	if kind == "" {
+		return
+	}
+
+	event := worker.NewReplyEvent(dto, kind)
+	event.TopologyName = n.topologyName
+	event.Reason = reason
+	event.TrashId = trashId
+	if kind == worker.ReplyEvent_Error {
+		event.Message = dto.GetHeaderOrDefault(enum.Header_ResultMessage, "")
+		if result.Error() != nil {
+			event.Message = result.Error().Error()
+		}
+	}
+
+	// Copy headers needed by the callback so it can run after the message is acked
+	message := &model.ProcessMessage{Headers: map[string]interface{}{
+		enum.Header_ReplyTo: dto.GetHeaderOrDefault(enum.Header_ReplyTo, ""),
+		enum.Header_ReplyId: dto.GetHeaderOrDefault(enum.Header_ReplyId, ""),
+	}}
+	go worker.PostReplyEvent(replyClient, message, kind, event)
+}
+
+func (n *node) replyEventKind(result model.ProcessResult, published int, targets []string, trashId string) (kind, reason string) {
+	dto := result.Message()
+
+	switch result.Status() {
+	case enum.ProcessStatus_Trash:
+		if trashId == "" {
+			return "", ""
+		}
+
+		return worker.ReplyEvent_Error, ""
+	case enum.ProcessStatus_Discard:
+		return worker.ReplyEvent_Error, "limit_exceeded"
+	case enum.ProcessStatus_Pending:
+		switch n.WorkerType() {
+		case enum.WorkerType_Confirm, enum.WorkerType_Question:
+			// Pulse decision nodes send their own confirm / question events
+			return "", ""
+		case enum.WorkerType_UserTask:
+			return worker.ReplyEvent_Pending, worker.ReplyReason_UserTask
+		}
+		if dto.GetIntHeaderOrDefault(enum.Header_ResultCode, 0) == enum.ResultCode_Repeat {
+			return worker.ReplyEvent_Pending, worker.ReplyReason_Repeat
+		}
+
+		return worker.ReplyEvent_Pending, worker.ReplyReason_Limit
+	case enum.ProcessStatus_StopAndOk:
+		if n.WorkerType() == enum.WorkerType_Response {
+			return "", ""
+		}
+
+		return worker.ReplyEvent_Stopped, ""
+	case enum.ProcessStatus_Continue:
+		if n.WorkerType() == enum.WorkerType_Response {
+			return "", ""
+		}
+		if published == 0 || !n.publishedToReplyPath(targets) {
+			return worker.ReplyEvent_Stopped, ""
+		}
+	}
+
+	return "", ""
+}
+
+// publishedToReplyPath reports whether the message continued to at least one follower on the main branch.
+func (n *node) publishedToReplyPath(targets []string) bool {
+	if targets == nil {
+		for _, follower := range n.Node.Followers {
+			if n.replyFollowers[follower.Id] {
+				return true
+			}
+		}
+
+		return false
+	}
+
+	for _, id := range targets {
+		if n.replyFollowers[id] {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (n *node) FollowerIdsForOutput(output string) string {
