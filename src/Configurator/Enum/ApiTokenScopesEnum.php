@@ -18,5 +18,6 @@ enum ApiTokenScopesEnum: string
     case METRIC_WRITE     = 'metric:write';
     case WORKER_ALL       = 'worker:all';
     case APPLICATIONS_ALL = 'applications:all';
+    case ACTIONS_RUN      = 'actions:run';
 
 }

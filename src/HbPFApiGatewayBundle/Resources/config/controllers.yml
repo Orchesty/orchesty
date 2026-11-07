@@ -23,6 +23,11 @@ services:
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController
 
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ActionController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ActionController
+        arguments:
+            - '@hbpf.action.manager'
+
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController
         arguments:

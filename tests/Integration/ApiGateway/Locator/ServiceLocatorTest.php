@@ -3,6 +3,8 @@
 namespace PipesFrameworkTests\Integration\ApiGateway\Locator;
 
 use Exception;
+use GuzzleHttp\Promise\FulfilledPromise;
+use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
@@ -17,6 +19,7 @@ use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Psr\Log\NullLogger;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -394,9 +397,132 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $this->createLocator($dto)->runSyncActions($req, 'key', 'name', 'someMethod');
     }
 
+    /**
+     * @throws Exception
+     */
+    public function testGetActionsInParallelSkipsFailingSdk(): void
+    {
+        foreach (['down' => 'host-down', 'fast' => 'host-fast', 'second' => 'host-second'] as $name => $url) {
+            $this->dm->persist((new Sdk())->setName($name)->setUrl($url));
+        }
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $curl = self::createMock(CurlManager::class);
+        $curl->expects(self::never())->method('send');
+        $curl->expects(self::exactly(3))->method('sendAsync')->willReturnCallback(
+            static fn(RequestDto $dto): FulfilledPromise => new FulfilledPromise(
+                match (TRUE) {
+                    str_contains((string) $dto->getUri(TRUE), 'host-down') => new GuzzleResponse(500, [], 'down'),
+                    str_contains((string) $dto->getUri(TRUE), 'host-fast') => new GuzzleResponse(
+                        200,
+                        [],
+                        '[{"app":"crm","name":"get-user","kind":"read"}]',
+                    ),
+                    default => new GuzzleResponse(
+                        200,
+                        [],
+                        '[{"app":"crm","name":"get-user","kind":"write"},{"app":"erp","name":"stock","kind":"read"}]',
+                    ),
+                },
+            ),
+        );
+
+        $actions = $this->createActionLocator($curl)->getActions();
+
+        self::assertSame(['crm.get-user', 'erp.stock'], array_column($actions, 'key'));
+        // The first SDK serving a key wins
+        self::assertSame('fast', $actions[0]['sdk']);
+        self::assertSame('read', $actions[0]['kind']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetActionsIsCached(): void
+    {
+        $this->dm->persist((new Sdk())->setName('name')->setUrl('host'));
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $curl = self::createMock(CurlManager::class);
+        $curl->expects(self::once())->method('sendAsync')->willReturn(
+            new FulfilledPromise(new GuzzleResponse(200, [], '[{"app":"crm","name":"get-user"}]')),
+        );
+
+        $locator = $this->createActionLocator($curl, new ArrayAdapter(), 30);
+
+        self::assertCount(1, $locator->getActions());
+        self::assertCount(1, $locator->getActions());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testRunAction(): void
+    {
+        $sdk = new Sdk();
+        $sdk->setName('name')->setUrl('host');
+        $this->dm->persist($sdk);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $request = NULL;
+        $curl    = self::createMock(CurlManager::class);
+        $curl->method('send')->willReturnCallback(
+            static function (RequestDto $dto) use (&$request): ResponseDto {
+                $request = $dto;
+
+                return new ResponseDto(200, '', Json::encode(['result' => ['id' => 1]]), []);
+            },
+        );
+
+        $locator = new ServiceLocator(
+            $this->dm,
+            $curl,
+            $this->createMock(RedirectInterface::class),
+            self::getContainer()->getParameter('backendHost'),
+        );
+        $locator->setLogger(new NullLogger());
+
+        $res = $locator->runAction('name', 'app.get-user', ['id' => 1], 'user@example.com');
+
+        self::assertSame(['status' => 200, 'body' => ['result' => ['id' => 1]]], $res);
+        self::assertInstanceOf(RequestDto::class, $request);
+        self::assertSame('http://host/action/app.get-user/run', $request->getUri(TRUE));
+        self::assertSame(
+            ['identity' => 'user@example.com', 'sdk' => 'name', 'input' => ['id' => 1]],
+            Json::decode($request->getBody()),
+        );
+    }
+
     /*
      * ------------------------------------ HELPERS --------------------------------------------
      */
+
+    /**
+     * @param CurlManager       $curl
+     * @param ArrayAdapter|null $cache
+     * @param int               $ttl
+     *
+     * @return ServiceLocator
+     * @throws Exception
+     */
+    private function createActionLocator(CurlManager $curl, ?ArrayAdapter $cache = NULL, int $ttl = 0): ServiceLocator
+    {
+        $locator = new ServiceLocator(
+            $this->dm,
+            $curl,
+            $this->createMock(RedirectInterface::class),
+            self::getContainer()->getParameter('backendHost'),
+            '',
+            $cache,
+            $ttl,
+        );
+        $locator->setLogger(new NullLogger());
+
+        return $locator;
+    }
 
     /**
      * @param ResponseDto $dto

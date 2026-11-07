@@ -10,8 +10,21 @@ services:
             - '@hbpf.redirect'
             - '%backendHost%'
             - '%tunnelProxyHost%'
+            - '@cache.app'
+            - '%actionCatalogTtl%'
         calls:
             - ['setLogger',['@monolog.logger.commons']]
+
+    # Actions control plane: catalog + grant. Enterprise overrides the policy with group RBAC + audit.
+    hbpf.action.grant_policy:
+        class: Hanaboso\PipesFramework\ApiGateway\Action\AllowAllActionGrantPolicy
+
+    hbpf.action.manager:
+        class: Hanaboso\PipesFramework\ApiGateway\Action\ActionManager
+        arguments:
+            - '@hbpp.service.locator'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.action.grant_policy'
 
     listener.controller.exception:
         class: Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener
