@@ -10,6 +10,7 @@ import { useToast } from '@/composables/useToast'
 import { topologyEditorService } from '@/services/topologyEditorService'
 import { fetchTopologySchema, saveTopologySchema } from '@/services/topologiesService'
 import { listWebhookConfigs, type WebhookConfigItem } from '@/services/webhookConfigService'
+import { findSyncIssues, type SyncIssueKind } from '@/utils/startingPointUrls'
 
 interface Props {
   modelValue: boolean
@@ -43,6 +44,37 @@ const validationErrorOpen = ref(false)
 const validationOffenders = ref<UnnamedNode[]>([])
 
 const saving = ref(false)
+
+// Non-blocking warning: the main branch (path to a Response node) fans out or contains a Batch,
+// so a synchronous call (`run-sync`) answers with only the first result that arrives.
+interface SyncWarning { kind: SyncIssueKind; label: string; name: string }
+
+const syncWarningOpen = ref(false)
+const syncWarnings = ref<SyncWarning[]>([])
+let pendingSyncPayload: ReturnType<EditorCore['exportGraph']> | null = null
+
+const collectSyncWarnings = (): SyncWarning[] => {
+  if (!editorCore.value) return []
+  const nodes = editorCore.value.getNodes() as Array<{
+    id: string
+    label: string
+    baseLabel?: string
+    name?: string | null
+    action?: { name?: string } | null
+  }>
+  const byId = new Map(nodes.map((n) => [n.id, n]))
+  const issues = findSyncIssues(
+    nodes.map((n) => ({ id: n.id, label: n.baseLabel || n.label })),
+    editorCore.value.getConnections().map((c) => ({ source: c.source, target: c.target, sourceOutput: String(c.sourceOutput) })),
+  )
+
+  return issues.map((issue) => {
+    const node = byId.get(issue.nodeId)
+    const label = node?.baseLabel || node?.label || ''
+
+    return { kind: issue.kind, label, name: node?.action?.name || node?.name || '' }
+  })
+}
 
 const collectWebhookNodeNames = (): Set<string> => {
   if (!editorCore.value) return new Set()
@@ -226,6 +258,33 @@ const handleSave = async () => {
 
   const workflow = editorCore.value.exportGraph()
 
+  const warnings = collectSyncWarnings()
+  if (warnings.length > 0) {
+    pendingSyncPayload = workflow
+    syncWarnings.value = warnings
+    syncWarningOpen.value = true
+    return
+  }
+
+  await checkWebhooksAndPersist(workflow)
+}
+
+const confirmSaveWithSyncWarning = async () => {
+  const payload = pendingSyncPayload
+  pendingSyncPayload = null
+  syncWarningOpen.value = false
+  if (payload) {
+    await checkWebhooksAndPersist(payload)
+  }
+}
+
+const cancelSaveWithSyncWarning = () => {
+  pendingSyncPayload = null
+  syncWarnings.value = []
+  syncWarningOpen.value = false
+}
+
+const checkWebhooksAndPersist = async (workflow: ReturnType<EditorCore['exportGraph']>) => {
   // Detect webhook configs whose owning node is being deleted or renamed.
   try {
     const configs = await listWebhookConfigs(props.topologyName)
@@ -380,6 +439,43 @@ watch(
     <template #footer-actions>
       <Button variant="outline" @click="cancelSaveWithWebhookWarning">Cancel</Button>
       <Button variant="primary" @click="confirmSaveWithWebhookWarning">
+        Save anyway
+      </Button>
+    </template>
+  </Modal>
+
+  <Modal
+    :model-value="syncWarningOpen"
+    id="sync-main-branch-warning-modal"
+    title="Synchronous call returns only one result"
+    size="md"
+    @update:model-value="(v) => v ? syncWarningOpen = true : cancelSaveWithSyncWarning()"
+  >
+    <div class="space-y-4">
+      <p class="text-sm text-gray-700 dark:text-gray-200">
+        The path to the Response node (main branch) can carry more than one message. A synchronous call
+        (<span class="font-mono">run-sync</span>) answers with the first result, error or wait state that arrives;
+        the other messages still run, but the caller never sees them. Asynchronous runs are not affected.
+      </p>
+      <ul class="space-y-1 rounded-lg border border-yellow-200 bg-yellow-50 p-3 text-sm dark:border-yellow-700 dark:bg-yellow-900/30">
+        <li
+          v-for="(warning, index) in syncWarnings"
+          :key="index"
+          class="text-yellow-900 dark:text-yellow-100"
+        >
+          <span class="font-semibold">{{ warning.label }}</span>
+          <span v-if="warning.name" class="ml-1 font-mono">{{ warning.name }}</span>
+          <span> — {{ warning.kind === 'batch' ? 'splits the message into many' : 'sends copies to several nodes that lead to Response' }}</span>
+        </li>
+      </ul>
+      <p class="text-xs text-gray-500 dark:text-gray-400">
+        Recommended: keep one linear path to Response and move other work (notifications, batches) to a side branch.
+      </p>
+    </div>
+
+    <template #footer-actions>
+      <Button variant="outline" @click="cancelSaveWithSyncWarning">Cancel</Button>
+      <Button variant="primary" @click="confirmSaveWithSyncWarning">
         Save anyway
       </Button>
     </template>

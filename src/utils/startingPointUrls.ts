@@ -96,3 +96,70 @@ export function hasResponseDownstream(startId: string, nodes: GraphNode[], conne
 
   return false
 }
+
+export type SyncIssueKind = 'branching' | 'batch'
+
+export interface SyncIssue {
+  kind: SyncIssueKind
+  nodeId: string
+}
+
+// Nodes that route a message to exactly one of their outputs (yes / no): followers of
+// different outputs are alternatives, but followers of one output still get copies.
+// A Question resumes along all its followers, so it is a normal node here.
+const SINGLE_OUTPUT_LABELS = new Set(['Confirm'])
+
+/**
+ * Main branch = nodes from which a Response node is reachable (the same rule the bridge uses
+ * to decide which events it reports to a synchronous caller).
+ */
+export function mainBranch(nodes: GraphNode[], connections: GraphConnection[]): Set<string> {
+  const predecessors = new Map<string, string[]>()
+  for (const c of connections) {
+    predecessors.set(c.target, [...(predecessors.get(c.target) ?? []), c.source])
+  }
+
+  const onPath = new Set<string>()
+  const queue = nodes.filter((n) => n.label === RESPONSE_NODE_LABEL).map((n) => n.id)
+  while (queue.length > 0) {
+    const id = queue.shift() as string
+    if (onPath.has(id)) continue
+    onPath.add(id)
+    queue.push(...(predecessors.get(id) ?? []))
+  }
+
+  return onPath
+}
+
+/**
+ * Main-branch shapes for which a synchronous call (`run-sync`) answers with only one of several
+ * results: the first event that reaches the caller wins and the rest are dropped.
+ *  - branching: a node sends copies of the message to two or more main-branch followers,
+ *  - batch: a Batch node splits the message into many.
+ */
+export function findSyncIssues(nodes: GraphNode[], connections: GraphConnection[]): SyncIssue[] {
+  const onPath = mainBranch(nodes, connections)
+  const issues: SyncIssue[] = []
+
+  for (const node of nodes) {
+    if (!onPath.has(node.id) || node.label === RESPONSE_NODE_LABEL) continue
+
+    if (node.label === 'Batch') {
+      issues.push({ kind: 'batch', nodeId: node.id })
+      continue
+    }
+
+    const perOutput = SINGLE_OUTPUT_LABELS.has(node.label)
+    const followers = new Map<string, Set<string>>()
+    for (const c of connections) {
+      if (c.source !== node.id || !onPath.has(c.target)) continue
+      const output = perOutput ? (c.sourceOutput ?? '') : ''
+      followers.set(output, (followers.get(output) ?? new Set()).add(c.target))
+    }
+    if ([...followers.values()].some((targets) => targets.size > 1)) {
+      issues.push({ kind: 'branching', nodeId: node.id })
+    }
+  }
+
+  return issues
+}
