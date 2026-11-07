@@ -18,12 +18,21 @@ interface Props {
   timeFilter: TimeFilterType
   showBackButton?: boolean
   backLabel?: string
+  /** Drawer heading */
+  label?: string
+  /** Extra tabs next to Statistics, rendered through `tab-<id>` slots (e.g. action access / context) */
+  tabs?: { id: string; label: string }[]
 }
 
 const props = withDefaults(defineProps<Props>(), {
   showBackButton: false,
   backLabel: 'Back',
+  label: 'Connector Details',
+  tabs: () => [],
 })
+
+const activeTab = ref('statistics')
+const allTabs = computed(() => [{ id: 'statistics', label: 'Statistics' }, ...props.tabs])
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
@@ -182,6 +191,7 @@ watch(
     if (newValue && props.connector) {
       // Reset to global time filter when opening
       localTimeFilter.value = props.timeFilter
+      activeTab.value = 'statistics'
       loadData()
     }
   },
@@ -196,7 +206,7 @@ watch(localTimeFilter, () => {
   <Drawer
     :model-value="modelValue"
     id="connector-detail-drawer"
-    label="Connector Details"
+    :label="label"
     @update:model-value="emit('update:modelValue', $event)"
     @hidden="emit('hidden')"
   >
@@ -220,12 +230,38 @@ watch(localTimeFilter, () => {
         </div>
 
         <!-- Local Time Filter -->
-        <TimeFilter v-model="localTimeFilter" />
+        <TimeFilter v-show="activeTab === 'statistics'" v-model="localTimeFilter" />
+      </div>
+
+      <div v-if="connector && tabs.length > 0" class="mt-4 border-b border-gray-200 dark:border-gray-700">
+        <ul class="-mb-px flex text-sm font-medium">
+          <li v-for="tab in allTabs" :key="tab.id">
+            <button
+              type="button"
+              :class="[
+                'inline-flex items-center border-b-2 px-4 py-3',
+                activeTab === tab.id
+                  ? 'border-primary-600 text-primary-600 dark:border-primary-500 dark:text-primary-500'
+                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-600 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:text-gray-300',
+              ]"
+              @click="activeTab = tab.id"
+            >
+              {{ tab.label }}
+            </button>
+          </li>
+        </ul>
       </div>
     </template>
 
-    <!-- Main Content -->
-    <div v-if="connectorDetail" class="space-y-8">
+    <!-- Extra tabs -->
+    <template v-for="tab in tabs" :key="tab.id">
+      <div v-if="connector && activeTab === tab.id">
+        <slot :name="`tab-${tab.id}`" :connector="connector" />
+      </div>
+    </template>
+
+    <!-- Main Content (Statistics) -->
+    <div v-if="connectorDetail" v-show="activeTab === 'statistics'" class="space-y-8">
       <!-- Chart -->
       <div>
         <div ref="chartElement" id="connector-error-chart"></div>
@@ -305,11 +341,12 @@ watch(localTimeFilter, () => {
         filter-mode="connector"
         :node-ids="resolvedNodeIds"
         :time-filter="localTimeFilter"
+        :hide-failed-messages="connector.type === 'action'"
       />
     </div>
 
     <!-- Loading State -->
-    <LoadingSpinner v-else-if="loading" class="py-12" text="Loading connector details..." />
+    <LoadingSpinner v-else-if="loading && activeTab === 'statistics'" class="py-12" text="Loading connector details..." />
   </Drawer>
 </template>
 

@@ -11,7 +11,11 @@ export interface Connector {
   errors500: number
   lastRequestStatus: number // HTTP status code (200, 400, 500, etc.)
   status: 'ok' | 'errors' | 'none'
+  /** 'action' for Actions (connector called directly by a worker, no topology) */
+  type?: string
 }
+
+export type ConnectorKind = 'all' | 'connectors' | 'actions'
 
 export type ConnectorStatus = 'all' | 'with-activity' | 'with-errors'
 
@@ -29,6 +33,7 @@ export interface ConnectorGroupsApiResponse {
 
 export interface ConnectorQueryParams extends QueryParams {
   status?: ConnectorStatus
+  kind?: ConnectorKind
   node?: string | string[]
   application?: string
   dateFrom?: string

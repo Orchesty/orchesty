@@ -117,11 +117,18 @@ export async function fetchConnectors(
       errors500: totalErrors500,
       lastRequestStatus: lastStatus,
       status: totalRequests > 0 ? (hasErrors ? 'errors' : 'ok') : 'none' as const,
+      type: group.type,
     }
   })
 
   if (params.application) {
     connectors = connectors.filter(c => c.application === params.application)
+  }
+
+  if (params.kind === 'actions') {
+    connectors = connectors.filter(c => c.type === 'action')
+  } else if (params.kind === 'connectors') {
+    connectors = connectors.filter(c => c.type !== 'action')
   }
 
   if (params.status === 'with-activity') {

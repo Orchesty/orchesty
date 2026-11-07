@@ -77,6 +77,12 @@ export const coreRoutes: RouteRecordRaw[] = [
         ],
       },
       {
+        path: 'actions',
+        name: 'actions',
+        component: () => import('@/views/actions/ActionsView.vue'),
+        meta: { permission: 'action:read', helpId: 'actions/overview' },
+      },
+      {
         path: 'users',
         name: 'users',
         component: () => import('@/views/users/UsersView.vue'),

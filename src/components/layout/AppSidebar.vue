@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { PieChart, Clock, OctagonAlert, List, Workflow, Grip, Settings } from 'lucide-vue-next'
+import { PieChart, Clock, OctagonAlert, List, Workflow, Grip, Settings, Zap } from 'lucide-vue-next'
 import { useSidebar } from '@/composables/useSidebar'
 import { useCronAlerts } from '@/composables/useCronAlerts'
 import { useAuthorization } from '@/composables/useAuthorization'
@@ -42,6 +42,7 @@ const coreItems: SidebarItem[] = [
   { id: 'trash', label: 'Failed Messages', path: '/trash', icon: OctagonAlert, permission: 'user_task:read' },
   { id: 'scheduled-tasks', label: 'Scheduled Tasks', path: '/scheduled-tasks', icon: Clock, badge: 'cron-alerts', permission: 'scheduled_task:read' },
   { id: 'topologies', label: 'Topologies', path: '/topologies', icon: Workflow, permission: 'topology:read' },
+  { id: 'actions', label: 'Actions', path: '/actions', icon: Zap, permission: 'action:read' },
   { id: 'applications', label: 'Applications', path: '/applications', icon: Grip, permission: 'application:read' },
   { id: 'settings', label: 'Settings', path: '/settings', icon: Settings, permission: 'settings:read' },
 ]

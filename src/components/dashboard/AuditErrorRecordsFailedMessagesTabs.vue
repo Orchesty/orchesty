@@ -30,6 +30,8 @@ const props = defineProps<{
   topologyId?: string
   nodeIds?: string[]
   timeFilter?: TimeFilterType
+  /** Actions never go to trash: hide the Failed Messages tab */
+  hideFailedMessages?: boolean
 }>()
 
 const { getTopologyName, getNodeName, getApplicationNameByNodeId } = useTopologyNodeMappings()
@@ -237,7 +239,7 @@ const trashLinkQuery = computed(() => {
             Error Records
           </button>
         </li>
-        <li>
+        <li v-if="!hideFailedMessages">
           <button
             type="button"
             :class="[
@@ -298,9 +300,11 @@ const trashLinkQuery = computed(() => {
         </template>
 
         <template v-if="filterMode === 'connector'" #cell-topology="{ row }">
-          <GridLink :to="{ name: 'topology-detail', params: { id: row.topologyId } }">
+          <!-- Calls outside a topology (Actions, settings forms) have no topology to link to -->
+          <GridLink v-if="row.topologyId" :to="{ name: 'topology-detail', params: { id: row.topologyId } }">
             {{ getTopologyName(row.topologyId) }}
           </GridLink>
+          <span v-else class="text-gray-400 dark:text-gray-500">—</span>
         </template>
 
         <template #cell-code="{ value }">
