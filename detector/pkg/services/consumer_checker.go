@@ -69,7 +69,7 @@ func (c ConsumerChecker) ConsumerCheck(queues []Queue) {
 						Database.
 						Collection(config.Mongo.Node).
 						FindOne(ctx, bson.D{
-							{"_id", primNodeId},
+							{Key: "_id", Value: primNodeId},
 						}, findOptions).
 						Decode(&node)
 
