@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM hanabosocom/go-base:1.24
+FROM --platform=$BUILDPLATFORM hanabosocom/go-base:1.27
 COPY . .
 ARG TARGETOS TARGETARCH
 RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags='-s -w' -o /counter main.go && upx -9 /counter
