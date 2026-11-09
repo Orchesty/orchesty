@@ -24,15 +24,15 @@ func (this MongoSvc) Snapshot() ([]SnapshotNode, error) {
 
 	pipeline := bson.A{
 		bson.D{{
-			"$group", bson.D{
-				{"_id", bson.D{
-					{"nodeId", "$message.headers.node-id"},
-					{"nodeName", "$message.headers.node-name"},
-					{"userId", "$message.headers.user"},
+			Key: "$group", Value: bson.D{
+				{Key: "_id", Value: bson.D{
+					{Key: "nodeId", Value: "$message.headers.node-id"},
+					{Key: "nodeName", Value: "$message.headers.node-name"},
+					{Key: "userId", Value: "$message.headers.user"},
 				}},
-				{"messages", bson.D{{"$sum", 1}}},
-				{"topologyId", bson.D{{"$first", "$message.headers.topology-id"}}},
-				{"applicationId", bson.D{{"$first", "$message.headers.application"}}},
+				{Key: "messages", Value: bson.D{{Key: "$sum", Value: 1}}},
+				{Key: "topologyId", Value: bson.D{{Key: "$first", Value: "$message.headers.topology-id"}}},
+				{Key: "applicationId", Value: bson.D{{Key: "$first", Value: "$message.headers.application"}}},
 			},
 		}},
 	}

@@ -9,41 +9,41 @@ import (
 func indices() []mongo.IndexModel {
 	return []mongo.IndexModel{
 		{
-			Keys:    bson.D{{"limitKey", 1}},
+			Keys:    bson.D{{Key: "limitKey", Value: 1}},
 			Options: options.Index().SetName("IK_limiter_limitKey"),
 		},
 		{
 			Keys: bson.D{
-				{"limitKey", 1},
-				{"allowedAt", 1},
-				{"inProcess", 1},
-				{"prioritize", -1},
+				{Key: "limitKey", Value: 1},
+				{Key: "allowedAt", Value: 1},
+				{Key: "inProcess", Value: 1},
+				{Key: "prioritize", Value: -1},
 			},
 			Options: options.Index().SetName("IK_limiter_limitKey_allowedAt_inProcess_prioritize"),
 		},
 		{
 			Keys: bson.D{
-				{"allowedAt", 1},
-				{"created", 1},
+				{Key: "allowedAt", Value: 1},
+				{Key: "created", Value: 1},
 			},
 			Options: options.Index().SetName("IK_limiter_allowedAt_created"),
 		},
 		{
 			Keys: bson.D{
-				{"prioritize", 1},
-				{"created", 1},
-				{"message.headers.node-id", 1},
-				{"message.headers.node-name", 1},
-				{"message.headers.user", 1},
-				{"message.headers.topology-id", 1},
-				{"message.headers.application", 1},
+				{Key: "prioritize", Value: 1},
+				{Key: "created", Value: 1},
+				{Key: "message.headers.node-id", Value: 1},
+				{Key: "message.headers.node-name", Value: 1},
+				{Key: "message.headers.user", Value: 1},
+				{Key: "message.headers.topology-id", Value: 1},
+				{Key: "message.headers.application", Value: 1},
 			},
 			Options: options.Index().SetName("IK_limiter_prioritize_created_messageHeadersNodeId_messageHeadersNodeName_messageHeadersUser_messageHeadersTopologyId_messageHeadersApplication"),
 		},
 		{
 			Keys: bson.D{
-				{"message.headers.correlation-id", 1},
-				{"prioritize", 1},
+				{Key: "message.headers.correlation-id", Value: 1},
+				{Key: "prioritize", Value: 1},
 			},
 			Options: options.Index().SetName("IK_limiter_messageHeadersCorrelationId_prioritize"),
 		},

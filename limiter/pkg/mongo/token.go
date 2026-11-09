@@ -19,9 +19,9 @@ func (this MongoSvc) GetApiToken() string {
 	err := this.connection.Database.Collection(config.MongoDb.ApiTokenCollection).FindOne(
 		ctx,
 		bson.D{
-			{"user", config.App.SystemUser},
+			{Key: "user", Value: config.App.SystemUser},
 		},
-		options.FindOne().SetProjection(bson.D{{"key", 1}}),
+		options.FindOne().SetProjection(bson.D{{Key: "key", Value: 1}}),
 	).Decode(&token)
 
 	if err != nil {
