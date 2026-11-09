@@ -5,6 +5,7 @@ namespace PipesFrameworkTests\Integration\ApiGateway\Locator;
 use Exception;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
@@ -99,6 +100,19 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
                 'sorter' => [],
             ],
             $res,
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetAppsAddsDefaultSchemeToSdkUrl(): void
+    {
+        self::assertSame('http://worker/applications', $this->getRequestedSdkUrl('worker'));
+        self::assertSame('http://worker:8080/applications', $this->getRequestedSdkUrl('worker:8080'));
+        self::assertSame(
+            'https://worker.example.com/applications',
+            $this->getRequestedSdkUrl('https://worker.example.com'),
         );
     }
 
@@ -420,6 +434,43 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $locator->setLogger(new NullLogger());
 
         return $locator;
+    }
+
+    /**
+     * @param string $sdkUrl
+     *
+     * @return string
+     * @throws Exception
+     */
+    private function getRequestedSdkUrl(string $sdkUrl): string
+    {
+        $sdkName = sprintf('sdk-%s', md5($sdkUrl));
+        $sdk     = new Sdk();
+        $sdk->setName($sdkName)->setUrl($sdkUrl);
+        $this->dm->persist($sdk);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $requestedUrl = '';
+        $curl         = self::createMock(CurlManager::class);
+        $curl->method('send')->willReturnCallback(
+            static function (RequestDto $dto) use (&$requestedUrl): ResponseDto {
+                $requestedUrl = (string) $dto->getUri(TRUE);
+
+                return new ResponseDto(200, '', Json::encode(['items' => []]), []);
+            },
+        );
+
+        $locator = new ServiceLocator(
+            $this->dm,
+            $curl,
+            $this->createMock(RedirectInterface::class),
+            self::getContainer()->getParameter('backendHost'),
+        );
+        $locator->setLogger(new NullLogger());
+        $locator->getApps($sdkName);
+
+        return $requestedUrl;
     }
 
 }

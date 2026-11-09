@@ -71,8 +71,7 @@ final class ReconcileWebhookConfigsCommand extends Command
     {
         $topologyFilter = $input->getOption('topology');
 
-        $criteria   = ['type' => TypeEnum::WEBHOOK->value, 'deleted' => FALSE];
-        $topologyId = NULL;
+        $criteria = ['type' => TypeEnum::WEBHOOK->value, 'deleted' => FALSE];
 
         if ($topologyFilter) {
             $topology = $this->dm->getRepository(Topology::class)->findOneBy(['name' => $topologyFilter]);
@@ -81,8 +80,7 @@ final class ReconcileWebhookConfigsCommand extends Command
 
                 return 1;
             }
-            $topologyId           = $topology->getId();
-            $criteria['topology'] = $topologyId;
+            $criteria['topology'] = $topology->getId();
         }
 
         /** @var Node[] $nodes */

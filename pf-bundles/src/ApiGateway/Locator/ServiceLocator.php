@@ -712,12 +712,26 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     private function buildSdkUrl(Sdk $sdk, string $path): string
     {
-        $base = $this->getSdkBaseUrl($sdk);
+        $base = $this->withDefaultScheme($this->getSdkBaseUrl($sdk));
         $path = ltrim($path, '/');
 
         return $sdk->isTunnel()
             ? sprintf('%s/call/%s/%s', $base, $sdk->getName(), $path)
             : sprintf('%s/%s', $base, $path);
+    }
+
+    /**
+     * @param string $url
+     *
+     * @return string
+     */
+    private function withDefaultScheme(string $url): string
+    {
+        if ($url === '' || preg_match('#^[a-z][a-z0-9+.-]*://#i', $url) === 1) {
+            return $url;
+        }
+
+        return sprintf('http://%s', ltrim($url, '/'));
     }
 
     /**

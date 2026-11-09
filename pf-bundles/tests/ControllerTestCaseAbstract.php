@@ -43,8 +43,10 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         parent::setUp();
 
+        WorkerMetricsDatabase::configure();
         $this->startClient();
         $this->dm = self::getContainer()->get('doctrine_mongodb.odm.default_document_manager');
+        WorkerMetricsDatabase::drop(self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager'));
         $this->clearMongo();
 
         // Login

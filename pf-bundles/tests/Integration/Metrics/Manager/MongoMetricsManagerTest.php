@@ -13,6 +13,7 @@ use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\System\NodeGeneratorUtils;
 use LogicException;
 use MongoDB\BSON\UTCDateTime;
+use MongoDB\Collection;
 use Monolog\Logger;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
@@ -755,7 +756,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
      */
     private function setFakeData(Topology $topology, Node $node, string $dateOffset = '-1 days'): void
     {
-        $client = $this->getMdm()->getClient();
         $this->setMinimalFakeData($topology, $node);
 
         /** @var string $counterTable */
@@ -771,12 +771,12 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         /** @var string $rabbitConsumerTable */
         $rabbitConsumerTable = self::getContainer()->getParameter('mongodb.rabbit_consumer_table');
 
-        $processes        = $client->selectCollection('metrics', $counterTable);
-        $monolith         = $client->selectCollection('metrics', $monolithTable);
-        $bridge           = $client->selectCollection('metrics', $nodeTable);
-        $connector        = $client->selectCollection('metrics', $connectorTable);
-        $rabbitmq         = $client->selectCollection('metrics', $rabbitTable);
-        $rabbitmqConsumer = $client->selectCollection('metrics', $rabbitConsumerTable);
+        $processes        = $this->metricsCollection($counterTable);
+        $monolith         = $this->metricsCollection($monolithTable);
+        $bridge           = $this->metricsCollection($nodeTable);
+        $connector        = $this->metricsCollection($connectorTable);
+        $rabbitmq         = $this->metricsCollection($rabbitTable);
+        $rabbitmqConsumer = $this->metricsCollection($rabbitConsumerTable);
 
         $doc = [
             'fields' => [
@@ -990,8 +990,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
      */
     private function setMinimalFakeData(Topology $topology, Node $node): void
     {
-        $client = $this->getMdm()->getClient();
-
         /** @var string $counterTable */
         $counterTable = self::getContainer()->getParameter('mongodb.counter_table');
         /** @var string $monolithTable */
@@ -1003,11 +1001,11 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         /** @var string $rabbitTable */
         $rabbitTable = self::getContainer()->getParameter('mongodb.rabbit_table');
 
-        $processes = $client->selectCollection('metrics', $counterTable);
-        $monolith  = $client->selectCollection('metrics', $monolithTable);
-        $bridge    = $client->selectCollection('metrics', $nodeTable);
-        $connector = $client->selectCollection('metrics', $connectorTable);
-        $rabbitmq  = $client->selectCollection('metrics', $rabbitTable);
+        $processes = $this->metricsCollection($counterTable);
+        $monolith  = $this->metricsCollection($monolithTable);
+        $bridge    = $this->metricsCollection($nodeTable);
+        $connector = $this->metricsCollection($connectorTable);
+        $rabbitmq  = $this->metricsCollection($rabbitTable);
 
         $doc = [
             'fields' => [
@@ -1085,6 +1083,18 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @param string $name
+     *
+     * @return Collection
+     */
+    private function metricsCollection(string $name): Collection
+    {
+        $mdm = $this->getMdm();
+
+        return $mdm->getClient()->selectCollection((string) $mdm->getConfiguration()->getDefaultDB(), $name);
+    }
+
+    /**
      *
      */
     private function ensureCollections(): void
@@ -1121,7 +1131,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     {
         $bucket = new UTCDateTime(DateTimeUtils::getUtcDateTime($bucketOffset));
 
-        $this->getMdm()->getClient()->selectCollection('metrics', 'hourly_connectors_aggregates')->insertOne(
+        $this->metricsCollection('hourly_connectors_aggregates')->insertOne(
             [
                 'application_id'     => 'app-1',
                 'bucket'             => $bucket,
@@ -1158,7 +1168,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     {
         $bucket = new UTCDateTime(DateTimeUtils::getUtcDateTime($bucketOffset));
 
-        $this->getMdm()->getClient()->selectCollection('metrics', 'hourly_pipes_node_aggregates')->insertOne(
+        $this->metricsCollection('hourly_pipes_node_aggregates')->insertOne(
             [
                 'bucket'       => $bucket,
                 'count'        => $count,
@@ -1187,7 +1197,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         /** @var string $connectorTable */
         $connectorTable = self::getContainer()->getParameter('mongodb.connector_table');
 
-        $this->getMdm()->getClient()->selectCollection('metrics', $connectorTable)->insertOne(
+        $this->metricsCollection($connectorTable)->insertOne(
             [
                 'fields' => [
                     'created'                     => new UTCDateTime(DateTimeUtils::getUtcDateTime($createdOffset)),
@@ -1219,7 +1229,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         /** @var string $nodeTable */
         $nodeTable = self::getContainer()->getParameter('mongodb.node_table');
 
-        $this->getMdm()->getClient()->selectCollection('metrics', $nodeTable)->insertOne(
+        $this->metricsCollection($nodeTable)->insertOne(
             [
                 'fields' => [
                     'created'         => new UTCDateTime(DateTimeUtils::getUtcDateTime($createdOffset)),

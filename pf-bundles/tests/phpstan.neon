@@ -13,11 +13,16 @@ parameters:
 		-
 			identifier: method.internal
 		-
+			identifier: phpunit.assertEmpty
+		-
 			message: '#Calling putenv\(\) is forbidden, might overwrite existing variables#'
 			path: ../tests/KernelTestCaseAbstract.php
 		-
 			message: '#Calling putenv\(\) is forbidden, might overwrite existing variables#'
 			path: ../tests/ControllerTestCaseAbstract.php
+		-
+			message: '#Calling putenv\(\) is forbidden, might overwrite existing variables#'
+			path: ../tests/WorkerMetricsDatabase.php
 		-
 			message: '#Access to an undefined property#'
 			path: ../tests/*

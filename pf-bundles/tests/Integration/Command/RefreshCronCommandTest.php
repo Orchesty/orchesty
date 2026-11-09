@@ -3,7 +3,7 @@
 namespace PipesFrameworkTests\Integration\Command;
 
 use Hanaboso\CommonsBundle\Exception\CronException;
-use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\RefreshCronCommand;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -28,7 +28,7 @@ final class RefreshCronCommandTest extends DatabaseTestCaseAbstract
      */
     public function testExecute(): void
     {
-        self::getContainer()->set('hbpf.transport.curl_manager', self::createMock(CurlManagerInterface::class));
+        self::getContainer()->set('hbpf.transport.curl_manager', self::createMock(CurlManager::class));
 
         /** @var KernelInterface $kernel */
         $kernel      = self::$kernel;

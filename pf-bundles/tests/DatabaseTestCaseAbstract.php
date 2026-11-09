@@ -27,6 +27,7 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
         parent::setUp();
 
         $this->dm = self::getContainer()->get('doctrine_mongodb.odm.default_document_manager');
+        WorkerMetricsDatabase::drop(self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager'));
         $this->clearMongo();
     }
 

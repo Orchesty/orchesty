@@ -16,7 +16,7 @@ use Hanaboso\Utils\Date\DateTimeUtils;
  *
  * @package Hanaboso\PipesFramework\Configurator\Model
  */
-final class ProgressManager
+final readonly class ProgressManager
 {
 
     /**
@@ -25,7 +25,7 @@ final class ProgressManager
      * @param ProgressFilter  $progressFilter
      * @param DocumentManager $dm
      */
-    public function __construct(private readonly ProgressFilter $progressFilter, private readonly DocumentManager $dm)
+    public function __construct(private ProgressFilter $progressFilter, private DocumentManager $dm)
     {
     }
 
