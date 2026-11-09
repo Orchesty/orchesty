@@ -61,7 +61,24 @@ export interface TrashItemApi {
   message: string
   body: string  // JSON string that needs parsing
   headers: Record<string, unknown>  // Already an object
-}// API response structure
+}
+
+// GET /api/user-task/{id} response: body/headers are nested under `message`
+// (empty headers serialise as `[]` on the backend)
+export interface TrashItemDetailApi {
+  id: string
+  nodeId: string
+  topologyId: string
+  correlationId: string
+  type: 'trash' | 'userTask'
+  created: string  // ISO date string
+  message: {
+    body: string  // JSON string that needs parsing
+    headers: Record<string, unknown> | unknown[]
+  }
+}
+
+// API response structure
 export interface TrashApiResponse {
   items: TrashItemApi[]
   paging: {
