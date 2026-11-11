@@ -1,0 +1,9 @@
+{
+    "http": "POST /api/user-task/reject",
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    },
+    "body": {
+        "correlationId": "corr"
+    }
+}

@@ -1,0 +1,18 @@
+parameters:
+  # Base params
+  locale: en
+
+  # A secret key that's used to generate certain security-related tokens
+  secret: ThisTokenIsNotSoSecretChangeIt
+
+  frontendHost: "%env(string:FRONTEND_URL)%"
+  backendHost: "%env(string:BACKEND_URL)%"
+  cronHost: "%env(string:CRON_DSN)%"
+  startingPointHost: "%env(string:STARTING_POINT_URL)%"
+  tunnelProxyHost: "%env(string:TUNNEL_PROXY_HOST)%"
+  env(TUNNEL_PROXY_HOST): ""
+  # Seconds the SDK action catalog is cached (grant, MCP and the editor read it on every request)
+  actionCatalogTtl: 30
+  env(MONGODB_TIMEOUT): '60000'
+  activateLink: '%backendHost%/user/%s/activate'
+  passwordLink: 'reset-password/%s'

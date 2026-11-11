@@ -1,0 +1,119 @@
+{
+    "connections": [
+        {
+            "from": "f95f7012f7f8f574",
+            "id": "49a036ce6e9ca392",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "408958ef7f95fa61"
+        },
+        {
+            "from": "f95f7012f7f8f574",
+            "id": "7c0e1c6d32720b2a",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "61ecefc1a754727b"
+        },
+        {
+            "from": "f95f7012f7f8f574",
+            "id": "9bd6f780e8018e3a",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "9944ebafc1090cb9"
+        },
+        {
+            "from": "f95f7012f7f8f574",
+            "id": "ed521f171c86c976",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "f825b29fc23f22a5"
+        }
+    ],
+    "nodes": [
+        {
+            "action": null,
+            "id": "f95f7012f7f8f574",
+            "label": "Event",
+            "name": "start",
+            "position": {
+                "x": 424,
+                "y": 522
+            },
+            "property": null,
+            "shape": "circle",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": null,
+                "name": "event-status-filter-processSuccess",
+                "type": "custom",
+                "worker": "nodejs-sdk"
+            },
+            "id": "408958ef7f95fa61",
+            "label": "Custom Action",
+            "name": null,
+            "position": {
+                "x": 902,
+                "y": 203
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": null,
+                "name": "event-status-filter-processFailed",
+                "type": "custom",
+                "worker": "nodejs-sdk"
+            },
+            "id": "61ecefc1a754727b",
+            "label": "Custom Action",
+            "name": null,
+            "position": {
+                "x": 902,
+                "y": 406
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": null,
+                "name": "event-status-filter-limitOverflow",
+                "type": "custom",
+                "worker": "nodejs-sdk"
+            },
+            "id": "9944ebafc1090cb9",
+            "label": "Custom Action",
+            "name": null,
+            "position": {
+                "x": 902,
+                "y": 609
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": null,
+                "name": "event-status-filter-messageInTrash",
+                "type": "custom",
+                "worker": "nodejs-sdk"
+            },
+            "id": "f825b29fc23f22a5",
+            "label": "Custom Action",
+            "name": null,
+            "position": {
+                "x": 902,
+                "y": 797
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        }
+    ]
+}

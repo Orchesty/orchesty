@@ -1,0 +1,69 @@
+{
+    "connections": [
+        {
+            "from": "629c607f28677e42",
+            "id": "03a4882e31243e6d",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "452f3942fb41a1fe"
+        },
+        {
+            "from": "452f3942fb41a1fe",
+            "id": "9c072c9750a54dc3",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "4d0a3d961555bacb"
+        }
+    ],
+    "nodes": [
+        {
+            "action": null,
+            "id": "629c607f28677e42",
+            "label": "Cron",
+            "name": "cron",
+            "position": {
+                "x": 351,
+                "y": 406
+            },
+            "property": null,
+            "shape": "circle",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": null,
+                "name": "get-application-for-refresh",
+                "type": "batch",
+                "worker": "nodejs-sdk"
+            },
+            "id": "452f3942fb41a1fe",
+            "label": "Batch",
+            "name": null,
+            "position": {
+                "x": 573,
+                "y": 406
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": null,
+                "name": "refresh-oauth2-token",
+                "type": "connector",
+                "worker": "nodejs-sdk"
+            },
+            "id": "4d0a3d961555bacb",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 744,
+                "y": 406
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        }
+    ]
+}

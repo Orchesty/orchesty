@@ -1,0 +1,3 @@
+parameters:
+    env(USER_TASK_COLLECTION): userTask
+    user_task_collection: '%env(USER_TASK_COLLECTION)%'

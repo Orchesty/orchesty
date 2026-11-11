@@ -1,0 +1,18 @@
+parameters:
+    stdout_path: "%kernel.logs_dir%/stdout_%kernel.environment%.log"
+    public.services: true
+    # Tests stub SDK responses per test: never serve a cached catalog
+    actionCatalogTtl: 0
+
+    node_services_dirs:
+        - '%kernel.project_dir%/config/packages/test/'
+    applications: [ '%kernel.project_dir%/config/packages/test' ]
+
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.transport.curl_client_factory:
+        class: Hanaboso\CommonsBundle\Transport\Curl\CurlClientFactory
+        arguments:
+            - {"timeout": 1}

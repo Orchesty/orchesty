@@ -1,0 +1,7 @@
+{
+    "http": "GET /api/topologies/999",
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

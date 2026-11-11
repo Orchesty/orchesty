@@ -1,0 +1,13 @@
+{
+    "http": 200,
+    "body": {
+        "cloudMode": false,
+        "features": {
+            "auditLogs": false,
+            "enterpriseDashboards": false,
+            "pulse": false,
+            "traceAuditing": false
+        },
+        "status": "ok"
+    }
+}

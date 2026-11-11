@@ -1,0 +1,15 @@
+{
+    "http": 200,
+    "body": {
+        "items": [
+            {
+                "name": "Topology-Node",
+                "time": "*\/1 * * * *",
+                "topology_status": true,
+                "topology_id": "Topology ID",
+                "topology": "Topology",
+                "node": "Node"
+            }
+        ]
+    }
+}
