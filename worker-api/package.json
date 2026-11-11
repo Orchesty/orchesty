@@ -1,0 +1,38 @@
+{
+  "name": "orchesty-worker-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "node --experimental-vm-modules --disable-warning=ExperimentalWarning node_modules/jest/bin/jest.js --coverage --detectOpenHandles --forceExit",
+    "lint": "eslint src tests --fix",
+    "start": "nodemon src/server.ts",
+    "build": "rm -rf dist && tsc -p tsconfig.prod.json"
+  },
+  "keywords": [],
+  "author": "info@hanaboso.com",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "axios": "^1.21.0",
+    "cors": "^2.8.6",
+    "express": "^5.3.0",
+    "joi": "^18.3.1",
+    "mongodb": "^7.8.0",
+    "pino": "^10.4.0"
+  },
+  "devDependencies": {
+    "@hanaboso/eslint-plugin": "^2.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^26.6.6",
+    "@types/supertest": "^7.2.1",
+    "eslint": "^10.14.0",
+    "jest": "^30.5.2",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.3.1",
+    "ts-jest": "^29.4.15",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
+}
