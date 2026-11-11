@@ -1,0 +1,45 @@
+{
+  "scopes": [
+    {
+      "id": "read:users",
+      "label": "read:users",
+      "description": "Read user information"
+    },
+    {
+      "id": "write:users",
+      "label": "write:users",
+      "description": "Create and update users"
+    },
+    {
+      "id": "read:topologies",
+      "label": "read:topologies",
+      "description": "Read topology configurations"
+    },
+    {
+      "id": "write:topologies",
+      "label": "write:topologies",
+      "description": "Create and update topologies"
+    },
+    {
+      "id": "read:processes",
+      "label": "read:processes",
+      "description": "Read process execution data"
+    },
+    {
+      "id": "write:processes",
+      "label": "write:processes",
+      "description": "Start and manage processes"
+    },
+    {
+      "id": "read:logs",
+      "label": "read:logs",
+      "description": "Read system logs"
+    },
+    {
+      "id": "admin",
+      "label": "admin",
+      "description": "Full administrative access"
+    }
+  ]
+}
+

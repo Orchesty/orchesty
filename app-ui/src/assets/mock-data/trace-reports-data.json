@@ -1,0 +1,24 @@
+[
+  {
+    "id": "report-1",
+    "title": "Design Principles Analysis",
+    "content": "<p>Certainly! Here is a list of potential essay topics related to design principles, along with a brief outline of main points for each topic:</p><p><strong>1. The Influence of Balance in Visual Design:</strong></p><ul><li>Introduction to balance as a fundamental design principle.</li><li>Exploring symmetrical and asymmetrical balance.</li><li>Examples of how balance impacts the perception of visual elements.</li><li>The role of balance in various design disciplines (e.g., graphic design, architecture).</li></ul><p><strong>2. Contrast and Its Impact on Design Communication:</strong></p><ul><li>Introduction to contrast and its significance in design.</li><li>Exploring the use of color, typography, and scale to create contrast.</li><li>How contrast guides the viewer's attention and conveys meaning.</li><li>Case studies demonstrating effective use of contrast in real-world designs.</li></ul><p>These essay topics provide a comprehensive range of subjects related to design principles, each with its own set of key points for discussion. Depending on your specific interests and requirements, you can choose one that resonates most with your academic goals.</p>",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "messageId": "msg-1"
+  },
+  {
+    "id": "report-2",
+    "title": "Flowbite Navbar Implementation",
+    "content": "<p>Certainly! Below is a Flowbite Navbar with two items:</p><p><strong>Features:</strong></p><ul><li>Responsive mobile menu with hamburger icon</li><li>Dark mode support</li><li>Two navigation items: Home and About</li><li>Clean and modern design using Tailwind CSS</li></ul><p>This implementation follows Flowbite best practices and provides excellent user experience across all device sizes.</p>",
+    "timestamp": "2024-01-15T14:20:00Z",
+    "messageId": "msg-2"
+  },
+  {
+    "id": "report-3",
+    "title": "Influencer Collaboration List",
+    "content": "<p>Here is a comprehensive list of potential influencers for collaboration:</p><p><strong>Technology & Design Influencers:</strong></p><ul><li>Sarah Drasner - Vue.js expert and developer advocate</li><li>Adam Wathan - Creator of Tailwind CSS</li><li>Wes Bos - Full-stack JavaScript developer and educator</li></ul><p><strong>Collaboration Strategy:</strong></p><ul><li>Reach out via Twitter or LinkedIn</li><li>Propose mutually beneficial partnerships</li><li>Focus on creating valuable content for their audiences</li><li>Consider sponsorship opportunities for educational content</li></ul>",
+    "timestamp": "2024-01-14T09:15:00Z",
+    "messageId": "msg-3"
+  }
+]
+
