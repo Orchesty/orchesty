@@ -42,6 +42,9 @@ const ReplyID = "reply-id"
 // the whole topology (registered as a bridge identity header).
 const Identity = "identity"
 
+const PulseKey = "pulse-key"
+const PulseKeyScope = "pulse:internal"
+
 // NodeID header
 const NodeID = "node-id"
 

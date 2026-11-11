@@ -6,4 +6,5 @@ const (
 	Source_Header SourceType = "source"
 	Source_UI     SourceType = "ui"
 	Source_Auto   SourceType = "auto"
+	Source_Pulse  SourceType = "pulse"
 )

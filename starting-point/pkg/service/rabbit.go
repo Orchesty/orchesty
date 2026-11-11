@@ -37,6 +37,26 @@ type MessageDto struct {
 	Headers map[string]interface{} `json:"headers"`
 }
 
+var isPulseKey = func(key string) bool {
+	if key == "" {
+		return false
+	}
+	found, err := storage.Mongo.FindApiKey(key, []string{utils.PulseKeyScope})
+
+	return err == nil && found == key
+}
+
+func runSource(request *http.Request) string {
+	switch source := request.Header.Get(string(enum.Source_Header)); {
+	case source == string(enum.Source_UI):
+		return source
+	case source == string(enum.Source_Pulse) && isPulseKey(request.Header.Get(utils.PulseKey)):
+		return source
+	default:
+		return string(enum.Source_Auto)
+	}
+}
+
 // ProcessMessage  body structures
 // ---------------------------------------------------------------------------------------------
 
@@ -66,11 +86,7 @@ func (this RabbitSvc) SendMessage(
 		h[utils.UserID] = user
 	}
 
-	if source := request.Header.Get(string(enum.Source_Header)); source == string(enum.Source_UI) {
-		h[string(enum.Source_Header)] = source
-	} else {
-		h[string(enum.Source_Header)] = string(enum.Source_Auto)
-	}
+	h[string(enum.Source_Header)] = runSource(request)
 
 	// Propagate reply headers (callback URL + request id) so a response node at
 	// the end of the topology can return the final payload to the caller.

@@ -15,6 +15,17 @@ type (
 		Cache    *cache
 		Cleaner  *cleaner
 		Limiter  *limiter
+		Sync     *syncRun
+	}
+
+	// syncRun configures run-sync endpoints (synchronous call over an async topology)
+	syncRun struct {
+		// Timeout - how long a run-sync request waits for a result before answering 202
+		Timeout int `env:"SYNC_TIMEOUT" default:"25"`
+		// ReplyBaseUrl - address of THIS starting-point instance as seen by bridges (reply-to callback)
+		ReplyBaseUrl string `env:"SYNC_REPLY_BASE_URL" default:"http://starting-point:8080"`
+		// WaitLimit - how many run-sync requests may wait at once; more get 429 (0 = no limit)
+		WaitLimit int `env:"SYNC_WAIT_LIMIT" default:"200"`
 	}
 
 	app struct {
@@ -57,6 +68,7 @@ var (
 	Cache    cache
 	Cleaner  cleaner
 	Limiter  limiter
+	Sync     syncRun
 	Logger   log.Logger
 
 	c = config{
@@ -67,6 +79,7 @@ var (
 		Cache:    &Cache,
 		Cleaner:  &Cleaner,
 		Limiter:  &Limiter,
+		Sync:     &Sync,
 	}
 )
 

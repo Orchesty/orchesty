@@ -60,17 +60,17 @@ func HandleStatus(w http.ResponseWriter, _ *http.Request) {
 
 // HandleRunByID runs topology by ID
 func HandleRunByID(w http.ResponseWriter, r *http.Request) {
-	handleByID(w, r)
+	handleByID(w, r, false)
 }
 
 // HandleRunByName runs topology by name
 func HandleRunByName(w http.ResponseWriter, r *http.Request) {
-	handleByName(w, r)
+	handleByName(w, r, false)
 }
 
 // HandleRunByApplication runs topology by application
 func HandleRunByApplication(w http.ResponseWriter, r *http.Request) {
-	handleByApplication(w, r)
+	handleByApplication(w, r, false)
 }
 
 // HandleInvalidateCache invalidates topology cache
@@ -81,7 +81,7 @@ func HandleInvalidateCache(w http.ResponseWriter, r *http.Request) {
 	writeResponse(w, map[string]interface{}{"cache": cache})
 }
 
-func handleByID(w http.ResponseWriter, r *http.Request) {
+func handleByID(w http.ResponseWriter, r *http.Request, sync bool) {
 	err := utils.ValidateBody(r)
 
 	uiRun := false
@@ -117,10 +117,10 @@ func handleByID(w http.ResponseWriter, r *http.Request) {
 		r.Header.Set(string(enum.Source_Header), string(enum.Source_UI))
 	}
 
-	processMessage(w, r, topology, init)
+	processMessage(w, r, topology, init, sync)
 }
 
-func handleByName(w http.ResponseWriter, r *http.Request) {
+func handleByName(w http.ResponseWriter, r *http.Request, sync bool) {
 	err := utils.ValidateBody(r)
 	if err != nil {
 		config.Logger.Error(fmt.Errorf("content is not valid: %s, Route: %s", err.Error(), r.URL.String()))
@@ -140,10 +140,10 @@ func handleByName(w http.ResponseWriter, r *http.Request) {
 
 	r.Header.Set(utils.UserID, getUser(r))
 
-	processMessage(w, r, topology, init)
+	processMessage(w, r, topology, init, sync)
 }
 
-func handleByApplication(w http.ResponseWriter, r *http.Request) {
+func handleByApplication(w http.ResponseWriter, r *http.Request, sync bool) {
 	err := utils.ValidateBody(r)
 	if err != nil {
 		config.Logger.Error(fmt.Errorf("content is not valid: %s, Route: %s", err.Error(), r.URL.String()))
@@ -163,10 +163,15 @@ func handleByApplication(w http.ResponseWriter, r *http.Request) {
 	r.Header.Set(utils.UserID, webhook.User)
 	r.Header.Set(utils.ApplicationID, webhook.Application)
 
-	processMessage(w, r, topology, init)
+	processMessage(w, r, topology, init, sync)
 }
 
-func processMessage(w http.ResponseWriter, r *http.Request, topology *storage.Topology, init map[string]interface{}) {
+func processMessage(w http.ResponseWriter, r *http.Request, topology *storage.Topology, init map[string]interface{}, sync bool) {
+	if sync {
+		processMessageSync(w, r, topology, init)
+		return
+	}
+
 	corrId, _ := service.RabbitMq.SendMessage(r, *topology, init)
 
 	if corrId == "" {
