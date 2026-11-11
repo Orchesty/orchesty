@@ -8,13 +8,14 @@ import BreakpointModal from '@/components/topologies/BreakpointModal.vue'
 import FailedMessageModal from '@/components/topologies/FailedMessageModal.vue'
 import WebhookSubscribeModal from '@/components/topologies/WebhookSubscribeModal.vue'
 import PrefetchSettingsModal from '@/components/topologies/PrefetchSettingsModal.vue'
+import CopyRunUrlModal from '@/components/topologies/CopyRunUrlModal.vue'
+import { buildRunUrls, buildWebhookUrls, hasResponseDownstream, type RunUrl } from '@/utils/startingPointUrls'
 import {
   listWebhookConfigs,
   subscribeWebhookConfig,
   unsubscribeWebhookConfig,
   deleteWebhookConfig,
   cascadeWebhookConfigs,
-  buildWebhookCallbackUrl,
   type WebhookConfigItem,
 } from '@/services/webhookConfigService'
 import { STARTING_POINT_URL } from '@/config'
@@ -178,26 +179,52 @@ const resolveBackendId = (editorNodeId: string): string => {
   return schemaToBackendId.value[editorNodeId] || editorNodeId
 }
 
-// Strict starting-point URL: identifies the topology + node by Mongo
-// ObjectIds and is therefore pinned to one specific topology version. Useful
-// when integrators want to lock a tester / cron to a single deployed build.
-const getStartingPointUrl = (editorNodeId: string): string => {
-  const backendId = resolveBackendId(editorNodeId)
-  return `${STARTING_POINT_URL}/topologies/${props.topologyId}/nodes/${backendId}/run`
+// Copy URL dialog: every start URL of an event / webhook node in one place
+// (async + sync, active + strict version). Sync URLs are offered only when a
+// Response node is reachable from the node, i.e. the topology can answer.
+const copyUrlModalOpen = ref(false)
+const copyUrlNodeName = ref('')
+const copyUrlList = ref<RunUrl[]>([])
+
+const canAnswerSync = (editorNodeId: string): boolean => {
+  const core = editorCore.value
+  if (!core) return false
+
+  return hasResponseDownstream(
+    editorNodeId,
+    core.getNodes().map((n) => ({ id: n.id, label: n.label })),
+    core.getConnections().map((c) => ({ source: c.source, target: c.target })),
+  )
 }
 
-// Name-based starting-point URL: matches the starting-point's
-// `/run-by-name` route and resolves to whichever topology version is
-// currently active. This is the URL we want integrators to share by default
-// — copy actions in the editor expose it as the primary "Copy URL" action.
-const getStartingPointUrlByName = (node: EditorNode): string => {
-  const topology = encodeURIComponent(props.topologyName || '')
-  const nodeName = encodeURIComponent(node.name || '')
-  return `${STARTING_POINT_URL}/topologies/${topology}/nodes/${nodeName}/run-by-name`
+const openCopyUrls = (nodeName: string, urls: RunUrl[]) => {
+  copyUrlNodeName.value = nodeName
+  copyUrlList.value = urls
+  copyUrlModalOpen.value = true
 }
 
+const openEventCopyUrls = (node: EditorNode) => {
+  if (!node.name) {
+    showToast('Event has no name yet — save the topology first', 'warning')
+    return
+  }
 
-const EXCLUDED_PROCESS_TIME_LABELS = new Set(['event', 'webhook', 'cron', 'breakpoint'])
+  openCopyUrls(
+    node.name,
+    buildRunUrls(
+      STARTING_POINT_URL,
+      {
+        topologyId: props.topologyId,
+        topologyName: props.topologyName || '',
+        nodeId: resolveBackendId(node.id),
+        nodeName: node.name,
+      },
+      canAnswerSync(node.id),
+    ),
+  )
+}
+
+const EXCLUDED_PROCESS_TIME_LABELS = new Set(['event', 'webhook', 'cron', 'breakpoint', 'confirm', 'question'])
 
 const isProcessTimeRelevant = (editorId: string): boolean => {
   const label = nodesData.value[editorId]?.label?.toLowerCase()
@@ -452,38 +479,8 @@ const eventNodeActions = {
       id: 'copy-url',
       icon: '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
       label: 'Copy URL',
-      tooltip: 'Copy URL (resolves to the currently active topology version)',
-      onClick: async (n: EditorNode) => {
-        if (!n.name) {
-          showToast('Event has no name yet — save the topology first', 'warning')
-          return
-        }
-        try {
-          const url = getStartingPointUrlByName(n)
-          await navigator.clipboard.writeText(url)
-          showToast('URL copied to clipboard', 'success')
-        } catch (e) {
-          showToast((e as Error).message, 'error')
-        }
-      }
-    })
-    actions.push({
-      id: 'copy-strict-url',
-      icon: '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 14l2 2 4-4"/>',
-      label: 'Copy strict version URL',
-      tooltip: 'Copy URL pinned to this exact topology version (uses Mongo IDs)',
-      // Strict version is power-user only — keep the inline label clean and
-      // expose it solely from the right-click dropdown.
-      hideInLabel: true,
-      onClick: async (n: EditorNode) => {
-        try {
-          const url = getStartingPointUrl(n.id)
-          await navigator.clipboard.writeText(url)
-          showToast('Strict version URL copied to clipboard', 'success')
-        } catch (e) {
-          showToast((e as Error).message, 'error')
-        }
-      }
+      tooltip: 'Copy start URL (async / sync, active / strict version)',
+      onClick: (n: EditorNode) => openEventCopyUrls(n),
     })
     return actions
   },
@@ -508,7 +505,7 @@ const openWebhookSubscribeModal = (node: EditorNode) => {
   webhookSubscribeModalOpen.value = true
 }
 
-const handleWebhookCopyUrl = async (node: EditorNode) => {
+const handleWebhookCopyUrl = (node: EditorNode) => {
   // The callback URL is only meaningful once a token has been issued by the
   // SDK during subscribe. Without it we have nothing usable to copy — bail
   // with a hint and refuse to fall back to the id-based starting-point URL
@@ -519,13 +516,10 @@ const handleWebhookCopyUrl = async (node: EditorNode) => {
     showToast('Subscribe the webhook first to generate a callback URL', 'warning')
     return
   }
-  try {
-    const url = buildWebhookCallbackUrl(props.topologyName, node.name, cfg.token)
-    await navigator.clipboard.writeText(url)
-    showToast('URL copied to clipboard', 'success')
-  } catch (e) {
-    showToast((e as Error).message, 'error')
-  }
+  openCopyUrls(
+    node.name,
+    buildWebhookUrls(STARTING_POINT_URL, props.topologyName || '', node.name, cfg.token, canAnswerSync(node.id)),
+  )
 }
 
 const handleWebhookUnsubscribe = async (node: EditorNode) => {
@@ -720,6 +714,8 @@ const labelCustomization: LabelCustomizationMap = {
     getTopLeftSlot: getBreakpointOverlay,
     getActions: getBreakpointActions,
   },
+  Confirm: {},
+  Question: {},
   Cron: {
     getFields: (node: EditorNode) => {
       const nodeData = nodesData.value[node.id]
@@ -1340,6 +1336,12 @@ watch(() => props.refreshKey, () => {
       :application="selectedWebhookApplication"
       :initial-parameters="selectedWebhookInitialParameters"
       @subscribed="handleWebhookSubscribed"
+    />
+
+    <CopyRunUrlModal
+      v-model="copyUrlModalOpen"
+      :node-name="copyUrlNodeName"
+      :urls="copyUrlList"
     />
 
     <PrefetchSettingsModal

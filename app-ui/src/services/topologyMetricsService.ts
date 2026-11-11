@@ -85,7 +85,8 @@ export const fetchRawTopologyMetrics = async (
   return { processTimeByNodeId, requestTimeByNodeId }
 }
 
-const EXCLUDED_NODE_TYPES = new Set(['start', 'cron', 'webhook', 'user'])
+// Nodes without their own processing time; Confirm / Question wait for a person like a user task
+const EXCLUDED_NODE_TYPES = new Set(['start', 'cron', 'webhook', 'user', 'confirm', 'question'])
 
 export const fetchTopologyMetrics = async (
   topologyId: string,

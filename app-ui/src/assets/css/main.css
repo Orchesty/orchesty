@@ -508,3 +508,17 @@ input[type="checkbox"]:indeterminate {
   @apply !text-red-700 dark:!text-red-400;
 }
 
+
+/* Rete editor: Yes / No output labels of Confirm and Question nodes (the package default is
+   11px slate-600, unreadable on the dark canvas and glued to the socket). */
+.custom-node .port-label {
+  left: 24px;
+  bottom: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.custom-node--dark .port-label {
+  color: #cbd5e1;
+}

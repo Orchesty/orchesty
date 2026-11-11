@@ -23,12 +23,18 @@ interface Props {
   topologyNodes?: unknown[]
   topologyName?: string
   disabled?: boolean
+  /** What the manifest describes: a topology (kind derived from nodes) or an Action (always returns data) */
+  subject?: 'topology' | 'action'
+  /** Tool id shown in the preview; defaults to `topology:<name>` */
+  toolId?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   topologyNodes: () => [],
   topologyName: '',
   disabled: false,
+  subject: 'topology',
+  toolId: '',
 })
 
 const emit = defineEmits<{
@@ -44,10 +50,14 @@ const validationError = ref('')
 
 let lastEmitted = JSON.stringify(props.modelValue ?? {})
 
-const derived = computed(() => deriveKindFromNodes(props.topologyNodes))
+const isAction = computed(() => props.subject === 'action')
+const derived = computed(() =>
+  isAction.value ? { kind: 'query' as const, responseNodeName: null } : deriveKindFromNodes(props.topologyNodes),
+)
 const isQuery = computed(() => derived.value.kind === 'query')
 
 const toolId = computed(() => {
+  if (props.toolId !== '') return props.toolId
   const name = props.topologyName.trim()
   return name === '' ? 'topology:{name}' : `topology:${name}`
 })
@@ -166,7 +176,7 @@ function removeExample(index: number): void {
             <div>
               <p class="text-sm font-semibold text-gray-900 dark:text-white">Expose to Trace / Pulse</p>
               <p class="text-xs text-gray-500 dark:text-gray-400">
-                When off, this topology is not offered as an MCP tool.
+                When off, this {{ isAction ? 'action' : 'topology' }} is not offered as an MCP tool.
               </p>
             </div>
           </div>
@@ -178,7 +188,10 @@ function removeExample(index: number): void {
       </div>
 
       <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
-        <template v-if="isQuery">
+        <template v-if="isAction">
+          A read action returns the target system's response directly to the caller.
+        </template>
+        <template v-else-if="isQuery">
           Kind detected from the topology: it ends with a Response node
           <code v-if="derived.responseNodeName">{{ derived.responseNodeName }}</code>, so it returns
           data to the caller.
@@ -246,7 +259,7 @@ function removeExample(index: number): void {
 
       <!-- Input parameters -->
       <div class="space-y-3">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col items-start gap-2">
           <div>
             <h4 class="text-sm font-semibold text-gray-900 dark:text-white">Input parameters</h4>
             <p class="text-xs text-gray-500 dark:text-gray-400">
@@ -277,7 +290,7 @@ function removeExample(index: number): void {
 
       <!-- Output parameters (query only) -->
       <div v-if="isQuery" class="space-y-3">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col items-start gap-2">
           <div>
             <h4 class="text-sm font-semibold text-gray-900 dark:text-white">Output (returned data)</h4>
             <p class="text-xs text-gray-500 dark:text-gray-400">
@@ -303,7 +316,7 @@ function removeExample(index: number): void {
 
       <!-- Examples -->
       <div class="space-y-3">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col items-start gap-2">
           <div>
             <h4 class="text-sm font-semibold text-gray-900 dark:text-white">Examples (optional)</h4>
             <p class="text-xs text-gray-500 dark:text-gray-400">
@@ -356,7 +369,7 @@ function removeExample(index: number): void {
       </div>
 
       <!-- Confirmation -->
-      <Card>
+      <Card v-if="!isAction">
         <Checkbox
           :model-value="form.requiresConfirmation"
           :disabled="disabled"
@@ -366,7 +379,7 @@ function removeExample(index: number): void {
       </Card>
 
       <!-- LLM formatting of the response -->
-      <Card>
+      <Card v-if="!isAction">
         <Checkbox
           :model-value="form.llmFormat"
           :disabled="disabled"

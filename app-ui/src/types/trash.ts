@@ -10,6 +10,9 @@ export interface TrashItem {
   timestamp: string
   headers: Record<string, unknown>
   body: Record<string, unknown>
+  type?: string
+  identity?: string
+  question?: string
 }
 
 export interface TrashQueryParams {
@@ -24,6 +27,7 @@ export interface TrashQueryParams {
   timeRange?: string
   dateFrom?: string
   dateTo?: string
+  types?: string[]
 }
 
 // API-specific types
@@ -61,6 +65,8 @@ export interface TrashItemApi {
   message: string
   body: string  // JSON string that needs parsing
   headers: Record<string, unknown>  // Already an object
+  identity?: string
+  question?: string
 }
 
 // GET /api/user-task/{id} response: body/headers are nested under `message`
