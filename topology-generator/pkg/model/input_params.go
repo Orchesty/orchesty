@@ -50,6 +50,27 @@ type Environment struct {
 	OrchestyApiKey      string  `json:"orchesty_api_key"`
 }
 
+const (
+	defaultBridgeTimeoutSec = 60
+	drainMarginSec          = 10
+)
+
+// StopGracePeriodSec returns how long the bridge needs to drain in-flight messages on shutdown:
+// the longest node timeout (the bridge's own default when none is set) plus a safety margin.
+func (p *NodeConfig) StopGracePeriodSec() int {
+	maxTimeout := 0
+	for _, nodeConfig := range p.NodeConfig {
+		if nodeConfig.Worker.Settings.Timeout > maxTimeout {
+			maxTimeout = nodeConfig.Worker.Settings.Timeout
+		}
+	}
+	if maxTimeout <= 0 {
+		maxTimeout = defaultBridgeTimeoutSec
+	}
+
+	return maxTimeout + drainMarginSec
+}
+
 func (p *NodeConfig) GetTopologyJson(t *Topology, nodes []Node) (TopologyJson, error) {
 	topology := TopologyJson{
 		Id:       t.ID.Hex(),
@@ -103,8 +124,9 @@ func (p *NodeConfig) GetTopologyJson(t *Topology, nodes []Node) (TopologyJson, e
 		}
 		for j, follower := range node.Next {
 			nodeJson.Followers[j] = NodeJsonFollower{
-				Id:   follower.ID,
-				Name: follower.Name,
+				Id:     follower.ID,
+				Name:   follower.Name,
+				Output: follower.Output,
 			}
 		}
 

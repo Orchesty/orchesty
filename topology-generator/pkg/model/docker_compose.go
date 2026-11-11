@@ -46,6 +46,8 @@ type Service struct {
 	MemLimit    string                           `yaml:"mem_limit,omitempty"`
 	Cpus        float64                          `yaml:"cpus,omitempty"`
 	Restart     string                           `yaml:"restart"`
+	// StopGracePeriod lets the bridge drain in-flight messages before it is killed (e.g. "70s")
+	StopGracePeriod string `yaml:"stop_grace_period,omitempty" json:"stop_grace_period,omitempty"`
 }
 
 // DockerCompose DockerCompose

@@ -207,3 +207,14 @@ func getTestNodes() []Node {
 
 	return nodes
 }
+
+func TestNodeConfig_StopGracePeriodSec(t *testing.T) {
+	withTimeouts := NodeConfig{NodeConfig: map[string]NodeUserParams{
+		"a": {Worker: TopologyBridgeWorkerJSON{Settings: TopologyBridgeWorkerSettingsJSON{Timeout: 30}}},
+		"b": {Worker: TopologyBridgeWorkerJSON{Settings: TopologyBridgeWorkerSettingsJSON{Timeout: 90}}},
+	}}
+	assert.Equal(t, 100, withTimeouts.StopGracePeriodSec())
+
+	withoutTimeouts := NodeConfig{NodeConfig: map[string]NodeUserParams{"a": {}}}
+	assert.Equal(t, 70, withoutTimeouts.StopGracePeriodSec())
+}

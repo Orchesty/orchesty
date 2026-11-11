@@ -80,6 +80,8 @@ type TemplateSpec struct {
 	Containers         []Container
 	Volumes            []Volume
 	ServiceAccountName string `yaml:"serviceAccountName"`
+	// TerminationGracePeriodSeconds lets the bridge drain in-flight messages (Kubernetes' default is 30 s)
+	TerminationGracePeriodSeconds int `yaml:"terminationGracePeriodSeconds,omitempty"`
 }
 
 // Template Template
