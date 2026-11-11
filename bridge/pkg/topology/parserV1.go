@@ -144,6 +144,10 @@ func workerTypeFromString(workerType string) (enum.WorkerType, error) {
 		return enum.WorkerType_Custom, nil
 	case "worker.response":
 		return enum.WorkerType_Response, nil
+	case "worker.confirm":
+		return enum.WorkerType_Confirm, nil
+	case "worker.question":
+		return enum.WorkerType_Question, nil
 	}
 
 	return enum.WorkerType_Null, fmt.Errorf("unknown worker type [%s]", workerType)

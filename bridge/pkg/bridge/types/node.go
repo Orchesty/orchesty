@@ -16,3 +16,9 @@ type Node interface {
 	TopologyName() string
 	WorkerType() enum.WorkerType
 }
+
+// FollowerRouter is implemented by the live bridge node so Confirm can pick
+// the Yes / No branch without publishing to every follower.
+type FollowerRouter interface {
+	FollowerIdsForOutput(output string) string
+}

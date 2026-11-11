@@ -23,8 +23,9 @@ type NodeShard struct {
 }
 
 type Follower struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
+	Id     string `json:"id"`
+	Name   string `json:"name"`
+	Output string `json:"output,omitempty"`
 }
 
 type NodeSettings struct {
@@ -91,8 +92,9 @@ type NodeV2 struct {
 }
 
 type NodeV2Follower struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
+	Id     string `json:"id"`
+	Name   string `json:"name"`
+	Output string `json:"output,omitempty"`
 }
 
 type NodeV2Settings struct {

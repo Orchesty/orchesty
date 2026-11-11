@@ -21,8 +21,20 @@ const (
 	Header_SystemEvent     = "system-event"
 	Header_Source          = "source"
 
-	Source_UI   = "ui"
-	Source_Auto = "auto"
+	Source_UI    = "ui"
+	Source_Auto  = "auto"
+	Source_Pulse = "pulse"
+
+	Header_ConfirmQuestion = "confirm-question"
+	Header_ConfirmDisplay  = "confirm-display"
+	Header_PulseEvent      = "pulse-event"
+	// Set by the backend only when a live Confirm / Question task is decided (accept / reject). A plain
+	// user-task-state without it is a Trash retry / reject, which must not count as the user's decision.
+	Header_PulseDecision = "pulse-decision"
+
+	Header_QuestionText   = "question-text"
+	Header_QuestionSchema = "question-schema"
+	Header_QuestionSkip   = "question-skip"
 
 	// Target queue from repeater
 	Header_RepeatQueue = "repeat-queue"
@@ -98,4 +110,5 @@ var IdentityHeaders = []string{
 	// survive every hop and never be overwritten by a worker, so the topology
 	// can act on the real user's behalf all the way to the response node.
 	Header_Identity,
+	Header_Source,
 }

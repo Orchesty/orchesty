@@ -26,8 +26,7 @@ func (p Publishers) FilterAllowed(dto *model.ProcessMessage) (Publishers, error)
 		return p, nil
 	}
 
-	targetStr := dto.GetHeaderOrDefault(enum.Header_ForceTargetQueue, "")
-	var targetIds []string
+	targetIds := TargetIds(dto)
 
 	log.Info().
 		Bool(enum.LogHeader_IsForUi, true).
@@ -36,20 +35,9 @@ func (p Publishers) FilterAllowed(dto *model.ProcessMessage) (Publishers, error)
 			fmt.Sprintf(
 				"%s [%s]",
 				dto.GetHeaderOrDefault(enum.Header_ResultMessage, "forwarded to queues"),
-				targetStr,
+				dto.GetHeaderOrDefault(enum.Header_ForceTargetQueue, ""),
 			),
 		)
-
-	if strings.HasPrefix(targetStr, "pipes.") {
-		// Deprecated format: "pipes.topologyId.nodeId"
-		parts := strings.Split(targetStr, ".")
-		if len(parts) == 3 {
-			targetIds = []string{parts[2]}
-		}
-	} else {
-		// New format: "nodeId,nodeId2,..."
-		targetIds = strings.Split(targetStr, ",")
-	}
 
 	selected := make(Publishers, len(targetIds))
 	for _, targetId := range targetIds {
@@ -62,4 +50,26 @@ func (p Publishers) FilterAllowed(dto *model.ProcessMessage) (Publishers, error)
 	}
 
 	return selected, nil
+}
+
+// TargetIds returns follower ids selected by ResultCode_ForwardToQueue (force-target-queue header),
+// or nil when the message is not forwarded to a subset of followers.
+func TargetIds(dto *model.ProcessMessage) []string {
+	if dto.GetIntHeaderOrDefault(enum.Header_ResultCode, 0) != enum.ResultCode_ForwardToQueue {
+		return nil
+	}
+
+	targetStr := dto.GetHeaderOrDefault(enum.Header_ForceTargetQueue, "")
+	if strings.HasPrefix(targetStr, "pipes.") {
+		// Deprecated format: "pipes.topologyId.nodeId"
+		parts := strings.Split(targetStr, ".")
+		if len(parts) == 3 {
+			return []string{parts[2]}
+		}
+
+		return []string{}
+	}
+
+	// New format: "nodeId,nodeId2,..."
+	return strings.Split(targetStr, ",")
 }

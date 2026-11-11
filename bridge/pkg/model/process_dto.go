@@ -110,6 +110,7 @@ func (pm *ProcessMessage) ClearHeaders() {
 	pm.DeleteHeader(enum.Header_ResultMessage)
 	pm.DeleteHeader(enum.Header_ResultDetail)
 	pm.DeleteHeader(enum.Header_UserTaskState)
+	pm.DeleteHeader(enum.Header_PulseDecision)
 	if !pm.KeepRepeatHeaders { // TODO zkontrolovat čištění a rozdělit případně zvlášť - bylo by vhod to vyhodit mimo worker a zobecnit
 		pm.DeleteHeader(enum.Header_RepeatHops)
 		pm.DeleteHeader(enum.Header_RepeatInterval)

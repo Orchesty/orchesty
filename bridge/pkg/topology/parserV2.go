@@ -99,8 +99,9 @@ func (jsonParserV2) getTopology(path string) (model.Topology, error) {
 
 		for j, f := range nodeV2.Followers {
 			node.Followers[j] = model.Follower{
-				Id:   f.Id,
-				Name: f.Name,
+				Id:     f.Id,
+				Name:   f.Name,
+				Output: f.Output,
 			}
 		}
 
@@ -112,7 +113,8 @@ func (jsonParserV2) getTopology(path string) (model.Topology, error) {
 		}
 	}
 
-	topology.Timeout = time.Duration(maxTimeout)
+	// Node timeouts are in seconds; the topology timeout bounds the graceful drain on shutdown
+	topology.Timeout = time.Duration(maxTimeout) * time.Second
 
 	return topology, nil
 }

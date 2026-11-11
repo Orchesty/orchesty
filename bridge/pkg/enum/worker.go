@@ -10,6 +10,8 @@ const (
 	WorkerType_Batch    WorkerType  = "batch"
 	WorkerType_UserTask WorkerType  = "user"
 	WorkerType_Response WorkerType  = "response"
+	WorkerType_Confirm  WorkerType  = "confirm"
+	WorkerType_Question WorkerType  = "question"
 	ServiceType_Rabbit  ServiceType = "rabbit"
 	ServiceType_Memory  ServiceType = "memory"
 )
