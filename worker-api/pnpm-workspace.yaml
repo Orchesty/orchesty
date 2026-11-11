@@ -1,0 +1,8 @@
+allowBuilds:
+  '@parcel/watcher': false
+  unrs-resolver: true
+
+minimumReleaseAgeExclude:
+  - '@hanaboso/*'
+
+yes: true
