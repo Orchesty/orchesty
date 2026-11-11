@@ -1,0 +1,11 @@
+{
+    "http": "PATCH /crons",
+    "body": [
+        {
+            "topology": "Topology",
+            "node": "Node",
+            "time": "This is not valid CRON!",
+            "parameters": ""
+        }
+    ]
+}
