@@ -1,0 +1,72 @@
+{
+    "id": "60e8309331fc8466ca5e09d2-htt",
+    "name": "http",
+    "rabbitMq": [
+        {
+            "dsn": "amqp://rabbitmq/"
+        }
+    ],
+    "nodes": [
+        {
+            "id": "60e8309331fc8466ca5e09d3",
+            "name": "Start",
+            "worker": "worker.null",
+            "next": [
+                {
+                    "id": "60e8309331fc8466ca5e09d4",
+                    "name": "http"
+                }
+            ],
+            "settings": {}
+        },
+        {
+            "id": "60e8309331fc8466ca5e09d4",
+            "name": "http",
+            "worker": "worker.http_limited",
+            "settings": {
+                "host": "node-sdk",
+                "process_path": "/connector/http/action",
+                "status_path": "/connector/http/action/test",
+                "method": "POST",
+                "port": 80
+            },
+            "next": [
+                {
+                    "id": "60e83176025ba932d33181f4",
+                    "name": "http"
+                }
+            ]
+        },
+        {
+            "id": "60e83176025ba932d33181f4",
+            "name": "http",
+            "worker": "worker.batch",
+            "settings": {
+                "host": "node-sdk",
+                "process_path": "/batch/batch/action",
+                "status_path": "/batch/batch/action/test",
+                "method": "POST",
+                "port": 80
+            },
+            "next": [
+                {
+                    "id": "60e83176025ba932d33181f5",
+                    "name": "custom"
+                }
+            ]
+        },
+        {
+            "id": "60e83176025ba932d33181f5",
+            "name": "custom",
+            "worker": "worker.http_limited",
+            "settings": {
+                "host": "node-sdk",
+                "process_path": "/custom_node/custom/process",
+                "status_path": "/custom_node/custom/process/test",
+                "method": "POST",
+                "port": 80
+            },
+            "next": []
+        }
+    ]
+}
