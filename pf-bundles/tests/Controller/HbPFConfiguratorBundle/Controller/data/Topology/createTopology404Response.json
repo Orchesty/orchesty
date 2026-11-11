@@ -1,0 +1,9 @@
+{
+    "http": 404,
+    "body": {
+        "status": "INTERNAL_SERVER_ERROR",
+        "error_code": 404,
+        "type": "Hanaboso\\PipesFramework\\Configurator\\Exception\\TopologyException",
+        "message": ""
+    }
+}

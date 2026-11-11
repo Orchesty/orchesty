@@ -1,0 +1,7 @@
+{
+    "http": "POST /api/user-task/507f191e810c19729de860ea/accept",
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    },
+    "body": {}
+}

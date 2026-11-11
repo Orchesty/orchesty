@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController:
+        class: Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController
+        arguments:
+            - '@hbpf.metrics.handler.metrics'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]

@@ -1,0 +1,9 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.user_task.handler.user_task:
+        class: Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler
+        arguments:
+            - '@hbpf.user_task.manager.user_task'
+            - '@doctrine_mongodb.odm.default_document_manager'

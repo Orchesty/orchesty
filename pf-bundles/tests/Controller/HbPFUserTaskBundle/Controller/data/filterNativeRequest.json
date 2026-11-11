@@ -1,0 +1,7 @@
+{
+    "http": "GET /user-task?filter={\"native\":{\"message.body\":\"body\"},\"filter\":[[{\"column\":\"nodeId\",\"operator\":\"EQ\",\"value\":[\"node\"]}]]}",
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    },
+    "body": {}
+}

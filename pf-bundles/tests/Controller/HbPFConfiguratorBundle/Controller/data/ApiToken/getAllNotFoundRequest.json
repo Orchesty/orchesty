@@ -1,0 +1,7 @@
+{
+    "http": "GET /api/apiTokens?user=One",
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

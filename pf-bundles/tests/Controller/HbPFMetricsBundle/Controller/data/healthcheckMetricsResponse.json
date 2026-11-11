@@ -1,0 +1,15 @@
+{
+    "http": 200,
+    "body": [
+        {
+            "type": "queue",
+            "name": "node.123abc.123",
+            "service": "service",
+            "topology": "topology"
+        },
+        {
+            "type": "service",
+            "name": "neco"
+        }
+    ]
+}

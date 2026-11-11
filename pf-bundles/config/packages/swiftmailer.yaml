@@ -1,0 +1,6 @@
+parameters:
+    # Mailer service params
+    mailer_from: dev@hanaboso.com
+    mailer_async: false
+    mailer_builder_id: generic
+    env(EMAIL_DSN): 'smtp://localhost:25'
