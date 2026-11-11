@@ -30,6 +30,9 @@ class ApiToken
     public const string EXPIRE_AT = 'expireAt';
     public const string SCOPES    = 'scopes';
 
+    // Not in ApiTokenScopesEnum, so the API and the CLI can't put it on a key
+    public const string PULSE_INTERNAL_SCOPE = 'pulse:internal';
+
     /**
      * @var string
      */

@@ -15,6 +15,11 @@ security:
         unsecured_user_api:
             pattern: ^/api/(user/login|user/logout|user/\w+/activate|user/\w+/set_password|user/reset_password|user/register|user/exists|user/setup|user/\w+/verify)
             security: false
+        # Called by SDK workers with their Orchesty API key, validated by ActionManager
+        # (scopes actions:run / worker:all); the decision itself is checked against the identity.
+        unsecured_action_grant:
+            pattern: ^/api/actions/(grant|audit)$
+            security: false
         unsecured_status_api:
             pattern: ^/api/status
             security: false

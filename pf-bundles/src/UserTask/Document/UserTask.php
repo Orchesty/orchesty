@@ -11,6 +11,7 @@ use Hanaboso\PipesFramework\UserTask\Enum\UserTaskEnum;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\String\Json;
+use stdClass;
 
 /**
  * Class UserTask
@@ -51,10 +52,14 @@ use Hanaboso\Utils\String\Json;
     keys: ['created' => 'desc', 'message.headers.node-id' => 'asc', 'message.headers.topology-id' => 'asc', 'message.headers.result-message' => 'asc'],
     name: 'IK_userTask_created_messageHeadersNodeId_messageHeadersTopologyId_messageHeadersResultMessage',
 )]
-#[ODM\Index( // Used by Limiter (pkg/metrics/client.go)
-    keys: ['type' => 'asc', 'created' => 'asc', 'message.headers.node-id' => 'asc', 'message.headers.node-name' => 'asc', 'message.headers.user' => 'asc', 'message.headers.topology-id' => 'asc', 'message.headers.application' => 'asc'],
-    name: 'IK_userTask_type_created_messageHeadersNodeId_messageHeadersNodeName_messageHeadersUser_messageHeadersTopologyId_messageHeadersApplication',
-)]
+    #[ODM\Index( // Used by Limiter (pkg/metrics/client.go)
+        keys: ['type' => 'asc', 'created' => 'asc', 'message.headers.node-id' => 'asc', 'message.headers.node-name' => 'asc', 'message.headers.user' => 'asc', 'message.headers.topology-id' => 'asc', 'message.headers.application' => 'asc'],
+        name: 'IK_userTask_type_created_messageHeadersNodeId_messageHeadersNodeName_messageHeadersUser_messageHeadersTopologyId_messageHeadersApplication',
+    )]
+    #[ODM\Index(
+        keys: ['type' => 'asc', 'identity' => 'asc', 'created' => 'desc'],
+        name: 'IK_userTask_type_identity_created',
+    )]
 #[ODM\HasLifecycleCallbacks]
 class UserTask
 {
@@ -80,6 +85,11 @@ class UserTask
     public const string CREATED            = 'created';
     public const string UPDATED            = 'updated';
     public const string USER               = 'user';
+    public const string IDENTITY           = 'identity';
+    public const string QUESTION           = 'question';
+    public const string DISPLAY            = 'display';
+    public const string REPLY_ID           = 'replyId';
+    public const string SCHEMA             = 'schema';
 
     /**
      * @var string
@@ -146,6 +156,38 @@ class UserTask
      */
     #[ODM\Field(type: 'string')]
     private ?string $user = NULL;
+
+    /**
+     * @var string|null
+     */
+    #[ODM\Field(type: 'string')]
+    private ?string $identity = NULL;
+
+    /**
+     * @var string
+     */
+    #[ODM\Field(type: 'string')]
+    private string $question = '';
+
+    /**
+     * @var mixed[]
+     */
+    #[ODM\Field(type: 'hash')]
+    private array $display = [];
+
+    /**
+     * @var string
+     */
+    #[ODM\Field(type: 'string')]
+    private string $replyId = '';
+
+    /**
+     * JSON Schema object of the fields a Question task asks for.
+     *
+     * @var mixed[]
+     */
+    #[ODM\Field(type: 'hash')]
+    private array $schema = [];
 
     /**
      * UserTask constructor.
@@ -419,16 +461,141 @@ class UserTask
     }
 
     /**
+     * @return string|null
+     */
+    public function getIdentity(): ?string
+    {
+        return $this->identity;
+    }
+
+    /**
+     * @param string|null $identity
+     *
+     * @return self
+     */
+    public function setIdentity(?string $identity): self
+    {
+        $this->identity = $identity;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getQuestion(): string
+    {
+        return $this->question;
+    }
+
+    /**
+     * @param string $question
+     *
+     * @return self
+     */
+    public function setQuestion(string $question): self
+    {
+        $this->question = $question;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getDisplay(): array
+    {
+        return $this->display;
+    }
+
+    /**
+     * @param mixed[] $display
+     */
+    public function setDisplay(array $display): self
+    {
+        $this->display = $display;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getReplyId(): string
+    {
+        return $this->replyId;
+    }
+
+    /**
+     * @param string $replyId
+     *
+     * @return self
+     */
+    public function setReplyId(string $replyId): self
+    {
+        $this->replyId = $replyId;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getSchema(): array
+    {
+        return $this->schema;
+    }
+
+    /**
+     * @param mixed[] $schema
+     *
+     * @return self
+     */
+    public function setSchema(array $schema): self
+    {
+        $this->schema = $schema;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPulseTask(): bool
+    {
+        return in_array($this->type, [UserTaskEnum::CONFIRM->value, UserTaskEnum::QUESTION->value], TRUE);
+    }
+
+    /**
+     * Empty display / schema are JSON objects, so typed clients (Trace) can decode them.
+     *
+     * @return mixed[]
+     */
+    public function toPulseArray(): array
+    {
+        return [
+            self::CREATED       => $this->created->format(DateTimeUtils::DATE_TIME_UTC),
+            self::DISPLAY       => $this->getDisplay() === [] ? new stdClass() : $this->getDisplay(),
+            self::ID            => $this->id,
+            self::NODE_NAME     => $this->nodeName,
+            self::QUESTION      => $this->getQuestion(),
+            self::SCHEMA        => $this->getSchema() === [] ? new stdClass() : $this->getSchema(),
+            self::TOPOLOGY_NAME => $this->topologyName,
+            self::TYPE          => $this->type,
+        ];
+    }
+
+    /**
      * @return mixed[]
      */
     public function toArray(): array
     {
-        return [
+        $data = [
             self::AUDIT_LOGS     => $this->getAuditLogs(),
             self::CORRELATION_ID => $this->correlationId,
             self::CREATED        => $this->created->format(DateTimeUtils::DATE_TIME_UTC),
             self::ID             => $this->id,
-            self::MESSAGE        => $this->message->toArray(),
+            self::MESSAGE        => $this->message->toPublicArray(),
             self::NODE_ID        => $this->nodeId,
             self::NODE_NAME      => $this->nodeName,
             self::TOPOLOGY_ID    => $this->topologyId,
@@ -437,6 +604,16 @@ class UserTask
             self::UPDATED        => $this->updated->format(DateTimeUtils::DATE_TIME_UTC),
             self::USER           => $this->getUser(),
         ];
+
+        // Pulse fields only exist on live Confirm / Question tasks (trash and breakpoints don't carry them)
+        if ($this->isPulseTask()) {
+            $data[self::DISPLAY]  = $this->getDisplay();
+            $data[self::IDENTITY] = $this->getIdentity();
+            $data[self::QUESTION] = $this->getQuestion();
+            $data[self::SCHEMA]   = $this->getSchema();
+        }
+
+        return $data;
     }
 
 }

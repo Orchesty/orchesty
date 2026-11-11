@@ -16,6 +16,10 @@ class UserTaskMessage
     public const string BODY    = 'body';
     public const string HEADERS = 'headers';
 
+    public const array PROTECTED_HEADERS = ['identity', 'reply-id', 'reply-to', 'source'];
+
+    public const array HIDDEN_HEADERS = ['reply-id', 'reply-to'];
+
     /**
      * @var string
      */
@@ -79,10 +83,25 @@ class UserTaskMessage
             $this->body = $data[self::BODY];
         }
         if (array_key_exists(self::HEADERS, $data)) {
-            $this->headers = $data[self::HEADERS];
+            $protected     = array_flip(self::PROTECTED_HEADERS);
+            $this->headers = [
+                ...array_diff_key((array) $data[self::HEADERS], $protected),
+                ...array_intersect_key($this->headers, $protected),
+            ];
         }
 
         return $this;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function toPublicArray(): array
+    {
+        return [
+            self::BODY    => $this->body,
+            self::HEADERS => array_diff_key($this->headers, array_flip(self::HIDDEN_HEADERS)),
+        ];
     }
 
     /**

@@ -49,6 +49,7 @@ final class ApiTokenFilter extends GridFilterAbstract
         return $this
             ->getRepository()
             ->createQueryBuilder()
+            ->field(ApiToken::SCOPES)->notEqual(ApiToken::PULSE_INTERNAL_SCOPE)
             ->sort(ApiToken::CREATED, 'DESC');
     }
 

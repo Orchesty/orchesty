@@ -4,9 +4,11 @@ namespace Hanaboso\PipesFramework\ApiGateway\Locator;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ObjectRepository;
+use GuzzleHttp\Promise\Utils;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
@@ -16,10 +18,13 @@ use Hanaboso\Utils\String\Base64;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\Traits\LoggerTrait;
 use LogicException;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use Throwable;
 
 /**
@@ -32,8 +37,13 @@ final class ServiceLocator implements LoggerAwareInterface
 
     use LoggerTrait;
 
-    public const array USER_TASK_LIST      = ['user-task'];
-    public const string CUSTOM_ACTION_PATH = '%sapi/topologies/%s/nodes/%s/run-by-name';
+    public const array USER_TASK_LIST = ['user-task'];
+
+    // getApplications(): per SDK, which of its two calls failed (only present when one did)
+    public const string FAILED_CALLS        = 'failedCalls';
+    public const string FAILED_APPLICATIONS = 'applications';
+    public const string FAILED_INSTALLED    = 'installed';
+    public const string CUSTOM_ACTION_PATH  = '%sapi/topologies/%s/nodes/%s/run-by-name';
 
     private const string ITEMS          = 'items';
     private const string KEY            = 'key';
@@ -49,6 +59,8 @@ final class ServiceLocator implements LoggerAwareInterface
     private const string IS_INSTALLABLE = 'isInstallable';
     private const string APPLICATIONS   = 'applications';
 
+    private const int ACTION_LIST_TIMEOUT = 3;
+
     /**
      * @var ObjectRepository<Sdk>&SdkRepository
      */
@@ -57,11 +69,13 @@ final class ServiceLocator implements LoggerAwareInterface
     /**
      * ServiceLocator constructor.
      *
-     * @param DocumentManager   $dm
-     * @param CurlManager       $curlManager
-     * @param RedirectInterface $redirect
-     * @param string            $backendHost
-     * @param string            $tunnelProxyHost
+     * @param DocumentManager     $dm
+     * @param CurlManager         $curlManager
+     * @param RedirectInterface   $redirect
+     * @param string              $backendHost
+     * @param string              $tunnelProxyHost
+     * @param CacheInterface|null $cache
+     * @param int                 $actionCatalogTtl
      */
     public function __construct(
         DocumentManager $dm,
@@ -69,6 +83,8 @@ final class ServiceLocator implements LoggerAwareInterface
         private readonly RedirectInterface $redirect,
         private readonly string $backendHost,
         private readonly string $tunnelProxyHost = '',
+        private readonly ?CacheInterface $cache = NULL,
+        private readonly int $actionCatalogTtl = 0,
     )
     {
         $this->sdkRepository = $dm->getRepository(Sdk::class);
@@ -97,11 +113,27 @@ final class ServiceLocator implements LoggerAwareInterface
                 self::URL          => $sdk->getUrl(),
             ];
 
-            $availableApplications = $this->doRequest('applications', $sdkName);
-            $installedApplications = $this->doRequest(
-                sprintf('applications/users/%s/sdk/%s', $user, $sdkName),
-                $sdkName,
-            );
+            // A failed call must not look like "no applications" / "nothing installed": record which one failed
+            $failed = [];
+            try {
+                $availableApplications = $this->doRequest('applications', $sdkName, allowThrowException: TRUE);
+            } catch (Throwable) {
+                $availableApplications = [];
+                $failed[]              = self::FAILED_APPLICATIONS;
+            }
+            try {
+                $installedApplications = $this->doRequest(
+                    sprintf('applications/users/%s/sdk/%s', $user, $sdkName),
+                    $sdkName,
+                    allowThrowException: TRUE,
+                );
+            } catch (Throwable) {
+                $installedApplications = [];
+                $failed[]              = self::FAILED_INSTALLED;
+            }
+            if ($failed !== []) {
+                $applications[$sdkName][self::FAILED_CALLS] = $failed;
+            }
 
             foreach ($availableApplications[self::ITEMS] ?? [] as $application) {
                 $applications[$sdkName][self::APPLICATIONS][$application[self::KEY]] = [
@@ -479,8 +511,10 @@ final class ServiceLocator implements LoggerAwareInterface
     {
         $nodeTypes = [
             NodeImplementationEnum::BATCH->value     => 'batch/list',
+            NodeImplementationEnum::CONFIRM->value   => 'confirm/list',
             NodeImplementationEnum::CONNECTOR->value => 'connector/list',
             NodeImplementationEnum::CUSTOM->value    => 'custom-node/list',
+            NodeImplementationEnum::QUESTION->value  => 'question/list',
         ];
 
         $n = [];
@@ -508,6 +542,86 @@ final class ServiceLocator implements LoggerAwareInterface
         $n['backend'][NodeImplementationEnum::USER->value] = self::USER_TASK_LIST;
 
         return $n;
+    }
+
+    /*
+     * --------------------------------------------- Actions -----------------------------------------
+     */
+
+    /**
+     * Actions of all SDKs (`action/list`). Each item gets the SDK name and its key `<application>.<name>`.
+     *
+     * @return mixed[]
+     */
+    public function getActions(): array
+    {
+        $sdks = $this->getSdks();
+        if ($this->cache === NULL || $this->actionCatalogTtl <= 0) {
+            return $this->fetchActions($sdks);
+        }
+
+        // Registering / changing an SDK changes the key, so it shows up without waiting for the TTL
+        $key = sprintf(
+            'hbpf.action_catalog.%s',
+            md5(
+                implode(
+                    '|',
+                    array_map(static fn(Sdk $sdk): string => sprintf('%s=%s', $sdk->getName(), $sdk->getUrl()), $sdks),
+                ),
+            ),
+        );
+
+        return $this->cache->get($key, function (ItemInterface $item) use ($sdks): array {
+            $item->expiresAfter($this->actionCatalogTtl);
+
+            return $this->fetchActions($sdks);
+        });
+    }
+
+    /**
+     * Runs an action on its SDK worker synchronously (`POST action/{key}/run`).
+     * The worker can't know under which SDK name it is registered, so the name is sent along.
+     *
+     * @param string  $sdkName
+     * @param string  $key
+     * @param mixed[] $input
+     * @param string  $identity
+     *
+     * @return array{status: int, body: mixed[]}
+     * @throws CurlException
+     */
+    public function runAction(string $sdkName, string $key, array $input, string $identity): array
+    {
+        $sdk = NULL;
+        foreach ($this->getSdks() as $candidate) {
+            if ($candidate->getName() === $sdkName) {
+                $sdk = $candidate;
+
+                break;
+            }
+        }
+
+        if ($sdk === NULL) {
+            throw new LogicException(sprintf('SDK "%s" of action "%s" not found.', $sdkName, $key));
+        }
+
+        $dto = (new RequestDto(
+            new Uri($this->buildSdkUrl($sdk, sprintf('action/%s/run', rawurlencode($key)))),
+            CurlManager::METHOD_POST,
+            new ProcessDto(),
+            '',
+            ['Content-Type' => 'application/json'],
+        ))->setBody(Json::encode(['identity' => $identity, 'sdk' => $sdk->getName(), 'input' => (object) $input]));
+
+        $response = $this->curlManager->send($dto);
+
+        try {
+            $body = $response->getJsonBody();
+        } catch (Throwable) {
+            $body = ['error' => $response->getBody()];
+        }
+
+        return ['status' => $response->getStatusCode(), 'body' => $body];
     }
 
     /*
@@ -593,6 +707,64 @@ final class ServiceLocator implements LoggerAwareInterface
     public function getSdks(): array
     {
         return $this->sdkRepository->findAll();
+    }
+
+    /**
+     * @param Sdk[] $sdks
+     *
+     * @return mixed[]
+     */
+    private function fetchActions(array $sdks): array
+    {
+        $promises = [];
+        foreach ($sdks as $i => $sdk) {
+            try {
+                $promises[$i] = $this->curlManager->sendAsync(
+                    new RequestDto(
+                        new Uri($this->buildSdkUrl($sdk, 'action/list')),
+                        CurlManager::METHOD_GET,
+                        new ProcessDto(),
+                    ),
+                    ['timeout' => self::ACTION_LIST_TIMEOUT],
+                );
+            } catch (Throwable) {
+                continue;
+            }
+        }
+        $responses = Utils::settle($promises)->wait();
+
+        $actions = [];
+        // In SDK order, so "the first SDK serving a key wins" stays deterministic
+        foreach ($sdks as $i => $sdk) {
+            $response = $responses[$i]['value'] ?? NULL;
+            if (!$response instanceof ResponseInterface || $response->getStatusCode() >= 300) {
+                continue;
+            }
+
+            try {
+                $items = Json::decode((string) $response->getBody());
+            } catch (Throwable) {
+                continue;
+            }
+
+            foreach ($items as $item) {
+                if (!is_array($item) || !is_string($item['name'] ?? NULL)) {
+                    continue;
+                }
+
+                $application = is_string($item['app'] ?? NULL) ? $item['app'] : '';
+                $key         = $application !== '' ? sprintf('%s.%s', $application, $item['name']) : $item['name'];
+                // The same worker code may be registered as several SDKs (e.g. direct + tunnel):
+                // an action key is unique, the first SDK serving it wins.
+                if (isset($actions[$key])) {
+                    continue;
+                }
+
+                $actions[$key] = array_merge($item, ['key' => $key, 'sdk' => $sdk->getName()]);
+            }
+        }
+
+        return array_values($actions);
     }
 
     /*

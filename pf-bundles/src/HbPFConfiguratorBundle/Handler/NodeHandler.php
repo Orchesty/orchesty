@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\NodeException;
+use Hanaboso\PipesFramework\ApiGateway\Action\ActionManager;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
 use Hanaboso\PipesFramework\Database\Document\Node;
@@ -151,6 +152,10 @@ final class NodeHandler
                 'type'        => $node->getType(),
                 '_id'         => $node->getId(),
             ];
+        }
+
+        foreach (ActionManager::toConnectorGroups($this->serviceLocator->getActions()) as $action) {
+            $items[] = array_merge($action, ['topology_id' => NULL, '_id' => $action['nodeIds'][0]]);
         }
 
         return ['items' => $items];

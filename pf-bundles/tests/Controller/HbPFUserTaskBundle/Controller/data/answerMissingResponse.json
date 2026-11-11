@@ -1,0 +1,9 @@
+{
+    "http": 400,
+    "body": {
+        "status": "INVALID_REQUEST",
+        "error_code": 0,
+        "type": "Hanaboso\\PipesFramework\\UserTask\\Exception\\UserTaskAnswerException",
+        "message": "Request body must contain an \"answer\" object."
+    }
+}

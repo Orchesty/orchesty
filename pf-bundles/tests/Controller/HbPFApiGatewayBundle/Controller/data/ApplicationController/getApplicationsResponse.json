@@ -4,7 +4,11 @@
         {
             "url": "php-sdk",
             "name": "php-sdk",
-            "applications": []
+            "applications": [],
+            "failedCalls": [
+                "applications",
+                "installed"
+            ]
         }
     ]
 }

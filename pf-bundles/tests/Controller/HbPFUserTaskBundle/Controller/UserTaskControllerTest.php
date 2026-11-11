@@ -2,6 +2,7 @@
 
 namespace PipesFrameworkTests\Controller\HbPFUserTaskBundle\Controller;
 
+use ArrayObject;
 use Exception;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController;
@@ -12,8 +13,10 @@ use Hanaboso\PipesFramework\UserTask\Enum\UserTaskEnum;
 use Hanaboso\PipesFramework\UserTask\Model\UserTaskFilter;
 use Hanaboso\PipesFramework\UserTask\Model\UserTaskManager;
 use Hanaboso\PipesFramework\UserTask\Repository\UserTaskRepository;
+use Hanaboso\PipesFramework\Utils\JsonSchemaArgsValidator;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
+use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
@@ -29,6 +32,7 @@ use RabbitMqBundle\Publisher\Publisher;
 #[CoversClass(UserTaskManager::class)]
 #[CoversClass(UserTaskFilter::class)]
 #[CoversClass(UserTaskRepository::class)]
+#[CoversClass(JsonSchemaArgsValidator::class)]
 #[AllowMockObjectsWithoutExpectations]
 final class UserTaskControllerTest extends ControllerTestCaseAbstract
 {
@@ -227,6 +231,357 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
 
         $repo = $this->dm->getRepository(UserTask::class);
         self::assertNotEmpty($repo->findAll());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testAnswer(): void
+    {
+        $published = $this->prepQuestion();
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/answerRequest.json');
+
+        self::assertEmpty($this->dm->getRepository(UserTask::class)->findAll());
+        self::assertCount(1, $published);
+        $message = $published->getArrayCopy()[0];
+        self::assertSame(
+            ['city' => 'Prague', 'keep' => 'yes', 'count' => 3],
+            Json::decode($message['body']),
+        );
+        self::assertSame('accept', PipesHeaders::get('user-task-state', $message['headers']));
+        self::assertSame('accept', $message['headers']['pulse-decision'] ?? NULL);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testAnswerUnknownField(): void
+    {
+        $published = $this->prepQuestion();
+        $res       = $this->sendPost(
+            sprintf('/pulse/user-task/%s/answer', self::IDS[0]),
+            [],
+            ['answer' => ['city' => 'Prague', 'keep' => 'no']],
+        );
+
+        self::assertSame(400, $res->status);
+        self::assertStringContainsString('keep', $res->content->message);
+        self::assertCount(0, $published);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testAnswerSchemaLessOnlyAddsFields(): void
+    {
+        // Two requests: a kernel reboot between them would drop the mocked publisher
+        $this->client->disableReboot();
+        $published = $this->prepQuestion(schema: []);
+
+        $res = $this->sendPost(
+            sprintf('/pulse/user-task/%s/answer', self::IDS[0]),
+            [],
+            ['answer' => ['city' => 'Prague']],
+        );
+        self::assertSame(400, $res->status);
+        self::assertCount(0, $published);
+
+        $res = $this->sendPost(
+            sprintf('/pulse/user-task/%s/answer', self::IDS[0]),
+            [],
+            ['answer' => ['zip' => '60200']],
+        );
+        self::assertSame(200, $res->status);
+        self::assertSame(
+            ['city' => 'Brno', 'keep' => 'yes', 'zip' => '60200'],
+            Json::decode($published->getArrayCopy()[0]['body']),
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testAnswerKeepsNestedObjects(): void
+    {
+        $published = $this->prepQuestion(body: '{"city":"Brno","meta":{}}');
+        $res       = $this->sendPost(
+            sprintf('/pulse/user-task/%s/answer', self::IDS[0]),
+            [],
+            ['answer' => ['city' => 'Prague']],
+        );
+
+        self::assertSame(200, $res->status);
+        self::assertSame('{"city":"Prague","meta":{}}', $published->getArrayCopy()[0]['body']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testAnswerNonObjectBody(): void
+    {
+        $published = $this->prepQuestion(body: '[1,2]');
+        $res       = $this->sendPost(
+            sprintf('/pulse/user-task/%s/answer', self::IDS[0]),
+            [],
+            ['answer' => ['city' => 'Prague']],
+        );
+
+        self::assertSame(409, $res->status);
+        self::assertCount(0, $published);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testAnswerAlreadyClaimed(): void
+    {
+        $published = $this->prepQuestion();
+        $this->dm->getDocumentCollection(UserTask::class)->updateOne(
+            [],
+            ['$set' => ['claimedAt' => new UTCDateTime()]],
+        );
+
+        $res = $this->sendPost(
+            sprintf('/pulse/user-task/%s/answer', self::IDS[0]),
+            [],
+            ['answer' => ['city' => 'Prague']],
+        );
+
+        self::assertSame(404, $res->status);
+        self::assertCount(0, $published);
+        self::assertNotEmpty($this->dm->getRepository(UserTask::class)->findAll());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testPulsePendingHidesMessage(): void
+    {
+        $this->prepQuestion();
+        $this->prepQuestion(identity: 'other@example.com', id: self::IDS[1], mockPublisher: FALSE);
+
+        $res = $this->sendGet('/pulse/user-tasks/pending', TRUE);
+
+        self::assertSame(200, $res->status);
+        $items = (array) $res->content;
+        self::assertCount(1, $items);
+        $item = (array) $items[0];
+        self::assertSame(self::IDS[0], $item['id']);
+        self::assertSame('Which city and how many?', $item['question']);
+        self::assertArrayNotHasKey('message', $item);
+        self::assertArrayNotHasKey('replyId', $item);
+        self::assertArrayNotHasKey('identity', $item);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testReplyHeadersAreHiddenAndKeptOnUpdate(): void
+    {
+        $this->client->disableReboot();
+        $this->prepQuestion(mockPublisher: FALSE);
+        /** @var UserTask $task */
+        $task = $this->dm->getRepository(UserTask::class)->find(self::IDS[0]);
+        $task->getMessage()->setHeaders(
+            ['identity' => 'test@example.com', 'node-id' => 'node', 'reply-id' => 'r1', 'reply-to' => 'http://trace'],
+        );
+        $this->dm->flush();
+
+        $detail = (array) $this->sendGet(sprintf('/user-task/%s', self::IDS[0]), TRUE)->content;
+        self::assertSame(['identity' => 'test@example.com', 'node-id' => 'node'], $detail['message']['headers']);
+        self::assertArrayNotHasKey('replyId', $detail);
+
+        $list = (array) $this->sendGet('/user-tasks', TRUE)->content;
+        self::assertSame(['identity' => 'test@example.com', 'node-id' => 'node'], $list['items'][0]['headers']);
+
+        $res = $this->sendPut(
+            sprintf('/user-task/%s', self::IDS[0]),
+            [],
+            ['body' => '{}', 'headers' => ['node-id' => 'node', 'reply-to' => 'http://evil']],
+        );
+        self::assertSame(200, $res->status);
+
+        $this->dm->clear();
+        /** @var UserTask $task */
+        $task = $this->dm->getRepository(UserTask::class)->find(self::IDS[0]);
+        self::assertEquals(
+            ['identity' => 'test@example.com', 'node-id' => 'node', 'reply-id' => 'r1', 'reply-to' => 'http://trace'],
+            $task->getMessage()->getHeaders(),
+        );
+        self::assertStringNotContainsString('r1', Json::encode($task->getAuditLogs()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testPulseAcceptQuestionRefused(): void
+    {
+        $published = $this->prepQuestion();
+        $res       = $this->sendPost(sprintf('/pulse/user-task/%s/accept', self::IDS[0]), []);
+
+        self::assertSame(404, $res->status);
+        self::assertCount(0, $published);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testPulseRejectConfirm(): void
+    {
+        $published = $this->prepQuestion(UserTaskEnum::CONFIRM->value);
+        $res       = $this->sendPost(sprintf('/pulse/user-task/%s/reject', self::IDS[0]), []);
+
+        self::assertSame(200, $res->status);
+        self::assertCount(1, $published);
+        $headers = $published->getArrayCopy()[0]['headers'];
+        self::assertSame('reject', PipesHeaders::get('user-task-state', $headers));
+        self::assertSame('reject', $headers['pulse-decision'] ?? NULL);
+        self::assertEmpty($this->dm->getRepository(UserTask::class)->findAll());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testPulseRejectCancelsQuestion(): void
+    {
+        $published = $this->prepQuestion();
+        $res       = $this->sendPost(sprintf('/pulse/user-task/%s/reject', self::IDS[0]), []);
+
+        self::assertSame(200, $res->status);
+        self::assertSame('reject', $published->getArrayCopy()[0]['headers']['pulse-decision'] ?? NULL);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testPulseDecideOtherUsersConfirm(): void
+    {
+        $published = $this->prepQuestion(UserTaskEnum::CONFIRM->value, 'other@example.com');
+        $res       = $this->sendPost(sprintf('/pulse/user-task/%s/accept', self::IDS[0]), []);
+
+        self::assertSame(404, $res->status);
+        self::assertCount(0, $published);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testAnswerInvalid(): void
+    {
+        $published = $this->prepQuestion();
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/answerInvalidRequest.json');
+
+        self::assertNotEmpty($this->dm->getRepository(UserTask::class)->findAll());
+        self::assertCount(0, $published);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testAnswerMissing(): void
+    {
+        $this->prepQuestion();
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/answerMissingRequest.json');
+
+        self::assertNotEmpty($this->dm->getRepository(UserTask::class)->findAll());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testAnswerNotQuestion(): void
+    {
+        $this->prepQuestion(UserTaskEnum::CONFIRM->value);
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/answerNotQuestionRequest.json');
+
+        self::assertNotEmpty($this->dm->getRepository(UserTask::class)->findAll());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testAnswerIdentity(): void
+    {
+        // The task belongs to someone else; the forged identity header in the request is ignored
+        $this->prepQuestion(identity: 'other@example.com');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/answerIdentityRequest.json');
+
+        self::assertNotEmpty($this->dm->getRepository(UserTask::class)->findAll());
+    }
+
+    /**
+     * @param string       $type
+     * @param string       $identity
+     * @param mixed[]|null $schema
+     * @param string       $body
+     * @param string       $id
+     * @param bool         $mockPublisher
+     *
+     * @return ArrayObject<int, array{body: string, headers: mixed[]}>
+     * @throws Exception
+     */
+    private function prepQuestion(
+        string $type = UserTaskEnum::QUESTION->value,
+        string $identity = 'test@example.com',
+        ?array $schema = NULL,
+        string $body = '{"city":"Brno","keep":"yes"}',
+        string $id = self::IDS[0],
+        bool $mockPublisher = TRUE,
+    ): ArrayObject
+    {
+        $topology = new Topology();
+        $this->pfd($topology, TRUE);
+
+        $userTask = new UserTask();
+        $this->setProperty($userTask, 'id', $id);
+        $userTask->setNodeId('node')
+            ->setTopologyId($topology->getId())
+            ->setReturnExchange('')
+            ->setNodeName('')
+            ->setTopologyName('')
+            ->setReturnRoutingKey('')
+            ->setCorrelationId('corr')
+            ->setType($type)
+            ->setMessage((new UserTaskMessage())->setBody($body));
+        $userTask
+            ->setIdentity($identity)
+            ->setQuestion('Which city and how many?')
+            ->setSchema(
+                $schema ?? [
+                    'properties' => [
+                        'city'  => ['type' => 'string'],
+                        'count' => ['type' => 'integer'],
+                    ],
+                    'required'   => ['city'],
+                    'type'       => 'object',
+                ],
+            );
+        $this->dm->persist($userTask);
+        $this->dm->flush();
+
+        /** @var ArrayObject<int, array{body: string, headers: mixed[]}> $published */
+        $published = new ArrayObject();
+        if (!$mockPublisher) {
+            return $published;
+        }
+
+        $publisher = self::createMock(Publisher::class);
+        $publisher->method('publish')->willReturnCallback(
+            static function (string $body) use ($published): void {
+                $decoded = Json::decode($body);
+                $published->append(['body' => (string) $decoded['body'], 'headers' => (array) $decoded['headers']]);
+            },
+        );
+        $c   = self::getContainer();
+        $svc = new UserTaskManager(
+            $this->dm,
+            $c->get('hbpf.user_task.filter.user_task'),
+            $c->get('hbpf.user_task.aggregation-filter.user_task'),
+            $publisher,
+        );
+        $c->set('hbpf.user_task.manager.user_task', $svc);
+
+        return $published;
     }
 
     /**

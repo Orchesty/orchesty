@@ -12,5 +12,7 @@ enum UserTaskEnum: string
 
     case TRASH     = 'trash';
     case USER_TASK = 'userTask';
+    case CONFIRM   = 'confirm';
+    case QUESTION  = 'question';
 
 }

@@ -27,6 +27,14 @@ class EmbedNode
     protected string $name;
 
     /**
+     * Source output key of the incoming connection (e.g. yes / no on Confirm).
+     *
+     * @var string
+     */
+    #[ODM\Field(type: 'string')]
+    protected string $output = '';
+
+    /**
      * @param Node $node
      *
      * @return self
@@ -64,6 +72,26 @@ class EmbedNode
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOutput(): string
+    {
+        return $this->output;
+    }
+
+    /**
+     * @param string $output
+     *
+     * @return EmbedNode
+     */
+    public function setOutput(string $output): self
+    {
+        $this->output = $output;
 
         return $this;
     }

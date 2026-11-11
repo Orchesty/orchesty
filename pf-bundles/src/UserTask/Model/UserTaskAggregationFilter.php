@@ -6,6 +6,7 @@ use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Hanaboso\MongoDataGrid\GridAggregationFilterAbstract;
 use Hanaboso\PipesFramework\UserTask\Document\UserTask;
+use Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage;
 
 /**
  * Class UserTaskAggregationFilter
@@ -74,6 +75,11 @@ final class UserTaskAggregationFilter extends GridAggregationFilterAbstract
         $addSortationsCallback();
         $addPaginationCallback();
 
+        $headers = '$message.headers';
+        foreach (UserTaskMessage::HIDDEN_HEADERS as $hidden) {
+            $headers = ['$unsetField' => ['field' => $hidden, 'input' => $headers]];
+        }
+
         $builder
             ->project()
             ->field('nodeId')
@@ -84,10 +90,20 @@ final class UserTaskAggregationFilter extends GridAggregationFilterAbstract
             ->expression('$correlationId')
             ->field('created')
             ->dateToString('%Y-%m-%dT%H:%M:%SZ', '$created')
+            ->field('type')
+            ->expression('$type')
+            ->field('identity')
+            ->expression('$identity')
+            ->field('question')
+            ->expression('$question')
+            ->field('display')
+            ->expression('$display')
+            ->field('schema')
+            ->expression('$schema')
             ->field('body')
             ->expression('$message.body')
             ->field('headers')
-            ->expression('$message.headers');
+            ->expression($headers);
     }
 
 }
